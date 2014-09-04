@@ -6,7 +6,7 @@
 
     <groupId>io.puharesource.mc</groupId>
     <artifactId>TitleManager</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,10 +22,6 @@
         <repository>
             <id>md-5-repo</id>
             <url>http://repo.md-5.net/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>md-5-repo2</id>
-            <url>http://repo.md-5.net/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 

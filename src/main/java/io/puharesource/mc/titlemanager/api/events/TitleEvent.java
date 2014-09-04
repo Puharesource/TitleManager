@@ -1,33 +1,22 @@
-package io.puharesource.mc.titlemanager.api;
+package io.puharesource.mc.titlemanager.api.events;
 
-import io.puharesource.mc.titlemanager.TitleObject;
+import io.puharesource.mc.titlemanager.api.TitleObject;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class TabTitleChangeEvent extends Event implements Cancellable {
+public class TitleEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
     private boolean cancelled;
 
     private Player player;
     private TitleObject titleObject;
-    private ChangeReason reason;
 
-    public TabTitleChangeEvent(Player player, TitleObject titleObject, ChangeReason reason) {
+    public TitleEvent(Player player, TitleObject titleObject) {
         this.player = player;
         this.titleObject = titleObject;
-        this.reason = reason;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
     }
 
     @Override
@@ -40,6 +29,11 @@ public class TabTitleChangeEvent extends Event implements Cancellable {
         cancelled = shouldCancel;
     }
 
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
     public Player getPlayer() {
         return player;
     }
@@ -50,13 +44,5 @@ public class TabTitleChangeEvent extends Event implements Cancellable {
 
     public void setTitleObject(TitleObject titleObject) {
         this.titleObject = titleObject;
-    }
-
-    public ChangeReason getReason() {
-        return reason;
-    }
-
-    public enum ChangeReason {
-        DEFAULT, PLUGIN, OTHERS
     }
 }

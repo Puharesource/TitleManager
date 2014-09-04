@@ -1,5 +1,11 @@
 name: TitleManager
-version: 1.0.0
+version: 1.0.1
 author: Puharesource
 
 main: io.puharesource.mc.titlemanager.Main
+
+commands:
+  tm:
+    description: TitleManager commands.
+    usage: /tm
+    aliases: [titlemanager]
