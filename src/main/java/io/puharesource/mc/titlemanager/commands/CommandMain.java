@@ -66,8 +66,8 @@ public class CommandMain implements CommandExecutor {
     void syntaxError(CommandSender sender) {
         sender.sendMessage(ChatColor.RED + "Wrong usage! Correct usages:");
         sender.sendMessage(ChatColor.RED + "    /tm reload" + ChatColor.GRAY + " - Reloads the config.");
-        sender.sendMessage(ChatColor.RED + "    /tm broadcast" + ChatColor.GRAY + " - Broadcasts a title message (use \\n another line)");
-        sender.sendMessage(ChatColor.RED + "    /tm msg <player>" + ChatColor.GRAY + " - Sends a title message to the given player.");
+        sender.sendMessage(ChatColor.RED + "    /tm broadcast" + ChatColor.GRAY + " - Broadcasts a title message. (use <nl> for another line)");
+        sender.sendMessage(ChatColor.RED + "    /tm msg <player>" + ChatColor.GRAY + " - Sends a title message to the given player. (use <nl> for another line)");
     }
 
     boolean hasPermission(CommandSender sender, String permissionNode) {
