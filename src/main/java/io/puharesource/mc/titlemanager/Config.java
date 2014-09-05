@@ -5,6 +5,7 @@ import io.puharesource.mc.titlemanager.api.TitleObject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -31,6 +32,33 @@ public class Config {
             e.printStackTrace();
         }
 
+        //Updates the config from v1.0.1 to v1.0.2.
+        if(getConfig().contains("header")) {
+            try {
+                FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(config);
+
+                String header = fileConfig.getString("header");
+                String footer = fileConfig.getString("footer");
+
+                String title = fileConfig.getString("title");
+                String subtitle = fileConfig.getString("subtitle");
+
+                Files.delete(config.toPath());
+                Files.copy(plugin.getResource("config.yml"), config.toPath());
+                fileConfig = YamlConfiguration.loadConfiguration(config);
+
+                fileConfig.set("tabmenu.header", header);
+                fileConfig.set("tabmenu.footer", footer);
+
+                fileConfig.set("welcome_message.title", title);
+                fileConfig.set("welcome_message.subtitle", subtitle);
+
+                fileConfig.save(config);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         plugin.getConfig();
         plugin.saveConfig();
         loadSettings();
@@ -39,8 +67,9 @@ public class Config {
     static void loadSettings() {
         usingConfig = getConfig().getBoolean("usingConfig");
 
-        tabTitleObject = new TabTitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("header")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("footer")));
-        welcomeObject = new TitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("title")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("subtitle")));
+        tabTitleObject = new TabTitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("tabmenu.header")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("tabmenu.footer")));
+        welcomeObject = new TitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.title")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.subtitle")))
+                .setFadeIn(getConfig().getInt("welcome_message.fadeIn")).setStay(getConfig().getInt("welcome_message.stay")).setFadeOut(getConfig().getInt("welcome_message.fadeOut"));
 
         for(Player player : Bukkit.getOnlinePlayers())
             tabTitleObject.send(player);

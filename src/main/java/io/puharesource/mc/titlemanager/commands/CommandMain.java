@@ -38,7 +38,9 @@ public class CommandMain implements CommandExecutor {
                 TitleObject object = getObject(args, 1);
                 for(Player player : Bukkit.getOnlinePlayers())
                     object.send(player);
-                sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast!");
+                if(object.getSubtitle() != null)
+                    sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast with the message \"" + object.getTitle() + ChatColor.GREEN + "\" \"" + object.getSubtitle() + "\"");
+                else sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast with the message \"" + object.getTitle() + ChatColor.GREEN + "\"");
             } else if(args[0].equalsIgnoreCase("msg")) {
                 if(!hasPermission(sender, PERMISSION_MESSAGE)) return true;
                 if(args.length < 3) {
@@ -52,8 +54,11 @@ public class CommandMain implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + args[1] + " is not a player!");
                     return true;
                 }
-                getObject(args, 2).send(player);
-                sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " a message!");
+                TitleObject object = getObject(args, 2);
+                object.send(player);
+                if(object.getSubtitle() != null)
+                    sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + object.getTitle() + ChatColor.GREEN + "\" \"" + object.getSubtitle() + ChatColor.GREEN + "\"");
+                else sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + object.getTitle() + "\"");
             } else {
                 syntaxError(sender);
             }
@@ -86,7 +91,7 @@ public class CommandMain implements CommandExecutor {
         String title = ChatColor.translateAlternateColorCodes('&', sb.toString());
         String subtitle = null;
         if(title.contains("<nl>")) {
-            String[] titles = title.split("<nl>");
+            String[] titles = title.split("<nl>", 2);
             title = titles[0];
             subtitle = titles[1];
         }

@@ -1,7 +1,11 @@
 usingConfig: true
 
-header: HeaderSweg
-footer: FooterSweg
-
-title: '&dWelcome!'
-subtitle: '&bTo sweggy mc sweggy'
+tabmenu:
+  header: '&3MyServer'
+  footer: '&bIP: play.myserver.com'
+welcome_message:
+  title: '&5Welcome'
+  subtitle: '&dTo sweggy mc sweg!'
+  fadeIn: -1
+  stay: -1
+  fadeOut: -1
