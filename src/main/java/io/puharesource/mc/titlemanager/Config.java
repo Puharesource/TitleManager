@@ -4,6 +4,7 @@ import io.puharesource.mc.titlemanager.api.TabTitleObject;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -19,48 +20,35 @@ public class Config {
     private static TitleObject welcomeObject;
     private static TabTitleObject tabTitleObject;
 
-    public static void loadConfig() {
+    public static void loadConfig() throws IOException {
         Main plugin = TitleManager.getPlugin();
 
         if (!plugin.getDataFolder().exists())
             plugin.getDataFolder().mkdir();
         File config = new File(plugin.getDataFolder(), "config.yml");
 
-        try {
-            if (!config.exists()) Files.copy(plugin.getResource("config.yml"), config.toPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        if (!config.exists()) Files.copy(plugin.getResource("config.yml"), config.toPath());
+
 
         //Updates the config from v1.0.1 to v1.0.2.
         if(getConfig().contains("header")) {
-            try {
-                FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(config);
+            FileConfiguration oldConfig = YamlConfiguration.loadConfiguration(config);
 
-                String header = fileConfig.getString("header");
-                String footer = fileConfig.getString("footer");
-
-                String title = fileConfig.getString("title");
-                String subtitle = fileConfig.getString("subtitle");
-
-                Files.delete(config.toPath());
+            Files.copy(config.toPath(), new File(plugin.getDataFolder(), "1.0.1-old-config.yml").toPath());
+            Files.delete(config.toPath());
+            if(!config.exists())
                 Files.copy(plugin.getResource("config.yml"), config.toPath());
-                fileConfig = YamlConfiguration.loadConfiguration(config);
+            FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
 
-                fileConfig.set("tabmenu.header", header);
-                fileConfig.set("tabmenu.footer", footer);
+            fileConfig.set("tabmenu.header", oldConfig.getString("header"));
+            fileConfig.set("tabmenu.footer", oldConfig.getString("footer"));
 
-                fileConfig.set("welcome_message.title", title);
-                fileConfig.set("welcome_message.subtitle", subtitle);
+            fileConfig.set("welcome_message.title", oldConfig.getString("title"));
+            fileConfig.set("welcome_message.subtitle", oldConfig.getString("subtitle"));
 
-                fileConfig.save(config);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            fileConfig.save(config);
+            reloadConfig();
         }
-
-        plugin.getConfig();
-        plugin.saveConfig();
         loadSettings();
     }
 

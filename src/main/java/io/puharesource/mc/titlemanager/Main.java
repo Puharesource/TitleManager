@@ -15,7 +15,11 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         TitleManager.setPlugin(this);
-        Config.loadConfig();
+        try {
+            Config.loadConfig();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         getServer().getPluginManager().registerEvents(new ListenerConnection(), this);
 

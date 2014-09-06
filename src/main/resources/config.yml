@@ -4,7 +4,7 @@ tabmenu:
   header: '&3MyServer'
   footer: '&bIP: play.myserver.com'
 welcome_message:
-  title: '&5Welcome'
+  title: '&5Welcome {PLAYER}'
   subtitle: '&dTo sweggy mc sweg!'
   fadeIn: -1
   stay: -1
