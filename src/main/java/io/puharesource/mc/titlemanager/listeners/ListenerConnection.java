@@ -16,10 +16,14 @@ public class ListenerConnection implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         if (Config.isUsingConfig()) {
             TitleObject titleObject = Config.getWelcomeObject();
-            titleObject.setTitle(titleObject.getTitle().replaceAll("(?i)\\{PLAYER\\}", event.getPlayer().getName()));
+            if(titleObject.getTitle() != null)
+                titleObject.setTitle(titleObject.getTitle().replaceAll("(?i)\\{PLAYER\\}", event.getPlayer().getName()));
             TabTitleObject tabTitleObject = Config.getTabTitleObject();
-            tabTitleObject.setFooter(tabTitleObject.getFooter().replaceAll("(?i)\\{PLAYER\\}", event.getPlayer().getName()));
-            tabTitleObject.setHeader(tabTitleObject.getHeader().replaceAll("(?i)\\{PLAYER\\}", event.getPlayer().getName()));
+            if(tabTitleObject.getFooter() != null)
+                tabTitleObject.setFooter(tabTitleObject.getFooter().replaceAll("(?i)\\{PLAYER\\}", event.getPlayer().getName()));
+            if(tabTitleObject.getHeader() != null)
+                tabTitleObject.setHeader(tabTitleObject.getHeader().replaceAll("(?i)\\{PLAYER\\}", event.getPlayer().getName()));
+
             titleObject.send(event.getPlayer());
             tabTitleObject.send(event.getPlayer());
         }
