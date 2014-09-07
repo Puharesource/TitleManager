@@ -28,6 +28,8 @@ public class CommandMain implements CommandExecutor {
                 if(!hasPermission(sender, PERMISSION_RELOAD)) return true;
                 Config.reloadConfig();
                 sender.sendMessage(ChatColor.GREEN + "You've reloaded the config!");
+                if(sender instanceof Player)
+                    new TitleObject(ChatColor.GREEN + "Config Reloaded!", TitleObject.TitleType.TITLE).setFadeIn(10).setStay(15).setFadeOut(10).send((Player) sender);
             } else if(args[0].equalsIgnoreCase("broadcast")) {
                 if(!hasPermission(sender, PERMISSION_BROADCAST)) return true;
                 if(args.length < 2) {

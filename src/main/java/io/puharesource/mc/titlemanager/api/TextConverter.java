@@ -1,7 +1,9 @@
 package io.puharesource.mc.titlemanager.api;
 
+import org.bukkit.entity.Player;
+
 public class TextConverter {
-    static String convert(String text) {
+    public static String convert(String text) {
         if (text == null || text.length() == 0) {
             return "\"\"";
         }
@@ -51,5 +53,9 @@ public class TextConverter {
         }
         sb.append('"');
         return sb.toString();
+    }
+
+    public static String setPlayerName(Player player, String text) {
+        return text.replaceAll("(?i)\\{PLAYER\\}", player.getName());
     }
 }

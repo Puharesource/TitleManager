@@ -1,10 +1,10 @@
 package io.puharesource.mc.titlemanager;
 
 import io.puharesource.mc.titlemanager.api.TabTitleObject;
+import io.puharesource.mc.titlemanager.api.TextConverter;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -59,8 +59,14 @@ public class Config {
         welcomeObject = new TitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.title")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.subtitle")))
                 .setFadeIn(getConfig().getInt("welcome_message.fadeIn")).setStay(getConfig().getInt("welcome_message.stay")).setFadeOut(getConfig().getInt("welcome_message.fadeOut"));
 
-        for(Player player : Bukkit.getOnlinePlayers())
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            TabTitleObject tabObject = tabTitleObject;
+            if(tabObject.getHeader() != null)
+                tabObject.setHeader(TextConverter.setPlayerName(player, tabObject.getHeader()));
+            if(tabObject.getFooter() != null)
+                tabObject.setFooter(TextConverter.setPlayerName(player, tabObject.getFooter()));
             tabTitleObject.send(player);
+        }
     }
 
     public static void reloadConfig() {

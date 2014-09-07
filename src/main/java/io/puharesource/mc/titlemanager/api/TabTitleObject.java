@@ -30,6 +30,8 @@ public class TabTitleObject {
     public TabTitleObject(String header, String footer) {
         this.header = ChatSerializer.a(TextConverter.convert(header));
         this.footer = ChatSerializer.a(TextConverter.convert(footer));
+        rawHeader = header;
+        rawFooter = footer;
     }
 
     public void send(Player p) {
