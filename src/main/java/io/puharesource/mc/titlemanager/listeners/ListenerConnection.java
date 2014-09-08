@@ -18,8 +18,9 @@ public class ListenerConnection implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (Config.isUsingConfig()) {
-            TitleObject titleObject = Config.getWelcomeObject();
-            TabTitleObject tabTitleObject = Config.getTabTitleObject();
+            TitleObject titleObject = new TitleObject(Config.getWelcomeObject().getTitle(), Config.getWelcomeObject().getSubtitle())
+                    .setFadeIn(Config.getWelcomeObject().getFadeIn()).setStay(Config.getWelcomeObject().getStay()).setFadeOut(Config.getWelcomeObject().getFadeOut());
+            TabTitleObject tabTitleObject = new TabTitleObject(Config.getTabTitleObject().getHeader(), Config.getTabTitleObject().getFooter());
 
             if(titleObject.getTitle() != null)
                 titleObject.setTitle(TextConverter.setPlayerName(player, titleObject.getTitle()));
@@ -31,8 +32,8 @@ public class ListenerConnection implements Listener {
             if(tabTitleObject.getFooter() != null)
                 tabTitleObject.setFooter(TextConverter.setPlayerName(player, tabTitleObject.getFooter()));
 
-            titleObject.send(event.getPlayer());
-            tabTitleObject.send(event.getPlayer());
+            titleObject.send(player);
+            tabTitleObject.send(player);
         }
     }
 
