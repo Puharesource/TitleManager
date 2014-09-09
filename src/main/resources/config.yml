@@ -1,9 +1,11 @@
 usingConfig: true
 
 tabmenu:
+  enabled: true
   header: '&3MyServer'
   footer: '&bIP: play.myserver.com'
 welcome_message:
+  enabled: true
   title: '&5Welcome {PLAYER}'
   subtitle: '&dTo sweggy mc sweg!'
   fadeIn: -1
