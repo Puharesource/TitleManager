@@ -33,12 +33,12 @@ public class Config {
 
 
         //Updates the config from v1.0.1 to v1.0.2.
-        if(getConfig().contains("header")) {
+        if (getConfig().contains("header")) {
             FileConfiguration oldConfig = YamlConfiguration.loadConfiguration(config);
 
             Files.copy(config.toPath(), new File(plugin.getDataFolder(), "1.0.1-old-config.yml").toPath());
             Files.delete(config.toPath());
-            if(!config.exists())
+            if (!config.exists())
                 Files.copy(plugin.getResource("config.yml"), config.toPath());
             FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
 
@@ -53,12 +53,12 @@ public class Config {
         }
 
         //Updates the config from v1.0.6 to v1.0.7
-        if(!getConfig().contains("tabmenu.enabled") || !getConfig().contains("welcome_message.enabled")) {
+        if (!getConfig().contains("tabmenu.enabled") || !getConfig().contains("welcome_message.enabled")) {
             FileConfiguration oldConfig = YamlConfiguration.loadConfiguration(config);
 
             Files.copy(config.toPath(), new File(plugin.getDataFolder(), "1.0.6-old-config.yml").toPath());
             Files.delete(config.toPath());
-            if(!config.exists())
+            if (!config.exists())
                 Files.copy(plugin.getResource("config.yml"), config.toPath());
             FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
 
@@ -83,18 +83,18 @@ public class Config {
         tabmenuEnabled = getConfig().getBoolean("tabmenu.enabled");
         welcomeMessageEnabled = getConfig().getBoolean("welcome_message.enabled");
 
-        if(tabmenuEnabled) {
-            tabTitleObject = new TabTitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("tabmenu.header")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("tabmenu.footer")));
-            for(Player player : Bukkit.getOnlinePlayers()) {
+        if (tabmenuEnabled) {
+            tabTitleObject = new TabTitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("tabmenu.header").replace("\\n", "\n")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("tabmenu.footer").replace("\\n", "\n")));
+            for (Player player : Bukkit.getOnlinePlayers()) {
                 TabTitleObject tabObject = tabTitleObject;
-                if(tabObject.getHeader() != null)
+                if (tabObject.getHeader() != null)
                     tabObject.setHeader(TextConverter.setPlayerName(player, tabObject.getHeader()));
-                if(tabObject.getFooter() != null)
+                if (tabObject.getFooter() != null)
                     tabObject.setFooter(TextConverter.setPlayerName(player, tabObject.getFooter()));
                 tabTitleObject.send(player);
             }
         }
-        if(welcomeMessageEnabled)
+        if (welcomeMessageEnabled)
             welcomeObject = new TitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.title")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.subtitle")))
                     .setFadeIn(getConfig().getInt("welcome_message.fadeIn")).setStay(getConfig().getInt("welcome_message.stay")).setFadeOut(getConfig().getInt("welcome_message.fadeOut"));
     }
