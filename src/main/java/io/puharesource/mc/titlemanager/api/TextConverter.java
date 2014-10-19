@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.api;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class TextConverter {
@@ -56,6 +57,6 @@ public class TextConverter {
     }
 
     public static String setPlayerName(Player player, String text) {
-        return text.replaceAll("(?i)\\{PLAYER\\}", player.getName());
+        return text.replaceAll("(?i)\\{PLAYER\\}", player.getName()).replaceAll("(?i)\\{DISPLAYNAME\\}", player.getDisplayName()).replaceAll("(?i)\\{STRIPPEDDISPLAYNAME\\}", ChatColor.stripColor(player.getDisplayName()));
     }
 }

@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class ListenerConnection implements Listener {
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (Config.isUsingConfig()) {
@@ -29,7 +29,6 @@ public class ListenerConnection implements Listener {
             }
             if (Config.isTabmenuEnabled()) {
                 TabTitleObject tabTitleObject = new TabTitleObject(Config.getTabTitleObject().getHeader(), Config.getTabTitleObject().getFooter());
-
 
                 if (tabTitleObject.getHeader() != null)
                     tabTitleObject.setHeader(TextConverter.setPlayerName(player, tabTitleObject.getHeader()));
