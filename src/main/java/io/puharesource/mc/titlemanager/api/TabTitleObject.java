@@ -18,20 +18,15 @@ public class TabTitleObject {
     private IChatBaseComponent footer;
 
     public TabTitleObject(String title, Position position) {
-        if (position == Position.HEADER) {
-            rawHeader = title;
-            header = ChatSerializer.a(TextConverter.convert(title));
-        } else if (position == Position.FOOTER) {
-            rawFooter = title;
-            footer = ChatSerializer.a(TextConverter.convert(title));
-        }
+        if (position == Position.HEADER)
+            setHeader(title);
+        else if (position == Position.FOOTER)
+            setFooter(title);
     }
 
     public TabTitleObject(String header, String footer) {
-        this.header = ChatSerializer.a(TextConverter.convert(header));
-        this.footer = ChatSerializer.a(TextConverter.convert(footer));
-        rawHeader = header;
-        rawFooter = footer;
+        setHeader(header);
+        setFooter(footer);
     }
 
     public void send(Player p) {

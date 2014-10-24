@@ -22,14 +22,10 @@ public class TitleObject {
     private int fadeOut = -1;
 
     public TitleObject(String title, TitleType type) {
-        IChatBaseComponent serializedTitle = ChatSerializer.a(TextConverter.convert(title));
-        if (type == TitleType.TITLE) {
-            rawTitle = title;
-            this.title = serializedTitle;
-        } else if (type == TitleType.SUBTITLE) {
-            rawSubtitle = title;
-            subtitle = serializedTitle;
-        }
+        if (type == TitleType.TITLE)
+            setTitle(title);
+        else if (type == TitleType.SUBTITLE)
+            setSubtitle(title);
     }
 
     public TitleObject(String title, String subtitle) {

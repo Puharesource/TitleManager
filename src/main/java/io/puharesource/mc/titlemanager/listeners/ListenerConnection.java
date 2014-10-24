@@ -1,10 +1,12 @@
 package io.puharesource.mc.titlemanager.listeners;
 
 import io.puharesource.mc.titlemanager.Config;
+import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TabTitleCache;
 import io.puharesource.mc.titlemanager.api.TabTitleObject;
 import io.puharesource.mc.titlemanager.api.TextConverter;
 import io.puharesource.mc.titlemanager.api.TitleObject;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,31 +14,52 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class ListenerConnection implements Listener {
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (Config.isUsingConfig()) {
             if (Config.isWelcomeMessageEnabled()) {
-                TitleObject titleObject = new TitleObject(Config.getWelcomeObject().getTitle(), Config.getWelcomeObject().getSubtitle())
+                final TitleObject titleObject = new TitleObject(Config.getWelcomeObject().getTitle(), Config.getWelcomeObject().getSubtitle())
                         .setFadeIn(Config.getWelcomeObject().getFadeIn()).setStay(Config.getWelcomeObject().getStay()).setFadeOut(Config.getWelcomeObject().getFadeOut());
-                if (titleObject.getTitle() != null)
-                    titleObject.setTitle(TextConverter.setPlayerName(player, titleObject.getTitle()));
-                if (titleObject.getSubtitle() != null)
-                    titleObject.setSubtitle(TextConverter.setPlayerName(player, titleObject.getSubtitle()));
-                titleObject.send(player);
+                long delay = 0l;
+
+                if (titleObject.getTitle().toLowerCase().contains("{displayname}") || titleObject.getTitle().toLowerCase().contains("{strippeddisplayname}") ||
+                        titleObject.getSubtitle().toLowerCase().contains("{displayname}") || titleObject.getSubtitle().toLowerCase().contains("{strippeddisplayname}"))
+                    delay = 10l;
+                Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (titleObject.getTitle() != null)
+                            titleObject.setTitle(TextConverter.setPlayerName(player, titleObject.getTitle()));
+                        if (titleObject.getSubtitle() != null)
+                            titleObject.setSubtitle(TextConverter.setPlayerName(player, titleObject.getSubtitle()));
+                        titleObject.send(player);
+                    }
+                }, delay);
             }
             if (Config.isTabmenuEnabled()) {
-                TabTitleObject tabTitleObject = new TabTitleObject(Config.getTabTitleObject().getHeader(), Config.getTabTitleObject().getFooter());
+                final TabTitleObject tabTitleObject = new TabTitleObject(Config.getTabTitleObject().getHeader(), Config.getTabTitleObject().getFooter());
+                long delay = 0l;
 
-                if (tabTitleObject.getHeader() != null)
-                    tabTitleObject.setHeader(TextConverter.setPlayerName(player, tabTitleObject.getHeader()));
-                if (tabTitleObject.getFooter() != null)
-                    tabTitleObject.setFooter(TextConverter.setPlayerName(player, tabTitleObject.getFooter()));
+                if (tabTitleObject.getHeader() != null && tabTitleObject.getFooter() != null)
+                    if (tabTitleObject.getHeader().toLowerCase().contains("{displayname}") || tabTitleObject.getHeader().toLowerCase().contains("{strippeddisplayname}") ||
+                            tabTitleObject.getFooter().toLowerCase().contains("{displayname}") || tabTitleObject.getFooter().toLowerCase().contains("{strippeddisplayname}"))
+                        delay = 10l;
 
+                Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (tabTitleObject.getHeader() != null)
+                            tabTitleObject.setHeader(TextConverter.setPlayerName(player, tabTitleObject.getHeader()));
+                        if (tabTitleObject.getFooter() != null)
+                            tabTitleObject.setFooter(TextConverter.setPlayerName(player, tabTitleObject.getFooter()));
 
-                tabTitleObject.send(player);
+                        tabTitleObject.send(player);
+                    }
+                }, delay);
             }
         }
     }
