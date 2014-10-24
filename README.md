@@ -37,7 +37,7 @@ public void onEnable() {
 Now you should be good to go and ready to use the API inside of your plugins!
 
 ### The Objects
-__TitleManager__ provides you with two objects, one being `TitleObject.java` which controls everything to do with the floating messages on your screen, and the other being `TabTitleObject.java` which controls everything to do with the header and footer on the Tabmenu (aka the playerlist).
+__TitleManager__ provides you with three objects, one being `TitleObject.java` which controls everything to do with the floating messages on your screen, and the second being `TabTitleObject.java` which controls everything to do with the header and footer on the Tabmenu (aka the playerlist) and last but not least `ActionbarTitleObject.java` which controls everything to do with Actionbar titles, like sending an actionbar title.
 
 ##### Creating simple functions using the objects.
 ###### Simple title functions
@@ -56,31 +56,44 @@ void sendFloatingText(Player player, String title, int fadeIn, int stay, int fad
 ##### Simple header/footer functions
 This will change the header and footer of a given player's tabmenu.
 ````java
-void setHeaderAndFooter(Player player, String header, String footer) {
+void sendHeaderAndFooter(Player player, String header, String footer) {
   new TabTitleObject(header, footer).send(player);
 }
 ````
 This will change just the header of a given player's tabmenu.
 ````java
-void setHeader(Player player, String header) {
-  new TabTitleObject(header, TabTitleObject.Position.HEADER);
+void sendHeader(Player player, String header) {
+  new TabTitleObject(header, TabTitleObject.Position.HEADER).send(player);
+}
+````
+##### Simple actionbar functions
+````java
+void sendActionbarMessage(Player player, String message) {
+  new ActionbarTitleObject(message).send(player);
 }
 ````
 ### The Events.
-__TitleManager__ provides you with two custom _Cancellable_ events. one being `TitleEvent.java` which allows you to control or cancel the outcome of a Title being sent to a player, and the other being `TabTitleChangeEvent.java` which allows you to control or cancel the outcome of a Tabmenu header or footer update being sent to a player.
+__TitleManager__ provides you with three custom _Cancellable_ events. One being `TitleEvent.java` which allows you to control or cancel the outcome of a Title being sent to a player, the second being `TabTitleChangeEvent.java` which allows you to control or cancel the outcome of a Tabmenu header or footer update being sent to a player and then last but not least, the `ActionbarEvent.java` which allows you to control or cancel the outcome of a Actionbar messages being sent.
 
 Simply use these like any other Event, e.g:
 ````java
 @EventHandler
 public void onTitleSend(TitleEvent event) {
-  if(true)
+  if (true)
     event.setCancelled(true);
   else event.setCancelled(false);
 }
 
 @EventHandler
 public void onTabTitleChange(TabTitleChangeEvent event) {
-  if(true)
+  if (true)
+    event.setCancelled(true);
+  else event.setCancelled(false);
+}
+
+@EventHandler
+public void onActionbarMessage(ActionbarEvent event) {
+  if (true)
     event.setCancelled(true);
   else event.setCancelled(false);
 }
