@@ -73,7 +73,7 @@ public class CommandMain implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "    /tm abc <message>");
                     return true;
                 }
-                ActionbarTitleObject object = new ActionbarTitleObject(ChatColor.translateAlternateColorCodes('&', args[1]));
+                ActionbarTitleObject object = new ActionbarTitleObject(ChatColor.translateAlternateColorCodes('&', combineArray(1, args)));
                 for (Player player : Bukkit.getOnlinePlayers())
                     object.send(player);
                 sender.sendMessage(ChatColor.GREEN + "You have sent an actionbar broadcast with the message \"" + object.getTitle() + ChatColor.GREEN + "\"");
