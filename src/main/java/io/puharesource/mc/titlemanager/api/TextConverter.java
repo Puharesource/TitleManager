@@ -57,6 +57,19 @@ public class TextConverter {
     }
 
     public static String setPlayerName(Player player, String text) {
-        return text.replaceAll("(?i)\\{PLAYER\\}", player.getName()).replaceAll("(?i)\\{DISPLAYNAME\\}", player.getDisplayName()).replaceAll("(?i)\\{STRIPPEDDISPLAYNAME\\}", ChatColor.stripColor(player.getDisplayName()));
+        text = replaceVariable(text, "PLAYER", player.getName());
+        text = replaceVariable(text, "DISPLAYNAME", player.getDisplayName());
+        text = replaceVariable(text, "STRIPPEDDISPLAYNAME", ChatColor.stripColor(player.getDisplayName()));
+        return text;
+    }
+
+    static String replaceVariable(String str0, String variable, String str1) {
+        try {
+            if (str0.toLowerCase().contains("{" + variable.toLowerCase() + "}"))
+                return str0.replaceAll("(?i)\\{" + variable + "\\}", str1);
+            else return str0;
+        } catch (Exception e) {
+            return str0;
+        }
     }
 }
