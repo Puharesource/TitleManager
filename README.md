@@ -4,8 +4,8 @@ __TitleManager__ adds floating messages and a header/footer for your tabmenu. _T
 
 #### Commands
 - /tm reload - Reloads the config.
-- /tm broadcast <message> - Sends a floating message to all players on the server. (Devide messages up into 2 with lines using <nl> inside of your message)
-- /tm msg <player> <message> - Sends a floating message to a specific player on the server. (Devide messages up into 2 with lines using <nl> inside of your message)
+- /tm broadcast <message> - Sends a floating message to all players on the server. (Divide messages up into 2 with lines using <nl> inside of your message)
+- /tm msg <player> <message> - Sends a floating message to a specific player on the server. (Divide messages up into 2 with lines using <nl> inside of your message)
 
 #### Permissions
 - reload - `titlemanager.commands.reload`
