@@ -10,7 +10,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        TitleManager.setPlugin(this);
+        TitleManager.load(this);
         try {
             Config.loadConfig();
         } catch (IOException e) {

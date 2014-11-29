@@ -6,7 +6,7 @@
 
     <groupId>io.puharesource.mc</groupId>
     <artifactId>TitleManager</artifactId>
-    <version>1.1.2</version>
+    <version>1.2.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,17 +27,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.7.9-R0.3-SNAPSHOT</version>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.spigotmc</groupId>
-            <artifactId>spigot-local-file</artifactId>
-            <version>20141001a</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/spigot.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

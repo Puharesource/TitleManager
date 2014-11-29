@@ -2,20 +2,16 @@ package io.puharesource.mc.titlemanager.api;
 
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.events.TitleEvent;
-import net.minecraft.server.v1_7_R4.ChatSerializer;
-import net.minecraft.server.v1_7_R4.IChatBaseComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.spigotmc.ProtocolInjector;
 
 public class TitleObject {
 
     private String rawTitle;
     private String rawSubtitle;
 
-    private IChatBaseComponent title;
-    private IChatBaseComponent subtitle;
+    private Object title;
+    private Object subtitle;
 
     private int fadeIn = -1;
     private int stay = -1;
@@ -31,24 +27,21 @@ public class TitleObject {
     public TitleObject(String title, String subtitle) {
         rawTitle = title;
         rawSubtitle = subtitle;
-        this.title = ChatSerializer.a(TextConverter.convert(title));
-        this.subtitle = ChatSerializer.a(TextConverter.convert(subtitle));
+        this.title = TitleManager.getReflectionManager().getIChatBaseComponent(title);
+        this.subtitle = TitleManager.getReflectionManager().getIChatBaseComponent(subtitle);
     }
 
-    public void send(Player p) {
-        final TitleEvent event = new TitleEvent(p, this);
+    public void send(Player player) {
+        final TitleEvent event = new TitleEvent(player, this);
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) return;
 
-        CraftPlayer player = (CraftPlayer) event.getPlayer();
-        if (player.getHandle().playerConnection.networkManager.getVersion() != TitleManager.PROTOCOL_VERSION) return;
-
-        player.getHandle().playerConnection.sendPacket(new ProtocolInjector.PacketTitle(ProtocolInjector.PacketTitle.Action.TIMES, fadeIn, stay, fadeOut));
-        if (title != null)
-            player.getHandle().playerConnection.sendPacket(new ProtocolInjector.PacketTitle(ProtocolInjector.PacketTitle.Action.TITLE, title));
-        if (subtitle != null)
-            player.getHandle().playerConnection.sendPacket(new ProtocolInjector.PacketTitle(ProtocolInjector.PacketTitle.Action.SUBTITLE, subtitle));
+        TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitleTimingsPacket(fadeIn, stay, fadeOut), player);
+        if (title != null && rawTitle != null && !rawTitle.isEmpty())
+            TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(false, title), player);
+        if (subtitle != null && rawSubtitle != null && !rawSubtitle.isEmpty())
+            TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(true, subtitle), player);
     }
 
     public String getTitle() {
@@ -57,7 +50,7 @@ public class TitleObject {
 
     public TitleObject setTitle(String title) {
         rawTitle = title;
-        this.title = ChatSerializer.a(TextConverter.convert(title));
+        this.title = TitleManager.getReflectionManager().getIChatBaseComponent(title);
         return this;
     }
 
@@ -67,7 +60,7 @@ public class TitleObject {
 
     public TitleObject setSubtitle(String subtitle) {
         rawSubtitle = subtitle;
-        this.subtitle = ChatSerializer.a(TextConverter.convert(subtitle));
+        this.subtitle = TitleManager.getReflectionManager().getIChatBaseComponent(subtitle);
         return this;
     }
 
