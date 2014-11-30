@@ -59,8 +59,8 @@ public class ReflectionManager {
     public static Method getMethod(String methodName, Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
         main:
         for (Method method : clazz.getMethods()) {
-            if (!method.getName().equals(methodName) || method.getParameterCount() != params.length) continue;
-            for (int i = 0; method.getParameterCount() > i; i++)
+            if (!method.getName().equals(methodName) || method.getParameterTypes().length != params.length) continue;
+            for (int i = 0; method.getParameterTypes().length > i; i++)
                 if (method.getParameterTypes()[i] != params[i]) continue main;
             return method;
         }
@@ -70,8 +70,8 @@ public class ReflectionManager {
     public static Method getDeclaredMethod(String methodName, Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
         main:
         for (Method method : clazz.getDeclaredMethods()) {
-            if (!method.getName().equals(methodName) || method.getParameterCount() != params.length) continue;
-            for (int i = 0; method.getParameterCount() > i; i++)
+            if (!method.getName().equals(methodName) || method.getParameterTypes().length != params.length) continue;
+            for (int i = 0; method.getParameterTypes().length > i; i++)
                 if (method.getParameterTypes()[i] != params[i]) continue main;
             method.setAccessible(true);
             return method;
@@ -82,8 +82,8 @@ public class ReflectionManager {
     public static Constructor getConstructor(Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
         main:
         for (Constructor constructor : clazz.getConstructors()) {
-            if (constructor.getParameterCount() != params.length) continue;
-            for (int i = 0; constructor.getParameterCount() > i; i++)
+            if (constructor.getParameterTypes().length != params.length) continue;
+            for (int i = 0; constructor.getParameterTypes().length > i; i++)
                 if (constructor.getParameterTypes()[i] != params[i]) continue main;
             return constructor;
         }

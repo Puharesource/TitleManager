@@ -49,7 +49,7 @@ public class TabTitleObject {
         }
 
         TabTitleCache.addTabTitle(player.getUniqueId(), new TabTitleCache(rawHeader, rawFooter));
-        TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructHeaderAndFooterPacket((rawHeader == null || rawHeader.isEmpty()) ? null : header, (rawFooter == null || rawFooter.isEmpty()) ? null : footer), player);
+        TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructHeaderAndFooterPacket(header, footer), player);
     }
 
     public String getHeader() {
