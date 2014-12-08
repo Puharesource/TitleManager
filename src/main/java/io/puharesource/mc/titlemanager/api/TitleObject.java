@@ -38,9 +38,9 @@ public class TitleObject {
         if (event.isCancelled()) return;
 
         TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitleTimingsPacket(fadeIn, stay, fadeOut), player);
-        if (title != null && rawTitle != null && !rawTitle.isEmpty())
+        if (title != null && rawTitle != null)
             TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(false, title), player);
-        if (subtitle != null && rawSubtitle != null && !rawSubtitle.isEmpty())
+        if (subtitle != null && rawSubtitle != null)
             TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(true, subtitle), player);
     }
 

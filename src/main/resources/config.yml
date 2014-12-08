@@ -1,4 +1,5 @@
 usingConfig: true
+config-version: 1
 
 tabmenu:
   enabled: true

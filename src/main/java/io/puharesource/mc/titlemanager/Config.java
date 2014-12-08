@@ -6,12 +6,11 @@ import io.puharesource.mc.titlemanager.api.TitleObject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Config {
 
@@ -22,56 +21,58 @@ public class Config {
     private static TitleObject welcomeObject;
     private static TabTitleObject tabTitleObject;
 
+    private static ConfigFile configFile;
+    private static ConfigFile animationConfigFile;
+
+    private static List<String> animations = new ArrayList<>();
+
     public static void loadConfig() throws IOException {
         Main plugin = TitleManager.getPlugin();
 
-        if (!plugin.getDataFolder().exists())
-            plugin.getDataFolder().mkdir();
-        File config = new File(plugin.getDataFolder(), "config.yml");
+        configFile = new ConfigFile(plugin, plugin.getDataFolder(), "config", true);
+        animationConfigFile = new ConfigFile(plugin, plugin.getDataFolder(), "animations", true);
 
-        if (!config.exists()) Files.copy(plugin.getResource("config.yml"), config.toPath());
+        configFile.load();
+        animationConfigFile.load();
 
+        FileConfiguration config = configFile.getConfig();
 
         //Updates the config from v1.0.1 to v1.0.2.
         if (getConfig().contains("header")) {
-            FileConfiguration oldConfig = YamlConfiguration.loadConfiguration(config);
 
-            Files.copy(config.toPath(), new File(plugin.getDataFolder(), "1.0.1-old-config.yml").toPath());
-            Files.delete(config.toPath());
-            if (!config.exists())
-                Files.copy(plugin.getResource("config.yml"), config.toPath());
-            FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
+            configFile.backupToFile(plugin.getDataFolder(), "1.0.1-old-config.yml");
+            configFile.regenConfig();
 
-            fileConfig.set("tabmenu.header", oldConfig.getString("header"));
-            fileConfig.set("tabmenu.footer", oldConfig.getString("footer"));
+            FileConfiguration newConfig = configFile.getCopy();
 
-            fileConfig.set("welcome_message.title", oldConfig.getString("title"));
-            fileConfig.set("welcome_message.subtitle", oldConfig.getString("subtitle"));
+            newConfig.set("tabmenu.header", config.getString("header"));
+            newConfig.set("tabmenu.footer", config.getString("footer"));
 
-            fileConfig.save(config);
+            newConfig.set("welcome_message.title", config.getString("title"));
+            newConfig.set("welcome_message.subtitle", config.getString("subtitle"));
+
+            configFile.save();
+            config = configFile.getConfig();
             reloadConfig();
         }
 
         //Updates the config from v1.0.6 to v1.0.7
         if (!getConfig().contains("tabmenu.enabled") || !getConfig().contains("welcome_message.enabled")) {
-            FileConfiguration oldConfig = YamlConfiguration.loadConfiguration(config);
+            configFile.backupToFile(plugin.getDataFolder(), "1.0.6-old-config.yml");
+            configFile.regenConfig();
 
-            Files.copy(config.toPath(), new File(plugin.getDataFolder(), "1.0.6-old-config.yml").toPath());
-            Files.delete(config.toPath());
-            if (!config.exists())
-                Files.copy(plugin.getResource("config.yml"), config.toPath());
-            FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
+            FileConfiguration oldConfig = configFile.getCopy();
 
-            fileConfig.set("tabmenu.header", oldConfig.getString("tabmenu.header"));
-            fileConfig.set("tabmenu.footer", oldConfig.getString("tabmenu.footer"));
+            config.set("tabmenu.header", oldConfig.getString("tabmenu.header"));
+            config.set("tabmenu.footer", oldConfig.getString("tabmenu.footer"));
 
-            fileConfig.set("welcome_message.title", oldConfig.getString("welcome_message.title"));
-            fileConfig.set("welcome_message.subtitle", oldConfig.getString("welcome_message.subtitle"));
-            fileConfig.set("welcome_message.fadeIn", oldConfig.getInt("welcome_message.fadeIn"));
-            fileConfig.set("welcome_message.stay", oldConfig.getInt("welcome_message.stay"));
-            fileConfig.set("welcome_message.fadeOut", oldConfig.getInt("welcome_message.fadeOut"));
+            config.set("welcome_message.title", oldConfig.getString("welcome_message.title"));
+            config.set("welcome_message.subtitle", oldConfig.getString("welcome_message.subtitle"));
+            config.set("welcome_message.fadeIn", oldConfig.getInt("welcome_message.fadeIn"));
+            config.set("welcome_message.stay", oldConfig.getInt("welcome_message.stay"));
+            config.set("welcome_message.fadeOut", oldConfig.getInt("welcome_message.fadeOut"));
 
-            fileConfig.save(config);
+            configFile.save();
             reloadConfig();
         }
 
