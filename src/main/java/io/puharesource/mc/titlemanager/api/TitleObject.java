@@ -36,6 +36,21 @@ public class TitleObject {
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) return;
+        /*boolean vars = false;
+        for(TitleVariable tv : TitleVariable.values())
+        {
+            if(rawTitle.toLowerCase().contains(tv.getTextRaw().toLowerCase()))
+            {
+                setTitle(TextConverter.setVariables(player, rawTitle));
+                vars = true;
+            }
+            if(rawSubtitle.toLowerCase().contains(tv.getTextRaw().toLowerCase()))
+            {
+                setSubtitle(TextConverter.setVariables(player, rawSubtitle));
+                vars = true;
+            }
+            if(vars) break;
+        }*/
 
         TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitleTimingsPacket(fadeIn, stay, fadeOut), player);
         if (title != null && rawTitle != null)
