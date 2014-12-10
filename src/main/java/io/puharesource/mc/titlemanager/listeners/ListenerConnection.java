@@ -26,16 +26,24 @@ public class ListenerConnection implements Listener {
                         .setFadeIn(Config.getWelcomeObject().getFadeIn()).setStay(Config.getWelcomeObject().getStay()).setFadeOut(Config.getWelcomeObject().getFadeOut());
                 long delay = 0l;
 
-                if (titleObject.getTitle().toLowerCase().contains("{displayname}") || titleObject.getTitle().toLowerCase().contains("{strippeddisplayname}") ||
-                        titleObject.getSubtitle().toLowerCase().contains("{displayname}") || titleObject.getSubtitle().toLowerCase().contains("{strippeddisplayname}"))
-                    delay = 10l;
+                //if (titleObject.getTitle().toLowerCase().contains("{displayname}") || titleObject.getTitle().toLowerCase().contains("{strippeddisplayname}") ||
+                        //titleObject.getSubtitle().toLowerCase().contains("{displayname}") || titleObject.getSubtitle().toLowerCase().contains("{strippeddisplayname}"))
+                    //delay = 10l;
+                for(TitleVariable tv : TitleVariable.values())
+                {
+                    if(titleObject.getTitle().toLowerCase().contains(tv.getTextRaw().toLowerCase()))
+                    {
+                        delay = 101
+                        break;
+                    }
+                }
                 Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new BukkitRunnable() {
                     @Override
                     public void run() {
                         if (titleObject.getTitle() != null)
-                            titleObject.setTitle(TextConverter.setPlayerName(player, titleObject.getTitle()));
+                            titleObject.setTitle(TextConverter.setVariables(player, titleObject.getTitle()));
                         if (titleObject.getSubtitle() != null)
-                            titleObject.setSubtitle(TextConverter.setPlayerName(player, titleObject.getSubtitle()));
+                            titleObject.setSubtitle(TextConverter.setVariables(player, titleObject.getSubtitle()));
                         titleObject.send(player);
                     }
                 }, delay);
@@ -45,17 +53,24 @@ public class ListenerConnection implements Listener {
                 long delay = 0l;
 
                 if (tabTitleObject.getHeader() != null && tabTitleObject.getFooter() != null)
-                    if (tabTitleObject.getHeader().toLowerCase().contains("{displayname}") || tabTitleObject.getHeader().toLowerCase().contains("{strippeddisplayname}") ||
-                            tabTitleObject.getFooter().toLowerCase().contains("{displayname}") || tabTitleObject.getFooter().toLowerCase().contains("{strippeddisplayname}"))
-                        delay = 10l;
+                {
+                    for(TitleVariable tv : TitleVariable.values())
+                    {
+                        if(titleObject.getTitle().toLowerCase().contains(tv.getTextRaw().toLowerCase()))
+                        {
+                            delay = 101
+                            break;
+                        }
+                    }
+                }
 
                 Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new BukkitRunnable() {
                     @Override
                     public void run() {
                         if (tabTitleObject.getHeader() != null)
-                            tabTitleObject.setHeader(TextConverter.setPlayerName(player, tabTitleObject.getHeader()));
+                            tabTitleObject.setHeader(TextConverter.setVariables(player, tabTitleObject.getHeader()));
                         if (tabTitleObject.getFooter() != null)
-                            tabTitleObject.setFooter(TextConverter.setPlayerName(player, tabTitleObject.getFooter()));
+                            tabTitleObject.setFooter(TextConverter.setVariables(player, tabTitleObject.getFooter()));
 
                         tabTitleObject.send(player);
                     }
