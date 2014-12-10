@@ -13,15 +13,22 @@ public enum TitleVariable {
 		text = var;
 	}
 
-	public String getText() {
+	public String getTextRaw()
+	{
 		return text;
+	}
+	
+	public String getText() {
+		String textTwo = text;
+		if(text.startsWith("{")&&text.endsWith("}")) textTwo = text.substring(1,text.length()-1);
+		return textTwo;
 	}
 
 	public static TitleVariable getFromString(String var)
     {
         for(TitleVariable tv : TitleVariable.values())
         {
-        	if(tv.getText().equalsIgnoreCase(var))
+        	if(tv.getText().equalsIgnoreCase(var)||tv.getTextRaw().equalsIgnoreCase(var))
         	{
         		return tv;
         	}
