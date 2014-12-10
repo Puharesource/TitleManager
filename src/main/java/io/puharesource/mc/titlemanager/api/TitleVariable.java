@@ -1,4 +1,4 @@
-package ca.webmc.MiniGames_Core.framework;
+package io.puharesource.mc.titlemanager.api;
 
 public enum TitleVariable {
 	PLAYERNAME("{PLAYER}"), DISPLAYNAME("{DISPLAYNAME}"), STRIPPEDDISPLAYNAME(
