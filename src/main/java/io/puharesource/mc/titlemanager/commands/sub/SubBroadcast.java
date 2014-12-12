@@ -45,7 +45,7 @@ public class SubBroadcast extends TMSubCommand {
                         return;
                     }
                 }
-                new TitleAnimation(null, title == null ? lines[0] : title, subtitle == null ? lines[1] : subtitle).run();
+                new TitleAnimation(title == null ? lines[0] : title, subtitle == null ? lines[1] : subtitle).broadcast();
                 sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast animation.");
                 return;
             }
@@ -53,7 +53,7 @@ public class SubBroadcast extends TMSubCommand {
             String str = args[0].substring("animation:".length());
             FrameSequence animation = Config.getAnimation(str);
             if (animation != null) {
-                new TitleAnimation(null, animation, "").run();
+                new TitleAnimation(animation, "").broadcast();
                 sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast animation.");
             } else sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
             return;

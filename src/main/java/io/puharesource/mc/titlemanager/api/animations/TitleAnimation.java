@@ -12,56 +12,58 @@ public class TitleAnimation {
     private ReflectionManager manager = TitleManager.getReflectionManager();
     private Object title;
     private Object subtitle;
-    private Player player;
 
-    public TitleAnimation(Player player, FrameSequence title, FrameSequence subtitle) {
-        this(player, title, (Object) subtitle);
+    public TitleAnimation(FrameSequence title, FrameSequence subtitle) {
+        this(title, (Object) subtitle);
     }
 
-    public TitleAnimation(Player player, FrameSequence title, String subtitle) {
-        this(player, title, (Object) subtitle);
+    public TitleAnimation(FrameSequence title, String subtitle) {
+        this(title, (Object) subtitle);
     }
 
-    public TitleAnimation(Player player, String title, FrameSequence subtitle) {
-        this(player, title, (Object) subtitle);
+    public TitleAnimation(String title, FrameSequence subtitle) {
+        this(title, (Object) subtitle);
     }
 
-    public TitleAnimation(Player player, Object title, Object subtitle) {
+    public TitleAnimation(Object title, Object subtitle) {
         manager = TitleManager.getReflectionManager();
-        this.player = player;
         this.title = title;
         this.subtitle = subtitle;
     }
 
-    public void run() {
+    public void broadcast() {
+        send(null);
+    }
+
+    public void send(Player player) {
         Plugin plugin = TitleManager.getPlugin();
         BukkitScheduler scheduler = Bukkit.getScheduler();
 
         long times = 0;
         if (title instanceof FrameSequence && subtitle instanceof FrameSequence) {
             for (AnimationFrame frame : ((FrameSequence) title).getFrames()) {
-                scheduler.runTaskLaterAsynchronously(plugin, new Task(false, frame), times);
+                scheduler.runTaskLaterAsynchronously(plugin, new Task(false, frame, player), times);
                 times += frame.getTotalTime();
             }
             times = 0;
             for (AnimationFrame frame : ((FrameSequence) subtitle).getFrames()) {
-                scheduler.runTaskLaterAsynchronously(plugin, new Task(true, frame), times);
+                scheduler.runTaskLaterAsynchronously(plugin, new Task(true, frame, player), times);
                 times += frame.getTotalTime();
             }
         } else if (title instanceof FrameSequence) {
             for (AnimationFrame frame : ((FrameSequence) title).getFrames()) {
-                scheduler.runTaskLaterAsynchronously(plugin, new Task(false, frame), times);
+                scheduler.runTaskLaterAsynchronously(plugin, new Task(false, frame, player), times);
                 times += frame.getTotalTime();
             }
             FrameSequence sequence = (FrameSequence) title;
-            scheduler.runTaskAsynchronously(plugin, new Task(true, new AnimationFrame((String) subtitle, sequence.getFadeIn(), sequence.getStay(), sequence.getFadeOut())));
+            scheduler.runTaskAsynchronously(plugin, new Task(true, new AnimationFrame((String) subtitle, sequence.getFadeIn(), sequence.getStay(), sequence.getFadeOut()), player));
         } else if (subtitle instanceof FrameSequence) {
             for (AnimationFrame frame : ((FrameSequence) subtitle).getFrames()) {
-                scheduler.runTaskLaterAsynchronously(plugin, new Task(true, frame), times);
+                scheduler.runTaskLaterAsynchronously(plugin, new Task(true, frame, player), times);
                 times += frame.getTotalTime();
             }
             FrameSequence sequence = (FrameSequence) subtitle;
-            scheduler.runTaskAsynchronously(plugin, new Task(false, new AnimationFrame((String) title, sequence.getFadeIn(), sequence.getStay(), sequence.getFadeOut())));
+            scheduler.runTaskAsynchronously(plugin, new Task(false, new AnimationFrame((String) title, sequence.getFadeIn(), sequence.getStay(), sequence.getFadeOut()), player));
         }
     }
 
@@ -69,10 +71,12 @@ public class TitleAnimation {
 
         private boolean isSubtitle;
         private AnimationFrame frame;
+        private Player player;
 
-        public Task(boolean isSubtitle, AnimationFrame frame) {
+        public Task(boolean isSubtitle, AnimationFrame frame, Player player) {
             this.isSubtitle = isSubtitle;
             this.frame = frame;
+            this.player = player;
         }
 
         @Override
