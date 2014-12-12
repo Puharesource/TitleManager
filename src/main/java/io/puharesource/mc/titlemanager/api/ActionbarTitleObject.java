@@ -22,12 +22,12 @@ public class ActionbarTitleObject {
         TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructActionbarTitlePacket(title), player);
     }
 
+    public String getTitle() {
+        return rawTitle;
+    }
+
     public void setTitle(String title) {
         rawTitle = title;
         this.title = TitleManager.getReflectionManager().getIChatBaseComponent(title);
-    }
-
-    public String getTitle() {
-        return rawTitle;
     }
 }

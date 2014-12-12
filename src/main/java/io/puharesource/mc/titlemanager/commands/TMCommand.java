@@ -27,7 +27,7 @@ public class TMCommand implements CommandExecutor, TabCompleter {
         List<String> aliases = new ArrayList<>();
         for (TMSubCommand cmd : commands.values()) {
             if (aliases.contains(cmd.getAlias().toUpperCase())) continue;
-            sender.sendMessage(ChatColor.RED + "    /tm " + cmd.getAlias() + " " + cmd.getUsage() +  ChatColor.GRAY + (cmd.getUsage().isEmpty() ? "- " : " - ") + cmd.getDescription());
+            sender.sendMessage(ChatColor.RED + "    /tm " + cmd.getAlias() + " " + cmd.getUsage() + ChatColor.GRAY + (cmd.getUsage().isEmpty() ? "- " : " - ") + cmd.getDescription());
             aliases.add(cmd.getAlias().toUpperCase());
         }
     }

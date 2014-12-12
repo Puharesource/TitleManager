@@ -54,7 +54,8 @@ public class TitleManager {
                 int amount = -1;
                 try {
                     amount = Integer.parseInt(lower.replaceAll("\\D", ""));
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) {
+                }
                 if (lower.startsWith("-fadein=")) {
                     if (amount != -1)
                         fadeIn = amount;

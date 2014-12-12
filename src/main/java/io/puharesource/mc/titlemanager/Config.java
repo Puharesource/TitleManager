@@ -3,14 +3,19 @@ package io.puharesource.mc.titlemanager;
 import io.puharesource.mc.titlemanager.api.TabTitleObject;
 import io.puharesource.mc.titlemanager.api.TextConverter;
 import io.puharesource.mc.titlemanager.api.TitleObject;
+import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
+import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Config {
 
@@ -24,7 +29,7 @@ public class Config {
     private static ConfigFile configFile;
     private static ConfigFile animationConfigFile;
 
-    private static List<String> animations = new ArrayList<>();
+    private static Map<String, FrameSequence> animations = new HashMap<>();
 
     public static void loadConfig() throws IOException {
         Main plugin = TitleManager.getPlugin();
@@ -80,6 +85,7 @@ public class Config {
     }
 
     static void loadSettings() {
+        animations.clear();
         usingConfig = getConfig().getBoolean("usingConfig");
         tabmenuEnabled = getConfig().getBoolean("tabmenu.enabled");
         welcomeMessageEnabled = getConfig().getBoolean("welcome_message.enabled");
@@ -98,11 +104,49 @@ public class Config {
         if (welcomeMessageEnabled)
             welcomeObject = new TitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.title")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.subtitle")))
                     .setFadeIn(getConfig().getInt("welcome_message.fadeIn")).setStay(getConfig().getInt("welcome_message.stay")).setFadeOut(getConfig().getInt("welcome_message.fadeOut"));
+
+        for (String str : animationConfigFile.getConfig().getKeys(false)) {
+            ConfigurationSection section = animationConfigFile.getConfig().getConfigurationSection(str);
+            List<AnimationFrame> frames = new ArrayList<>();
+            for (String frame : section.getStringList("frames")) {
+                int fadeIn = -1;
+                int stay = -1;
+                int fadeOut = -1;
+                frame = ChatColor.translateAlternateColorCodes('&', frame);
+                if (frame.startsWith("[") && frame.length() > 1) {
+                    char[] chars = frame.toCharArray();
+                    String timesString = "";
+                    for (int i = 1; frame.length() > i; i++) {
+                        char c = chars[i];
+                        if (c == ']') {
+                            frame = frame.substring(i + 1);
+                            break;
+                        }
+                        timesString += chars[i];
+                    }
+
+                    try {
+                        String[] times = timesString.split(";", 3);
+                        fadeIn = Integer.valueOf(times[0]);
+                        stay = Integer.valueOf(times[1]);
+                        fadeOut = Integer.parseInt(times[2]);
+                    } catch (NumberFormatException ignored) {}
+
+                    frames.add(new AnimationFrame(frame, fadeIn, stay, fadeOut));
+                }
+            }
+            animations.put(str.toUpperCase().trim(), new FrameSequence(frames));
+        }
     }
 
     public static void reloadConfig() {
-        TitleManager.getPlugin().reloadConfig();
+        configFile.load();
+        animationConfigFile.load();
         loadSettings();
+    }
+
+    public static FrameSequence getAnimation(String animation) {
+        return animations.get(animation.toUpperCase().trim());
     }
 
     public static FileConfiguration getConfig() {
