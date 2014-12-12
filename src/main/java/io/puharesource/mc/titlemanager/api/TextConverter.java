@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.api;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -56,13 +57,38 @@ public class TextConverter {
         return sb.toString();
     }
 
+    /**
+     * @deprecated because it is the inferior method and replaces fewer variables.
+     */
+    @Deprecated
     public static String setPlayerName(Player player, String text) {
         text = replaceVariable(text, "PLAYER", player.getName());
         text = replaceVariable(text, "DISPLAYNAME", player.getDisplayName());
         text = replaceVariable(text, "STRIPPEDDISPLAYNAME", ChatColor.stripColor(player.getDisplayName()));
         return text;
     }
-
+    
+    public static String setVariables(Player player, String text)
+    {
+    	text = replaceVariable(text, TitleVariable.getFromString("PLAYER"), player.getName());
+    	text = replaceVariable(text, TitleVariable.getFromString("DISPLAYNAME"), player.getDisplayName());
+        text = replaceVariable(text, TitleVariable.getFromString("STRIPPEDDISPLAYNAME"), ChatColor.stripColor(player.getDisplayName()));
+        text = replaceVariable(text, TitleVariable.getFromString("WORLD"),player.getWorld().getName());
+        text = replaceVariable(text, TitleVariable.getFromString("WORLD TIME"),Long.toString(player.getWorld().getTime()));
+        text = replaceVariable(text, TitleVariable.getFromString("GROUP_NAME"), /*TODO vault integration OR custom method (Vault preferred)*/"");
+        text = replaceVariable(text, TitleVariable.getFromString("ONLINE"),Integer.toString(Bukkit.getOnlinePlayers().length));
+        text = replaceVariable(text, TitleVariable.getFromString("MAX PLAYERS"),Integer.toString(Bukkit.getMaxPlayers()));
+        text = replaceVariable(text, TitleVariable.getFromString("BALANCE"),/*TODO vault integration*/"");
+        text = replaceVariable(text, TitleVariable.getFromString("RAINBOW"),/*This requires animation which is not quite done yet.*/"");
+        text = replaceVariable(text, TitleVariable.getFromString("ONLINE: servername|ALL"),/*Bungee needed for this. TODO add check for bungee and add string accordingly.*/"");
+        text = replaceVariable(text, TitleVariable.getFromString("MAX: servername|ALL"),/*Bungee needed for this.*/"");
+        return text;
+    }
+    
+    /**
+     * @deprecated because it is replaced by the better method using enumerators.
+     */
+    @Deprecated
     static String replaceVariable(String str0, String variable, String str1) {
         try {
             if (str0.toLowerCase().contains("{" + variable.toLowerCase() + "}"))
@@ -71,5 +97,18 @@ public class TextConverter {
         } catch (Exception e) {
             return str0;
         }
+    }
+    
+    static String replaceVariable(String main, TitleVariable variable, String replacer)
+    {
+    	if(variable == null||main==null||replacer==null) return "";
+    	if(main==""||replacer=="") return "";
+    	 try {
+             if (main.toLowerCase().contains("{" + variable.getText().toLowerCase() + "}"))
+                 return main.replaceAll("(?i)\\{" + variable.getText() + "\\}", replacer);
+             else return main;
+         } catch (Exception e) {
+             return main;
+         }
     }
 }
