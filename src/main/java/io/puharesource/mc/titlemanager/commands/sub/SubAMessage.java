@@ -1,7 +1,10 @@
 package io.puharesource.mc.titlemanager.commands.sub;
 
+import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
+import io.puharesource.mc.titlemanager.api.animations.ActionbarTitleAnimation;
+import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -24,6 +27,17 @@ public class SubAMessage extends TMSubCommand {
             sender.sendMessage(ChatColor.RED + args[0] + " is not a player!");
             return;
         }
+
+        if (args[1].toLowerCase().startsWith("animation:")) {
+            String str = args[1].substring("animation:".length());
+            FrameSequence sequence = Config.getAnimation(str);
+            if (sequence != null) {
+                new ActionbarTitleAnimation(sequence).broadcast();
+                sender.sendMessage(ChatColor.GREEN + "You have sent an actionbar animation to " + player.getName() + ".");
+            } else sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
+            return;
+        }
+
         ActionbarTitleObject object = new ActionbarTitleObject(TitleManager.combineArray(1, args));
         object.send(player);
         sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + ChatColor.RESET + object.getTitle() + ChatColor.GREEN + "\"");

@@ -2,6 +2,7 @@ package io.puharesource.mc.titlemanager.api.animations;
 
 import io.puharesource.mc.titlemanager.ReflectionManager;
 import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.api.TextConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -88,8 +89,10 @@ public class TitleAnimation {
         }
 
         private void send(Player p, AnimationFrame frame) {
-            manager.sendPacket(manager.constructTitleTimingsPacket(frame.getFadeIn(), frame.getStay() + 1, frame.getFadeOut()), p);
-            manager.sendPacket(manager.constructTitlePacket(isSubtitle, frame.getComponentText()), p);
+            if (p != null) {
+                manager.sendPacket(manager.constructTitleTimingsPacket(frame.getFadeIn(), frame.getStay() + 1, frame.getFadeOut()), p);
+                manager.sendPacket(manager.constructTitlePacket(isSubtitle, (frame.getText().contains("{") && frame.getText().contains("}")) ? manager.getIChatBaseComponent(TextConverter.setVariables(player, frame.getText())) : frame.getComponentText()), p);
+            }
         }
     }
 }

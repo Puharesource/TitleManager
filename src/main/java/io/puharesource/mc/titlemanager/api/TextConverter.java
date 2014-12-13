@@ -75,9 +75,9 @@ public class TextConverter {
         text = replaceVariable(text, TitleVariable.getFromString("ONLINE"), Integer.toString(Bukkit.getOnlinePlayers().size()));
         text = replaceVariable(text, TitleVariable.getFromString("MAX PLAYERS"), Integer.toString(Bukkit.getMaxPlayers()));
         text = replaceVariable(text, TitleVariable.getFromString("BALANCE"),/*TODO vault integration*/"");
-        text = replaceVariable(text, TitleVariable.getFromString("RAINBOW"),/*This requires animation which is not quite done yet.*/"");
-        text = replaceVariable(text, TitleVariable.getFromString("ONLINE: servername|ALL"),/*Bungee needed for this. TODO add check for bungee and add string accordingly.*/"");
-        text = replaceVariable(text, TitleVariable.getFromString("MAX: servername|ALL"),/*Bungee needed for this.*/"");
+        //text = replaceVariable(text, TitleVariable.getFromString("RAINBOW"),/*This requires animation which is not quite done yet.*/"");
+        //text = replaceVariable(text, TitleVariable.getFromString("ONLINE: servername|ALL"),/*Bungee needed for this. TODO add check for bungee and add string accordingly.*/"");
+        //text = replaceVariable(text, TitleVariable.getFromString("MAX: servername|ALL"),/*Bungee needed for this.*/"");
         return text;
     }
 

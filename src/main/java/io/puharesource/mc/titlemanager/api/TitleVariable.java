@@ -16,8 +16,8 @@ public enum TitleVariable {
 
     private String text;
 
-    TitleVariable(String var) {
-        text = var;
+    TitleVariable(String variable) {
+        text = variable;
     }
 
     public static TitleVariable getFromString(String var) {

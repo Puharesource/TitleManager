@@ -3,6 +3,8 @@ package io.puharesource.mc.titlemanager.listeners;
 import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.*;
+import io.puharesource.mc.titlemanager.api.animations.TabTitleAnimation;
+import io.puharesource.mc.titlemanager.api.animations.TitleAnimation;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,58 +17,48 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class ListenerConnection implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        if (Config.isUsingConfig()) return;
         final Player player = event.getPlayer();
-        if (Config.isUsingConfig()) {
-            if (Config.isWelcomeMessageEnabled()) {
-                final TitleObject titleObject = new TitleObject(
-                        Config.getWelcomeObject().getTitle(),
-                        Config.getWelcomeObject().getSubtitle())
-                        .setFadeIn(Config.getWelcomeObject().getFadeIn())
-                        .setStay(Config.getWelcomeObject().getStay())
-                        .setFadeOut(Config.getWelcomeObject().getFadeOut());
-                long delay = 0l;
 
-                for (TitleVariable variable : TitleVariable.values()) {
-                    if (titleObject.getTitle().toLowerCase().contains(variable.getTextRaw().toLowerCase()) || titleObject.getSubtitle().toLowerCase().contains(variable.getTextRaw().toLowerCase())) {
-                        delay = 101;
-                        break;
-                    }
-                }
+        if (Config.isWelcomeMessageEnabled()) {
+            final Object welcomeObject = Config.getWelcomeObject();
+
+            if (welcomeObject instanceof TitleAnimation) {
+                final TitleAnimation titleAnimation = (TitleAnimation) welcomeObject;
                 Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
                     @Override
                     public void run() {
-                        if (titleObject.getTitle() != null)
-                            titleObject.setTitle(TextConverter.setVariables(player, titleObject.getTitle()));
-                        if (titleObject.getSubtitle() != null)
-                            titleObject.setSubtitle(TextConverter.setVariables(player, titleObject.getSubtitle()));
+                        titleAnimation.send(player);
+                    }
+                }, 10l);
+            } else {
+                final TitleObject titleObject = (TitleObject) welcomeObject;
+                Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
+                    @Override
+                    public void run() {
                         titleObject.send(player);
                     }
-                }, delay);
+                }, 10l);
             }
-            if (Config.isTabmenuEnabled()) {
-                final TabTitleObject tabTitleObject = new TabTitleObject(Config.getTabTitleObject().getHeader(), Config.getTabTitleObject().getFooter());
-                long delay = 0l;
+        }
+        if (Config.isTabmenuEnabled()) {
+            final Object tabWelcomeObject = Config.getTabTitleObject();
 
-                if (tabTitleObject.getHeader() != null && tabTitleObject.getFooter() != null) {
-                    for (TitleVariable variable : TitleVariable.values()) {
-                        if (tabTitleObject.getHeader().toLowerCase().contains(variable.getTextRaw().toLowerCase()) || tabTitleObject.getFooter().toLowerCase().contains(variable.getTextRaw().toLowerCase())) {
-                            delay = 101;
-                            break;
-                        }
-                    }
-                }
-
+            if (tabWelcomeObject instanceof TabTitleAnimation) {
+                final TabTitleAnimation titleAnimation = (TabTitleAnimation) tabWelcomeObject;
                 Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
                     @Override
                     public void run() {
-                        if (tabTitleObject.getHeader() != null)
-                            tabTitleObject.setHeader(TextConverter.setVariables(player, tabTitleObject.getHeader()));
-                        if (tabTitleObject.getFooter() != null)
-                            tabTitleObject.setFooter(TextConverter.setVariables(player, tabTitleObject.getFooter()));
-
-                        tabTitleObject.send(player);
+                        titleAnimation.send(player);
                     }
-                }, delay);
+                }, 10l);
+            } else {
+                Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
+                    @Override
+                    public void run() {
+                        ((TabTitleObject) tabWelcomeObject).send(player);
+                    }
+                }, 10l);
             }
         }
     }

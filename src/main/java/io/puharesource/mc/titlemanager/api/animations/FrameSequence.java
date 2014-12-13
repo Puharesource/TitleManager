@@ -45,4 +45,8 @@ public class FrameSequence {
     public int getFadeOut() {
         return fadeOut;
     }
+
+    public int getTotalTime() {
+        return fadeIn + stay + fadeOut;
+    }
 }

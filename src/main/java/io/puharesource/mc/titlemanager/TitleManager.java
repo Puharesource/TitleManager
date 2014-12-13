@@ -7,12 +7,17 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 
 public class TitleManager {
 
     private static Main plugin;
     private static ReflectionManager reflectionManager;
+
+    private static List<Integer> runningAnimations = Collections.synchronizedList(new ArrayList<Integer>());
 
     public static FileConfiguration getConfig() {
         return plugin.getConfig();
@@ -116,5 +121,17 @@ public class TitleManager {
         for (int i = offset + 1; array.length > i; i++)
             sb.append(" " + array[i]);
         return ChatColor.translateAlternateColorCodes('&', sb.toString());
+    }
+
+    public static void addRunningAnimationId(int id) {
+        runningAnimations.add(id);
+    }
+
+    public static void removeRunningAnimationId(int id) {
+        runningAnimations.remove(id);
+    }
+
+    public static List<Integer> getRunningAnimations() {
+        return runningAnimations;
     }
 }

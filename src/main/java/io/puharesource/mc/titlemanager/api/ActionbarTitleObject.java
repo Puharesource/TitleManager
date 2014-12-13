@@ -19,7 +19,7 @@ public class ActionbarTitleObject {
 
         if (event.isCancelled()) return;
 
-        TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructActionbarTitlePacket(title), player);
+        TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructActionbarTitlePacket((rawTitle.contains("{") && rawTitle.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawTitle)) : title), player);
     }
 
     public String getTitle() {
