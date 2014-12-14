@@ -12,3 +12,10 @@ welcome_message:
   fadeIn: -1
   stay: -1
   fadeOut: -1
+return_message:
+  enabled: true
+  title: '&5Welcome back, {PLAYER}'
+  subtitle: '&dTo sweggy mc sweg!'
+  fadeIn: -1
+  stay: -1
+  fadeOut: -1
