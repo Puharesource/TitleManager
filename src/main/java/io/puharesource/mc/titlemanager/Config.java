@@ -31,6 +31,7 @@ public class Config {
 
     private static ConfigFile configFile;
     private static ConfigFile animationConfigFile;
+    private static ConfigFile usersList;
 
     private static Map<String, FrameSequence> animations = new HashMap<>();
 
@@ -39,9 +40,11 @@ public class Config {
 
         configFile = new ConfigFile(plugin, plugin.getDataFolder(), "config", true);
         animationConfigFile = new ConfigFile(plugin, plugin.getDataFolder(), "animations", true);
-
+        usersList = new ConfigFile(plugin, plugin.getDataFolder(), "users", true);
+        
         configFile.load();
         animationConfigFile.load();
+        usersList.load();
 
         FileConfiguration config = configFile.getConfig();
 
@@ -215,11 +218,16 @@ public class Config {
     public static void reloadConfig() {
         configFile.load();
         animationConfigFile.load();
+        usersList.load();
         loadSettings();
     }
 
     public static FrameSequence getAnimation(String animation) {
         return animations.get(animation.toUpperCase().trim());
+    }
+    
+    public static ConfigFile getUsersList() {
+        return usersList;
     }
 
     public static FileConfiguration getConfig() {
