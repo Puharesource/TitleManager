@@ -68,7 +68,7 @@ public class Config {
         }
 
         //Updates the config from v1.0.6 to v1.0.7
-        if (!getConfig().contains("tabmenu.enabled") || !getConfig().contains("welcome_message.enabled")) {
+        if (!getConfig().contains("tabmenu.enabled") || !getConfig().contains("welcome_message.enabled") || !getConfig().contains("return_message.enabled") {
             configFile.backupToFile(plugin.getDataFolder(), "1.0.6-old-config.yml");
             configFile.regenConfig();
 
