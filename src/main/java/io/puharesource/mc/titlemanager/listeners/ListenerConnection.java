@@ -19,8 +19,59 @@ public class ListenerConnection implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         if (Config.isUsingConfig()) return;
         final Player player = event.getPlayer();
+        
+        if(!Config.getUsersList().getConfig().getStringList("users").contains(player.getUniqueId().toString()))
+        {
+            if (Config.isWelcomeMessageEnabled()) {
+                final Object welcomeObject = Config.getWelcomeObject();
 
-        if (Config.isWelcomeMessageEnabled()) {
+            if (welcomeObject instanceof TitleAnimation) {
+                final TitleAnimation titleAnimation = (TitleAnimation) welcomeObject;
+                Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
+                    @Override
+                    public void run() {
+                        titleAnimation.send(player);
+                    }
+                }, 10l);
+            } else {
+                final TitleObject titleObject = (TitleObject) welcomeObject;
+                Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
+                    @Override
+                    public void run() {
+                        titleObject.send(player);
+                        }
+                    }, 10l);
+                }
+            }
+            Config.getUsersList().getConfig().getStringList("users").add(player.getUniqueId().toString());
+            Config.getUsersList().save();
+        }
+        else
+        {
+            if (Config.isReturnMessageEnabled()) {
+                final Object returnObject = Config.getReturnMsgObject();
+
+                if (returnObject instanceof TitleAnimation) {
+                    final TitleAnimation titleAnimation = (TitleAnimation) returnObject;
+                    Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
+                        @Override
+                        public void run() {
+                            titleAnimation.send(player);
+                        }
+                    }, 10l);
+                } else {
+                    final TitleObject titleObject = (TitleObject) returnObject;
+                    Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
+                        @Override
+                        public void run() {
+                            titleObject.send(player);
+                        }
+                    }, 10l);
+                }
+            }
+        }
+        
+        /*if (Config.isWelcomeMessageEnabled()) {
             final Object welcomeObject = Config.getWelcomeObject();
 
             if (welcomeObject instanceof TitleAnimation) {
@@ -40,7 +91,7 @@ public class ListenerConnection implements Listener {
                     }
                 }, 10l);
             }
-        }
+        }*/
         if (Config.isTabmenuEnabled()) {
             final Object tabWelcomeObject = Config.getTabTitleObject();
 
