@@ -71,7 +71,7 @@ public class TextConverter {
         text = replaceVariable(text, TitleVariable.getFromString("STRIPPEDDISPLAYNAME"), ChatColor.stripColor(player.getDisplayName()));
         text = replaceVariable(text, TitleVariable.getFromString("WORLD"), player.getWorld().getName());
         text = replaceVariable(text, TitleVariable.getFromString("WORLD TIME"), Long.toString(player.getWorld().getTime()));
-        text = replaceVariable(text, TitleVariable.getFromString("GROUP_NAME"), /*TODO vault integration OR custom method (Vault preferred)*/"");
+        text = replaceVariable(text, TitleVariable.getFromString("GROUP"), /*TODO vault integration OR custom method (Vault preferred)*/"");
         text = replaceVariable(text, TitleVariable.getFromString("ONLINE"), Integer.toString(Bukkit.getOnlinePlayers().size()));
         text = replaceVariable(text, TitleVariable.getFromString("MAX PLAYERS"), Integer.toString(Bukkit.getMaxPlayers()));
         text = replaceVariable(text, TitleVariable.getFromString("BALANCE"),/*TODO vault integration*/"");
