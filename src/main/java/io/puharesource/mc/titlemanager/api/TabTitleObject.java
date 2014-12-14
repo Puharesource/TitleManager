@@ -49,7 +49,9 @@ public class TabTitleObject {
         }
 
         TabTitleCache.addTabTitle(player.getUniqueId(), new TabTitleCache(rawHeader, rawFooter));
-        TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructHeaderAndFooterPacket(header, footer), player);
+        TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructHeaderAndFooterPacket(
+                (rawHeader.contains("{") || rawHeader.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawHeader)) : header,
+                (rawFooter.contains("{") || rawFooter.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawFooter)) : footer), player);
     }
 
     public String getHeader() {

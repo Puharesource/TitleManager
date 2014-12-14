@@ -3,14 +3,20 @@ package io.puharesource.mc.titlemanager;
 import io.puharesource.mc.titlemanager.api.TabTitleObject;
 import io.puharesource.mc.titlemanager.api.TextConverter;
 import io.puharesource.mc.titlemanager.api.TitleObject;
+import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
+import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
+import io.puharesource.mc.titlemanager.api.animations.TabTitleAnimation;
+import io.puharesource.mc.titlemanager.api.animations.TitleAnimation;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Config {
 
@@ -18,15 +24,15 @@ public class Config {
     private static boolean tabmenuEnabled;
     private static boolean welcomeMessageEnabled;
 
-    private static TitleObject welcomeObject;
-    private static TabTitleObject tabTitleObject;
+    private static Object welcomeObject;
+    private static Object tabTitleObject;
 
     private static ConfigFile configFile;
     private static ConfigFile animationConfigFile;
 
-    private static List<String> animations = new ArrayList<>();
+    private static Map<String, FrameSequence> animations = new HashMap<>();
 
-    public static void loadConfig() throws IOException {
+    public static void loadConfig() {
         Main plugin = TitleManager.getPlugin();
 
         configFile = new ConfigFile(plugin, plugin.getDataFolder(), "config", true);
@@ -80,29 +86,107 @@ public class Config {
     }
 
     static void loadSettings() {
+        animations.clear();
+
+        for (int id : TitleManager.getRunningAnimations())
+            Bukkit.getScheduler().cancelTask(id);
+
+        TitleManager.getRunningAnimations().clear();
+
+        for (String str : animationConfigFile.getConfig().getKeys(false)) {
+            ConfigurationSection section = animationConfigFile.getConfig().getConfigurationSection(str);
+            List<AnimationFrame> frames = new ArrayList<>();
+            for (String frame : section.getStringList("frames")) {
+                int fadeIn = -1;
+                int stay = -1;
+                int fadeOut = -1;
+                frame = ChatColor.translateAlternateColorCodes('&', frame);
+                if (frame.startsWith("[") && frame.length() > 1) {
+                    char[] chars = frame.toCharArray();
+                    String timesString = "";
+                    for (int i = 1; frame.length() > i; i++) {
+                        char c = chars[i];
+                        if (c == ']') {
+                            frame = frame.substring(i + 1);
+                            break;
+                        }
+                        timesString += chars[i];
+                    }
+
+                    try {
+                        String[] times = timesString.split(";", 3);
+                        fadeIn = Integer.valueOf(times[0]);
+                        stay = Integer.valueOf(times[1]);
+                        fadeOut = Integer.parseInt(times[2]);
+                    } catch (NumberFormatException ignored) {}
+
+                    frames.add(new AnimationFrame(frame, fadeIn, stay, fadeOut));
+                }
+            }
+            animations.put(str.toUpperCase().trim(), new FrameSequence(frames));
+        }
+
         usingConfig = getConfig().getBoolean("usingConfig");
         tabmenuEnabled = getConfig().getBoolean("tabmenu.enabled");
         welcomeMessageEnabled = getConfig().getBoolean("welcome_message.enabled");
 
         if (tabmenuEnabled) {
-            tabTitleObject = new TabTitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("tabmenu.header").replace("\\n", "\n")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("tabmenu.footer").replace("\\n", "\n")));
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                TabTitleObject tabObject = tabTitleObject;
-                if (tabObject.getHeader() != null)
-                    tabObject.setHeader(TextConverter.setPlayerName(player, tabObject.getHeader()));
-                if (tabObject.getFooter() != null)
-                    tabObject.setFooter(TextConverter.setPlayerName(player, tabObject.getFooter()));
-                tabTitleObject.send(player);
+            String headerString = getConfig().getString("tabmenu.header");
+            String footerString = getConfig().getString("tabmenu.footer");
+            if (headerString.toLowerCase().startsWith("animation:") || footerString.toLowerCase().startsWith("animation:")) {
+                Object header;
+                Object footer;
+
+                if (headerString.toLowerCase().startsWith("animation:"))
+                    header = getAnimation(headerString.substring("animation:".length()));
+                else header = ChatColor.translateAlternateColorCodes('&', headerString.replace("\\n", "\n"));
+                if (footerString.toLowerCase().startsWith("animation:"))
+                    footer = getAnimation(headerString.substring("animation:".length()));
+                else footer = ChatColor.translateAlternateColorCodes('&', footerString.replace("\\n", "\n"));
+
+                tabTitleObject = new TabTitleAnimation(header == null ? "" : header, footer == null ? "" : footer);
+                ((TabTitleAnimation) tabTitleObject).broadcast();
+            } else {
+                tabTitleObject = new TabTitleObject(ChatColor.translateAlternateColorCodes('&', headerString.replace("\\n", "\n")), ChatColor.translateAlternateColorCodes('&', footerString.replace("\\n", "\n")));
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    TabTitleObject tempObject = (TabTitleObject) tabTitleObject;
+                    tempObject.setHeader(TextConverter.setVariables(player, tempObject.getHeader()));
+                    tempObject.setFooter(TextConverter.setVariables(player, tempObject.getFooter()));
+                    tempObject.send(player);
+                }
             }
         }
-        if (welcomeMessageEnabled)
-            welcomeObject = new TitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.title")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.subtitle")))
-                    .setFadeIn(getConfig().getInt("welcome_message.fadeIn")).setStay(getConfig().getInt("welcome_message.stay")).setFadeOut(getConfig().getInt("welcome_message.fadeOut"));
+        if (welcomeMessageEnabled) {
+            String titleString = getConfig().getString("welcome_message.title");
+            String subtitleString = getConfig().getString("welcome_message.subtitle");
+            if (titleString.toLowerCase().startsWith("animation:") || subtitleString.toLowerCase().startsWith("animation:")) {
+                Object title;
+                Object subtitle;
+
+                if (titleString.toLowerCase().startsWith("animation:"))
+                    title = getAnimation(titleString.substring("animation:".length()));
+                else title = ChatColor.translateAlternateColorCodes('&', titleString.replace("\\n", "\n"));
+                if (subtitleString.toLowerCase().startsWith("animation:"))
+                    subtitle = getAnimation(subtitleString.substring("animation:".length()));
+                else subtitle = ChatColor.translateAlternateColorCodes('&', subtitleString.replace("\\n", "\n"));
+
+                welcomeObject = new TitleAnimation(title, subtitle);
+                ((TitleAnimation) welcomeObject).broadcast();
+            } else {
+                welcomeObject = new TitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.title")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.subtitle")))
+                        .setFadeIn(getConfig().getInt("welcome_message.fadeIn")).setStay(getConfig().getInt("welcome_message.stay")).setFadeOut(getConfig().getInt("welcome_message.fadeOut"));
+            }
+        }
     }
 
     public static void reloadConfig() {
-        TitleManager.getPlugin().reloadConfig();
+        configFile.load();
+        animationConfigFile.load();
         loadSettings();
+    }
+
+    public static FrameSequence getAnimation(String animation) {
+        return animations.get(animation.toUpperCase().trim());
     }
 
     public static FileConfiguration getConfig() {
@@ -117,11 +201,11 @@ public class Config {
         return usingConfig;
     }
 
-    public static TitleObject getWelcomeObject() {
+    public static Object getWelcomeObject() {
         return welcomeObject;
     }
 
-    public static TabTitleObject getTabTitleObject() {
+    public static Object getTabTitleObject() {
         return tabTitleObject;
     }
 

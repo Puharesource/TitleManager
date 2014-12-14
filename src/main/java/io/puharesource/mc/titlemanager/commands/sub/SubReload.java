@@ -1,8 +1,8 @@
 package io.puharesource.mc.titlemanager.commands.sub;
 
 import io.puharesource.mc.titlemanager.Config;
-import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import io.puharesource.mc.titlemanager.api.TitleObject;
+import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

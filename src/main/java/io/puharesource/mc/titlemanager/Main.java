@@ -5,18 +5,12 @@ import io.puharesource.mc.titlemanager.commands.sub.*;
 import io.puharesource.mc.titlemanager.listeners.ListenerConnection;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
-
 public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
         TitleManager.load(this);
-        try {
-            Config.loadConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Config.loadConfig();
 
         getServer().getPluginManager().registerEvents(new ListenerConnection(), this);
 

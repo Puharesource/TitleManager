@@ -36,27 +36,12 @@ public class TitleObject {
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) return;
-        /*boolean vars = false;
-        for(TitleVariable tv : TitleVariable.values())
-        {
-            if(rawTitle.toLowerCase().contains(tv.getTextRaw().toLowerCase()))
-            {
-                setTitle(TextConverter.setVariables(player, rawTitle));
-                vars = true;
-            }
-            if(rawSubtitle.toLowerCase().contains(tv.getTextRaw().toLowerCase()))
-            {
-                setSubtitle(TextConverter.setVariables(player, rawSubtitle));
-                vars = true;
-            }
-            if(vars) break;
-        }*/
 
         TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitleTimingsPacket(fadeIn, stay, fadeOut), player);
-        if (title != null && rawTitle != null)
-            TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(false, title), player);
-        if (subtitle != null && rawSubtitle != null)
-            TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(true, subtitle), player);
+        if (rawTitle != null && title != null)
+            TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(false, (rawTitle.contains("{") && rawTitle.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawTitle)) : title), player);
+        if (rawSubtitle != null && title != null)
+            TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(true, (rawSubtitle.contains("{") && rawSubtitle.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawSubtitle)) : subtitle), player);
     }
 
     public String getTitle() {
