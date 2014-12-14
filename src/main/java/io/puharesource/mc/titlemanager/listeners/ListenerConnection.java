@@ -2,11 +2,12 @@ package io.puharesource.mc.titlemanager.listeners;
 
 import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
-import io.puharesource.mc.titlemanager.api.*;
+import io.puharesource.mc.titlemanager.api.TabTitleCache;
+import io.puharesource.mc.titlemanager.api.TabTitleObject;
+import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.animations.TabTitleAnimation;
 import io.puharesource.mc.titlemanager.api.animations.TitleAnimation;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -16,9 +17,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class ListenerConnection implements Listener {
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        if (Config.isUsingConfig()) return;
-        final Player player = event.getPlayer();
+    public void onJoin(final PlayerJoinEvent event) {
+        if (!Config.isUsingConfig()) return;
 
         if (Config.isWelcomeMessageEnabled()) {
             final Object welcomeObject = Config.getWelcomeObject();
@@ -28,7 +28,7 @@ public class ListenerConnection implements Listener {
                 Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
                     @Override
                     public void run() {
-                        titleAnimation.send(player);
+                        titleAnimation.send(event.getPlayer());
                     }
                 }, 10l);
             } else {
@@ -36,7 +36,7 @@ public class ListenerConnection implements Listener {
                 Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
                     @Override
                     public void run() {
-                        titleObject.send(player);
+                        titleObject.send(event.getPlayer());
                     }
                 }, 10l);
             }
@@ -49,14 +49,14 @@ public class ListenerConnection implements Listener {
                 Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
                     @Override
                     public void run() {
-                        titleAnimation.send(player);
+                        titleAnimation.send(event.getPlayer());
                     }
                 }, 10l);
             } else {
                 Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
                     @Override
                     public void run() {
-                        ((TabTitleObject) tabWelcomeObject).send(player);
+                        ((TabTitleObject) tabWelcomeObject).send(event.getPlayer());
                     }
                 }, 10l);
             }

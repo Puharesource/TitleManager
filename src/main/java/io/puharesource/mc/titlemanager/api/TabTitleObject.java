@@ -49,6 +49,12 @@ public class TabTitleObject {
         }
 
         TabTitleCache.addTabTitle(player.getUniqueId(), new TabTitleCache(rawHeader, rawFooter));
+
+        if (rawHeader == null && header == null)
+            setHeader("");
+        if (rawFooter == null && footer == null)
+            setFooter("");
+
         TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructHeaderAndFooterPacket(
                 (rawHeader.contains("{") || rawHeader.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawHeader)) : header,
                 (rawFooter.contains("{") || rawFooter.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawFooter)) : footer), player);
@@ -59,8 +65,8 @@ public class TabTitleObject {
     }
 
     public TabTitleObject setHeader(String header) {
-        rawHeader = header;
-        this.header = TitleManager.getReflectionManager().getIChatBaseComponent(header);
+        rawHeader = header == null ? "" : header;
+        this.header = TitleManager.getReflectionManager().getIChatBaseComponent(rawHeader);
         return this;
     }
 
@@ -69,8 +75,8 @@ public class TabTitleObject {
     }
 
     public TabTitleObject setFooter(String footer) {
-        rawFooter = footer;
-        this.footer = TitleManager.getReflectionManager().getIChatBaseComponent(footer);
+        rawFooter = footer == null ? "" : footer;
+        this.footer = TitleManager.getReflectionManager().getIChatBaseComponent(rawFooter);
         return this;
     }
 

@@ -4,9 +4,10 @@ import java.util.List;
 
 public class FrameSequence {
 
-    private int fadeIn = 0;
-    private int stay = 0;
-    private int fadeOut = 0;
+    private int fadeIn;
+    private int stay;
+    private int fadeOut;
+    private int totalTime;
 
     private List<AnimationFrame> frames;
 
@@ -16,22 +17,27 @@ public class FrameSequence {
             AnimationFrame frame = frames.get(i);
             if (i == 0) {
                 fadeIn = (frame.getFadeIn() == -1 ? 0 : frame.getFadeIn());
-                stay = (frame.getStay() == -1 ? 0 : frame.getStay());
-                stay = (frame.getFadeOut() == -1 ? 0 : frame.getFadeOut());
+                stay += (frame.getStay() == -1 ? 0 : frame.getStay());
+                stay += (frame.getFadeOut() == -1 ? 0 : frame.getFadeOut());
             } else if (i + 1 == frames.size()) {
-                stay = (frame.getFadeIn() == -1 ? 0 : frame.getFadeIn());
-                stay = (frame.getStay() == -1 ? 0 : frame.getStay());
+                stay += (frame.getFadeIn() == -1 ? 0 : frame.getFadeIn());
+                stay += (frame.getStay() == -1 ? 0 : frame.getStay());
                 fadeOut = (frame.getFadeOut() == -1 ? 0 : frame.getFadeOut());
             } else {
-                stay = (frame.getFadeIn() == -1 ? 0 : frame.getFadeIn());
-                stay = (frame.getStay() == -1 ? 0 : frame.getStay());
-                stay = (frame.getFadeOut() == -1 ? 0 : frame.getFadeOut());
+                stay += (frame.getFadeIn() == -1 ? 0 : frame.getFadeIn());
+                stay += (frame.getStay() == -1 ? 0 : frame.getStay());
+                stay += (frame.getFadeOut() == -1 ? 0 : frame.getFadeOut());
             }
+            totalTime += frame.getTotalTime();
         }
     }
 
     public List<AnimationFrame> getFrames() {
         return frames;
+    }
+
+    public int size() {
+        return frames.size();
     }
 
     public int getFadeIn() {
@@ -47,6 +53,6 @@ public class FrameSequence {
     }
 
     public int getTotalTime() {
-        return fadeIn + stay + fadeOut;
+        return totalTime;
     }
 }

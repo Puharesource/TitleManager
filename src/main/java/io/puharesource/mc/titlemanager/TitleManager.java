@@ -128,7 +128,7 @@ public class TitleManager {
     }
 
     public static void removeRunningAnimationId(int id) {
-        runningAnimations.remove(id);
+        runningAnimations.remove((Integer) id);
     }
 
     public static List<Integer> getRunningAnimations() {

@@ -66,18 +66,18 @@ public class TextConverter {
     }
 
     public static String setVariables(Player player, String text) {
-        text = replaceVariable(text, TitleVariable.getFromString("PLAYER"), player.getName());
-        text = replaceVariable(text, TitleVariable.getFromString("DISPLAYNAME"), player.getDisplayName());
-        text = replaceVariable(text, TitleVariable.getFromString("STRIPPEDDISPLAYNAME"), ChatColor.stripColor(player.getDisplayName()));
-        text = replaceVariable(text, TitleVariable.getFromString("WORLD"), player.getWorld().getName());
-        text = replaceVariable(text, TitleVariable.getFromString("WORLD TIME"), Long.toString(player.getWorld().getTime()));
-        text = replaceVariable(text, TitleVariable.getFromString("GROUP_NAME"), /*TODO vault integration OR custom method (Vault preferred)*/"");
-        text = replaceVariable(text, TitleVariable.getFromString("ONLINE"), Integer.toString(Bukkit.getOnlinePlayers().size()));
-        text = replaceVariable(text, TitleVariable.getFromString("MAX PLAYERS"), Integer.toString(Bukkit.getMaxPlayers()));
-        text = replaceVariable(text, TitleVariable.getFromString("BALANCE"),/*TODO vault integration*/"");
-        //text = replaceVariable(text, TitleVariable.getFromString("RAINBOW"),/*This requires animation which is not quite done yet.*/"");
-        //text = replaceVariable(text, TitleVariable.getFromString("ONLINE: servername|ALL"),/*Bungee needed for this. TODO add check for bungee and add string accordingly.*/"");
-        //text = replaceVariable(text, TitleVariable.getFromString("MAX: servername|ALL"),/*Bungee needed for this.*/"");
+        text = replaceVariable(text, TitleVariable.PLAYER_NAME, player.getName());
+        text = replaceVariable(text, TitleVariable.DISPLAY_NAME, player.getDisplayName());
+        text = replaceVariable(text, TitleVariable.STRIPPED_DISPLAY_NAME, ChatColor.stripColor(player.getDisplayName()));
+        text = replaceVariable(text, TitleVariable.WORLD, player.getWorld().getName());
+        text = replaceVariable(text, TitleVariable.WORLD_TIME, Long.toString(player.getWorld().getTime()));
+        text = replaceVariable(text, TitleVariable.GROUP_NAME, /*TODO vault integration OR custom method (Vault preferred)*/"");
+        text = replaceVariable(text, TitleVariable.ONLINE_PLAYERS, Integer.toString(Bukkit.getOnlinePlayers().size()));
+        text = replaceVariable(text, TitleVariable.MAX_PLAYERS, Integer.toString(Bukkit.getMaxPlayers()));
+        text = replaceVariable(text, TitleVariable.BALANCE,/*TODO vault integration*/"");
+        //text = replaceVariable(text, TitleVariable.RAINBOW,/*This requires animation which is not quite done yet.*/"");
+        //text = replaceVariable(text, TitleVariable.ONLINE_BUNGEE,/*Bungee needed for this. TODO add check for bungee and add string accordingly.*/"");
+        //text = replaceVariable(text, TitleVariable.MAX_BUNGEE,/*Bungee needed for this.*/"");
         return text;
     }
 
@@ -95,15 +95,13 @@ public class TextConverter {
         }
     }
 
-    private static String replaceVariable(String main, TitleVariable variable, String replacer) {
-        if (variable == null || main == null || replacer == null) return "";
-        if (main.equals("") || replacer.equals("")) return "";
+    private static String replaceVariable(String text, TitleVariable variable, String replacement) {
         try {
-            if (main.toLowerCase().contains("{" + variable.getText().toLowerCase() + "}"))
-                return main.replaceAll("(?i)\\{" + variable.getText() + "\\}", replacer);
-            else return main;
+            if (text.toLowerCase().contains("{" + variable.getText().toLowerCase() + "}"))
+                return text.replaceAll("(?i)\\{" + variable.getText() + "\\}", replacement);
+            else return text;
         } catch (Exception e) {
-            return main;
+            return text;
         }
     }
 }
