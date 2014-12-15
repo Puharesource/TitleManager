@@ -3,6 +3,7 @@ version: 1.3.0
 author: Puharesource
 
 main: io.puharesource.mc.titlemanager.Main
+softdepend: [Vault]
 
 commands:
   tm:

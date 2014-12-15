@@ -1,11 +1,14 @@
 package io.puharesource.mc.titlemanager;
 
 import io.puharesource.mc.titlemanager.api.TitleObject;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +19,9 @@ public class TitleManager {
 
     private static Main plugin;
     private static ReflectionManager reflectionManager;
+
+    private static Economy economy;
+    private static Permission permissions;
 
     private static List<Integer> runningAnimations = Collections.synchronizedList(new ArrayList<Integer>());
 
@@ -39,6 +45,17 @@ public class TitleManager {
             e.printStackTrace();
             plugin.getLogger().log(Level.SEVERE, "Failed to load NMS classes, please update to the latest version of Spigot! Disabling plugin...");
             plugin.getPluginLoader().disablePlugin(plugin);
+        }
+
+        if (isVaultEnabled()) {
+            if (!setupEconomy()) {
+                plugin.getLogger().warning("There's no economy plugin hooked into vault! Disabling economy based variables.");
+            }
+            if (!setupPermissions()) {
+                plugin.getLogger().warning("There's no permissions plugin hooked into vault! Disabling permissions based variables!");
+            }
+        } else {
+            plugin.getLogger().warning("Vault is not enabled! Disabling permissions and economy based variables!");
         }
     }
 
@@ -133,5 +150,30 @@ public class TitleManager {
 
     public static List<Integer> getRunningAnimations() {
         return runningAnimations;
+    }
+
+    public static boolean isVaultEnabled() {
+        return Bukkit.getServer().getPluginManager().getPlugin("Vault") != null;
+    }
+
+    public static Economy getEconomy() {
+        return economy;
+    }
+
+    public static Permission getPermissions() {
+        return permissions;
+    }
+
+    private static boolean setupEconomy() {
+        RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) return false;
+        economy = rsp.getProvider();
+        return economy != null;
+    }
+
+    private static boolean setupPermissions() {
+        RegisteredServiceProvider<Permission> rsp = Bukkit.getServer().getServicesManager().getRegistration(Permission.class);
+        permissions = rsp.getProvider();
+        return permissions != null;
     }
 }

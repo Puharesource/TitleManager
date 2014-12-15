@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.api;
 
+import io.puharesource.mc.titlemanager.TitleManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -71,37 +72,33 @@ public class TextConverter {
         text = replaceVariable(text, TitleVariable.STRIPPED_DISPLAY_NAME, ChatColor.stripColor(player.getDisplayName()));
         text = replaceVariable(text, TitleVariable.WORLD, player.getWorld().getName());
         text = replaceVariable(text, TitleVariable.WORLD_TIME, Long.toString(player.getWorld().getTime()));
-        text = replaceVariable(text, TitleVariable.GROUP_NAME, /*TODO vault integration OR custom method (Vault preferred)*/"");
-        text = replaceVariable(text, TitleVariable.ONLINE_PLAYERS, Integer.toString(Bukkit.getOnlinePlayers().size()));
-        text = replaceVariable(text, TitleVariable.MAX_PLAYERS, Integer.toString(Bukkit.getMaxPlayers()));
-        text = replaceVariable(text, TitleVariable.BALANCE,/*TODO vault integration*/"");
+        text = replaceVariable(text, TitleVariable.ONLINE_PLAYERS, String.valueOf(Bukkit.getOnlinePlayers().size()));
+        text = replaceVariable(text, TitleVariable.MAX_PLAYERS, String.valueOf(Bukkit.getMaxPlayers()));
         //text = replaceVariable(text, TitleVariable.RAINBOW,/*This requires animation which is not quite done yet.*/"");
         //text = replaceVariable(text, TitleVariable.ONLINE_BUNGEE,/*Bungee needed for this. TODO add check for bungee and add string accordingly.*/"");
         //text = replaceVariable(text, TitleVariable.MAX_BUNGEE,/*Bungee needed for this.*/"");
+        if (TitleManager.isVaultEnabled()) {
+            if (TitleManager.getEconomy() != null) {
+                text = replaceVariable(text, TitleVariable.BALANCE, String.valueOf(TitleManager.getEconomy().getBalance(player)));
+            }
+            if (TitleManager.getPermissions() != null) {
+                text = replaceVariable(text, TitleVariable.GROUP_NAME, TitleManager.getPermissions().getPrimaryGroup(player));
+            }
+        }
         return text;
     }
 
-    /**
-     * @deprecated because it is replaced by the better method using enumerators.
-     */
-    @Deprecated
-    static String replaceVariable(String str0, String variable, String str1) {
+    private static String replaceVariable(String text, String variable, String replacement) {
         try {
-            if (str0.toLowerCase().contains("{" + variable.toLowerCase() + "}"))
-                return str0.replaceAll("(?i)\\{" + variable + "\\}", str1);
-            else return str0;
-        } catch (Exception e) {
-            return str0;
-        }
-    }
-
-    private static String replaceVariable(String text, TitleVariable variable, String replacement) {
-        try {
-            if (text.toLowerCase().contains("{" + variable.getText().toLowerCase() + "}"))
-                return text.replaceAll("(?i)\\{" + variable.getText() + "\\}", replacement);
+            if (text.toLowerCase().contains("{" + variable.toLowerCase() + "}"))
+                return text.replaceAll("(?i)\\{" + variable + "\\}", replacement);
             else return text;
         } catch (Exception e) {
             return text;
         }
+    }
+
+    private static String replaceVariable(String text, TitleVariable variable, String replacement) {
+        return replaceVariable(text, variable.getText(), replacement);
     }
 }

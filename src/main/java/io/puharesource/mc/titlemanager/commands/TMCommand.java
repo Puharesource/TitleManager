@@ -8,7 +8,7 @@ import java.util.*;
 
 public class TMCommand implements CommandExecutor, TabCompleter {
 
-    Map<String, TMSubCommand> commands = new HashMap<>();
+    private Map<String, TMSubCommand> commands = new HashMap<>();
 
     public TMCommand() {
         PluginCommand cmd = TitleManager.getPlugin().getCommand("tm");
@@ -48,6 +48,13 @@ public class TMCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        return null;
+        List<String> possibilities = new ArrayList<>();
+
+        if (args.length == 1)
+            for (String sub : commands.keySet())
+                if (sub.toLowerCase().startsWith(args[0].toLowerCase()))
+                    possibilities.add(sub);
+
+        return possibilities.size() <= 0 ? null : possibilities;
     }
 }
