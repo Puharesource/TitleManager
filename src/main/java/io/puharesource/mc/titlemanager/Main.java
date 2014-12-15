@@ -20,5 +20,6 @@ public class Main extends JavaPlugin {
         cmd.addSubCommand(new SubReload());
         cmd.addSubCommand(new SubABroadcast());
         cmd.addSubCommand(new SubAMessage());
+        cmd.addSubCommand(new SubAnimations());
     }
 }

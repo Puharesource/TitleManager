@@ -189,6 +189,10 @@ public class Config {
         return animations.get(animation.toUpperCase().trim());
     }
 
+    public static Map<String, FrameSequence> getAnimations() {
+        return animations;
+    }
+
     public static FileConfiguration getConfig() {
         return TitleManager.getPlugin().getConfig();
     }
