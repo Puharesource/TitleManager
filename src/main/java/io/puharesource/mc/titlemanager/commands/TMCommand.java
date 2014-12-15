@@ -53,7 +53,7 @@ public class TMCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1)
             for (String sub : commands.keySet())
                 if (sub.toLowerCase().startsWith(args[0].toLowerCase()))
-                    possibilities.add(sub);
+                    possibilities.add(sub.toLowerCase());
 
         return possibilities.size() <= 0 ? null : possibilities;
     }

@@ -25,6 +25,7 @@ public class Config {
     private static boolean welcomeMessageEnabled;
 
     private static Object welcomeObject;
+    private static Object firstWelcomeObject;
     private static Object tabTitleObject;
 
     private static ConfigFile configFile;
@@ -44,12 +45,10 @@ public class Config {
         FileConfiguration config = configFile.getConfig();
 
         //Updates the config from v1.0.1 to v1.0.2.
-        if (getConfig().contains("header")) {
-
+        if (config.contains("header")) {
+            FileConfiguration newConfig = configFile.getCopy();
             configFile.backupToFile(plugin.getDataFolder(), "1.0.1-old-config.yml");
             configFile.regenConfig();
-
-            FileConfiguration newConfig = configFile.getCopy();
 
             newConfig.set("tabmenu.header", config.getString("header"));
             newConfig.set("tabmenu.footer", config.getString("footer"));
@@ -59,15 +58,13 @@ public class Config {
 
             configFile.save();
             config = configFile.getConfig();
-            reloadConfig();
         }
 
         //Updates the config from v1.0.6 to v1.0.7
-        if (!getConfig().contains("tabmenu.enabled") || !getConfig().contains("welcome_message.enabled")) {
+        if (!config.contains("tabmenu.enabled") || !config.contains("welcome_message.enabled")) {
+            FileConfiguration oldConfig = configFile.getCopy();
             configFile.backupToFile(plugin.getDataFolder(), "1.0.6-old-config.yml");
             configFile.regenConfig();
-
-            FileConfiguration oldConfig = configFile.getCopy();
 
             config.set("tabmenu.header", oldConfig.getString("tabmenu.header"));
             config.set("tabmenu.footer", oldConfig.getString("tabmenu.footer"));
@@ -79,9 +76,20 @@ public class Config {
             config.set("welcome_message.fadeOut", oldConfig.getInt("welcome_message.fadeOut"));
 
             configFile.save();
-            reloadConfig();
         }
 
+        //Updates the config from v1.2.1 to 1.3.0
+        if (config.get("config-version") == null) {
+            config.set("config-version", 1);
+            ConfigurationSection section = config.createSection("welcome_message.first-join");
+            section.set("title", config.getString("welcome_message.title"));
+            section.set("subtitle", config.getString("welcome_message.subtitle"));
+            config.set("welcome_message.first-join", section);
+
+            configFile.save();
+        }
+
+        plugin.reloadConfig();
         loadSettings();
     }
 
@@ -171,6 +179,25 @@ public class Config {
                 welcomeObject = new TitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.title")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.subtitle")))
                         .setFadeIn(getConfig().getInt("welcome_message.fadeIn")).setStay(getConfig().getInt("welcome_message.stay")).setFadeOut(getConfig().getInt("welcome_message.fadeOut"));
             }
+
+            titleString = getConfig().getString("welcome_message.first-join.title");
+            subtitleString = getConfig().getString("welcome_message.first-join.subtitle");
+            if (titleString.toLowerCase().startsWith("animation:") || subtitleString.toLowerCase().startsWith("animation:")) {
+                Object title;
+                Object subtitle;
+
+                if (titleString.toLowerCase().startsWith("animation:"))
+                    title = getAnimation(titleString.substring("animation:".length()));
+                else title = ChatColor.translateAlternateColorCodes('&', titleString.replace("\\n", "\n"));
+                if (subtitleString.toLowerCase().startsWith("animation:"))
+                    subtitle = getAnimation(subtitleString.substring("animation:".length()));
+                else subtitle = ChatColor.translateAlternateColorCodes('&', subtitleString.replace("\\n", "\n"));
+
+                firstWelcomeObject = new TitleAnimation(title, subtitle);
+            } else {
+                firstWelcomeObject = new TitleObject(ChatColor.translateAlternateColorCodes('&', titleString), ChatColor.translateAlternateColorCodes('&', subtitleString))
+                        .setFadeIn(getConfig().getInt("welcome_message.fadeIn")).setStay(getConfig().getInt("welcome_message.stay")).setFadeOut(getConfig().getInt("welcome_message.fadeOut"));
+            }
         }
     }
 
@@ -210,6 +237,10 @@ public class Config {
 
     public static Object getWelcomeObject() {
         return welcomeObject;
+    }
+
+    public static Object getFirstWelcomeObject() {
+        return firstWelcomeObject;
     }
 
     public static Object getTabTitleObject() {

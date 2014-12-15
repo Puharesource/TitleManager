@@ -21,7 +21,7 @@ public class ListenerConnection implements Listener {
         if (!Config.isUsingConfig()) return;
 
         if (Config.isWelcomeMessageEnabled()) {
-            final Object welcomeObject = Config.getWelcomeObject();
+            final Object welcomeObject = event.getPlayer().hasPlayedBefore() ? Config.getWelcomeObject() : Config.getFirstWelcomeObject();
 
             if (welcomeObject instanceof TitleAnimation) {
                 final TitleAnimation titleAnimation = (TitleAnimation) welcomeObject;

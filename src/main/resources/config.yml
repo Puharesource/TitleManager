@@ -4,11 +4,14 @@ config-version: 1
 tabmenu:
   enabled: true
   header: '&3MyServer'
-  footer: '&bIP: play.myserver.com'
+  footer: 'animation:test1'
 welcome_message:
   enabled: true
-  title: '&5Welcome {PLAYER}'
+  title: '&5Welcome back {PLAYER}!'
   subtitle: '&dTo sweggy mc sweg!'
   fadeIn: -1
   stay: -1
   fadeOut: -1
+  first-join:
+    title: '&5Welcome to MyServer {PLAYER}'
+    subtitle: '&dHope you will enjoy your stay here!'
