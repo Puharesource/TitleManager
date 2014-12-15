@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 public class ListenerCommand implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onCommandSend(final PlayerCommandPreprocessEvent event) {
+        if(event.isCancelled()) return;
         if(Config.getCommandTitle(event.getMessage())!=null)
         {
             List<Object> messages = Config.getCommandTitle(event.getMessage);
