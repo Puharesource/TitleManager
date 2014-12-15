@@ -215,11 +215,19 @@ public class Config {
                 sect = section.getConfigurationSection(str);
                 if(sect.getBoolean("title.enabled")
                 {
-                    message = new TitleObject(sect.getString("title.title"),sect.getString("title.subtitle"));
+                    if(sect.getString("title.title").contains("animation:"))
+                    {
+                        message = new TitleAnimation(getAnimation(sect.getString("title.title")),sect.getString("title.subtitle").contains("animation:")?getAnimation(sect.getString("title.subtitle")):sect.getString("title.subtitle"));
+                    }
+                    else message = new TitleObject(sect.getString("title.title"),sect.getString("title.subtitle"));
                 }
                 if(sect.getBoolean("actionbar.enabled"))
                 {
-                    amessage = new ActionbarTitleObject(sect.getString("actionbar.text"));
+                    if(sect.getString("actionbar.text").contains("animation:"))
+                    {
+                        amessage = new ActionbarTitleAnimation(getAnimation(sect.getString("actionbar.text")));
+                    }
+                    else amessage = new ActionbarTitleObject(sect.getString("actionbar.text"));
                 }
                 List<Object> msgs = new ArrayList<>();
                 if(message!=null) msgs.add(message);
