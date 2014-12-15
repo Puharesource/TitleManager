@@ -30,7 +30,9 @@ public class Config {
 
     private static ConfigFile configFile;
     private static ConfigFile animationConfigFile;
-
+    private static ConfigFile commandsFile;
+    
+    private static Map<String, Object> commands = new Map<>();
     private static Map<String, FrameSequence> animations = new HashMap<>();
 
     public static void loadConfig() {
@@ -41,6 +43,7 @@ public class Config {
 
         configFile.load();
         animationConfigFile.load();
+        commandsFile.load();
 
         FileConfiguration config = configFile.getConfig();
 
@@ -199,12 +202,38 @@ public class Config {
                         .setFadeIn(getConfig().getInt("welcome_message.fadeIn")).setStay(getConfig().getInt("welcome_message.stay")).setFadeOut(getConfig().getInt("welcome_message.fadeOut"));
             }
         }
+        
+        if(commandsFile.getConfig().getBoolean("enabled"))
+        {
+            ConfigurationSection section = commandsFile.getConfig().getConfigurationSection("commands");
+            ConfigurationSection sect;
+            commands = section.getValues(false);
+            for(String str : commands.keySet())
+            {
+                Object message;
+                Object amessage;
+                sect = section.getConfigurationSection(str);
+                if(sect.getBoolean("title.enabled")
+                {
+                    message = new TitleObject(sect.getString("title.title"),sect.getString("title.subtitle"));
+                }
+                if(sect.getBoolean("actionbar.enabled"))
+                {
+                    amessage = new ActionbarTitleObject(sect.getString("actionbar.text"));
+                }
+                List<Object> msgs = new ArrayList<>();
+                if(message!=null) msgs.add(message);
+                if(amessage!=null) msgs.add(amessage);
+                commands.put(str, msgs);
+            }
+        }
     }
 
     public static void reloadConfig() {
         configFile.load();
         animationConfigFile.load();
-
+        commandsFile.load();
+        
         animations.clear();
 
         for (int id : TitleManager.getRunningAnimations())
@@ -213,6 +242,18 @@ public class Config {
         TitleManager.getRunningAnimations().clear();
 
         loadSettings();
+    }
+
+    public static Map<String, Object> getCommandTitles() {
+        return commands;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static List<Object> getCommandTitle(String command)
+    {
+        String cmd = command.replace("/","").trim();
+        if(commands.containsKey(cmd)) return (ArrayList<Object>) commands.get(cmd);
+        return null;
     }
 
     public static FrameSequence getAnimation(String animation) {
