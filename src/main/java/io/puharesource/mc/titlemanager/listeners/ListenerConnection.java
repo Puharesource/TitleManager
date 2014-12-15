@@ -44,15 +44,7 @@ public class ListenerConnection implements Listener {
         if (Config.isTabmenuEnabled()) {
             final Object tabWelcomeObject = Config.getTabTitleObject();
 
-            if (tabWelcomeObject instanceof TabTitleAnimation) {
-                final TabTitleAnimation titleAnimation = (TabTitleAnimation) tabWelcomeObject;
-                Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
-                    @Override
-                    public void run() {
-                        titleAnimation.send(event.getPlayer());
-                    }
-                }, 10l);
-            } else {
+            if (!(tabWelcomeObject instanceof TabTitleAnimation)) {
                 Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
                     @Override
                     public void run() {

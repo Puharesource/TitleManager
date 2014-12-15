@@ -145,6 +145,7 @@ public class TabTitleAnimation {
 
         public void setId(int id) {
             this.id = id;
+            TitleManager.addRunningAnimationId(id);
         }
 
         @Override

@@ -17,6 +17,6 @@ public class SubAnimations extends TMSubCommand {
         String[] animations = Config.getAnimations().keySet().toArray(new String[Config.getAnimations().size()]);
         for (int i = 0; animations.length > i; i++)
             sb.append((i == 0 ? ChatColor.GREEN : ChatColor.WHITE + ", " + ChatColor.GREEN) + animations[i].toLowerCase().trim());
-        sender.sendMessage(String.format(ChatColor.GREEN + "Loaded animations (%s): %s", animations.length, sb.toString()));
+        sender.sendMessage(String.format(ChatColor.GREEN + "Loaded animations (%s): %s", ChatColor.WHITE.toString() + animations.length + ChatColor.GREEN, sb.toString()));
     }
 }

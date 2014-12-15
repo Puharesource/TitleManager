@@ -86,13 +86,6 @@ public class Config {
     }
 
     static void loadSettings() {
-        animations.clear();
-
-        for (int id : TitleManager.getRunningAnimations())
-            Bukkit.getScheduler().cancelTask(id);
-
-        TitleManager.getRunningAnimations().clear();
-
         for (String str : animationConfigFile.getConfig().getKeys(false)) {
             ConfigurationSection section = animationConfigFile.getConfig().getConfigurationSection(str);
             List<AnimationFrame> frames = new ArrayList<>();
@@ -127,6 +120,9 @@ public class Config {
         }
 
         usingConfig = getConfig().getBoolean("usingConfig");
+
+        if (!usingConfig) return;
+
         tabmenuEnabled = getConfig().getBoolean("tabmenu.enabled");
         welcomeMessageEnabled = getConfig().getBoolean("welcome_message.enabled");
 
@@ -141,7 +137,7 @@ public class Config {
                     header = getAnimation(headerString.substring("animation:".length()));
                 else header = ChatColor.translateAlternateColorCodes('&', headerString.replace("\\n", "\n"));
                 if (footerString.toLowerCase().startsWith("animation:"))
-                    footer = getAnimation(headerString.substring("animation:".length()));
+                    footer = getAnimation(footerString.substring("animation:".length()));
                 else footer = ChatColor.translateAlternateColorCodes('&', footerString.replace("\\n", "\n"));
 
                 tabTitleObject = new TabTitleAnimation(header == null ? "" : header, footer == null ? "" : footer);
@@ -171,7 +167,6 @@ public class Config {
                 else subtitle = ChatColor.translateAlternateColorCodes('&', subtitleString.replace("\\n", "\n"));
 
                 welcomeObject = new TitleAnimation(title, subtitle);
-                ((TitleAnimation) welcomeObject).broadcast();
             } else {
                 welcomeObject = new TitleObject(ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.title")), ChatColor.translateAlternateColorCodes('&', getConfig().getString("welcome_message.subtitle")))
                         .setFadeIn(getConfig().getInt("welcome_message.fadeIn")).setStay(getConfig().getInt("welcome_message.stay")).setFadeOut(getConfig().getInt("welcome_message.fadeOut"));
@@ -182,6 +177,14 @@ public class Config {
     public static void reloadConfig() {
         configFile.load();
         animationConfigFile.load();
+
+        animations.clear();
+
+        for (int id : TitleManager.getRunningAnimations())
+            Bukkit.getScheduler().cancelTask(id);
+
+        TitleManager.getRunningAnimations().clear();
+
         loadSettings();
     }
 
