@@ -35,7 +35,7 @@ public class SubMessage extends TMSubCommand {
             if (args[0].toLowerCase().contains("<nl>"))
                 lines = args[0].split("<nl>", 2);
             else if (args[0].toLowerCase().contains("{nl}"))
-                lines = args[0].split("\\{nl\\}", 2);
+                lines = args[0].split("{nl}", 2);
             if (lines != null && (lines[0].toLowerCase().startsWith("animation:") || lines[1].toLowerCase().startsWith("animation:"))) {
                 FrameSequence title = null;
                 FrameSequence subtitle = null;
