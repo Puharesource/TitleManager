@@ -15,15 +15,15 @@ public class TabTitleAnimation {
     private Object footer;
 
     public TabTitleAnimation(FrameSequence header, FrameSequence footer) {
-        this(header, (Object) footer);
+        this((Object) header, (Object) footer);
     }
 
     public TabTitleAnimation(FrameSequence header, String footer) {
-        this(header, (Object) footer);
+        this((Object) header, (Object) footer);
     }
 
     public TabTitleAnimation(String header, FrameSequence footer) {
-        this(header, (Object) footer);
+        this((Object) header, (Object) footer);
     }
 
     public TabTitleAnimation(Object header, Object footer) {
@@ -43,9 +43,9 @@ public class TabTitleAnimation {
         if (header instanceof FrameSequence && footer instanceof FrameSequence) {
             FrameSequence headerSequence = (FrameSequence) header;
             FrameSequence footerSequence = (FrameSequence) footer;
-            int speed = (headerSequence.getTotalTime() / headerSequence.size() + footerSequence.getTotalTime() / footerSequence.size()) / 2;
-            MultiTask task = new MultiTask(headerSequence, footerSequence, player);
-            int id = scheduler.runTaskTimerAsynchronously(plugin, task, 0, speed).getTaskId();
+            int speed = 1;//Speed is 1 to be maximize frames and not have problems with async animations
+            MultiTask task = new MultiTask(headerSequence, footerSequence, player).setSpeed(speed);
+            int id = scheduler.runTaskTimerAsynchronously(plugin, task, 0, speed).getTaskId();//According to bukkit API, this is deprecated. Perhaps look into changing it to the method (task).runTaskTimerAsynchronously(Plugin plugin, long delay, long period).
             task.setId(id);
         } else if (header instanceof FrameSequence) {
             for (AnimationFrame frame : ((FrameSequence) header).getFrames()) {
@@ -128,6 +128,9 @@ public class TabTitleAnimation {
         private int j;
 
         private int id;
+        
+        private int speed;
+        private int totalTime;
 
         private FrameSequence header;
         private FrameSequence footer;
@@ -137,10 +140,17 @@ public class TabTitleAnimation {
             this.header = header;
             this.footer = footer;
             this.uuid = uuid;
+            this.totalTime = 0;
+            this.speed = 0;
         }
 
         public MultiTask(FrameSequence header, FrameSequence footer, Player player) {
             this(header, footer, player == null ? null : player.getUniqueId());
+        }
+        
+        public MultiTask setSpeed(int speed) {
+            this.speed = speed;
+            return this;
         }
 
         public void setId(int id) {
@@ -168,10 +178,16 @@ public class TabTitleAnimation {
             if (i == header.size() - 1)
                 i = 0;
             else i++;
-
+            
+            if(totalTime%header.getFrames().get(i).getTotalTime()!=0) i--;//Puts it back to previous value if frame shouldn't change
+            
             if (j == footer.size() - 1)
                 j = 0;
             else j++;
+            
+            if(totalTime%footer.getFrames().get(j).getTotalTime()!=0) j--;//Puts it back to previous value if frame shouldn't change
+            
+            totalTime+=speed;
         }
     }
 }

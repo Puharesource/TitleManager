@@ -1,0 +1,24 @@
+enabled: true
+commands:
+  tm:
+    title:
+      enabled: true
+      title: '&aSuccess!'
+      subtitle: ''
+      fadeIn: -1
+      stay: -1
+      fadeOut: -1
+    actionbar:
+      enabled: true
+      text: ''
+  example1:
+    title:
+      enabled: true
+      title: '&aSuccess!'
+      subtitle: ''
+      fadeIn: -1
+      stay: -1
+      fadeOut: -1
+    actionbar:
+      enabled: true
+      text: 'Example text'
