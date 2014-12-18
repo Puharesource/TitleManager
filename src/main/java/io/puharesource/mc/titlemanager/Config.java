@@ -7,6 +7,8 @@ import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
 import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
 import io.puharesource.mc.titlemanager.api.animations.TabTitleAnimation;
 import io.puharesource.mc.titlemanager.api.animations.TitleAnimation;
+import io.puharesource.mc.titlemanager.api.iface.ITabObject;
+import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,9 +26,9 @@ public class Config {
     private static boolean tabmenuEnabled;
     private static boolean welcomeMessageEnabled;
 
-    private static Object welcomeObject;
-    private static Object firstWelcomeObject;
-    private static Object tabTitleObject;
+    private static ITitleObject welcomeObject;
+    private static ITitleObject firstWelcomeObject;
+    private static ITabObject tabTitleObject;
 
     private static ConfigFile configFile;
     private static ConfigFile animationConfigFile;
@@ -42,7 +44,7 @@ public class Config {
         configFile.load();
         animationConfigFile.load();
 
-        FileConfiguration config = configFile.getConfig();
+        FileConfiguration config = getConfig();
 
         //Updates the config from v1.0.1 to v1.0.2.
         if (config.contains("header")) {
@@ -56,7 +58,7 @@ public class Config {
             newConfig.set("welcome_message.title", config.getString("title"));
             newConfig.set("welcome_message.subtitle", config.getString("subtitle"));
 
-            configFile.save();
+            saveConfig();
             config = configFile.getConfig();
         }
 
@@ -75,7 +77,7 @@ public class Config {
             config.set("welcome_message.stay", oldConfig.getInt("welcome_message.stay"));
             config.set("welcome_message.fadeOut", oldConfig.getInt("welcome_message.fadeOut"));
 
-            configFile.save();
+            saveConfig();
         }
 
         //Updates the config from v1.2.1 to 1.3.0
@@ -86,7 +88,7 @@ public class Config {
             section.set("subtitle", config.getString("welcome_message.subtitle"));
             config.set("welcome_message.first-join", section);
 
-            configFile.save();
+            saveConfig();
         }
 
         plugin.reloadConfig();
@@ -119,7 +121,8 @@ public class Config {
                         fadeIn = Integer.valueOf(times[0]);
                         stay = Integer.valueOf(times[1]);
                         fadeOut = Integer.parseInt(times[2]);
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException ignored) {
+                    }
 
                     frames.add(new AnimationFrame(frame, fadeIn, stay, fadeOut));
                 }
@@ -143,15 +146,15 @@ public class Config {
 
                 if (headerString.toLowerCase().startsWith("animation:"))
                     header = getAnimation(headerString.substring("animation:".length()));
-                else header = ChatColor.translateAlternateColorCodes('&', headerString.replace("\\n", "\n"));
+                else header = ChatColor.translateAlternateColorCodes('&', headerString);
                 if (footerString.toLowerCase().startsWith("animation:"))
                     footer = getAnimation(footerString.substring("animation:".length()));
-                else footer = ChatColor.translateAlternateColorCodes('&', footerString.replace("\\n", "\n"));
+                else footer = ChatColor.translateAlternateColorCodes('&', footerString);
 
                 tabTitleObject = new TabTitleAnimation(header == null ? "" : header, footer == null ? "" : footer);
-                ((TabTitleAnimation) tabTitleObject).broadcast();
+                tabTitleObject.broadcast();
             } else {
-                tabTitleObject = new TabTitleObject(ChatColor.translateAlternateColorCodes('&', headerString.replace("\\n", "\n")), ChatColor.translateAlternateColorCodes('&', footerString.replace("\\n", "\n")));
+                tabTitleObject = new TabTitleObject(ChatColor.translateAlternateColorCodes('&', headerString), ChatColor.translateAlternateColorCodes('&', footerString));
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     TabTitleObject tempObject = (TabTitleObject) tabTitleObject;
                     tempObject.setHeader(TextConverter.setVariables(player, tempObject.getHeader()));
@@ -224,26 +227,26 @@ public class Config {
     }
 
     public static FileConfiguration getConfig() {
-        return TitleManager.getPlugin().getConfig();
+        return configFile.getConfig();
     }
 
     public static void saveConfig() {
-        TitleManager.getPlugin().saveConfig();
+        configFile.save();
     }
 
     public static boolean isUsingConfig() {
         return usingConfig;
     }
 
-    public static Object getWelcomeObject() {
+    public static ITitleObject getWelcomeObject() {
         return welcomeObject;
     }
 
-    public static Object getFirstWelcomeObject() {
+    public static ITitleObject getFirstWelcomeObject() {
         return firstWelcomeObject;
     }
 
-    public static Object getTabTitleObject() {
+    public static ITabObject getTabTitleObject() {
         return tabTitleObject;
     }
 

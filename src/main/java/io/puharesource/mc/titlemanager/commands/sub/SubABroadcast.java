@@ -6,10 +6,8 @@ import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
 import io.puharesource.mc.titlemanager.api.animations.ActionbarTitleAnimation;
 import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class SubABroadcast extends TMSubCommand {
     public SubABroadcast() {
@@ -32,8 +30,7 @@ public class SubABroadcast extends TMSubCommand {
             return;
         }
         ActionbarTitleObject object = new ActionbarTitleObject(TitleManager.combineArray(0, args));
-        for (Player player : Bukkit.getOnlinePlayers())
-            object.send(player);
+        object.broadcast();
         sender.sendMessage(ChatColor.GREEN + "You have sent an actionbar broadcast with the message \"" + ChatColor.RESET + object.getTitle() + ChatColor.GREEN + "\"");
     }
 }

@@ -3,12 +3,14 @@ package io.puharesource.mc.titlemanager.api.animations;
 import io.puharesource.mc.titlemanager.ReflectionManager;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TextConverter;
+import io.puharesource.mc.titlemanager.api.iface.IAnimation;
+import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-public class TitleAnimation {
+public class TitleAnimation implements IAnimation, ITitleObject {
 
     private ReflectionManager manager = TitleManager.getReflectionManager();
     private Object title;
@@ -32,10 +34,12 @@ public class TitleAnimation {
         this.subtitle = subtitle;
     }
 
+    @Override
     public void broadcast() {
         send(null);
     }
 
+    @Override
     public void send(Player player) {
         Plugin plugin = TitleManager.getPlugin();
         BukkitScheduler scheduler = Bukkit.getScheduler();

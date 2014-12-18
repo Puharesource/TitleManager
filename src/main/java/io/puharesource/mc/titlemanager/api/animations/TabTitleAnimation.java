@@ -2,6 +2,8 @@ package io.puharesource.mc.titlemanager.api.animations;
 
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TabTitleObject;
+import io.puharesource.mc.titlemanager.api.iface.IAnimation;
+import io.puharesource.mc.titlemanager.api.iface.ITabObject;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -9,7 +11,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.UUID;
 
-public class TabTitleAnimation {
+public class TabTitleAnimation implements IAnimation, ITabObject{
 
     private Object header;
     private Object footer;
@@ -31,10 +33,12 @@ public class TabTitleAnimation {
         this.footer = footer;
     }
 
+    @Override
     public void broadcast() {
         send(null);
     }
 
+    @Override
     public void send(Player player) {
         Plugin plugin = TitleManager.getPlugin();
         BukkitScheduler scheduler = Bukkit.getScheduler();
@@ -43,9 +47,8 @@ public class TabTitleAnimation {
         if (header instanceof FrameSequence && footer instanceof FrameSequence) {
             FrameSequence headerSequence = (FrameSequence) header;
             FrameSequence footerSequence = (FrameSequence) footer;
-            int speed = 1;//Speed is 1 to be maximize frames and not have problems with async animations
-            MultiTask task = new MultiTask(headerSequence, footerSequence, player).setSpeed(speed);
-            int id = scheduler.runTaskTimerAsynchronously(plugin, task, 0, speed).getTaskId();//According to bukkit API, this is deprecated. Perhaps look into changing it to the method (task).runTaskTimerAsynchronously(Plugin plugin, long delay, long period).
+            MultiTask task = new MultiTask(headerSequence, footerSequence, player);
+            int id = scheduler.runTaskTimerAsynchronously(plugin, task, 0, 1).getTaskId();
             task.setId(id);
         } else if (header instanceof FrameSequence) {
             for (AnimationFrame frame : ((FrameSequence) header).getFrames()) {
@@ -128,9 +131,12 @@ public class TabTitleAnimation {
         private int j;
 
         private int id;
-        
-        private int speed;
-        private int totalTime;
+
+        private int headerTimeLeft;
+        private int footerTimeLeft;
+
+        private AnimationFrame currentHeaderFrame;
+        private AnimationFrame currentFooterFrame;
 
         private FrameSequence header;
         private FrameSequence footer;
@@ -140,17 +146,10 @@ public class TabTitleAnimation {
             this.header = header;
             this.footer = footer;
             this.uuid = uuid;
-            this.totalTime = 0;
-            this.speed = 0;
         }
 
         public MultiTask(FrameSequence header, FrameSequence footer, Player player) {
             this(header, footer, player == null ? null : player.getUniqueId());
-        }
-        
-        public MultiTask setSpeed(int speed) {
-            this.speed = speed;
-            return this;
         }
 
         public void setId(int id) {
@@ -160,34 +159,47 @@ public class TabTitleAnimation {
 
         @Override
         public void run() {
+            boolean headerChanged = false;
+            boolean footerChanged = false;
 
-            if (uuid == null) {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    new TabTitleObject(header.getFrames().get(i).getText(), footer.getFrames().get(j).getText()).send(player);
+            if (headerTimeLeft == 0 || footerTimeLeft == 0) {
+                if (headerTimeLeft == 0) {
+                    currentHeaderFrame = header.getFrames().get(i);
+                    headerTimeLeft = header.getFrames().get(i).getTotalTime();
+                    if (header.getFrames().size() - 1 == i)
+                        i = 0;
+                    else i++;
+                    headerChanged = true;
                 }
-            } else {
-                Player player = Bukkit.getPlayer(uuid);
-                if (player != null && player.isOnline()) {
-                    new TabTitleObject(header.getFrames().get(i).getText(), footer.getFrames().get(j).getText()).send(player);
+
+                if (footerTimeLeft == 0) {
+                    currentFooterFrame = footer.getFrames().get(j);
+                    footerTimeLeft = footer.getFrames().get(j).getTotalTime();
+                    if (footer.getFrames().size() - 1 == j)
+                        j = 0;
+                    else j++;
+                    footerChanged = true;
+                }
+
+                if (uuid == null) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        new TabTitleObject(currentHeaderFrame.getText(), currentFooterFrame.getText()).send(player);
+                    }
                 } else {
-                    Bukkit.getScheduler().cancelTask(id);
-                    TitleManager.removeRunningAnimationId(id);
+                    Player player = Bukkit.getPlayer(uuid);
+                    if (player != null && player.isOnline()) {
+                        new TabTitleObject(currentHeaderFrame.getText(), currentFooterFrame.getText()).send(player);
+                    } else {
+                        Bukkit.getScheduler().cancelTask(id);
+                        TitleManager.removeRunningAnimationId(id);
+                    }
                 }
             }
 
-            if (i == header.size() - 1)
-                i = 0;
-            else i++;
-            
-            if(totalTime%header.getFrames().get(i).getTotalTime()!=0) i--;//Puts it back to previous value if frame shouldn't change
-            
-            if (j == footer.size() - 1)
-                j = 0;
-            else j++;
-            
-            if(totalTime%footer.getFrames().get(j).getTotalTime()!=0) j--;//Puts it back to previous value if frame shouldn't change
-            
-            totalTime+=speed;
+            if (!headerChanged)
+                headerTimeLeft--;
+            if (!footerChanged)
+                footerTimeLeft--;
         }
     }
 }

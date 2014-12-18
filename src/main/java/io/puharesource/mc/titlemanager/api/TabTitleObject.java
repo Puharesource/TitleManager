@@ -2,10 +2,11 @@ package io.puharesource.mc.titlemanager.api;
 
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.events.TabTitleChangeEvent;
+import io.puharesource.mc.titlemanager.api.iface.ITabObject;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class TabTitleObject {
+public class TabTitleObject implements ITabObject {
 
     private String rawHeader;
     private String rawFooter;
@@ -23,6 +24,12 @@ public class TabTitleObject {
     public TabTitleObject(String header, String footer) {
         setHeader(header);
         setFooter(footer);
+    }
+
+    @Override
+    public void broadcast() {
+        for (Player player : Bukkit.getOnlinePlayers())
+            send(player);
     }
 
     public void send(Player player) {
@@ -56,8 +63,8 @@ public class TabTitleObject {
             setFooter("");
 
         TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructHeaderAndFooterPacket(
-                (rawHeader.contains("{") || rawHeader.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawHeader)) : header,
-                (rawFooter.contains("{") || rawFooter.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawFooter)) : footer), player);
+                (rawHeader != null && (rawHeader.contains("{") || rawHeader.contains("}"))) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawHeader)) : header,
+                (rawFooter != null && (rawFooter.contains("{") || rawFooter.contains("}"))) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawFooter)) : footer), player);
     }
 
     public String getHeader() {
@@ -65,7 +72,7 @@ public class TabTitleObject {
     }
 
     public TabTitleObject setHeader(String header) {
-        rawHeader = header == null ? "" : header;
+        rawHeader = header == null ? "" : header.replace("\\n", "\n");
         this.header = TitleManager.getReflectionManager().getIChatBaseComponent(rawHeader);
         return this;
     }
@@ -75,7 +82,7 @@ public class TabTitleObject {
     }
 
     public TabTitleObject setFooter(String footer) {
-        rawFooter = footer == null ? "" : footer;
+        rawFooter = footer == null ? "" : footer.replace("\\n", "\n");
         this.footer = TitleManager.getReflectionManager().getIChatBaseComponent(rawFooter);
         return this;
     }
