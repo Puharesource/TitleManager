@@ -6,10 +6,8 @@ import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
 import io.puharesource.mc.titlemanager.api.animations.TitleAnimation;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class SubBroadcast extends TMSubCommand {
     public SubBroadcast() {
@@ -23,11 +21,15 @@ public class SubBroadcast extends TMSubCommand {
             return;
         }
 
-        if (args[0].toLowerCase().contains("<nl>")||args[0].toLowerCase().contains("{nl}")) {
-            String[] lines;
-            if(args[0].toLowerCase().contains("<nl>")) lines = args[0].split("<nl>", 2);
-            if(args[0].toLowerCase().contains("{nl}")) lines = args[0].split("{nl}", 2);
-            if (lines[0].toLowerCase().startsWith("animation:") || lines[1].toLowerCase().startsWith("animation:")) {
+        if (args[0].toLowerCase().contains("<nl>") || args[0].toLowerCase().contains("{nl}")) {
+            String[] lines = null;
+            if (args[0].toLowerCase().contains("{nl}"))
+                args[0] = args[0].replace("{nl}", "<nl>");
+            if (args[0].toLowerCase().contains("<nl>"))
+                lines = args[0].split("<nl>", 2);
+            else if (args[0].toLowerCase().contains("{nl}"))
+                lines = args[0].split("\\{nl\\}", 2);
+            if (lines != null && (lines[0].toLowerCase().startsWith("animation:") || lines[1].toLowerCase().startsWith("animation:"))) {
                 FrameSequence title = null;
                 FrameSequence subtitle = null;
 
@@ -62,8 +64,7 @@ public class SubBroadcast extends TMSubCommand {
         }
 
         TitleObject object = TitleManager.generateTitleObjectFromArgs(0, args);
-        for (Player player : Bukkit.getOnlinePlayers())
-            object.send(player);
+        object.broadcast();
         if (object.getSubtitle() != null)
             sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast with the message \"" + ChatColor.RESET + object.getTitle() + ChatColor.GREEN + "\" \"" + ChatColor.RESET + object.getSubtitle() + ChatColor.GREEN + "\"");
         else

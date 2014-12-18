@@ -2,10 +2,11 @@ package io.puharesource.mc.titlemanager.api;
 
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.events.TitleEvent;
+import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class TitleObject {
+public class TitleObject implements ITitleObject {
 
     private String rawTitle;
     private String rawSubtitle;
@@ -31,6 +32,13 @@ public class TitleObject {
         this.subtitle = TitleManager.getReflectionManager().getIChatBaseComponent(subtitle);
     }
 
+    @Override
+    public void broadcast() {
+        for (Player player : Bukkit.getOnlinePlayers())
+            send(player);
+    }
+
+    @Override
     public void send(Player player) {
         final TitleEvent event = new TitleEvent(player, this);
         Bukkit.getServer().getPluginManager().callEvent(event);
