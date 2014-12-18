@@ -28,8 +28,10 @@ public class SubMessage extends TMSubCommand {
             return;
         }
 
-        if (args[1].toLowerCase().contains("<nl>")) {
-            String[] lines = args[1].split("<nl>", 2);
+        if (args[0].toLowerCase().contains("<nl>")||args[0].toLowerCase().contains("{nl}")) {
+            String[] lines;
+            if(args[0].toLowerCase().contains("<nl>")) lines = args[0].split("<nl>", 2);
+            if(args[0].toLowerCase().contains("{nl}")) lines = args[0].split("{nl}", 2);
             if (lines[0].toLowerCase().startsWith("animation:") || lines[1].toLowerCase().startsWith("animation:")) {
                 FrameSequence title = null;
                 FrameSequence subtitle = null;
