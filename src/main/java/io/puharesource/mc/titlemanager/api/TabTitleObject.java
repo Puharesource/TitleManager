@@ -72,7 +72,7 @@ public class TabTitleObject implements ITabObject {
     }
 
     public TabTitleObject setHeader(String header) {
-        rawHeader = header == null ? "" : header;
+        rawHeader = header == null ? "" : header.replace("\\n", "\n");
         this.header = TitleManager.getReflectionManager().getIChatBaseComponent(rawHeader);
         return this;
     }
@@ -82,7 +82,7 @@ public class TabTitleObject implements ITabObject {
     }
 
     public TabTitleObject setFooter(String footer) {
-        rawFooter = footer == null ? "" : footer;
+        rawFooter = footer == null ? "" : footer.replace("\\n", "\n");
         this.footer = TitleManager.getReflectionManager().getIChatBaseComponent(rawFooter);
         return this;
     }

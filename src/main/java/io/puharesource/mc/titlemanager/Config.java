@@ -146,15 +146,15 @@ public class Config {
 
                 if (headerString.toLowerCase().startsWith("animation:"))
                     header = getAnimation(headerString.substring("animation:".length()));
-                else header = ChatColor.translateAlternateColorCodes('&', headerString.replace("\\n", "\n"));
+                else header = ChatColor.translateAlternateColorCodes('&', headerString);
                 if (footerString.toLowerCase().startsWith("animation:"))
                     footer = getAnimation(footerString.substring("animation:".length()));
-                else footer = ChatColor.translateAlternateColorCodes('&', footerString.replace("\\n", "\n"));
+                else footer = ChatColor.translateAlternateColorCodes('&', footerString);
 
                 tabTitleObject = new TabTitleAnimation(header == null ? "" : header, footer == null ? "" : footer);
                 tabTitleObject.broadcast();
             } else {
-                tabTitleObject = new TabTitleObject(ChatColor.translateAlternateColorCodes('&', headerString.replace("\\n", "\n")), ChatColor.translateAlternateColorCodes('&', footerString.replace("\\n", "\n")));
+                tabTitleObject = new TabTitleObject(ChatColor.translateAlternateColorCodes('&', headerString), ChatColor.translateAlternateColorCodes('&', footerString));
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     TabTitleObject tempObject = (TabTitleObject) tabTitleObject;
                     tempObject.setHeader(TextConverter.setVariables(player, tempObject.getHeader()));
