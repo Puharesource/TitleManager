@@ -101,6 +101,9 @@ public class TitleManager {
 
         String title = ChatColor.translateAlternateColorCodes('&', sb.toString());
         String subtitle = null;
+
+        if (title.contains("{nl}"))
+            title.replace("{nl}", "<nl>");
         if (title.contains("<nl>")) {
             String[] titles = title.split("<nl>", 2);
             title = titles[0];
