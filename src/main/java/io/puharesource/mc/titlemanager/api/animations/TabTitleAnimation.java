@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.UUID;
 
-public class TabTitleAnimation implements IAnimation, ITabObject{
+public class TabTitleAnimation implements IAnimation, ITabObject {
 
     private Object header;
     private Object footer;

@@ -3,6 +3,7 @@ package io.puharesource.mc.titlemanager.listeners;
 import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TabTitleCache;
+import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,6 +22,15 @@ public class ListenerConnection implements Listener {
                 @Override
                 public void run() {
                     (event.getPlayer().hasPlayedBefore() ? Config.getWelcomeObject() : Config.getFirstWelcomeObject()).send(event.getPlayer());
+                }
+            }, 10l);
+        }
+
+        if (Config.isTabmenuEnabled() && !(Config.getTabTitleObject() instanceof IAnimation)) {
+            Bukkit.getScheduler().runTaskLater(TitleManager.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    Config.getTabTitleObject().send(event.getPlayer());
                 }
             }, 10l);
         }
