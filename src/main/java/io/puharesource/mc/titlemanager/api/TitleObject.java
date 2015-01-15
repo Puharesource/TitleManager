@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.api;
 
+import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.events.TitleEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
@@ -23,13 +24,23 @@ public class TitleObject implements ITitleObject {
             setTitle(title);
         else if (type == TitleType.SUBTITLE)
             setSubtitle(title);
+        updateTimes();
     }
 
     public TitleObject(String title, String subtitle) {
-        rawTitle = title;
-        rawSubtitle = subtitle;
-        this.title = TitleManager.getReflectionManager().getIChatBaseComponent(title);
-        this.subtitle = TitleManager.getReflectionManager().getIChatBaseComponent(subtitle);
+        setTitle(title);
+        setSubtitle(subtitle);
+        updateTimes();
+    }
+
+    private void updateTimes() {
+        if (Config.isUsingConfig()) return;
+
+        try {
+            fadeIn = Config.getConfig().getInt("welcome_message.fadeIn");
+            stay = Config.getConfig().getInt("welcome_message.stay");
+            fadeOut = Config.getConfig().getInt("welcome_message.fadeOut");
+        } catch (Exception ignored) {}
     }
 
     @Override
@@ -47,9 +58,9 @@ public class TitleObject implements ITitleObject {
 
         TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitleTimingsPacket(fadeIn, stay, fadeOut), player);
         if (rawTitle != null && title != null)
-            TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(false, (rawTitle.contains("{") && rawTitle.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawTitle)) : title), player);
+            TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(false, TextConverter.containsVariable(rawTitle) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawTitle)) : title), player);
         if (rawSubtitle != null && title != null)
-            TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(true, (rawSubtitle.contains("{") && rawSubtitle.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawSubtitle)) : subtitle), player);
+            TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructTitlePacket(true, TextConverter.containsVariable(rawSubtitle) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawSubtitle)) : subtitle), player);
     }
 
     public String getTitle() {

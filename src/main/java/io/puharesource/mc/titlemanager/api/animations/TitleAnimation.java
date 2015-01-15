@@ -95,7 +95,7 @@ public class TitleAnimation implements IAnimation, ITitleObject {
         private void send(Player p, AnimationFrame frame) {
             if (p != null) {
                 manager.sendPacket(manager.constructTitleTimingsPacket(frame.getFadeIn(), frame.getStay() + 1, frame.getFadeOut()), p);
-                manager.sendPacket(manager.constructTitlePacket(isSubtitle, (frame.getText().contains("{") && frame.getText().contains("}")) ? manager.getIChatBaseComponent(TextConverter.setVariables(player, frame.getText())) : frame.getComponentText()), p);
+                manager.sendPacket(manager.constructTitlePacket(isSubtitle, TextConverter.containsVariable(frame.getText()) ? manager.getIChatBaseComponent(TextConverter.setVariables(p, frame.getText())) : frame.getComponentText()), p);
             }
         }
     }

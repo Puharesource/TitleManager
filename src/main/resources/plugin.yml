@@ -1,5 +1,5 @@
 name: TitleManager
-version: 1.3.3
+version: ${project.version}
 author: Puharesource
 
 main: io.puharesource.mc.titlemanager.Main

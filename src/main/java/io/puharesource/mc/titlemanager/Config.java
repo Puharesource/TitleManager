@@ -1,7 +1,5 @@
 package io.puharesource.mc.titlemanager;
 
-import io.puharesource.mc.titlemanager.api.TabTitleObject;
-import io.puharesource.mc.titlemanager.api.TextConverter;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
 import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
@@ -13,12 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Config {
 
@@ -28,7 +22,7 @@ public class Config {
 
     private static ITitleObject welcomeObject;
     private static ITitleObject firstWelcomeObject;
-    private static ITabObject tabTitleObject;
+    private static TabTitleAnimation tabTitleObject;
 
     private static ConfigFile configFile;
     private static ConfigFile animationConfigFile;
@@ -152,16 +146,8 @@ public class Config {
                 else footer = ChatColor.translateAlternateColorCodes('&', footerString);
 
                 tabTitleObject = new TabTitleAnimation(header == null ? "" : header, footer == null ? "" : footer);
-                tabTitleObject.broadcast();
-            } else {
-                tabTitleObject = new TabTitleObject(ChatColor.translateAlternateColorCodes('&', headerString), ChatColor.translateAlternateColorCodes('&', footerString));
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    TabTitleObject tempObject = (TabTitleObject) tabTitleObject;
-                    tempObject.setHeader(TextConverter.setVariables(player, tempObject.getHeader()));
-                    tempObject.setFooter(TextConverter.setVariables(player, tempObject.getFooter()));
-                    tempObject.send(player);
-                }
-            }
+            } else tabTitleObject = new TabTitleAnimation(new FrameSequence(Arrays.asList(new AnimationFrame(ChatColor.translateAlternateColorCodes('&', headerString), 0, 5, 0))), new FrameSequence(Arrays.asList(new AnimationFrame(ChatColor.translateAlternateColorCodes('&', footerString), 0, 5, 0))));
+            tabTitleObject.broadcast();
         }
         if (welcomeMessageEnabled) {
             String titleString = getConfig().getString("welcome_message.title");

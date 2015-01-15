@@ -56,7 +56,7 @@ public class ActionbarTitleAnimation implements IAnimation, IActionbarObject {
 
         private void send(Player p, AnimationFrame frame) {
             if (p != null)
-                manager.sendPacket(manager.constructActionbarTitlePacket((frame.getText().contains("{") && frame.getText().contains("}")) ? manager.getIChatBaseComponent(TextConverter.setVariables(player, frame.getText())) : frame.getComponentText()), p);
+                manager.sendPacket(manager.constructActionbarTitlePacket(TextConverter.containsVariable(frame.getText()) ? manager.getIChatBaseComponent(TextConverter.setVariables(p, frame.getText())) : frame.getComponentText()), p);
         }
     }
 }

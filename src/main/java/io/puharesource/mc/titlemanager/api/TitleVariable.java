@@ -10,9 +10,6 @@ public enum TitleVariable {
     ONLINE_PLAYERS("ONLINE"),
     MAX_PLAYERS("MAX-PLAYERS"),
     BALANCE("BALANCE");
-    /* RAINBOW("{RAINBOW}"),
-    ONLINE_BUNGEE("{ONLINE: servername|ALL}"),
-    MAX_BUNGEE("{MAX: servername|ALL}");*/
 
     private String text;
 

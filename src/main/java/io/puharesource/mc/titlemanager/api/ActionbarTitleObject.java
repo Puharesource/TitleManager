@@ -27,7 +27,7 @@ public class ActionbarTitleObject implements IActionbarObject {
 
         if (event.isCancelled()) return;
 
-        TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructActionbarTitlePacket((rawTitle.contains("{") && rawTitle.contains("}")) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawTitle)) : title), player);
+        TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructActionbarTitlePacket(TextConverter.containsVariable(rawTitle) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawTitle)) : title), player);
     }
 
     public String getTitle() {

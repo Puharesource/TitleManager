@@ -67,25 +67,37 @@ public class TextConverter {
     }
 
     public static String setVariables(Player player, String text) {
-        text = replaceVariable(text, TitleVariable.PLAYER_NAME, player.getName());
-        text = replaceVariable(text, TitleVariable.DISPLAY_NAME, player.getDisplayName());
-        text = replaceVariable(text, TitleVariable.STRIPPED_DISPLAY_NAME, ChatColor.stripColor(player.getDisplayName()));
-        text = replaceVariable(text, TitleVariable.WORLD, player.getWorld().getName());
-        text = replaceVariable(text, TitleVariable.WORLD_TIME, Long.toString(player.getWorld().getTime()));
-        text = replaceVariable(text, TitleVariable.ONLINE_PLAYERS, String.valueOf(Bukkit.getOnlinePlayers().size()));
-        text = replaceVariable(text, TitleVariable.MAX_PLAYERS, String.valueOf(Bukkit.getMaxPlayers()));
-        //text = replaceVariable(text, TitleVariable.RAINBOW,/*This requires animation which is not quite done yet.*/"");
-        //text = replaceVariable(text, TitleVariable.ONLINE_BUNGEE,/*Bungee needed for this. TODO add check for bungee and add string accordingly.*/"");
-        //text = replaceVariable(text, TitleVariable.MAX_BUNGEE,/*Bungee needed for this.*/"");
-        if (TitleManager.isVaultEnabled()) {
-            if (TitleManager.getEconomy() != null) {
-                text = replaceVariable(text, TitleVariable.BALANCE, String.valueOf(TitleManager.getEconomy().getBalance(player)));
-            }
-            if (TitleManager.getPermissions() != null) {
-                text = replaceVariable(text, TitleVariable.GROUP_NAME, TitleManager.getPermissions().getPrimaryGroup(player));
+        if (!text.contains("{") && !text.contains("}")) return text;
+
+        if (player != null) {
+            text = replaceVariable(text, TitleVariable.PLAYER_NAME, player.getName());
+            text = replaceVariable(text, TitleVariable.DISPLAY_NAME, player.getDisplayName());
+            text = replaceVariable(text, TitleVariable.STRIPPED_DISPLAY_NAME, ChatColor.stripColor(player.getDisplayName()));
+            text = replaceVariable(text, TitleVariable.WORLD, player.getWorld().getName());
+            text = replaceVariable(text, TitleVariable.WORLD_TIME, Long.toString(player.getWorld().getTime()));
+
+            if (TitleManager.isVaultEnabled()) {
+                if (TitleManager.getEconomy() != null)
+                    text = replaceVariable(text, TitleVariable.BALANCE, String.valueOf(TitleManager.getEconomy().getBalance(player)));
+
+                if (TitleManager.getPermissions() != null)
+                    text = replaceVariable(text, TitleVariable.GROUP_NAME, TitleManager.getPermissions().getPrimaryGroup(player));
             }
         }
+
+        text = replaceVariable(text, TitleVariable.ONLINE_PLAYERS, String.valueOf(Bukkit.getOnlinePlayers().size()));
+        text = replaceVariable(text, TitleVariable.MAX_PLAYERS, String.valueOf(Bukkit.getMaxPlayers()));
+
         return text;
+    }
+
+    public static boolean containsVariable(String str, String... strings) {
+        if (str != null && (str.contains("{") || str.contains("}"))) return true;
+
+        for (String str0 : strings)
+            if (str0.contains("{") || str0.contains("}")) return true;
+
+        return false;
     }
 
     private static String replaceVariable(String text, String variable, String replacement) {

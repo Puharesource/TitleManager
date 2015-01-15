@@ -63,8 +63,8 @@ public class TabTitleObject implements ITabObject {
             setFooter("");
 
         TitleManager.getReflectionManager().sendPacket(TitleManager.getReflectionManager().constructHeaderAndFooterPacket(
-                (rawHeader != null && (rawHeader.contains("{") || rawHeader.contains("}"))) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawHeader)) : header,
-                (rawFooter != null && (rawFooter.contains("{") || rawFooter.contains("}"))) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawFooter)) : footer), player);
+                TextConverter.containsVariable(rawHeader) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawHeader)) : header,
+                TextConverter.containsVariable(rawFooter) ? TitleManager.getReflectionManager().getIChatBaseComponent(TextConverter.setVariables(player, rawFooter)) : footer), player);
     }
 
     public String getHeader() {
