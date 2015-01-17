@@ -32,7 +32,7 @@ public class SubAMessage extends TMSubCommand {
             String str = args[1].substring("animation:".length());
             FrameSequence sequence = Config.getAnimation(str);
             if (sequence != null) {
-                new ActionbarTitleAnimation(sequence).broadcast();
+                new ActionbarTitleAnimation(sequence).send(player);
                 sender.sendMessage(ChatColor.GREEN + "You have sent an actionbar animation to " + player.getName() + ".");
             } else sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
             return;

@@ -55,7 +55,7 @@ public class SubMessage extends TMSubCommand {
                     }
                 }
                 new TitleAnimation(title == null ? lines[1] : title, subtitle == null ? lines[2] : subtitle).send(player);
-                sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast animation.");
+                sender.sendMessage(ChatColor.GREEN + "You have sent an animation to " + player.getName() + ".");
                 return;
             }
         } else if (args[1].toLowerCase().startsWith("animation:")) {
@@ -63,7 +63,7 @@ public class SubMessage extends TMSubCommand {
             FrameSequence animation = Config.getAnimation(str);
             if (animation != null) {
                 new TitleAnimation(animation, "").send(player);
-                sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast animation.");
+                sender.sendMessage(ChatColor.GREEN + "You have sent an animation to " + player.getName() + ".");
             } else sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
             return;
         }
