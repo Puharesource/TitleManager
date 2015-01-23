@@ -28,18 +28,25 @@ public class SubMessage extends TMSubCommand {
             return;
         }
 
-        if (args[0].toLowerCase().contains("<nl>") || args[0].toLowerCase().contains("{nl}")) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 1; args.length > i; i++)
+            sb.append(i == args.length - 1 ? args[i] : args[i] + " ");
+
+        String argsString = sb.toString();
+
+        if (argsString.toLowerCase().contains("<nl>") || argsString.toLowerCase().contains("{nl}")) {
             String[] lines = null;
-            if (args[0].toLowerCase().contains("{nl}"))
-                args[0] = args[0].replace("{nl}", "<nl>");
-            if (args[0].toLowerCase().contains("<nl>"))
-                lines = args[0].split("<nl>", 2);
+            if (argsString.toLowerCase().contains("{nl}"))
+                argsString = argsString.replace("{nl}", "<nl>");
+            if (argsString.toLowerCase().contains("<nl>"))
+                lines = argsString.split("<nl>", 2);
             if (lines != null && (lines[0].toLowerCase().startsWith("animation:") || lines[1].toLowerCase().startsWith("animation:"))) {
                 FrameSequence title = null;
                 FrameSequence subtitle = null;
 
-                if (lines[1].toLowerCase().startsWith("animation:")) {
-                    String str = lines[1].substring("animation:".length());
+                if (lines[0].toLowerCase().startsWith("animation:")) {
+                    String str = lines[0].substring("animation:".length());
                     title = Config.getAnimation(str);
                     if (title == null) {
                         sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
@@ -54,7 +61,7 @@ public class SubMessage extends TMSubCommand {
                         return;
                     }
                 }
-                new TitleAnimation(title == null ? lines[1] : title, subtitle == null ? lines[2] : subtitle).send(player);
+                new TitleAnimation(title == null ? lines[0] : title, subtitle == null ? lines[1] : subtitle).send(player);
                 sender.sendMessage(ChatColor.GREEN + "You have sent an animation to " + player.getName() + ".");
                 return;
             }
