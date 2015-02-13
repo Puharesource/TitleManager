@@ -4,9 +4,11 @@ subprojects {
     apply plugin: 'idea'
     apply plugin: 'groovy'
 
-    group = "io.puharesource.mc"
+    group = 'io.puharesource.mc'
     version = ''
 
+    compileJava.options.encoding = 'UTF-8'
+    
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
 
