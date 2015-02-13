@@ -1,5 +1,9 @@
 package io.puharesource.mc.titlemanager.api;
 
+/**
+ * The variable class.
+ * This class consists of all of the placeholders that TitleManager offers.
+ */
 public enum TitleVariable {
     PLAYER_NAME("PLAYER"),
     DISPLAY_NAME("DISPLAYNAME"),

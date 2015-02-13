@@ -6,6 +6,9 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * This event fires whenever a player is sent an actionbar message.
+ */
 public class ActionbarEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
@@ -38,14 +41,24 @@ public class ActionbarEvent extends Event implements Cancellable {
         cancelled = shouldCancel;
     }
 
+    /**
+     * @return The player that is going to receive the actionbar message.
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * @return The object being sent.
+     */
     public ActionbarTitleObject getTitleObject() {
         return titleObject;
     }
 
+    /**
+     * This sets the actionbar object to something different.
+     * @param titleObject The new object.
+     */
     public void setTitleObject(ActionbarTitleObject titleObject) {
         this.titleObject = titleObject;
     }

@@ -11,22 +11,22 @@ import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
 public class ReflectionManager {
-    final static Pattern BRAND = Pattern.compile("(v|)[0-9][_.][0-9][_.][R0-9]*");
+    
+    private static ReflectionManager instance;
+    
+    private final Pattern BRAND = Pattern.compile("(v|)[0-9][_.][0-9][_.][R0-9]*");
 
-    final static String CRAFTBUKKIT_PATH = "org.bukkit.craftbukkit.";
-    final static String NMS_PATH = "net.minecraft.server.";
+    private final Class<?> CLASS_ChatSerializer;
+    private final Class<?> CLASS_IChatBaseComponent;
+    private final Class<?> CLASS_CraftPlayer;
+    private final Class<?> CLASS_EntityPlayer;
+    private final Class<?> CLASS_PacketPlayOutTitle;
+    private final Class<?> CLASS_PacketPlayOutChat;
+    private final Class<?> CLASS_PacketPlayOutPlayerListHeaderFooter;
+    private final Class<?> CLASS_EnumTitleAction;
+    private final Class<?> CLASS_Packet;
 
-    final Class<?> CLASS_ChatSerializer;
-    final Class<?> CLASS_IChatBaseComponent;
-    final Class<?> CLASS_CraftPlayer;
-    final Class<?> CLASS_EntityPlayer;
-    final Class<?> CLASS_PacketPlayOutTitle;
-    final Class<?> CLASS_PacketPlayOutChat;
-    final Class<?> CLASS_PacketPlayOutPlayerListHeaderFooter;
-    final Class<?> CLASS_EnumTitleAction;
-    final Class<?> CLASS_Packet;
-
-    public ReflectionManager() throws ClassNotFoundException {
+    protected ReflectionManager() throws ClassNotFoundException {
         CLASS_ChatSerializer = getNMSClass("ChatSerializer");
         CLASS_IChatBaseComponent = getNMSClass("IChatBaseComponent");
         CLASS_CraftPlayer = getCraftbukkitClass("entity.CraftPlayer");
@@ -38,15 +38,27 @@ public class ReflectionManager {
         CLASS_Packet = getNMSClass("Packet");
     }
 
-    public static Class<?> getCraftbukkitClass(String path) throws ClassNotFoundException {
-        return Class.forName(CRAFTBUKKIT_PATH + getServerVersion() + path);
+    public static ReflectionManager getInstance() {
+        try {
+            return instance == null ? instance = new ReflectionManager() : instance;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            TitleManager.getPlugin().getLogger().warning("Failed to load TitleManager classes! Please update to the latest version of Spigot/Craftbukkit!");
+            TitleManager.getPlugin().getLogger().warning("If you're using the 1.7/1.8 Protocol Hack version of Spigot, please downgrade to version 1.1.X");
+            Bukkit.getPluginManager().disablePlugin(TitleManager.getPlugin());
+            return null;
+        }
     }
 
-    public static Class<?> getNMSClass(String path) throws ClassNotFoundException {
-        return Class.forName(NMS_PATH + getServerVersion() + path);
+    public Class<?> getCraftbukkitClass(String path) throws ClassNotFoundException {
+        return Class.forName("org.bukkit.craftbukkit." + getServerVersion() + path);
     }
 
-    public static String getServerVersion() {
+    public Class<?> getNMSClass(String path) throws ClassNotFoundException {
+        return Class.forName("net.minecraft.server." + getServerVersion() + path);
+    }
+
+    public String getServerVersion() {
         String version;
         String pkg = Bukkit.getServer().getClass().getPackage().getName();
         String version0 = pkg.substring(pkg.lastIndexOf('.') + 1);
@@ -56,7 +68,7 @@ public class ReflectionManager {
         return !version.isEmpty() ? version + "." : "";
     }
 
-    public static Method getMethod(String methodName, Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
+    public Method getMethod(String methodName, Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
         main:
         for (Method method : clazz.getMethods()) {
             if (!method.getName().equals(methodName) || method.getParameterTypes().length != params.length) continue;
@@ -67,7 +79,7 @@ public class ReflectionManager {
         throw new NoSuchMethodException("Couldn't find method \"" + methodName + "\" for " + clazz.getName() + ".");
     }
 
-    public static Method getDeclaredMethod(String methodName, Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
+    public Method getDeclaredMethod(String methodName, Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
         main:
         for (Method method : clazz.getDeclaredMethods()) {
             if (!method.getName().equals(methodName) || method.getParameterTypes().length != params.length) continue;
@@ -79,7 +91,7 @@ public class ReflectionManager {
         throw new NoSuchMethodException("Couldn't find declared method \"" + methodName + "\" for " + clazz.getName() + ".");
     }
 
-    public static Constructor getConstructor(Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
+    public Constructor getConstructor(Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
         main:
         for (Constructor constructor : clazz.getConstructors()) {
             if (constructor.getParameterTypes().length != params.length) continue;

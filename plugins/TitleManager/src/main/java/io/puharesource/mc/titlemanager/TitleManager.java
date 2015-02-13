@@ -13,12 +13,10 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 
 public class TitleManager {
 
     private static Main plugin;
-    private static ReflectionManager reflectionManager;
 
     private static Economy economy;
     private static Permission permissions;
@@ -39,28 +37,13 @@ public class TitleManager {
 
     public static void load(Main plugin) {
         TitleManager.plugin = plugin;
-        try {
-            reflectionManager = new ReflectionManager();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            plugin.getLogger().log(Level.SEVERE, "Failed to load NMS classes, please update to the latest version of Spigot! Disabling plugin...");
-            plugin.getPluginLoader().disablePlugin(plugin);
-        }
 
         if (isVaultEnabled()) {
-            if (!setupEconomy()) {
+            if (!setupEconomy())
                 plugin.getLogger().warning("There's no economy plugin hooked into vault! Disabling economy based variables.");
-            }
-            if (!setupPermissions()) {
+            if (!setupPermissions())
                 plugin.getLogger().warning("There's no permissions plugin hooked into vault! Disabling permissions based variables!");
-            }
-        } else {
-            plugin.getLogger().warning("Vault is not enabled! Disabling permissions and economy based variables!");
-        }
-    }
-
-    public static ReflectionManager getReflectionManager() {
-        return reflectionManager;
+        } else plugin.getLogger().warning("Vault is not enabled! Disabling permissions and economy based variables!");
     }
 
     public static TitleObject generateTitleObjectFromArgs(int offset, String[] args) {
@@ -96,14 +79,14 @@ public class TitleManager {
                     continue;
                 }
             }
-            sb.append(" " + args[i]);
+            sb.append(" ").append(args[i]);
         }
 
         String title = ChatColor.translateAlternateColorCodes('&', sb.toString());
         String subtitle = null;
 
         if (title.contains("{nl}"))
-            title.replace("{nl}", "<nl>");
+            title = title.replace("{nl}", "<nl>");
         if (title.contains("<nl>")) {
             String[] titles = title.split("<nl>", 2);
             title = titles[0];
@@ -139,7 +122,7 @@ public class TitleManager {
     public static String combineArray(int offset, String[] array) {
         StringBuilder sb = new StringBuilder(array[offset]);
         for (int i = offset + 1; array.length > i; i++)
-            sb.append(" " + array[i]);
+            sb.append(" ").append(array[i]);
         return ChatColor.translateAlternateColorCodes('&', sb.toString());
     }
 

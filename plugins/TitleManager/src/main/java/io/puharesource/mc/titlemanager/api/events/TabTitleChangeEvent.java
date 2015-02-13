@@ -38,14 +38,24 @@ public class TabTitleChangeEvent extends Event implements Cancellable {
         cancelled = shouldCancel;
     }
 
+    /**
+     * @return The player that is going to receive the tabtitle change.
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * @return The object being sent.
+     */
     public TabTitleObject getTitleObject() {
         return titleObject;
     }
 
+    /**
+     * This sets the tabtitle object to something different.
+     * @param titleObject The new object.
+     */
     public void setTitleObject(TabTitleObject titleObject) {
         this.titleObject = titleObject;
     }

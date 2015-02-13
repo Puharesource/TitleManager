@@ -47,7 +47,7 @@ public class TextConverter {
                 default:
                     if (c < ' ') {
                         t = "000" + Integer.toHexString(c);
-                        sb.append("\\u" + t.substring(t.length() - 4));
+                        sb.append("\\u").append(t.substring(t.length() - 4));
                     } else sb.append(c);
             }
         }

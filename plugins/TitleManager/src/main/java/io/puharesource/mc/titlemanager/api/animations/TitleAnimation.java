@@ -10,9 +10,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+/**
+ * This is the title animation.
+ * It can send a sequence of actionbar messages to the player, making it look like an animation.
+ */
 public class TitleAnimation implements IAnimation, ITitleObject {
 
-    private ReflectionManager manager = TitleManager.getReflectionManager();
     private Object title;
     private Object subtitle;
 
@@ -29,7 +32,6 @@ public class TitleAnimation implements IAnimation, ITitleObject {
     }
 
     public TitleAnimation(Object title, Object subtitle) {
-        manager = TitleManager.getReflectionManager();
         this.title = title;
         this.subtitle = subtitle;
     }
@@ -93,6 +95,7 @@ public class TitleAnimation implements IAnimation, ITitleObject {
         }
 
         private void send(Player p, AnimationFrame frame) {
+            ReflectionManager manager = ReflectionManager.getInstance();
             if (p != null) {
                 manager.sendPacket(manager.constructTitleTimingsPacket(frame.getFadeIn(), frame.getStay() + 1, frame.getFadeOut()), p);
                 manager.sendPacket(manager.constructTitlePacket(isSubtitle, TextConverter.containsVariable(frame.getText()) ? manager.getIChatBaseComponent(TextConverter.setVariables(p, frame.getText())) : frame.getComponentText()), p);

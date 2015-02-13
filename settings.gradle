@@ -1,4 +1,4 @@
-rootProject.name = 'TitleManager'
+rootProject.name = 'TitleManager-Main'
 
 include 'plugins/TitleManager'
 rootProject.children.find { it.name == 'plugins/TitleManager' }.name = 'TitleManager'

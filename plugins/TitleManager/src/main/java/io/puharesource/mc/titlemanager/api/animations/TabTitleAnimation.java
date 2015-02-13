@@ -11,6 +11,10 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.UUID;
 
+/**
+ * This is the actionbar title animation.
+ * It can send a sequence of actionbar messages to the player, making it look like an animation.
+ */
 public class TabTitleAnimation implements IAnimation, ITabObject {
 
     private Object header;

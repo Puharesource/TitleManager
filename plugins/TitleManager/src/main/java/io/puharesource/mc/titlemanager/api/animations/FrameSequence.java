@@ -2,6 +2,10 @@ package io.puharesource.mc.titlemanager.api.animations;
 
 import java.util.List;
 
+/**
+ * This class is similar to a list, in which it stores a sequence of AnimationFrame's.
+ * This class is used in all types of animations.
+ */
 public class FrameSequence {
 
     private int fadeIn;

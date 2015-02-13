@@ -1,7 +1,10 @@
 package io.puharesource.mc.titlemanager.api.animations;
 
-import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.ReflectionManager;
 
+/**
+ * This is a frame used in every type of animation.
+ */
 public class AnimationFrame {
 
     private String rawText;
@@ -24,7 +27,7 @@ public class AnimationFrame {
 
     public void setText(String text) {
         rawText = text;
-        componentText = TitleManager.getReflectionManager().getIChatBaseComponent(text);
+        componentText = ReflectionManager.getInstance().getIChatBaseComponent(text);
     }
 
     public Object getComponentText() {
