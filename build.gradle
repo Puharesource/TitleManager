@@ -1,0 +1,53 @@
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'idea'
+    apply plugin: 'groovy'
+
+    group = "io.puharesource.mc"
+    version = ''
+
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+
+    sourceSets {
+        main {
+            java {
+                srcDir 'src/main/java'
+            }
+            resources {
+                srcDir 'src/main/resources'
+            }
+        }
+    }
+
+    task copyToJars(dependsOn: 'build', type: Copy) {
+        from 'build/libs/'
+        into "../../jars/"
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+
+        maven {
+            name 'Spigot'
+            url 'https://hub.spigotmc.org/nexus/content/groups/public/'
+        }
+
+        maven {
+            name 'Vault'
+            url 'http://nexus.theyeticave.net/content/repositories/pub_releases'
+        }
+    }
+
+    dependencies {
+        compile 'org.bukkit:bukkit:1.8-R0.1-SNAPSHOT'
+
+        testCompile group: 'junit', name: 'junit', version: '4.11'
+    }
+
+    artifacts {
+        archives jar
+    }
+}

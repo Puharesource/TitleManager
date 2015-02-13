@@ -36,6 +36,9 @@ Icon
 .Spotlight-V100
 .Trashes
 
-target/
-forum-resources/
+plugins/*/plugins/*
+plugins/*/build/*
+.gradle/
+.idea/
 *.iml
+jars/
