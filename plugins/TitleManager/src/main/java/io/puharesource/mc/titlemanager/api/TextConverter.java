@@ -1,9 +1,15 @@
 package io.puharesource.mc.titlemanager.api;
 
+import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 public class TextConverter {
     public static String convert(String text) {
@@ -77,10 +83,10 @@ public class TextConverter {
             text = replaceVariable(text, TitleVariable.WORLD_TIME, Long.toString(player.getWorld().getTime()));
 
             if (TitleManager.isVaultEnabled()) {
-                if (TitleManager.getEconomy() != null)
-                    text = replaceVariable(text, TitleVariable.BALANCE, String.valueOf(TitleManager.getEconomy().getBalance(player)));
+                if (TitleManager.isEconomySupported())
+                    text = replaceVariable(text, TitleVariable.BALANCE, Config.isNumberFormatEnabled() ?  formatNumber(TitleManager.getEconomy().getBalance(player)) : String.valueOf(TitleManager.getEconomy().getBalance(player)));
 
-                if (TitleManager.getPermissions() != null)
+                if (TitleManager.isPermissionsSupported())
                     text = replaceVariable(text, TitleVariable.GROUP_NAME, TitleManager.getPermissions().getPrimaryGroup(player));
             }
         }
@@ -112,5 +118,14 @@ public class TextConverter {
 
     private static String replaceVariable(String text, TitleVariable variable, String replacement) {
         return replaceVariable(text, variable.getText(), replacement);
+    }
+    
+    private static String formatNumber(double number) {
+        return formatNumber(new BigDecimal(number));
+    }
+    
+    private static String formatNumber(BigDecimal number) {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        return new DecimalFormat(Config.getNumberFormat(), symbols).format(number);
     }
 }

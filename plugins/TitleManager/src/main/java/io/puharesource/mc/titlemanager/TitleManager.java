@@ -20,6 +20,8 @@ public class TitleManager {
 
     private static Economy economy;
     private static Permission permissions;
+    private static boolean economySupported;
+    private static boolean permissionsSupported;
 
     private static List<Integer> runningAnimations = Collections.synchronizedList(new ArrayList<Integer>());
 
@@ -37,12 +39,14 @@ public class TitleManager {
 
     public static void load(Main plugin) {
         TitleManager.plugin = plugin;
-
+        
         if (isVaultEnabled()) {
-            if (!setupEconomy())
+            if (!setupEconomy() || !economy.isEnabled())
                 plugin.getLogger().warning("There's no economy plugin hooked into vault! Disabling economy based variables.");
-            if (!setupPermissions())
+            else economySupported = true;
+            if (!setupPermissions() || !permissions.isEnabled() || !permissions.hasGroupSupport())
                 plugin.getLogger().warning("There's no permissions plugin hooked into vault! Disabling permissions based variables!");
+            else permissionsSupported = true;
         } else plugin.getLogger().warning("Vault is not enabled! Disabling permissions and economy based variables!");
     }
 
@@ -159,7 +163,16 @@ public class TitleManager {
 
     private static boolean setupPermissions() {
         RegisteredServiceProvider<Permission> rsp = Bukkit.getServer().getServicesManager().getRegistration(Permission.class);
+        if (rsp == null) return false;
         permissions = rsp.getProvider();
         return permissions != null;
+    }
+
+    public static boolean isEconomySupported() {
+        return economySupported;
+    }
+
+    public static boolean isPermissionsSupported() {
+        return permissionsSupported;
     }
 }

@@ -1,9 +1,9 @@
 usingConfig: true
-config-version: 1
+config-version: 2
 
 tabmenu:
   enabled: true
-  header: '&3MyServer'
+  header: '&3MyServer\n&bSecond line!\n&fThird line!'
   footer: 'animation:test1'
 welcome_message:
   enabled: true
@@ -14,4 +14,7 @@ welcome_message:
   fadeOut: -1
   first-join:
     title: '&5Welcome to MyServer {PLAYER}'
-    subtitle: '&dHope you will enjoy your stay here!'
+    subtitle: '&dHope you enjoy your stay!'
+number-format:
+  enabled: true
+  format: '#,###.##'

@@ -19,10 +19,13 @@ public class Config {
     private static boolean usingConfig;
     private static boolean tabmenuEnabled;
     private static boolean welcomeMessageEnabled;
+    private static boolean numberFormatEnabled;
 
     private static ITitleObject welcomeObject;
     private static ITitleObject firstWelcomeObject;
     private static TabTitleAnimation tabTitleObject;
+    
+    private static String numberFormat;
 
     private static ConfigFile configFile;
     private static ConfigFile animationConfigFile;
@@ -85,6 +88,16 @@ public class Config {
             saveConfig();
         }
 
+        if (config.getInt("config-version") == 1) {
+            config.set("config-version", 2);
+            ConfigurationSection section = config.createSection("number-format");
+            section.set("enabled", true);
+            section.set("format", "#,###.##");
+            config.set("number-format", section);
+            
+            saveConfig();
+        }
+        
         plugin.reloadConfig();
         loadSettings();
     }
@@ -130,6 +143,7 @@ public class Config {
 
         tabmenuEnabled = getConfig().getBoolean("tabmenu.enabled");
         welcomeMessageEnabled = getConfig().getBoolean("welcome_message.enabled");
+        numberFormatEnabled = getConfig().getBoolean("number-format.enabled");
 
         if (tabmenuEnabled) {
             String headerString = getConfig().getString("tabmenu.header");
@@ -188,6 +202,9 @@ public class Config {
                         .setFadeIn(getConfig().getInt("welcome_message.fadeIn")).setStay(getConfig().getInt("welcome_message.stay")).setFadeOut(getConfig().getInt("welcome_message.fadeOut"));
             }
         }
+        
+        if (numberFormatEnabled)
+            numberFormat = configFile.getConfig().getString("number-format.format");
     }
 
     public static void reloadConfig() {
@@ -242,5 +259,13 @@ public class Config {
 
     public static boolean isWelcomeMessageEnabled() {
         return welcomeMessageEnabled;
+    }
+
+    public static boolean isNumberFormatEnabled() {
+        return numberFormatEnabled;
+    }
+
+    public static String getNumberFormat() {
+        return numberFormat;
     }
 }
