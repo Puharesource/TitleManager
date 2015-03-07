@@ -43,7 +43,7 @@ subprojects {
     }
 
     dependencies {
-        compile 'org.bukkit:bukkit:1.8-R0.1-SNAPSHOT'
+        compile 'org.bukkit:bukkit:1.8.3-R0.1-SNAPSHOT'
 
         testCompile group: 'junit', name: 'junit', version: '4.11'
     }

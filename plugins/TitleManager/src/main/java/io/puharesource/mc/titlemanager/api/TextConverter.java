@@ -12,55 +12,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 public class TextConverter {
-    public static String convert(String text) {
-        if (text == null || text.length() == 0)
-            return "\"\"";
-
-        char c;
-        int i;
-        int len = text.length();
-        StringBuilder sb = new StringBuilder(len + 4);
-        String t;
-
-        sb.append('"');
-        for (i = 0; i < len; i += 1) {
-            c = text.charAt(i);
-            switch (c) {
-                case '\\':
-                case '"':
-                    sb.append('\\');
-                    sb.append(c);
-                    break;
-                case '/':
-                    sb.append('\\');
-                    sb.append(c);
-                    break;
-                case '\b':
-                    sb.append("\\b");
-                    break;
-                case '\t':
-                    sb.append("\\t");
-                    break;
-                case '\n':
-                    sb.append("\\n");
-                    break;
-                case '\f':
-                    sb.append("\\f");
-                    break;
-                case '\r':
-                    sb.append("\\r");
-                    break;
-                default:
-                    if (c < ' ') {
-                        t = "000" + Integer.toHexString(c);
-                        sb.append("\\u").append(t.substring(t.length() - 4));
-                    } else sb.append(c);
-            }
-        }
-        sb.append('"');
-        return sb.toString();
-    }
-
     /**
      * @deprecated Because it is the inferior method and replaces fewer variables.
      */
@@ -83,10 +34,11 @@ public class TextConverter {
             text = replaceVariable(text, TitleVariable.WORLD_TIME, Long.toString(player.getWorld().getTime()));
 
             if (TitleManager.isVaultEnabled()) {
-                if (TitleManager.isEconomySupported())
-                    text = replaceVariable(text, TitleVariable.BALANCE, Config.isNumberFormatEnabled() ?  formatNumber(TitleManager.getEconomy().getBalance(player)) : String.valueOf(TitleManager.getEconomy().getBalance(player)));
+                if (TitleManager.isEconomySupported()) {
+                    text = replaceVariable(text, TitleVariable.BALANCE, Config.isNumberFormatEnabled() ? formatNumber(TitleManager.getEconomy().getBalance(player)) : String.valueOf(TitleManager.getEconomy().getBalance(player)));
+                }
 
-                if (TitleManager.isPermissionsSupported())
+                if (TitleManager.isPermissionsSupported() && TitleManager.getPermissions().hasGroupSupport())
                     text = replaceVariable(text, TitleVariable.GROUP_NAME, TitleManager.getPermissions().getPrimaryGroup(player));
             }
         }

@@ -1,6 +1,5 @@
 package io.puharesource.mc.titlemanager;
 
-import io.puharesource.mc.titlemanager.api.TextConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -14,12 +13,11 @@ public class ReflectionManager {
     
     private static ReflectionManager instance;
     
-    private final Pattern BRAND = Pattern.compile("(v|)[0-9][_.][0-9][_.][R0-9]*");
+    private static final Pattern BRAND = Pattern.compile("(v|)[0-9][_.][0-9][_.][R0-9]*");
 
-    private final Class<?> CLASS_ChatSerializer;
+    private final Class<?> CLASS_ChatComponentText;
     private final Class<?> CLASS_IChatBaseComponent;
     private final Class<?> CLASS_CraftPlayer;
-    private final Class<?> CLASS_EntityPlayer;
     private final Class<?> CLASS_PacketPlayOutTitle;
     private final Class<?> CLASS_PacketPlayOutChat;
     private final Class<?> CLASS_PacketPlayOutPlayerListHeaderFooter;
@@ -27,14 +25,13 @@ public class ReflectionManager {
     private final Class<?> CLASS_Packet;
 
     protected ReflectionManager() throws ClassNotFoundException {
-        CLASS_ChatSerializer = getNMSClass("ChatSerializer");
+        CLASS_ChatComponentText = getNMSClass("ChatComponentText");
         CLASS_IChatBaseComponent = getNMSClass("IChatBaseComponent");
         CLASS_CraftPlayer = getCraftbukkitClass("entity.CraftPlayer");
-        CLASS_EntityPlayer = getNMSClass("EntityPlayer");
         CLASS_PacketPlayOutTitle = getNMSClass("PacketPlayOutTitle");
         CLASS_PacketPlayOutChat = getNMSClass("PacketPlayOutChat");
         CLASS_PacketPlayOutPlayerListHeaderFooter = getNMSClass("PacketPlayOutPlayerListHeaderFooter");
-        CLASS_EnumTitleAction = getNMSClass("EnumTitleAction");
+        CLASS_EnumTitleAction = getNMSClass("PacketPlayOutTitle$EnumTitleAction");
         CLASS_Packet = getNMSClass("Packet");
     }
 
@@ -43,6 +40,7 @@ public class ReflectionManager {
             return instance == null ? instance = new ReflectionManager() : instance;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            TitleManager.getPlugin().getLogger().warning("Debug Info> " + getServerVersion());
             TitleManager.getPlugin().getLogger().warning("Failed to load TitleManager classes! Please update to the latest version of Spigot/Craftbukkit!");
             TitleManager.getPlugin().getLogger().warning("If you're using the 1.7/1.8 Protocol Hack version of Spigot, please downgrade to version 1.1.X");
             Bukkit.getPluginManager().disablePlugin(TitleManager.getPlugin());
@@ -58,7 +56,7 @@ public class ReflectionManager {
         return Class.forName("net.minecraft.server." + getServerVersion() + path);
     }
 
-    public String getServerVersion() {
+    public static String getServerVersion() {
         String version;
         String pkg = Bukkit.getServer().getClass().getPackage().getName();
         String version0 = pkg.substring(pkg.lastIndexOf('.') + 1);
@@ -104,8 +102,9 @@ public class ReflectionManager {
 
     public Object getIChatBaseComponent(String text) {
         try {
-            return getMethod("a", CLASS_ChatSerializer, String.class).invoke(null, TextConverter.convert(text));
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            Constructor constructor = getConstructor(CLASS_ChatComponentText, String.class);
+            return constructor.newInstance(text);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | InstantiationException e) {
             e.printStackTrace();
         }
         return null;

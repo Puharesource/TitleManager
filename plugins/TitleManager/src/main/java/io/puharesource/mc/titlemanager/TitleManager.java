@@ -41,10 +41,10 @@ public class TitleManager {
         TitleManager.plugin = plugin;
         
         if (isVaultEnabled()) {
-            if (!setupEconomy() || !economy.isEnabled())
+            if (!setupEconomy())
                 plugin.getLogger().warning("There's no economy plugin hooked into vault! Disabling economy based variables.");
             else economySupported = true;
-            if (!setupPermissions() || !permissions.isEnabled() || !permissions.hasGroupSupport())
+            if (!setupPermissions())
                 plugin.getLogger().warning("There's no permissions plugin hooked into vault! Disabling permissions based variables!");
             else permissionsSupported = true;
         } else plugin.getLogger().warning("Vault is not enabled! Disabling permissions and economy based variables!");
