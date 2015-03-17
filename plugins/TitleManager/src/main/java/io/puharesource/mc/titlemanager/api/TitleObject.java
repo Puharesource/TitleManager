@@ -74,7 +74,7 @@ public class TitleObject implements ITitleObject {
         manager.sendPacket(manager.constructTitleTimingsPacket(fadeIn, stay, fadeOut), player);
         if (rawTitle != null && title != null)
             manager.sendPacket(manager.constructTitlePacket(false, TextConverter.containsVariable(rawTitle) ? manager.getIChatBaseComponent(TextConverter.setVariables(player, rawTitle)) : title), player);
-        if (rawSubtitle != null && title != null)
+        if (rawSubtitle != null && subtitle != null)
             manager.sendPacket(manager.constructTitlePacket(true, TextConverter.containsVariable(rawSubtitle) ? manager.getIChatBaseComponent(TextConverter.setVariables(player, rawSubtitle)) : subtitle), player);
     }
 
