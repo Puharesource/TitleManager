@@ -1,14 +1,11 @@
 package io.puharesource.mc.titlemanager.api.animations;
 
-import io.puharesource.mc.titlemanager.ReflectionManager;
-
 /**
  * This is a frame used in every type of animation.
  */
 public class AnimationFrame {
 
-    private String rawText;
-    private Object componentText;
+    private String text;
 
     private int fadeIn = -1;
     private int stay = -1;
@@ -22,16 +19,11 @@ public class AnimationFrame {
     }
 
     public String getText() {
-        return rawText;
+        return text;
     }
 
     public void setText(String text) {
-        rawText = text;
-        componentText = ReflectionManager.getInstance().getIChatBaseComponent(text);
-    }
-
-    public Object getComponentText() {
-        return componentText;
+        this.text = text;
     }
 
     public int getFadeIn() {

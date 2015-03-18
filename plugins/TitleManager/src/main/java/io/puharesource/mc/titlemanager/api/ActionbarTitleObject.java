@@ -1,8 +1,10 @@
 package io.puharesource.mc.titlemanager.api;
 
-import io.puharesource.mc.titlemanager.ReflectionManager;
 import io.puharesource.mc.titlemanager.api.events.ActionbarEvent;
 import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
+import io.puharesource.mc.titlemanager.backend.packet.ActionbarTitlePacket;
+import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
+import io.puharesource.mc.titlemanager.backend.variables.PluginVariable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -11,8 +13,7 @@ import org.bukkit.entity.Player;
  * It is used whenever both in actionbar animations and simply for displaying a message above the actionbar.
  */
 public class ActionbarTitleObject implements IActionbarObject {
-    private String rawTitle;
-    private Object title;
+    private String title;
 
     public ActionbarTitleObject(String title) {
         setTitle(title);
@@ -30,18 +31,17 @@ public class ActionbarTitleObject implements IActionbarObject {
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) return;
-        
-        ReflectionManager manager = ReflectionManager.getInstance();
 
-        manager.sendPacket(manager.constructActionbarTitlePacket(TextConverter.containsVariable(rawTitle) ? manager.getIChatBaseComponent(TextConverter.setVariables(player, rawTitle)) : title), player);
+        TMPlayer tmPlayer = new TMPlayer(player);
+
+        tmPlayer.sendPacket(new ActionbarTitlePacket(TextConverter.containsVariable(title) ? PluginVariable.replace(player, title) : title));
     }
 
     public String getTitle() {
-        return rawTitle;
+        return title;
     }
 
     public void setTitle(String title) {
-        rawTitle = title;
-        this.title = ReflectionManager.getInstance().getIChatBaseComponent(title);
+        this.title = title;
     }
 }

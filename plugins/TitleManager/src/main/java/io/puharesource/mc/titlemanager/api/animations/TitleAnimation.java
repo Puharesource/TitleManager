@@ -1,10 +1,13 @@
 package io.puharesource.mc.titlemanager.api.animations;
 
-import io.puharesource.mc.titlemanager.ReflectionManager;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TextConverter;
+import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.backend.packet.TitlePacket;
+import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
+import io.puharesource.mc.titlemanager.backend.variables.PluginVariable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -95,10 +98,12 @@ public class TitleAnimation implements IAnimation, ITitleObject {
         }
 
         private void send(Player p, AnimationFrame frame) {
-            ReflectionManager manager = ReflectionManager.getInstance();
             if (p != null) {
-                manager.sendPacket(manager.constructTitleTimingsPacket(frame.getFadeIn(), frame.getStay() + 1, frame.getFadeOut()), p);
-                manager.sendPacket(manager.constructTitlePacket(isSubtitle, TextConverter.containsVariable(frame.getText()) ? manager.getIChatBaseComponent(TextConverter.setVariables(p, frame.getText())) : frame.getComponentText()), p);
+                TMPlayer tmPlayer = new TMPlayer(p);
+
+                tmPlayer.sendPacket(new TitlePacket(frame.getFadeIn(), frame.getStay(), frame.getFadeOut()));
+
+                tmPlayer.sendPacket(new TitlePacket(isSubtitle ? TitleObject.TitleType.SUBTITLE : TitleObject.TitleType.TITLE, TextConverter.containsVariable(frame.getText()) ? PluginVariable.replace(p, frame.getText()) : frame.getText()));
             }
         }
     }

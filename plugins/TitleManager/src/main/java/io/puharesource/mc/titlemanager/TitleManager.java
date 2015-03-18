@@ -1,6 +1,7 @@
 package io.puharesource.mc.titlemanager;
 
 import io.puharesource.mc.titlemanager.api.TitleObject;
+import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.apache.commons.lang.StringUtils;
@@ -33,13 +34,16 @@ public class TitleManager {
         plugin.saveConfig();
     }
 
+    public static ReflectionManager reflectionManager;
+
     public static Main getPlugin() {
         return plugin;
     }
 
     public static void load(Main plugin) {
         TitleManager.plugin = plugin;
-        
+        reflectionManager = ReflectionManager.createManager();
+
         if (isVaultEnabled()) {
             if (!setupEconomy())
                 plugin.getLogger().warning("There's no economy plugin hooked into vault! Disabling economy based variables.");

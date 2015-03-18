@@ -1,8 +1,10 @@
 package io.puharesource.mc.titlemanager.api;
 
-import io.puharesource.mc.titlemanager.ReflectionManager;
 import io.puharesource.mc.titlemanager.api.events.TabTitleChangeEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
+import io.puharesource.mc.titlemanager.backend.packet.TabmenuPacket;
+import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
+import io.puharesource.mc.titlemanager.backend.variables.PluginVariable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -11,11 +13,8 @@ import org.bukkit.entity.Player;
  */
 public class TabTitleObject implements ITabObject {
 
-    private String rawHeader;
-    private String rawFooter;
-
-    private Object header;
-    private Object footer;
+    private String header;
+    private String footer;
 
     public TabTitleObject(String title, Position position) {
         if (position == Position.HEADER)
@@ -58,37 +57,35 @@ public class TabTitleObject implements ITabObject {
             }
         }
 
-        TabTitleCache.addTabTitle(player.getUniqueId(), new TabTitleCache(rawHeader, rawFooter));
+        TabTitleCache.addTabTitle(player.getUniqueId(), new TabTitleCache(header, footer));
 
-        if (rawHeader == null && header == null)
+        if (header == null)
             setHeader("");
-        if (rawFooter == null && footer == null)
+        if (footer == null)
             setFooter("");
 
-        ReflectionManager manager = ReflectionManager.getInstance();
+        TMPlayer tmPlayer = new TMPlayer(player);
 
-        manager.sendPacket(manager.constructHeaderAndFooterPacket(
-                TextConverter.containsVariable(rawHeader) ? manager.getIChatBaseComponent(TextConverter.setVariables(player, rawHeader)) : header,
-                TextConverter.containsVariable(rawFooter) ? manager.getIChatBaseComponent(TextConverter.setVariables(player, rawFooter)) : footer), player);
+        tmPlayer.sendPacket(new TabmenuPacket(
+                TextConverter.containsVariable(header) ? PluginVariable.replace(player, header) : header,
+                TextConverter.containsVariable(footer) ? PluginVariable.replace(player, footer) : footer));
     }
 
     public String getHeader() {
-        return rawHeader;
+        return header;
     }
 
     public TabTitleObject setHeader(String header) {
-        rawHeader = header == null ? "" : header.replace("\\n", "\n");
-        this.header = ReflectionManager.getInstance().getIChatBaseComponent(rawHeader);
+        this.header = header == null ? "" : header.replace("\\n", "\n");
         return this;
     }
 
     public String getFooter() {
-        return rawFooter;
+        return footer;
     }
 
     public TabTitleObject setFooter(String footer) {
-        rawFooter = footer == null ? "" : footer.replace("\\n", "\n");
-        this.footer = ReflectionManager.getInstance().getIChatBaseComponent(rawFooter);
+        this.footer = footer == null ? "" : footer.replace("\\n", "\n");
         return this;
     }
 

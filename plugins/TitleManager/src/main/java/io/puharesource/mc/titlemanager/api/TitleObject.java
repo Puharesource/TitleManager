@@ -1,9 +1,12 @@
 package io.puharesource.mc.titlemanager.api;
 
 import io.puharesource.mc.titlemanager.Config;
-import io.puharesource.mc.titlemanager.ReflectionManager;
+import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.events.TitleEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.backend.packet.TitlePacket;
+import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
+import io.puharesource.mc.titlemanager.backend.variables.PluginVariable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -14,9 +17,6 @@ public class TitleObject implements ITitleObject {
 
     private String rawTitle;
     private String rawSubtitle;
-
-    private Object title;
-    private Object subtitle;
 
     private int fadeIn = -1;
     private int stay = -1;
@@ -68,14 +68,14 @@ public class TitleObject implements ITitleObject {
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) return;
-        
-        ReflectionManager manager = ReflectionManager.getInstance();
 
-        manager.sendPacket(manager.constructTitleTimingsPacket(fadeIn, stay, fadeOut), player);
-        if (rawTitle != null && title != null)
-            manager.sendPacket(manager.constructTitlePacket(false, TextConverter.containsVariable(rawTitle) ? manager.getIChatBaseComponent(TextConverter.setVariables(player, rawTitle)) : title), player);
-        if (rawSubtitle != null && subtitle != null)
-            manager.sendPacket(manager.constructTitlePacket(true, TextConverter.containsVariable(rawSubtitle) ? manager.getIChatBaseComponent(TextConverter.setVariables(player, rawSubtitle)) : subtitle), player);
+        TMPlayer tmPlayer = new TMPlayer(player);
+
+        tmPlayer.sendPacket(new TitlePacket(fadeIn, stay, fadeOut));
+        if (rawTitle != null)
+            tmPlayer.sendPacket(new TitlePacket(TitleType.TITLE, TextConverter.containsVariable(rawTitle) ? PluginVariable.replace(player, rawTitle) : rawTitle));
+        if (rawSubtitle != null)
+            tmPlayer.sendPacket(new TitlePacket(TitleType.SUBTITLE, TextConverter.containsVariable(rawSubtitle) ? PluginVariable.replace(player, rawSubtitle) : rawSubtitle));
     }
 
     /**
@@ -93,7 +93,6 @@ public class TitleObject implements ITitleObject {
      */
     public TitleObject setTitle(String title) {
         rawTitle = title;
-        this.title = ReflectionManager.getInstance().getIChatBaseComponent(title);
         return this;
     }
 
@@ -112,7 +111,6 @@ public class TitleObject implements ITitleObject {
      */
     public TitleObject setSubtitle(String subtitle) {
         rawSubtitle = subtitle;
-        this.subtitle = ReflectionManager.getInstance().getIChatBaseComponent(subtitle);
         return this;
     }
 
@@ -170,5 +168,21 @@ public class TitleObject implements ITitleObject {
         return this;
     }
 
-    public enum TitleType {TITLE, SUBTITLE}
+    public enum TitleType {
+        TITLE(0),
+        SUBTITLE(1),
+        TIMES(2),
+        CLEAR(3),
+        RESET(4);
+
+        private final int i;
+
+        private TitleType(final int i) {
+            this.i = i;
+        }
+
+        public Object getHandle() {
+            return TitleManager.reflectionManager.getClasses().get("EnumTitleAction").getHandle().getEnumConstants()[i];
+        }
+    }
 }

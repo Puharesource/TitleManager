@@ -1,10 +1,12 @@
 package io.puharesource.mc.titlemanager.api.animations;
 
-import io.puharesource.mc.titlemanager.ReflectionManager;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TextConverter;
 import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
+import io.puharesource.mc.titlemanager.backend.packet.ActionbarTitlePacket;
+import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
+import io.puharesource.mc.titlemanager.backend.variables.PluginVariable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -56,9 +58,9 @@ public class ActionbarTitleAnimation implements IAnimation, IActionbarObject {
         }
 
         private void send(Player p, AnimationFrame frame) {
-            ReflectionManager manager = ReflectionManager.getInstance();
-            if (p != null)
-                manager.sendPacket(manager.constructActionbarTitlePacket(TextConverter.containsVariable(frame.getText()) ? manager.getIChatBaseComponent(TextConverter.setVariables(p, frame.getText())) : frame.getComponentText()), p);
+            if (p != null) {
+                new TMPlayer(p).sendPacket(new ActionbarTitlePacket(TextConverter.containsVariable(frame.getText()) ? PluginVariable.replace(p, frame.getText()) : frame.getText()));
+            }
         }
     }
 }
