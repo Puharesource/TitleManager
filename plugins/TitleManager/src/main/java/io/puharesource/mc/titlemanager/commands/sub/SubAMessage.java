@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.commands.sub;
 
-import io.puharesource.mc.titlemanager.Config;
+import io.puharesource.mc.titlemanager.__Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
 import io.puharesource.mc.titlemanager.api.animations.ActionbarTitleAnimation;
@@ -30,7 +30,7 @@ public class SubAMessage extends TMSubCommand {
 
         if (args[1].toLowerCase().startsWith("animation:")) {
             String str = args[1].substring("animation:".length());
-            FrameSequence sequence = Config.getAnimation(str);
+            FrameSequence sequence = __Config.getAnimation(str);
             if (sequence != null) {
                 new ActionbarTitleAnimation(sequence).send(player);
                 sender.sendMessage(ChatColor.GREEN + "You have sent an actionbar animation to " + player.getName() + ".");

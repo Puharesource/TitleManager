@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.commands.sub;
 
-import io.puharesource.mc.titlemanager.Config;
+import io.puharesource.mc.titlemanager.__Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
@@ -33,7 +33,7 @@ public class SubBroadcast extends TMSubCommand {
 
                 if (lines[0].toLowerCase().startsWith("animation:")) {
                     String str = lines[0].substring("animation:".length());
-                    title = Config.getAnimation(str);
+                    title = __Config.getAnimation(str);
                     if (title == null) {
                         sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
                         return;
@@ -41,7 +41,7 @@ public class SubBroadcast extends TMSubCommand {
                 }
                 if (lines[1].toLowerCase().startsWith("animation:")) {
                     String str = lines[1].substring("animation:".length());
-                    subtitle = Config.getAnimation(str);
+                    subtitle = __Config.getAnimation(str);
                     if (subtitle == null) {
                         sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
                         return;
@@ -53,7 +53,7 @@ public class SubBroadcast extends TMSubCommand {
             }
         } else if (args[0].toLowerCase().startsWith("animation:")) {
             String str = args[0].substring("animation:".length());
-            FrameSequence animation = Config.getAnimation(str);
+            FrameSequence animation = __Config.getAnimation(str);
             if (animation != null) {
                 new TitleAnimation(animation, "").broadcast();
                 sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast animation.");

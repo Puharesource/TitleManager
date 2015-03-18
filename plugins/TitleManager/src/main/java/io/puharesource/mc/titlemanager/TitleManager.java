@@ -1,137 +1,57 @@
 package io.puharesource.mc.titlemanager;
 
-import io.puharesource.mc.titlemanager.api.TitleObject;
+import io.puharesource.mc.titlemanager.backend.hooks.PluginHook;
+import io.puharesource.mc.titlemanager.backend.hooks.VaultHook;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
+import io.puharesource.mc.titlemanager.commands.TMCommand;
+import io.puharesource.mc.titlemanager.commands.sub.*;
+import io.puharesource.mc.titlemanager.listeners.ListenerConnection;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-public class TitleManager {
+public class TitleManager extends JavaPlugin {
 
-    private static Main plugin;
-
-    private static Economy economy;
-    private static Permission permissions;
-    private static boolean economySupported;
-    private static boolean permissionsSupported;
+    private static TitleManager instance;
+    private Config config;
+    private ReflectionManager reflectionManager;
 
     private static List<Integer> runningAnimations = Collections.synchronizedList(new ArrayList<Integer>());
 
-    public static FileConfiguration getConfig() {
-        return plugin.getConfig();
-    }
+    private Map<String, PluginHook> hooks = new HashMap<>();
 
-    public static void saveConfig() {
-        plugin.saveConfig();
-    }
-
-    public static ReflectionManager reflectionManager;
-
-    public static Main getPlugin() {
-        return plugin;
-    }
-
-    public static void load(Main plugin) {
-        TitleManager.plugin = plugin;
+    @Override
+    public void onEnable() {
+        instance = this;
+        config = new Config();
         reflectionManager = ReflectionManager.createManager();
 
-        if (isVaultEnabled()) {
-            if (!setupEconomy())
-                plugin.getLogger().warning("There's no economy plugin hooked into vault! Disabling economy based variables.");
-            else economySupported = true;
-            if (!setupPermissions())
-                plugin.getLogger().warning("There's no permissions plugin hooked into vault! Disabling permissions based variables!");
-            else permissionsSupported = true;
-        } else plugin.getLogger().warning("Vault is not enabled! Disabling permissions and economy based variables!");
+        getServer().getPluginManager().registerEvents(new ListenerConnection(), this);
+
+        TMCommand cmd = new TMCommand();
+        cmd.addSubCommand(new SubBroadcast());
+        cmd.addSubCommand(new SubMessage());
+        cmd.addSubCommand(new SubReload());
+        cmd.addSubCommand(new SubABroadcast());
+        cmd.addSubCommand(new SubAMessage());
+        cmd.addSubCommand(new SubAnimations());
+
+        hooks.put("Vault", VaultHook.getInstance());
     }
 
-    public static TitleObject generateTitleObjectFromArgs(int offset, String[] args) {
-        int fadeIn = -1;
-        int stay = -1;
-        int fadeOut = -1;
-
-        StringBuilder sb = new StringBuilder();
-        boolean isReadingTimes = true;
-        for (int i = offset; args.length > i; i++) {
-            if (isReadingTimes) {
-                String lower = args[i].toLowerCase();
-                int amount = -1;
-                try {
-                    amount = Integer.parseInt(lower.replaceAll("\\D", ""));
-                } catch (NumberFormatException ignored) {
-                }
-                if (lower.startsWith("-fadein=")) {
-                    if (amount != -1)
-                        fadeIn = amount;
-                    continue;
-                } else if (lower.startsWith("-stay=")) {
-                    if (amount != -1)
-                        stay = amount;
-                    continue;
-                } else if (lower.startsWith("-fadeout=")) {
-                    if (amount != -1)
-                        fadeOut = amount;
-                    continue;
-                } else {
-                    isReadingTimes = false;
-                    sb.append(args[i]);
-                    continue;
-                }
-            }
-            sb.append(" ").append(args[i]);
-        }
-
-        String title = ChatColor.translateAlternateColorCodes('&', sb.toString());
-        String subtitle = null;
-
-        if (title.contains("{nl}"))
-            title = title.replace("{nl}", "<nl>");
-        if (title.contains("<nl>")) {
-            String[] titles = title.split("<nl>", 2);
-            title = titles[0];
-            subtitle = titles[1];
-        }
-        TitleObject object;
-        if (subtitle == null)
-            object = new TitleObject(title, TitleObject.TitleType.TITLE);
-        else object = new TitleObject(title, subtitle);
-
-        if (fadeIn != -1)
-            object.setFadeIn(fadeIn);
-        else object.setFadeIn(Config.getConfig().getInt("welcome_message.fadeIn"));
-        if (stay != -1)
-            object.setStay(stay);
-        else object.setFadeIn(Config.getConfig().getInt("welcome_message.stay"));
-        if (fadeOut != -1)
-            object.setFadeOut(fadeOut);
-        else object.setFadeIn(Config.getConfig().getInt("welcome_message.fadeOut"));
-        return object;
+    public static TitleManager getInstance() {
+        return instance;
     }
 
-    public static Player getPlayer(String name) {
-        Player correctPlayer = null;
-        for (Player player : Bukkit.getOnlinePlayers())
-            if (StringUtils.containsIgnoreCase(player.getName(), name)) {
-                correctPlayer = player;
-                break;
-            }
-        return correctPlayer;
+    public Config getConfigManager() {
+        return config;
     }
 
-    public static String combineArray(int offset, String[] array) {
-        StringBuilder sb = new StringBuilder(array[offset]);
-        for (int i = offset + 1; array.length > i; i++)
-            sb.append(" ").append(array[i]);
-        return ChatColor.translateAlternateColorCodes('&', sb.toString());
+    public ReflectionManager getReflectionManager() {
+        return reflectionManager;
     }
 
     public static void addRunningAnimationId(int id) {
@@ -158,19 +78,7 @@ public class TitleManager {
         return permissions;
     }
 
-    private static boolean setupEconomy() {
-        RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) return false;
-        economy = rsp.getProvider();
-        return economy != null;
-    }
 
-    private static boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> rsp = Bukkit.getServer().getServicesManager().getRegistration(Permission.class);
-        if (rsp == null) return false;
-        permissions = rsp.getProvider();
-        return permissions != null;
-    }
 
     public static boolean isEconomySupported() {
         return economySupported;

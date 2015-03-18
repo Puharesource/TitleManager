@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.api;
 
-import io.puharesource.mc.titlemanager.Config;
+import io.puharesource.mc.titlemanager.__Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.events.TitleEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
@@ -47,12 +47,12 @@ public class TitleObject implements ITitleObject {
     }
     
     private void updateTimes() {
-        if (Config.isUsingConfig()) return;
+        if (__Config.isUsingConfig()) return;
 
         try {
-            fadeIn = Config.getConfig().getInt("welcome_message.fadeIn");
-            stay = Config.getConfig().getInt("welcome_message.stay");
-            fadeOut = Config.getConfig().getInt("welcome_message.fadeOut");
+            fadeIn = __Config.getConfig().getInt("welcome_message.fadeIn");
+            stay = __Config.getConfig().getInt("welcome_message.stay");
+            fadeOut = __Config.getConfig().getInt("welcome_message.fadeOut");
         } catch (Exception ignored) {}
     }
     
