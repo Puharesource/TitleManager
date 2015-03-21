@@ -44,7 +44,7 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
 
     @Override
     public void send(Player player) {
-        Plugin plugin = TitleManager.getPlugin();
+        Plugin plugin = TitleManager.getInstance();
         BukkitScheduler scheduler = Bukkit.getScheduler();
 
         long times = 0;

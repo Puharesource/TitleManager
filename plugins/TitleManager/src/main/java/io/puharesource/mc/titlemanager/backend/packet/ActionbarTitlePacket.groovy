@@ -6,7 +6,7 @@ final class ActionbarTitlePacket extends Packet {
     private Object handle
 
     ActionbarTitlePacket (String text) {
-        def manager = TitleManager.reflectionManager
+        def manager = TitleManager.getInstance().getReflectionManager()
 
         handle = manager.classes["PacketPlayOutChat"].createInstance(manager.getIChatBaseComponent(text), (byte) 2)
     }

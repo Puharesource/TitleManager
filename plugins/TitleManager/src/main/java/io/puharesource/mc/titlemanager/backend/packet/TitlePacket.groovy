@@ -20,7 +20,7 @@ final class TitlePacket extends Packet {
     }
 
     TitlePacket(TitleObject.TitleType action, String text, int fadeIn, int stay, int fadeOut) {
-        def manager = TitleManager.reflectionManager
+        def manager = TitleManager.getInstance().getReflectionManager();
 
         this.action = action
         this.iChatBaseComponent = iChatBaseComponent

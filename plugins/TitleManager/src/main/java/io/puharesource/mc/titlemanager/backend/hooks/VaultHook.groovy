@@ -40,4 +40,6 @@ final class VaultHook extends PluginHook {
         permissions = rsp.getProvider()
         return permissions != null
     }
+
+    static boolean hasGroupSupport() { permissions != null && permissions.hasGroupSupport() }
 }

@@ -1,7 +1,6 @@
 package io.puharesource.mc.titlemanager.backend.variables
+import io.puharesource.mc.titlemanager.Config
 import io.puharesource.mc.titlemanager.TitleManager
-import io.puharesource.mc.titlemanager.__Config
-import io.puharesource.mc.titlemanager.backend.hooks.PluginHook
 import io.puharesource.mc.titlemanager.backend.hooks.VaultHook
 import io.puharesource.mc.titlemanager.backend.variables.supportedplugins.vault.specialrule.VaultRuleEconomy
 import io.puharesource.mc.titlemanager.backend.variables.supportedplugins.vault.specialrule.VaultRuleGroups
@@ -25,11 +24,11 @@ enum PluginVariable {
     WORLD_PLAYERS({Player p -> String.valueOf(p.getWorld().getPlayers().size())}, "WORLD-PLAYERS", "WORLD-ONLINE"),
 
     //Vault Variables:
-    GROUP({Player p -> TitleManager.permissions.getPrimaryGroup(p)}, VaultHook.getInstance(), VaultRuleGroups.class, "GROUP", "GROUP-NAME"),
-    BALANCE({Player p -> formatNumber(TitleManager.economy.getBalance(p))}, VaultHook.getInstance(), VaultRuleEconomy.class, "BALANCE", "MONEY");
+    GROUP({Player p -> VaultHook.permissions.getPrimaryGroup(p)}, "VAULT", VaultRuleGroups.class, "GROUP", "GROUP-NAME"),
+    BALANCE({Player p -> formatNumber(VaultHook.economy.getBalance(p))}, "VAULT", VaultRuleEconomy.class, "BALANCE", "MONEY");
 
     Closure<String> closure
-    PluginHook hook
+    String hook
     VariableRule rule
     String aliases
 
@@ -38,31 +37,25 @@ enum PluginVariable {
         this.aliases = aliases
     }
 
-    PluginVariable(Closure<String> closure, PluginHook hook, String... aliases) {
-        this(closure, aliases)
-        this.hook = hook
-    }
-
     PluginVariable(Closure<String> closure, Class<VariableRule> rule, String... aliases) {
         this(closure, aliases)
         this.rule = rule.newInstance()
     }
 
-    PluginVariable(Closure<String> closure, PluginHook hook, Class<VariableRule> rule, String... aliases) {
-        this(closure, hook, aliases)
-        this.rule = rule.newInstance()
+    PluginVariable(Closure<String> closure, String hook, Class<VariableRule> rule, String... aliases) {
+        this(closure, rule, aliases)
+        this.hook = hook
     }
 
     static String replace(Player player, String str) {
         for (PluginVariable var : values()) {
-            if (var.hook != null && Bukkit.getPluginManager().getPlugin(var.hook.pluginName) == null) continue
+            if (var.hook != null && !TitleManager.getInstance().getHook(var.hook).isEnabled()) continue
             if (var.rule != null && !var.rule.rule(player)) continue
 
             for (String alias : var.aliases)
                 str = str.replaceAll(getPattern(alias), var.closure(player))
         }
-
-        str
+        return str
     }
 
     private static Pattern getPattern(String alias) {
@@ -70,9 +63,11 @@ enum PluginVariable {
     }
 
     private static String formatNumber(BigDecimal number) {
-        if (__Config.numberFormatEnabled) {
+        Config config = TitleManager.getInstance().getConfigManager()
+
+        if (config.isNumberFormatEnabled()) {
             DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US)
-            return new DecimalFormat(__Config.getNumberFormat(), symbols).format(number)
+            return new DecimalFormat(config.getNumberFormat(), symbols).format(number)
         }
         String.valueOf(number.toDouble())
     }

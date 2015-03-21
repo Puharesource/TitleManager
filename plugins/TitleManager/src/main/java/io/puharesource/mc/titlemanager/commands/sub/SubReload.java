@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.commands.sub;
 
-import io.puharesource.mc.titlemanager.__Config;
+import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import org.bukkit.ChatColor;
@@ -14,7 +14,7 @@ public class SubReload extends TMSubCommand {
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
-        __Config.reloadConfig();
+        TitleManager.getInstance().reloadConfig();
         sender.sendMessage(ChatColor.GREEN + "The configuration has been reloaded.");
         if (sender instanceof Player)
             new TitleObject(ChatColor.GREEN + "Config Reloaded!", TitleObject.TitleType.TITLE).setFadeIn(10).setStay(15).setFadeOut(10).send((Player) sender);

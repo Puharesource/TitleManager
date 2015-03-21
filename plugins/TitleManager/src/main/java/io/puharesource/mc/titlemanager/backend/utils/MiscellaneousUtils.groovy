@@ -18,7 +18,7 @@ final class MiscellaneousUtils {
     static FrameSequence isValidAnimationString(String text) {
         text = text.toUpperCase().trim()
 
-        (text.startsWith("ANIMATION:") ? TitleManager.getConfigManager().getAnimation(text.substring(10)) : null)
+        (text.startsWith("ANIMATION:") ? TitleManager.getInstance().getConfigManager().getAnimation(text.substring(10)) : null)
     }
 
     static TitleObject generateTitleObjectFromArgs(int offset, String[] args) {
@@ -68,7 +68,7 @@ final class MiscellaneousUtils {
         }
         TitleObject object = subtitle == null ? new TitleObject(title, TitleObject.TitleType.TITLE) : new TitleObject(title, subtitle)
 
-        ConfigurationSection section = TitleManager.getConfigManager().config.getConfigurationSection("welcome_message")
+        ConfigurationSection section = TitleManager.getInstance().getConfigManager().config.getConfigurationSection("welcome_message")
 
         object.setFadeIn(fadeIn != -1 ? fadeIn : section.getInt("fadeIn"))
         object.setStay(stay != -1 ? stay : section.getInt("stay"))

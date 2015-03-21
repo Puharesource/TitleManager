@@ -3,6 +3,7 @@ package io.puharesource.mc.titlemanager.backend.player
 import io.puharesource.mc.titlemanager.TitleManager
 import io.puharesource.mc.titlemanager.backend.packet.Packet
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionClass
+import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager
 import org.bukkit.entity.Player
 
 final class TMPlayer {
@@ -15,18 +16,19 @@ final class TMPlayer {
 
     void sendPacket(final Packet packet) {
         Object connection = getPlayerConnection()
-        TitleManager.reflectionManager.classes["PlayerConnection"]
-                .getMethod("sendPacket", connection.getClass(), TitleManager.reflectionManager.classes["Packet"].handle.getClass())
+        ReflectionManager reflectionManager = TitleManager.getInstance().getReflectionManager();
+        reflectionManager.classes["PlayerConnection"]
+                .getMethod("sendPacket", connection.getClass(), reflectionManager.classes["Packet"].handle.getClass())
                 .invoke(connection, packet.getHandle())
     }
 
     private Object getEntityPlayer() {
-        ReflectionClass craftPlayerClass = TitleManager.reflectionManager.classes["CraftPlayer"];
+        ReflectionClass craftPlayerClass = TitleManager.getInstance().getReflectionManager().classes["CraftPlayer"];
 
         return craftPlayerClass.getMethod("getHandle").invoke(craftPlayerClass.handle.cast(player))
     }
 
     private Object getPlayerConnection() {
-        TitleManager.reflectionManager.classes["EntityPlayer"].getField("playerConnection").get(getEntityPlayer())
+        TitleManager.getInstance().getReflectionManager().classes["EntityPlayer"].getField("playerConnection").get(getEntityPlayer())
     }
 }

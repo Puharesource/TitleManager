@@ -4,9 +4,7 @@ import org.bukkit.Bukkit
 
 abstract class PluginHook {
 
-    String pluginName
-
-    private static def instance
+    private String pluginName
 
     PluginHook(String pluginName) {
         this.pluginName = pluginName
@@ -15,6 +13,4 @@ abstract class PluginHook {
     boolean isEnabled() {
         Bukkit.getPluginManager().isPluginEnabled(pluginName)
     }
-
-    static PluginHook getInstance() { instance ?: (instance = this.class.newInstance()) }
 }

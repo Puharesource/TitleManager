@@ -11,7 +11,7 @@ public class TMCommand implements CommandExecutor, TabCompleter {
     private Map<String, TMSubCommand> commands = new HashMap<>();
 
     public TMCommand() {
-        PluginCommand cmd = TitleManager.getPlugin().getCommand("tm");
+        PluginCommand cmd = TitleManager.getInstance().getCommand("tm");
         cmd.setExecutor(this);
         cmd.setTabCompleter(this);
     }

@@ -6,9 +6,6 @@ import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
 import io.puharesource.mc.titlemanager.commands.TMCommand;
 import io.puharesource.mc.titlemanager.commands.sub.*;
 import io.puharesource.mc.titlemanager.listeners.ListenerConnection;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -18,7 +15,6 @@ public class TitleManager extends JavaPlugin {
     private static TitleManager instance;
     private Config config;
     private ReflectionManager reflectionManager;
-
     private static List<Integer> runningAnimations = Collections.synchronizedList(new ArrayList<Integer>());
 
     private Map<String, PluginHook> hooks = new HashMap<>();
@@ -39,7 +35,7 @@ public class TitleManager extends JavaPlugin {
         cmd.addSubCommand(new SubAMessage());
         cmd.addSubCommand(new SubAnimations());
 
-        hooks.put("Vault", VaultHook.getInstance());
+        hooks.put("VAULT", VaultHook.getInstance());
     }
 
     public static TitleManager getInstance() {
@@ -66,25 +62,7 @@ public class TitleManager extends JavaPlugin {
         return runningAnimations;
     }
 
-    public static boolean isVaultEnabled() {
-        return Bukkit.getServer().getPluginManager().getPlugin("Vault") != null;
-    }
-
-    public static Economy getEconomy() {
-        return economy;
-    }
-
-    public static Permission getPermissions() {
-        return permissions;
-    }
-
-
-
-    public static boolean isEconomySupported() {
-        return economySupported;
-    }
-
-    public static boolean isPermissionsSupported() {
-        return permissionsSupported;
+    public PluginHook getHook(String pluginName) {
+        return hooks.get(pluginName.toUpperCase().trim());
     }
 }

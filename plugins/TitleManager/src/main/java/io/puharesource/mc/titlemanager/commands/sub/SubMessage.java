@@ -1,10 +1,10 @@
 package io.puharesource.mc.titlemanager.commands.sub;
 
-import io.puharesource.mc.titlemanager.__Config;
-import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
 import io.puharesource.mc.titlemanager.api.animations.TitleAnimation;
+import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -22,7 +22,7 @@ public class SubMessage extends TMSubCommand {
             return;
         }
 
-        Player player = TitleManager.getPlayer(args[0]);
+        Player player = MiscellaneousUtils.getPlayer(args[0]);
         if (player == null) {
             sender.sendMessage(ChatColor.RED + args[0] + " is not a player!");
             return;
@@ -47,7 +47,7 @@ public class SubMessage extends TMSubCommand {
 
                 if (lines[0].toLowerCase().startsWith("animation:")) {
                     String str = lines[0].substring("animation:".length());
-                    title = __Config.getAnimation(str);
+                    title = Config.getAnimation(str);
                     if (title == null) {
                         sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
                         return;
@@ -55,7 +55,7 @@ public class SubMessage extends TMSubCommand {
                 }
                 if (lines[1].toLowerCase().startsWith("animation:")) {
                     String str = lines[1].substring("animation:".length());
-                    subtitle = __Config.getAnimation(str);
+                    subtitle = Config.getAnimation(str);
                     if (subtitle == null) {
                         sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
                         return;
@@ -67,7 +67,7 @@ public class SubMessage extends TMSubCommand {
             }
         } else if (args[1].toLowerCase().startsWith("animation:")) {
             String str = args[1].substring("animation:".length());
-            FrameSequence animation = __Config.getAnimation(str);
+            FrameSequence animation = Config.getAnimation(str);
             if (animation != null) {
                 new TitleAnimation(animation, "").send(player);
                 sender.sendMessage(ChatColor.GREEN + "You have sent an animation to " + player.getName() + ".");
@@ -75,7 +75,7 @@ public class SubMessage extends TMSubCommand {
             return;
         }
 
-        TitleObject object = TitleManager.generateTitleObjectFromArgs(1, args);
+        TitleObject object = MiscellaneousUtils.generateTitleObjectFromArgs(1, args);
         object.send(player);
         if (object.getSubtitle() != null)
             sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + ChatColor.RESET + object.getTitle() + ChatColor.GREEN + "\" \"" + ChatColor.RESET + object.getSubtitle() + ChatColor.GREEN + "\"");

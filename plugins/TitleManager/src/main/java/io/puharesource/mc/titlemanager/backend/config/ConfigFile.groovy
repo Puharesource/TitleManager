@@ -25,7 +25,7 @@ class ConfigFile {
     }
 
     void reload() {
-        if (!path.exists()) path.mkdirs();
+        if (!path.exists()) path.mkdirs()
 
         if (locatedInJar) {
             if (!file.exists())

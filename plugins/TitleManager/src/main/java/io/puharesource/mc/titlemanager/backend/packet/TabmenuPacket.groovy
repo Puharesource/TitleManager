@@ -9,7 +9,7 @@ final class TabmenuPacket extends Packet {
     private Object handle
 
     public TabmenuPacket(String header, String footer) {
-        def manager = TitleManager.reflectionManager
+        def manager = TitleManager.getInstance().getReflectionManager()
 
         handle = manager.classes["PacketPlayOutPlayerListHeaderFooter"].handle.newInstance()
         if (header != null) {

@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.api;
 
-import io.puharesource.mc.titlemanager.__Config;
+import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.events.TitleEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
@@ -47,12 +47,13 @@ public class TitleObject implements ITitleObject {
     }
     
     private void updateTimes() {
-        if (__Config.isUsingConfig()) return;
+        Config config = TitleManager.getInstance().getConfigManager();
+        if (config.isUsingConfig()) return;
 
         try {
-            fadeIn = __Config.getConfig().getInt("welcome_message.fadeIn");
-            stay = __Config.getConfig().getInt("welcome_message.stay");
-            fadeOut = __Config.getConfig().getInt("welcome_message.fadeOut");
+            fadeIn = config.getConfig().getInt("welcome_message.fadeIn");
+            stay = config.getConfig().getInt("welcome_message.stay");
+            fadeOut = config.getConfig().getInt("welcome_message.fadeOut");
         } catch (Exception ignored) {}
     }
     
@@ -182,7 +183,7 @@ public class TitleObject implements ITitleObject {
         }
 
         public Object getHandle() {
-            return TitleManager.reflectionManager.getClasses().get("EnumTitleAction").getHandle().getEnumConstants()[i];
+            return TitleManager.getInstance().getReflectionManager().getClasses().get("EnumTitleAction").getHandle().getEnumConstants()[i];
         }
     }
 }
