@@ -1,4 +1,6 @@
 package io.puharesource.mc.titlemanager.backend.utils
+
+import io.puharesource.mc.titlemanager.Config
 import io.puharesource.mc.titlemanager.TitleManager
 import io.puharesource.mc.titlemanager.api.TitleObject
 import io.puharesource.mc.titlemanager.api.animations.FrameSequence
@@ -8,6 +10,8 @@ import org.bukkit.ChatColor
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.regex.Pattern
 
 final class MiscellaneousUtils {
@@ -77,7 +81,7 @@ final class MiscellaneousUtils {
         return object
     }
 
-    public static Player getPlayer(String name) {
+    static Player getPlayer(String name) {
         if (!(Pattern.matches("^[a-z0-9A-Z_]+", name) && name.length() <= 16)) return null
         Player correctPlayer = Bukkit.getPlayerExact(name)
         if (correctPlayer == null) {
@@ -90,10 +94,20 @@ final class MiscellaneousUtils {
         return correctPlayer
     }
 
-    public static String combineArray(int offset, String[] array) {
+    static String combineArray(int offset, String[] array) {
         StringBuilder sb = new StringBuilder(array[offset])
         for (int i = offset + 1; array.length > i; i++)
             sb.append(" ").append(array[i])
         return format(sb.toString())
+    }
+
+    static String formatNumber(BigDecimal number) {
+        Config config = TitleManager.getInstance().getConfigManager()
+
+        if (config.isNumberFormatEnabled()) {
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US)
+            return new DecimalFormat(config.getNumberFormat(), symbols).format(number)
+        }
+        String.valueOf(number.toDouble())
     }
 }

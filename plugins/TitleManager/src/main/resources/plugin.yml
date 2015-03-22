@@ -3,7 +3,7 @@ version: 1.5.0
 author: Puharesource
 
 main: io.puharesource.mc.titlemanager.TitleManager
-softdepend: [Vault]
+softdepend: [Vault, Essentials, VanishNoPacket]
 
 commands:
   tm:

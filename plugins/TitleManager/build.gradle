@@ -1,5 +1,8 @@
-version = '1.4.0'
+version = '1.5.0'
 
 dependencies {
     compile 'net.milkbowl.vault:VaultAPI:1.5'
+    compile 'net.ess3:Essentials:2.13.1'
+    compile 'org.kitteh:VanishNoPacket:3.19.2-SNAPSHOT'
+    compile files('../../libs/EZRanksLite.jar')
 }

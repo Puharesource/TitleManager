@@ -1,5 +1,5 @@
 usingConfig: true
-config-version: 2
+config-version: 3
 
 tabmenu:
   enabled: true
@@ -18,3 +18,5 @@ welcome_message:
 number-format:
   enabled: true
   format: '#,###.##'
+date-format:
+  format: 'EEE, dd MMM yyyy HH:mm:ss z'

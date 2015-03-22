@@ -1,19 +1,21 @@
 package io.puharesource.mc.titlemanager.backend.variables
-import io.puharesource.mc.titlemanager.Config
+
 import io.puharesource.mc.titlemanager.TitleManager
-import io.puharesource.mc.titlemanager.backend.hooks.VaultHook
-import io.puharesource.mc.titlemanager.backend.variables.supportedplugins.vault.specialrule.VaultRuleEconomy
-import io.puharesource.mc.titlemanager.backend.variables.supportedplugins.vault.specialrule.VaultRuleGroups
+import io.puharesource.mc.titlemanager.backend.hooks.ezrankslite.EZRanksLiteHook
+import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultHook
+import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultRuleEconomy
+import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultRuleGroups
+import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils
+import io.puharesource.mc.titlemanager.backend.variables.specialrule.VanishRule
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
+import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
 enum PluginVariable {
-    //TitleManager Variables:
+    //TitleManager Variables
     PLAYER({Player p -> p.getName()}, "PLAYER", "USERNAME", "NAME"),
     DISPLAYNAME({Player p -> p.getDisplayName()}, "DISPLAYNAME", "DISPLAY-NAME", "NICKNAME", "NICK"),
     STRIPPEDDISPLAYNAME({Player p -> ChatColor.stripColor(p.getDisplayName())}, "STRIPPEDDISPLAYNAME", "STRIPPED-DISPLAYNAME", "STRIPPED-NICKNAME", "STRIPPED-NICK"),
@@ -22,10 +24,19 @@ enum PluginVariable {
     ONLINE({Player p -> String.valueOf(Bukkit.getOnlinePlayers().size())}, "ONLINE", "ONLINE-PLAYERS"),
     MAX_PLAYERS({Player p -> String.valueOf(Bukkit.getMaxPlayers())}, "MAX-PLAYERS"),
     WORLD_PLAYERS({Player p -> String.valueOf(p.getWorld().getPlayers().size())}, "WORLD-PLAYERS", "WORLD-ONLINE"),
+    SERVER_TIME({Player p -> new SimpleDateFormat(TitleManager.getInstance().getConfig().getString("date-format.format")).format(new Date(System.currentTimeMillis()))}, "SERVER-TIME"),
 
-    //Vault Variables:
-    GROUP({Player p -> VaultHook.permissions.getPrimaryGroup(p)}, "VAULT", VaultRuleGroups.class, "GROUP", "GROUP-NAME"),
-    BALANCE({Player p -> formatNumber(VaultHook.economy.getBalance(p))}, "VAULT", VaultRuleEconomy.class, "BALANCE", "MONEY");
+    //Vault Variables
+    VAULT_GROUP({Player p -> VaultHook.permissions.getPrimaryGroup(p)}, "VAULT", VaultRuleGroups.class, "GROUP", "GROUP-NAME"),
+    VAULT_BALANCE({Player p -> MiscellaneousUtils.formatNumber(VaultHook.economy.getBalance(p))}, "VAULT", VaultRuleEconomy.class, "BALANCE", "MONEY"),
+
+    EZRL_RANK_PREFIX({Player p -> EZRanksLiteHook.getRankPrefix(p)}, "VAULT", (Class<VariableRule>) null, "EZRL.RANKPREFIX"),
+    EZRL_RANKUP_PREFIX({Player p -> EZRanksLiteHook.getRankupPrefix(p)}, "VAULT", (Class<VariableRule>) null, "EZRL.RANKUPPREFIX"),
+    EZRL_CURRENT_RANK({Player p -> EZRanksLiteHook.getCurrentRank(p)}, "VAULT", (Class<VariableRule>) null, "EZRL.CURRENTRANK", "EZRL.RANKFROM")
+    ,
+
+    //Special Rules
+    SAFE_ONLINE({Player p -> String.valueOf(VanishRule.getOnlinePlayers())}, VanishRule.class, "SAFE-ONLINE", "SAFE-ONLINE-PLAYERS");
 
     Closure<String> closure
     String hook
@@ -60,15 +71,5 @@ enum PluginVariable {
 
     private static Pattern getPattern(String alias) {
         return Pattern.compile("\\{" + alias + "\\}")
-    }
-
-    private static String formatNumber(BigDecimal number) {
-        Config config = TitleManager.getInstance().getConfigManager()
-
-        if (config.isNumberFormatEnabled()) {
-            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US)
-            return new DecimalFormat(config.getNumberFormat(), symbols).format(number)
-        }
-        String.valueOf(number.toDouble())
     }
 }

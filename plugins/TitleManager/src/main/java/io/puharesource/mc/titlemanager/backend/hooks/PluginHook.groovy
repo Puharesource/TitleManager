@@ -1,6 +1,7 @@
 package io.puharesource.mc.titlemanager.backend.hooks
 
 import org.bukkit.Bukkit
+import org.bukkit.plugin.Plugin
 
 abstract class PluginHook {
 
@@ -10,7 +11,7 @@ abstract class PluginHook {
         this.pluginName = pluginName
     }
 
-    boolean isEnabled() {
-        Bukkit.getPluginManager().isPluginEnabled(pluginName)
-    }
+    boolean isEnabled() { Bukkit.getPluginManager().isPluginEnabled(pluginName) }
+
+    Plugin getPlugin() { Bukkit.getPluginManager().getPlugin(pluginName) }
 }

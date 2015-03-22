@@ -1,6 +1,7 @@
-package io.puharesource.mc.titlemanager.backend.hooks
+package io.puharesource.mc.titlemanager.backend.hooks.vault
 
 import io.puharesource.mc.titlemanager.TitleManager
+import io.puharesource.mc.titlemanager.backend.hooks.PluginHook
 import net.milkbowl.vault.economy.Economy
 import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit

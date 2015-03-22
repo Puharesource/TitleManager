@@ -1,7 +1,10 @@
 package io.puharesource.mc.titlemanager;
 
+import io.puharesource.mc.titlemanager.backend.hooks.essentials.EssentialsHook;
 import io.puharesource.mc.titlemanager.backend.hooks.PluginHook;
-import io.puharesource.mc.titlemanager.backend.hooks.VaultHook;
+import io.puharesource.mc.titlemanager.backend.hooks.ezrankslite.EZRanksLiteHook;
+import io.puharesource.mc.titlemanager.backend.hooks.vanishnopacket.VanishNoPacketHook;
+import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultHook;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
 import io.puharesource.mc.titlemanager.commands.TMCommand;
 import io.puharesource.mc.titlemanager.commands.sub.*;
@@ -35,7 +38,10 @@ public class TitleManager extends JavaPlugin {
         cmd.addSubCommand(new SubAMessage());
         cmd.addSubCommand(new SubAnimations());
 
-        hooks.put("VAULT", VaultHook.getInstance());
+        hooks.put("VAULT", new VaultHook());
+        hooks.put("ESSENTIALS", new EssentialsHook());
+        hooks.put("VANISHNOPACKET", new VanishNoPacketHook());
+        hooks.put("EZRANKSLITE", new EZRanksLiteHook());
     }
 
     public static TitleManager getInstance() {

@@ -62,5 +62,15 @@ final class ConfigUpdater {
 
             configFile.save()
         }
+
+        //Updates the config from config-version 2 to 3
+        if (config.getInt("config-version") == 2) {
+            config.set("config-version", 3)
+            ConfigurationSection section = config.createSection("date-format")
+            section.set("format", "EEE, dd MMM yyyy HH:mm:ss z")
+            config.set("date-format", section)
+
+            configFile.save()
+        }
     }
 }
