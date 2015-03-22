@@ -30,10 +30,14 @@ enum PluginVariable {
     VAULT_GROUP({Player p -> VaultHook.permissions.getPrimaryGroup(p)}, "VAULT", VaultRuleGroups.class, "GROUP", "GROUP-NAME"),
     VAULT_BALANCE({Player p -> MiscellaneousUtils.formatNumber(VaultHook.economy.getBalance(p))}, "VAULT", VaultRuleEconomy.class, "BALANCE", "MONEY"),
 
-    EZRL_RANK_PREFIX({Player p -> EZRanksLiteHook.getRankPrefix(p)}, "VAULT", (Class<VariableRule>) null, "EZRL.RANKPREFIX"),
-    EZRL_RANKUP_PREFIX({Player p -> EZRanksLiteHook.getRankupPrefix(p)}, "VAULT", (Class<VariableRule>) null, "EZRL.RANKUPPREFIX"),
-    EZRL_CURRENT_RANK({Player p -> EZRanksLiteHook.getCurrentRank(p)}, "VAULT", (Class<VariableRule>) null, "EZRL.CURRENTRANK", "EZRL.RANKFROM")
-    ,
+    EZRL_RANK_PREFIX({Player p -> EZRanksLiteHook.getRankPrefix(p)}, "EZRanksLite", (Class<VariableRule>) null, "EZRL.RANKPREFIX"),
+    EZRL_RANKUP_PREFIX({Player p -> EZRanksLiteHook.getRankupPrefix(p)}, "EZRanksLite", (Class<VariableRule>) null, "EZRL.RANKUPPREFIX"),
+    EZRL_CURRENT_RANK({Player p -> EZRanksLiteHook.getCurrentRank(p)}, "EZRanksLite", (Class<VariableRule>) null, "EZRL.CURRENTRANK", "EZRL.RANKFROM"),
+    EZRL_RANKUP_RANK({Player p -> EZRanksLiteHook.getRankup(p)}, "EZRanksLite", (Class<VariableRule>) null, "EZRL.RANKTO", "EZRL.RANKUP"),
+    EZRL_COST({Player p -> EZRanksLiteHook.getRankupCost(p)}, "EZRanksLite", (Class<VariableRule>) null, "EZRL.COST", "EZRL.RANKUPCOST"),
+    EZRL_PROGRESS({Player p -> EZRanksLiteHook.getProgress(p)}, "EZRanksLite", (Class<VariableRule>) null, "EZRL.PROGRESS"),
+    EZRL_PROGRESSBAR({Player p -> EZRanksLiteHook.getProgressBar(p)}, "EZRanksLite", (Class<VariableRule>), null, "EZRL.PROGRESSBAR"),
+    EZRL_NEEDED({Player p -> EZRanksLiteHook.getNeeded(p)}, "EZRanksLite", (Class<VariableRule>), null, "EZRL.NEEDED", "EZRL.DIFFERENCE"),
 
     //Special Rules
     SAFE_ONLINE({Player p -> String.valueOf(VanishRule.getOnlinePlayers())}, VanishRule.class, "SAFE-ONLINE", "SAFE-ONLINE-PLAYERS");
