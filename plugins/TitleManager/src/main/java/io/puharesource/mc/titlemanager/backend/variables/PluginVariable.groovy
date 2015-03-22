@@ -30,6 +30,7 @@ enum PluginVariable {
     VAULT_GROUP({Player p -> VaultHook.permissions.getPrimaryGroup(p)}, "VAULT", VaultRuleGroups.class, "GROUP", "GROUP-NAME"),
     VAULT_BALANCE({Player p -> MiscellaneousUtils.formatNumber(VaultHook.economy.getBalance(p))}, "VAULT", VaultRuleEconomy.class, "BALANCE", "MONEY"),
 
+    //EZRanksLite Variables
     EZRL_RANK_PREFIX({Player p -> EZRanksLiteHook.getRankPrefix(p)}, "EZRanksLite", (Class<VariableRule>) null, "EZRL.RANKPREFIX"),
     EZRL_RANKUP_PREFIX({Player p -> EZRanksLiteHook.getRankupPrefix(p)}, "EZRanksLite", (Class<VariableRule>) null, "EZRL.RANKUPPREFIX"),
     EZRL_CURRENT_RANK({Player p -> EZRanksLiteHook.getCurrentRank(p)}, "EZRanksLite", (Class<VariableRule>) null, "EZRL.CURRENTRANK", "EZRL.RANKFROM"),
