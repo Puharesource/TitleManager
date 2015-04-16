@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.api;
 
-import io.puharesource.mc.titlemanager.backend.variables.PluginVariable;
+import io.puharesource.mc.titlemanager.backend.variables.Variables;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -17,7 +17,7 @@ public class TextConverter {
     }
 
     public static String setVariables(Player player, String text) {
-        return PluginVariable.replace(player, text);
+
     }
 
     public static boolean containsVariable(String str, String... strings) {

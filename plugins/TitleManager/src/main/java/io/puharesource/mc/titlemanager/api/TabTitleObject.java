@@ -4,7 +4,7 @@ import io.puharesource.mc.titlemanager.api.events.TabTitleChangeEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
 import io.puharesource.mc.titlemanager.backend.packet.TabmenuPacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
-import io.puharesource.mc.titlemanager.backend.variables.PluginVariable;
+import io.puharesource.mc.titlemanager.backend.variables.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -67,8 +67,8 @@ public class TabTitleObject implements ITabObject {
         TMPlayer tmPlayer = new TMPlayer(player);
 
         tmPlayer.sendPacket(new TabmenuPacket(
-                TextConverter.containsVariable(header) ? PluginVariable.replace(player, header) : header,
-                TextConverter.containsVariable(footer) ? PluginVariable.replace(player, footer) : footer));
+                TextConverter.containsVariable(header) ? Variables.replace(player, header) : header,
+                TextConverter.containsVariable(footer) ? Variables.replace(player, footer) : footer));
     }
 
     public String getHeader() {

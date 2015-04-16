@@ -4,7 +4,7 @@ import io.puharesource.mc.titlemanager.api.events.ActionbarEvent;
 import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.backend.packet.ActionbarTitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
-import io.puharesource.mc.titlemanager.backend.variables.PluginVariable;
+import io.puharesource.mc.titlemanager.backend.variables.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -34,7 +34,7 @@ public class ActionbarTitleObject implements IActionbarObject {
 
         TMPlayer tmPlayer = new TMPlayer(player);
 
-        tmPlayer.sendPacket(new ActionbarTitlePacket(TextConverter.containsVariable(title) ? PluginVariable.replace(player, title) : title));
+        tmPlayer.sendPacket(new ActionbarTitlePacket(TextConverter.containsVariable(title) ? Variables.replace(player, title) : title));
     }
 
     public String getTitle() {

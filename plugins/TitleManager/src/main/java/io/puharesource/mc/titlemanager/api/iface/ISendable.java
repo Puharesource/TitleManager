@@ -9,11 +9,11 @@ public interface ISendable {
     /**
      * This broadcasts the object to all players on the server.
      */
-    public void broadcast();
+    void broadcast();
 
     /**
      * This sends the object to a specific player.
      * @param player The player receiving the object.
      */
-    public void send(Player player);
+    void send(Player player);
 }

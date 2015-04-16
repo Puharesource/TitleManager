@@ -6,7 +6,7 @@ import io.puharesource.mc.titlemanager.api.events.TitleEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.backend.packet.TitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
-import io.puharesource.mc.titlemanager.backend.variables.PluginVariable;
+import io.puharesource.mc.titlemanager.backend.variables.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -74,9 +74,9 @@ public class TitleObject implements ITitleObject {
 
         tmPlayer.sendPacket(new TitlePacket(fadeIn, stay, fadeOut));
         if (rawTitle != null)
-            tmPlayer.sendPacket(new TitlePacket(TitleType.TITLE, TextConverter.containsVariable(rawTitle) ? PluginVariable.replace(player, rawTitle) : rawTitle));
+            tmPlayer.sendPacket(new TitlePacket(TitleType.TITLE, TextConverter.containsVariable(rawTitle) ? Variables.replace(player, rawTitle) : rawTitle));
         if (rawSubtitle != null)
-            tmPlayer.sendPacket(new TitlePacket(TitleType.SUBTITLE, TextConverter.containsVariable(rawSubtitle) ? PluginVariable.replace(player, rawSubtitle) : rawSubtitle));
+            tmPlayer.sendPacket(new TitlePacket(TitleType.SUBTITLE, TextConverter.containsVariable(rawSubtitle) ? Variables.replace(player, rawSubtitle) : rawSubtitle));
     }
 
     /**
@@ -169,7 +169,7 @@ public class TitleObject implements ITitleObject {
         return this;
     }
 
-    public enum TitleType {
+    public static enum TitleType {
         TITLE(0),
         SUBTITLE(1),
         TIMES(2),
