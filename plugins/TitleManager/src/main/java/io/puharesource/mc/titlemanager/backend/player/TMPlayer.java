@@ -6,13 +6,31 @@ import io.puharesource.mc.titlemanager.backend.reflections.ReflectionClass;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public final class TMPlayer implements Comparable<TMPlayer> {
     private final Player player;
 
+    private ReflectionClass craftPlayerClass;
+    private Object craftPlayer;
+    private Object entityPlayer;
+    private Field pingField;
+    private Method handle;
+
     public TMPlayer(final Player player) {
         this.player = player;
+
+        try {
+            craftPlayerClass = ReflectionManager.ReflectionType.ORG_BUKKIT_CRAFTBUKKIT.getReflectionClass("entity.CraftPlayer");
+            craftPlayer = craftPlayerClass.getHandle().cast(player);
+            handle = craftPlayer.getClass().getMethod("getHandle");
+            entityPlayer = handle.invoke(craftPlayer);
+            pingField = entityPlayer.getClass().getField("ping");
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendPacket(final Packet packet) {
@@ -39,10 +57,19 @@ public final class TMPlayer implements Comparable<TMPlayer> {
     private Object getPlayerConnection() {
         try {
             return TitleManager.getInstance().getReflectionManager().getClasses().get("EntityPlayer").getField("playerConnection").get(getEntityPlayer());
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public int getPing() {
+        try {
+            return pingField.getInt(entityPlayer);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     @Override

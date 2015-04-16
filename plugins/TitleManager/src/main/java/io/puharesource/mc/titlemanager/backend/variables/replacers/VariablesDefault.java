@@ -1,6 +1,7 @@
 package io.puharesource.mc.titlemanager.backend.variables.replacers;
 
 import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
 import io.puharesource.mc.titlemanager.backend.variables.Variable;
 import io.puharesource.mc.titlemanager.backend.variables.VariableReplacer;
 import io.puharesource.mc.titlemanager.backend.variables.specialrule.VanishRule;
@@ -45,4 +46,7 @@ public final class VariablesDefault implements VariableReplacer {
 
     @Variable(vars = {"SAFE-ONLINE", "SAFE-ONLINE-PLAYERS"})
     public String safeOnlineVar(Player player) { return String.valueOf(VanishRule.getOnlinePlayers()); }
+
+    @Variable(vars = {"PING"})
+    public String pingVar(Player player) { return String.valueOf(new TMPlayer(player).getPing()); }
 }
