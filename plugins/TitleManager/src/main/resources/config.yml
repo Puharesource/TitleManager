@@ -7,14 +7,14 @@ tabmenu:
   footer: 'animation:test1'
 welcome_message:
   enabled: true
-  title: '&5Welcome back {PLAYER}!'
-  subtitle: '&dTo sweggy mc sweg!'
+  title: '&7Welcome back &a{PLAYER}!'
+  subtitle: '&7To my server'
   fadeIn: -1
   stay: -1
   fadeOut: -1
   first-join:
-    title: '&5Welcome to MyServer {PLAYER}'
-    subtitle: '&dHope you enjoy your stay!'
+    title: '&7Welcome to MyServer &a{PLAYER}'
+    subtitle: '&7Hope you enjoy your stay!'
 number-format:
   enabled: true
   format: '#,###.##'
