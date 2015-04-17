@@ -7,7 +7,7 @@ tabmenu:
   footer: 'animation:test1'
 welcome_message:
   enabled: true
-  title: '&7Welcome back &a{PLAYER}!'
+  title: '&7Welcome back &a{PLAYER}&7!'
   subtitle: '&7To my server'
   fadeIn: -1
   stay: -1

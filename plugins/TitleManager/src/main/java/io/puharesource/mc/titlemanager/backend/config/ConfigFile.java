@@ -9,6 +9,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class ConfigFile {
+
+    private JavaPlugin plugin;
+    private File path;
+    private File file;
+    private String fileName;
+    private FileConfiguration config;
+    private boolean locatedInJar;
+
     public ConfigFile(JavaPlugin plugin, File path, String fileName, boolean locatedInJar) {
         this.plugin = plugin;
         this.path = path;
@@ -77,11 +85,4 @@ public class ConfigFile {
     public FileConfiguration getCopy() {
         return YamlConfiguration.loadConfiguration(file);
     }
-
-    private JavaPlugin plugin;
-    private File path;
-    private File file;
-    private String fileName;
-    private FileConfiguration config;
-    private boolean locatedInJar;
 }
