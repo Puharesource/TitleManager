@@ -102,7 +102,7 @@ public class TitleAnimation implements IAnimation, ITitleObject {
 
                 tmPlayer.sendPacket(new TitlePacket(frame.getFadeIn(), frame.getStay(), frame.getFadeOut()));
 
-                tmPlayer.sendPacket(new TitlePacket(isSubtitle ? TitleObject.TitleType.SUBTITLE : TitleObject.TitleType.TITLE, TextConverter.containsVariable(frame.getText()) ? Variables.replace(p, frame.getText()) : frame.getText()));
+                tmPlayer.sendPacket(new TitlePacket(isSubtitle ? TitleObject.TitleType.SUBTITLE : TitleObject.TitleType.TITLE, TextConverter.setVariables(p, frame.getText())));
             }
         }
     }

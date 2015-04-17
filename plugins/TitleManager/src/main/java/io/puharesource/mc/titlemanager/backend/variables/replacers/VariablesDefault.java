@@ -2,8 +2,8 @@ package io.puharesource.mc.titlemanager.backend.variables.replacers;
 
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
-import io.puharesource.mc.titlemanager.backend.variables.Variable;
-import io.puharesource.mc.titlemanager.backend.variables.VariableReplacer;
+import io.puharesource.mc.titlemanager.api.variables.Variable;
+import io.puharesource.mc.titlemanager.api.variables.VariableReplacer;
 import io.puharesource.mc.titlemanager.backend.variables.specialrule.VanishRule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,7 +44,7 @@ public final class VariablesDefault implements VariableReplacer {
     @Variable(vars = {"SERVER-TIME"})
     public String serverTimeVar(Player player) { return new SimpleDateFormat(TitleManager.getInstance().getConfig().getString("date-format.format")).format(new Date(System.currentTimeMillis())); }
 
-    @Variable(vars = {"SAFE-ONLINE", "SAFE-ONLINE-PLAYERS"})
+    @Variable(rule = "VANISH-RULE", vars = {"SAFE-ONLINE", "SAFE-ONLINE-PLAYERS"})
     public String safeOnlineVar(Player player) { return String.valueOf(VanishRule.getOnlinePlayers()); }
 
     @Variable(vars = {"PING"})

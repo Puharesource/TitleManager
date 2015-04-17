@@ -2,8 +2,8 @@ package io.puharesource.mc.titlemanager.backend.variables.replacers;
 
 import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultHook;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
-import io.puharesource.mc.titlemanager.backend.variables.Variable;
-import io.puharesource.mc.titlemanager.backend.variables.VariableReplacer;
+import io.puharesource.mc.titlemanager.api.variables.Variable;
+import io.puharesource.mc.titlemanager.api.variables.VariableReplacer;
 import org.bukkit.entity.Player;
 
 /**

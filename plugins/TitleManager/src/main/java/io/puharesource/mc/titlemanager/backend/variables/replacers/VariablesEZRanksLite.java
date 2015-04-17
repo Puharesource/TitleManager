@@ -1,8 +1,8 @@
 package io.puharesource.mc.titlemanager.backend.variables.replacers;
 
 import io.puharesource.mc.titlemanager.backend.hooks.ezrankslite.EZRanksLiteHook;
-import io.puharesource.mc.titlemanager.backend.variables.Variable;
-import io.puharesource.mc.titlemanager.backend.variables.VariableReplacer;
+import io.puharesource.mc.titlemanager.api.variables.Variable;
+import io.puharesource.mc.titlemanager.api.variables.VariableReplacer;
 import org.bukkit.entity.Player;
 
 /**

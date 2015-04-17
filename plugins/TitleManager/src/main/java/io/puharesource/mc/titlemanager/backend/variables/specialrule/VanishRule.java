@@ -3,7 +3,7 @@ package io.puharesource.mc.titlemanager.backend.variables.specialrule;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.backend.hooks.essentials.EssentialsHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vanishnopacket.VanishNoPacketHook;
-import io.puharesource.mc.titlemanager.backend.variables.VariableRule;
+import io.puharesource.mc.titlemanager.api.variables.VariableRule;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -36,5 +36,4 @@ public class VanishRule extends VariableRule {
     private static VanishNoPacketHook getVanishHook() {
         return ((VanishNoPacketHook) (TitleManager.getInstance().getHook("VANISHNOPACKET")));
     }
-
 }

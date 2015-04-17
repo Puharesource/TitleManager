@@ -58,7 +58,7 @@ public class ActionbarTitleAnimation implements IAnimation, IActionbarObject {
 
         private void send(Player p, AnimationFrame frame) {
             if (p != null) {
-                new TMPlayer(p).sendPacket(new ActionbarTitlePacket(TextConverter.containsVariable(frame.getText()) ? Variables.replace(p, frame.getText()) : frame.getText()));
+                new TMPlayer(p).sendPacket(new ActionbarTitlePacket(TextConverter.setVariables(p, frame.getText())));
             }
         }
     }

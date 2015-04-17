@@ -1,37 +1,38 @@
 package io.puharesource.mc.titlemanager;
 
-import io.puharesource.mc.titlemanager.backend.hooks.PluginHook;
+import io.puharesource.mc.titlemanager.api.variables.VariableManager;
 import io.puharesource.mc.titlemanager.backend.hooks.essentials.EssentialsHook;
 import io.puharesource.mc.titlemanager.backend.hooks.ezrankslite.EZRanksLiteHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vanishnopacket.VanishNoPacketHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultHook;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
-import io.puharesource.mc.titlemanager.backend.variables.VariableReplacer;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesDefault;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesEZRanksLite;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesVault;
+import io.puharesource.mc.titlemanager.backend.variables.specialrule.VanishRule;
 import io.puharesource.mc.titlemanager.commands.TMCommand;
 import io.puharesource.mc.titlemanager.commands.sub.*;
 import io.puharesource.mc.titlemanager.listeners.ListenerConnection;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public final class TitleManager extends JavaPlugin {
 
     private static TitleManager instance;
     private Config config;
     private ReflectionManager reflectionManager;
+    private VariableManager variableManager;
 
     private static List<Integer> runningAnimations = Collections.synchronizedList(new ArrayList<Integer>());
-    private static List<VariableReplacer> variableReplacers = Collections.synchronizedList(new ArrayList<VariableReplacer>());
-
-    private Map<String, PluginHook> hooks = new HashMap<>();
 
     @Override
     public void onEnable() {
         instance = this;
         reflectionManager = ReflectionManager.createManager();
+        variableManager = new VariableManager();
 
         getServer().getPluginManager().registerEvents(new ListenerConnection(), this);
 
@@ -43,14 +44,16 @@ public final class TitleManager extends JavaPlugin {
         cmd.addSubCommand(new SubAMessage());
         cmd.addSubCommand(new SubAnimations());
 
-        addHook("VAULT", new VaultHook());
-        addHook("ESSENTIALS", new EssentialsHook());
-        addHook("VANISHNOPACKET", new VanishNoPacketHook());
-        addHook("EZRANKSLITE", new EZRanksLiteHook());
+        variableManager.registerHook("VAULT", new VaultHook());
+        variableManager.registerHook("ESSENTIALS", new EssentialsHook());
+        variableManager.registerHook("VANISHNOPACKET", new VanishNoPacketHook());
+        variableManager.registerHook("EZRANKSLITE", new EZRanksLiteHook());
 
-        addVariableReplacer(new VariablesDefault());
-        addVariableReplacer(new VariablesVault());
-        addVariableReplacer(new VariablesEZRanksLite());
+        variableManager.registerRule("VANISH", new VanishRule());
+
+        variableManager.registerVariableReplacer(new VariablesDefault());
+        variableManager.registerVariableReplacer(new VariablesVault());
+        variableManager.registerVariableReplacer(new VariablesEZRanksLite());
 
         config = new Config();
     }
@@ -79,15 +82,7 @@ public final class TitleManager extends JavaPlugin {
         return runningAnimations;
     }
 
-    public void addHook(String pluginName, PluginHook hook) {
-        hooks.put(pluginName.toUpperCase().trim(), hook);
-    }
-
-    public PluginHook getHook(String pluginName) {
-        return hooks.get(pluginName.toUpperCase().trim());
-    }
-
-    public void addVariableReplacer(VariableReplacer replacer) {
-        variableReplacers.add(replacer);
+    public VariableManager getVariableManager() {
+        return variableManager;
     }
 }

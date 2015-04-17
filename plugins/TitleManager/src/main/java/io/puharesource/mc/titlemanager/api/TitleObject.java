@@ -6,7 +6,6 @@ import io.puharesource.mc.titlemanager.api.events.TitleEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.backend.packet.TitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
-import io.puharesource.mc.titlemanager.backend.variables.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -15,8 +14,8 @@ import org.bukkit.entity.Player;
  */
 public class TitleObject implements ITitleObject {
 
-    private String rawTitle;
-    private String rawSubtitle;
+    private String title;
+    private String subtitle;
 
     private int fadeIn = -1;
     private int stay = -1;
@@ -73,10 +72,10 @@ public class TitleObject implements ITitleObject {
         TMPlayer tmPlayer = new TMPlayer(player);
 
         tmPlayer.sendPacket(new TitlePacket(fadeIn, stay, fadeOut));
-        if (rawTitle != null)
-            tmPlayer.sendPacket(new TitlePacket(TitleType.TITLE, TextConverter.containsVariable(rawTitle) ? Variables.replace(player, rawTitle) : rawTitle));
-        if (rawSubtitle != null)
-            tmPlayer.sendPacket(new TitlePacket(TitleType.SUBTITLE, TextConverter.containsVariable(rawSubtitle) ? Variables.replace(player, rawSubtitle) : rawSubtitle));
+        if (title != null)
+            tmPlayer.sendPacket(new TitlePacket(TitleType.TITLE, TextConverter.setVariables(player, title)));
+        if (subtitle != null)
+            tmPlayer.sendPacket(new TitlePacket(TitleType.SUBTITLE, TextConverter.setVariables(player, subtitle)));
     }
 
     /**
@@ -84,7 +83,7 @@ public class TitleObject implements ITitleObject {
      * @return The title text.
      */
     public String getTitle() {
-        return rawTitle;
+        return title;
     }
 
     /**
@@ -93,7 +92,7 @@ public class TitleObject implements ITitleObject {
      * @return The root object.
      */
     public TitleObject setTitle(String title) {
-        rawTitle = title;
+        this.title = title;
         return this;
     }
 
@@ -102,7 +101,7 @@ public class TitleObject implements ITitleObject {
      * @return The subtitle text.
      */
     public String getSubtitle() {
-        return rawSubtitle;
+        return subtitle;
     }
 
     /**
@@ -111,7 +110,7 @@ public class TitleObject implements ITitleObject {
      * @return The root object.
      */
     public TitleObject setSubtitle(String subtitle) {
-        rawSubtitle = subtitle;
+        this.subtitle = subtitle;
         return this;
     }
 
