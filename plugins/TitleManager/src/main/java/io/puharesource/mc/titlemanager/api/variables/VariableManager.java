@@ -87,7 +87,6 @@ public class VariableManager {
                     invoked = "UNSUPPORTED";
                 }
                 text = text.replaceAll("(?i)\\{" + var + "\\}", invoked);
-                System.out.println(text);
             }
         }
 

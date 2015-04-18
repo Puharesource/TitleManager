@@ -28,7 +28,7 @@ public final class ReflectionManager18 extends ReflectionManager {
 
     public Object getIChatBaseComponent(String text) {
         try {
-            return classes.get("ChatComponentText").getConstructor(String.class).newInstance(text);
+            return text == null ? null : classes.get("ChatComponentText").getConstructor(String.class).newInstance(text);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }

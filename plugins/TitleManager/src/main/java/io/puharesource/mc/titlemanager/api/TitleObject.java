@@ -6,6 +6,8 @@ import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import io.puharesource.mc.titlemanager.backend.packet.TitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
+import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
+import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManagerProtocolHack1718;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -180,11 +182,10 @@ public class TitleObject implements ITitleObject {
         }
 
         public Object getHandle() {
-            return TitleManager.getInstance().getReflectionManager().getClasses().get("EnumTitleAction").getHandle().getEnumConstants()[i];
-        }
-
-        public static Class<?> getTypeClass() {
-            return TitleManager.getInstance().getReflectionManager().getClasses().get("EnumTitleAction").getHandle();
+            ReflectionManager manager = TitleManager.getInstance().getReflectionManager();
+            return manager instanceof ReflectionManagerProtocolHack1718 ?
+                    manager.getClasses().get("Action").getHandle().getEnumConstants()[i] :
+                    manager.getClasses().get("EnumTitleAction").getHandle().getEnumConstants()[i];
         }
     }
 }
