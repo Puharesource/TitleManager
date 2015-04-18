@@ -31,7 +31,10 @@ public final class TitlePacket extends Packet {
         this.fadeOut = fadeOut;
 
         try {
-            this.handle = manager.getClasses().get("PacketPlayOutTitle").getConstructor(action.getHandle().getClass(), manager.getClasses().get("IChatBaseComponent").getClass(), Integer.TYPE, Integer.TYPE, Integer.TYPE).newInstance(action.getHandle(), text == null ? null : manager.getIChatBaseComponent(text), fadeIn, stay, fadeOut);
+            this.handle = manager.getClasses().get("PacketPlayOutTitle").createInstance(
+                        action.getHandle(),
+                        text == null ? manager.getIChatBaseComponent("") : manager.getIChatBaseComponent(text),
+                        fadeIn, stay, fadeOut);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }

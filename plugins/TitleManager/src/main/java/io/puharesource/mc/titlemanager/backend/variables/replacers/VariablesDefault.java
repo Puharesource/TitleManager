@@ -4,7 +4,7 @@ import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
 import io.puharesource.mc.titlemanager.api.variables.Variable;
 import io.puharesource.mc.titlemanager.api.variables.VariableReplacer;
-import io.puharesource.mc.titlemanager.backend.variables.specialrule.VanishRule;
+import io.puharesource.mc.titlemanager.backend.hooks.specialrules.VanishRule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,10 +12,6 @@ import org.bukkit.entity.Player;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by Tarkan on 16-04-2015.
- * This class is under the GPLv3 license.
- */
 public final class VariablesDefault implements VariableReplacer {
     @Variable(vars = {"PLAYER", "USERNAME", "NAME"})
     public String nameVar(Player player) { return player.getName(); }

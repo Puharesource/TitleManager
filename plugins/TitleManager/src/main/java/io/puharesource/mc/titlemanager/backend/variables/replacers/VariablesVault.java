@@ -6,17 +6,11 @@ import io.puharesource.mc.titlemanager.api.variables.Variable;
 import io.puharesource.mc.titlemanager.api.variables.VariableReplacer;
 import org.bukkit.entity.Player;
 
-/**
- * Created by Tarkan on 16-04-2015.
- * This class is under the GPLv3 license.
- */
 public final class VariablesVault implements VariableReplacer {
 
-    @Variable(hook = "VAULT", vars = {"GROUP", "GROUP-NAME"})
-    public String groupVar(Player player) {
-        return VaultHook.isPermissionsSupported() ? VaultHook.getPermissions().getPrimaryGroup(player) : null;
-    }
+    @Variable(hook = "VAULT", rule = "VAULT-GROUPS", vars = {"GROUP", "GROUP-NAME"})
+    public String groupVar(Player player) { return VaultHook.getPermissions().getPrimaryGroup(player); }
 
-    @Variable(hook = "VAULT", vars = {"BALANCE", "MONEY"})
-    public String balanceVar(Player player) { return VaultHook.isEconomySupported() ? MiscellaneousUtils.formatNumber(VaultHook.getEconomy().getBalance(player)) : null; }
+    @Variable(hook = "VAULT", rule = "VAULT-ECONOMY", vars = {"BALANCE", "MONEY"})
+    public String balanceVar(Player player) { return MiscellaneousUtils.formatNumber(VaultHook.getEconomy().getBalance(player)); }
 }

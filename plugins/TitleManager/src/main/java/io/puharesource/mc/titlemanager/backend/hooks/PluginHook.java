@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 public abstract class PluginHook {
+    private String pluginName;
+
     public PluginHook(String pluginName) {
         this.pluginName = pluginName;
     }
@@ -15,6 +17,4 @@ public abstract class PluginHook {
     public Plugin getPlugin() {
         return Bukkit.getPluginManager().getPlugin(pluginName);
     }
-
-    private String pluginName;
 }

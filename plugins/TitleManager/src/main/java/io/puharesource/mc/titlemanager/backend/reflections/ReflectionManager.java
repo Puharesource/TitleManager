@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public abstract class ReflectionManager {
+    private static final Pattern VERSION_PATTERN = Pattern.compile("(v|)[0-9][_.][0-9][_.][R0-9]*");
+    private static String version;
+
     /**
      * This will create a ReflectionManager for the current version of Spigot / CraftBukkit.
      */
@@ -31,20 +34,17 @@ public abstract class ReflectionManager {
         String version0 = pkg.substring(pkg.lastIndexOf(".") + 1);
         if (!VERSION_PATTERN.matcher(version0).matches()) version0 = "";
         version = version0;
-        return !version.isEmpty() ? version + "." : "";
+        return ReflectionManager.version = (!version.isEmpty() ? version + "." : "");
     }
 
     public abstract Map<String, ReflectionClass> getClasses();
 
     public abstract Object getIChatBaseComponent(String text);
 
-    private static final Pattern VERSION_PATTERN = Pattern.compile("(v|)[0-9][_.][0-9][_.][R0-9]*");
-    private static String version;
-
-    public static enum ReflectionType {
+    public enum ReflectionType {
         NET_MINECRAFT_SERVER("net.minecraft.server"), ORG_BUKKIT_CRAFTBUKKIT("org.bukkit.craftbukkit");
 
-        private ReflectionType(String path) {
+        ReflectionType(String path) {
             this.path = path;
         }
 

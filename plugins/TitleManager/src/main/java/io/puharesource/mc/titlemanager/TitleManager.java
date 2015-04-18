@@ -5,11 +5,13 @@ import io.puharesource.mc.titlemanager.backend.hooks.essentials.EssentialsHook;
 import io.puharesource.mc.titlemanager.backend.hooks.ezrankslite.EZRanksLiteHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vanishnopacket.VanishNoPacketHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultHook;
+import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultRuleEconomy;
+import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultRuleGroups;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesDefault;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesEZRanksLite;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesVault;
-import io.puharesource.mc.titlemanager.backend.variables.specialrule.VanishRule;
+import io.puharesource.mc.titlemanager.backend.hooks.specialrules.VanishRule;
 import io.puharesource.mc.titlemanager.commands.TMCommand;
 import io.puharesource.mc.titlemanager.commands.sub.*;
 import io.puharesource.mc.titlemanager.listeners.ListenerConnection;
@@ -50,12 +52,15 @@ public final class TitleManager extends JavaPlugin {
         variableManager.registerHook("EZRANKSLITE", new EZRanksLiteHook());
 
         variableManager.registerRule("VANISH", new VanishRule());
+        variableManager.registerRule("VAULT-ECONOMY", new VaultRuleEconomy());
+        variableManager.registerRule("VAULT-GROUPS", new VaultRuleGroups());
 
         variableManager.registerVariableReplacer(new VariablesDefault());
         variableManager.registerVariableReplacer(new VariablesVault());
         variableManager.registerVariableReplacer(new VariablesEZRanksLite());
 
         config = new Config();
+        config.load();
     }
 
     public static TitleManager getInstance() {

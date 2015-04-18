@@ -3,16 +3,22 @@ package io.puharesource.mc.titlemanager.backend.utils;
 import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TitleObject;
+import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
 import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
+import io.puharesource.mc.titlemanager.api.animations.TabTitleAnimation;
+import io.puharesource.mc.titlemanager.api.animations.TitleAnimation;
+import io.puharesource.mc.titlemanager.api.iface.ITabObject;
+import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -26,7 +32,7 @@ public final class MiscellaneousUtils {
         text = text.toUpperCase().trim();
 
         return text.startsWith("ANIMATION:") ?
-                TitleManager.getInstance().getConfigManager().getAnimation(text.substring(10)) : null;
+                Config.getAnimation(text.substring(10)) : null;
     }
 
     public static TitleObject generateTitleObjectFromArgs(int offset, String[] args) {
@@ -78,11 +84,11 @@ public final class MiscellaneousUtils {
 
         TitleObject object = subtitle == null ? new TitleObject(title, TitleObject.TitleType.TITLE) : new TitleObject(title, subtitle);
 
-        ConfigurationSection section = TitleManager.getInstance().getConfigManager().getConfig().getConfigurationSection("welcome_message");
+        ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
 
-        object.setFadeIn(fadeIn != -1 ? fadeIn : section.getInt("fadeIn"));
-        object.setStay(stay != -1 ? stay : section.getInt("stay"));
-        object.setFadeOut(fadeOut != -1 ? fadeOut : section.getInt("fadeOut"));
+        object.setFadeIn(fadeIn != -1 ? fadeIn : config.welcomeMessageFadeIn);
+        object.setStay(stay != -1 ? stay : config.welcomeMessageStay);
+        object.setFadeOut(fadeOut != -1 ? fadeOut : config.welcomeMessageFadeOut);
 
         return object;
     }
@@ -98,11 +104,11 @@ public final class MiscellaneousUtils {
     }
 
     public static String formatNumber(BigDecimal number) {
-        Config config = TitleManager.getInstance().getConfigManager();
+        ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
 
-        if (config.isNumberFormatEnabled()) {
+        if (config.numberFormatEnabled) {
             DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-            return new DecimalFormat(config.getNumberFormat(), symbols).format(number);
+            return new DecimalFormat(config.numberFormat, symbols).format(number);
         }
 
         return String.valueOf(number.doubleValue());
@@ -120,5 +126,62 @@ public final class MiscellaneousUtils {
         }
 
         return correctPlayer;
+    }
+
+    public static AnimationFrame getFrameFromString(String frame) {
+        int fadeIn = -1;
+        int stay = -1;
+        int fadeOut = -1;
+
+        frame = MiscellaneousUtils.format(frame);
+        if (frame.startsWith("[") && frame.length() > 1) {
+            char[] chars = frame.toCharArray();
+            String timesString = "";
+            for (int i = 1; frame.length() > i; i++) {
+                char c = chars[i];
+                if (c == ']') {
+                    frame = frame.substring(i + 1);
+                    break;
+                }
+
+                timesString += chars[i];
+            }
+
+
+            try {
+                String[] times = timesString.split(";", 3);
+                fadeIn = Integer.valueOf(times[0]);
+                stay = Integer.valueOf(times[1]);
+                fadeOut = Integer.parseInt(times[2]);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        return new AnimationFrame(frame, fadeIn, stay, fadeOut);
+    }
+
+    public static ITabObject generateTabObject(final String header, final String footer) {
+        Object headerObject = isValidAnimationString(header);
+        Object footerObject = isValidAnimationString(footer);
+
+        headerObject = headerObject == null ? MiscellaneousUtils.format(header).replace("\\n", "\n") : headerObject;
+        footerObject = footerObject == null ? MiscellaneousUtils.format(footer).replace("\\n", "\n") : footerObject;
+
+        headerObject = headerObject instanceof String ? new FrameSequence(Arrays.asList(new AnimationFrame((String) headerObject, 0, 5, 0))) : headerObject;
+        footerObject = footerObject instanceof String ? new FrameSequence(Arrays.asList(new AnimationFrame((String) footerObject, 0, 5, 0))) : footerObject;
+
+        return new TabTitleAnimation(headerObject, footerObject);
+    }
+
+    public static ITitleObject generateTitleObject(final String title, final String subtitle, final int fadeIn, final int stay, final int fadeOut) {
+        Object titleObject = isValidAnimationString(title);
+        Object subtitleObject = isValidAnimationString(subtitle);
+
+        titleObject = titleObject == null ? MiscellaneousUtils.format(title).replace("\\n", "\n") : titleObject;
+        subtitleObject = subtitleObject == null ? MiscellaneousUtils.format(subtitle).replace("\\n", "\n") : subtitleObject;
+
+        if (titleObject instanceof FrameSequence || subtitleObject instanceof FrameSequence)
+            return new TitleAnimation(title, subtitle);
+        return new TitleObject((String) titleObject, (String) subtitleObject).setFadeIn(fadeIn).setStay(stay).setFadeOut(fadeOut);
     }
 }

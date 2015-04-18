@@ -12,5 +12,4 @@ public final class VanishNoPacketHook extends PluginHook {
     public boolean isPlayerVanished(Player player) {
         return ((VanishPlugin) getPlugin()).getManager().isVanished(player);
     }
-
 }

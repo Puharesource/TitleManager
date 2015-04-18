@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.api.variables;
 
+import io.puharesource.mc.titlemanager.backend.config.ConfigField;
 import io.puharesource.mc.titlemanager.backend.hooks.PluginHook;
 import io.puharesource.mc.titlemanager.backend.variables.RegisteredVariable;
 import org.bukkit.entity.Player;
@@ -26,11 +27,10 @@ public class VariableManager {
         replacers.put(rReplacer, replacer);
 
         for (Method method : replacer.getClass().getMethods()) {
-            Annotation[] annotations = method.getAnnotations();
-            if (annotations.length <= 0) continue;
+            if (!method.isAnnotationPresent(ConfigField.class)) continue;
 
             Variable variable = null;
-            for (Annotation annotation : annotations) {
+            for (Annotation annotation : method.getDeclaredAnnotations()) {
                 if (annotation instanceof Variable) {
                     variable = (Variable) annotation;
                     break;
@@ -52,6 +52,14 @@ public class VariableManager {
 
     public void registerRule(final String name, final VariableRule rule) {
         rules.put(name.toUpperCase().trim(), rule);
+    }
+
+    public PluginHook getHook(final String name) {
+        return hooks.get(name.toUpperCase().trim());
+    }
+
+    public VariableRule getRule(final String name) {
+        return rules.get(name.toUpperCase().trim());
     }
 
     public String replaceText(final Player player, String text) {

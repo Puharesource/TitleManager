@@ -1,4 +1,4 @@
-package io.puharesource.mc.titlemanager.backend.variables.specialrule;
+package io.puharesource.mc.titlemanager.backend.hooks.specialrules;
 
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.backend.hooks.essentials.EssentialsHook;
@@ -7,7 +7,7 @@ import io.puharesource.mc.titlemanager.api.variables.VariableRule;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class VanishRule extends VariableRule {
+public final class VanishRule extends VariableRule {
     @Override
     public boolean rule(Player player) {
         return getEssentials().isEnabled() || getVanishHook().isEnabled();
@@ -30,10 +30,10 @@ public class VanishRule extends VariableRule {
     }
 
     private static EssentialsHook getEssentials() {
-        return ((EssentialsHook) (TitleManager.getInstance().getHook("ESSENTIALS")));
+        return ((EssentialsHook) (TitleManager.getInstance().getVariableManager().getHook("ESSENTIALS")));
     }
 
     private static VanishNoPacketHook getVanishHook() {
-        return ((VanishNoPacketHook) (TitleManager.getInstance().getHook("VANISHNOPACKET")));
+        return ((VanishNoPacketHook) (TitleManager.getInstance().getVariableManager().getHook("VANISHNOPACKET")));
     }
 }

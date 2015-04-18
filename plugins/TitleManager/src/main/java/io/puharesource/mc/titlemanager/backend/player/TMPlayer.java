@@ -37,7 +37,7 @@ public final class TMPlayer implements Comparable<TMPlayer> {
         Object connection = getPlayerConnection();
         ReflectionManager reflectionManager = TitleManager.getInstance().getReflectionManager();
         try {
-            reflectionManager.getClasses().get("PlayerConnection").getMethod("sendPacket", connection.getClass(), reflectionManager.getClasses().get("Packet").getHandle().getClass()).invoke(connection, packet.getHandle());
+            reflectionManager.getClasses().get("PlayerConnection").getMethod("sendPacket", reflectionManager.getClasses().get("Packet").getHandle()).invoke(connection, packet.getHandle());
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }

@@ -4,6 +4,7 @@ import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TabTitleCache;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
+import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,26 +16,27 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class ListenerConnection implements Listener {
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
-        final Config config = TitleManager.getInstance().getConfigManager();
+        final Config configManager = TitleManager.getInstance().getConfigManager();
+        final ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
 
-        if (!config.isUsingConfig()) return;
+        if (!config.usingConfig) return;
 
 
-        if (config.isWelcomeMessageEnabled()) {
+        if (config.welcomeMessageEnabled) {
             Bukkit.getScheduler().runTaskLater(TitleManager.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    (event.getPlayer().hasPlayedBefore() ? config.getWelcomeObject() : config.getFirstWelcomeObject()).send(event.getPlayer());
+                    (event.getPlayer().hasPlayedBefore() ? configManager.getWelcomeObject() : configManager.getFirstWelcomeObject()).send(event.getPlayer());
                 }
             }, 10l);
         }
 
 
-        if (config.isTabmenuEnabled() && !(config.getTabTitleObject() instanceof IAnimation)) {
+        if (config.tabmenuEnabled && !(configManager.getTabTitleObject() instanceof IAnimation)) {
             Bukkit.getScheduler().runTaskLater(TitleManager.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    config.getTabTitleObject().send(event.getPlayer());
+                    configManager.getTabTitleObject().send(event.getPlayer());
                 }
             }, 10l);
         }
@@ -46,7 +48,7 @@ public class ListenerConnection implements Listener {
         TabTitleCache.removeTabTitle(event.getPlayer().getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onKick(PlayerKickEvent event) {
         TabTitleCache.removeTabTitle(event.getPlayer().getUniqueId());
     }

@@ -23,11 +23,10 @@ public final class ConfigSerializer {
         Object object = clazz.getConstructors()[0].newInstance();
 
         for (Field field : clazz.getDeclaredFields()) {
-            Annotation[] annotations = field.getAnnotations();
-            if (annotations.length <= 0) continue;
+            if (!field.isAnnotationPresent(ConfigField.class)) continue;
 
             ConfigField configField = null;
-            for (Annotation annotation : annotations) {
+            for (Annotation annotation : field.getDeclaredAnnotations()) {
                 if (annotation instanceof ConfigField) {
                     configField = (ConfigField) annotation;
                     break;
@@ -53,19 +52,25 @@ public final class ConfigSerializer {
         T object = (T) clazz.getConstructors()[0].newInstance();
 
         for (Field field : clazz.getDeclaredFields()) {
-            Annotation[] annotations = field.getAnnotations();
-            if (annotations.length <= 0) continue;
+            System.out.println("Deserialize> Field: " + field.getName());
+            if (!field.isAnnotationPresent(ConfigField.class)) continue;
 
             ConfigField configField = null;
-            for (Annotation annotation : annotations) {
+            for (Annotation annotation : field.getDeclaredAnnotations()) {
+                System.out.println("Deserialize> Annotation: " + annotation.getClass().toString());
                 if (annotation instanceof ConfigField) {
                     configField = (ConfigField) annotation;
+                    System.out.println("Deserialize> Annotation Found");
                     break;
                 }
             }
 
-            if (configField != null)
+            if (configField != null) {
+                System.out.println("Deserialize> get: " + configField.path() + " to: " + config.get(configField.path()));
+                System.out.println("Deserialize> pre:" + field.get(object).toString());
                 field.set(object, config.get(configField.path()));
+                System.out.println("Deserialize> after:" + field.get(object).toString());
+            }
         }
 
         return object;
@@ -82,11 +87,10 @@ public final class ConfigSerializer {
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
         for (Field field : object.getClass().getDeclaredFields()) {
-            Annotation[] annotations = field.getAnnotations();
-            if (annotations.length <= 0) continue;
+            if (!field.isAnnotationPresent(ConfigField.class)) continue;
 
             ConfigField configField = null;
-            for (Annotation annotation : annotations) {
+            for (Annotation annotation : field.getDeclaredAnnotations()) {
                 if (annotation instanceof ConfigField) {
                     configField = (ConfigField) annotation;
                     break;

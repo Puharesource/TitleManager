@@ -6,6 +6,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public final class ReflectionClass {
+    private final Class<?> handle;
+    private final String path;
+
     public ReflectionClass(String path) throws ClassNotFoundException {
         handle = Class.forName(path);
         this.path = path;
@@ -13,7 +16,7 @@ public final class ReflectionClass {
 
     public Method getMethod(String methodName, Class<?>... params) throws NoSuchMethodException {
         main:
-        for (Method method : handle.getMethods()) {
+        for (Method method : handle.getDeclaredMethods()) {
             if (!method.getName().equals(methodName) || method.getParameterTypes().length != params.length) continue;
             for (int i = 0; method.getParameterTypes().length > i; i++)
                 if (!method.getParameterTypes()[i].equals(params[i])) continue main;
@@ -23,22 +26,9 @@ public final class ReflectionClass {
         throw new NoSuchMethodException("Couldn't find method \"" + methodName + "\" for " + handle.getName() + ".");
     }
 
-    public Method getDeclaredMethod(String methodName, Class<?>... params) throws NoSuchMethodException {
-        main:
-        for (Method method : handle.getDeclaredMethods()) {
-            if (!method.getName().equals(methodName) || method.getParameterTypes().length != params.length) continue;
-            for (int i = 0; method.getParameterTypes().length > i; i++)
-                if (!method.getParameterTypes()[i].equals(params[i])) continue main;
-            method.setAccessible(true);
-            return method;
-        }
-
-        throw new NoSuchMethodException("Couldn't find declared method \"" + methodName + "\" for " + handle.getName() + ".");
-    }
-
     public Constructor getConstructor(Class<?>... params) throws NoSuchMethodException {
         main:
-        for (Constructor constructor : handle.getConstructors()) {
+        for (Constructor constructor : handle.getDeclaredConstructors()) {
             if (constructor.getParameterTypes().length != params.length) continue;
             for (int i = 0; constructor.getParameterTypes().length > i; i++)
                 if (!constructor.getParameterTypes()[i].equals(params[i])) continue main;
@@ -54,7 +44,6 @@ public final class ReflectionClass {
         for (int i = 0; objects.length > i; i++) {
             classes[i] = objects[i].getClass();
         }
-
 
         return getConstructor(classes).newInstance(objects);
     }
@@ -74,7 +63,4 @@ public final class ReflectionClass {
     public final Class<?> getHandle() {
         return handle;
     }
-
-    private final Class<?> handle;
-    private final String path;
 }

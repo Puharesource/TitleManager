@@ -5,10 +5,6 @@ import io.puharesource.mc.titlemanager.api.variables.Variable;
 import io.puharesource.mc.titlemanager.api.variables.VariableReplacer;
 import org.bukkit.entity.Player;
 
-/**
- * Created by Tarkan on 16-04-2015.
- * This class is under the GPLv3 license.
- */
 public final class VariablesEZRanksLite implements VariableReplacer {
     @Variable(hook = "EZRANKSLITE", vars = {"EZRL.RANKPREFIX"})
     public String rankPrefixVar(Player player) { return EZRanksLiteHook.getRankPrefix(player); }

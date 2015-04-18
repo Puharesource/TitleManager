@@ -15,7 +15,7 @@ public final class TabmenuPacket extends Packet {
             if (header != null) {
                 Field field = manager.getClasses().get("PacketPlayOutPlayerListHeaderFooter").getHandle().getDeclaredField("a");
                 field.setAccessible(true);
-                field.set(handle, header);
+                field.set(handle, TitleManager.getInstance().getReflectionManager().getIChatBaseComponent(header));
                 field.setAccessible(false);
             }
 
@@ -23,7 +23,7 @@ public final class TabmenuPacket extends Packet {
             if (footer != null) {
                 Field field = manager.getClasses().get("PacketPlayOutPlayerListHeaderFooter").getHandle().getDeclaredField("b");
                 field.setAccessible(true);
-                field.set(handle, footer);
+                field.set(handle, TitleManager.getInstance().getReflectionManager().getIChatBaseComponent(footer));
                 field.setAccessible(false);
             }
         } catch (InstantiationException | IllegalAccessException | NoSuchFieldException e) {

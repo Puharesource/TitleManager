@@ -1,6 +1,5 @@
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'groovy'
 
     group = 'io.puharesource.mc'
     version = ''

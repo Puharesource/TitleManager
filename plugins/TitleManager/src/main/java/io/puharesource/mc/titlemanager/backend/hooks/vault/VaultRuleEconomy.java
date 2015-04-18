@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 public final class VaultRuleEconomy extends VariableRule {
     @Override
     public boolean rule(Player player) {
-        return TitleManager.getInstance().getHook("VAULT").isEnabled() && VaultHook.isEconomySupported();
+        return TitleManager.getInstance().getVariableManager().getHook("VAULT").isEnabled() && VaultHook.isEconomySupported();
     }
 
     @Override

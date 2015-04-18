@@ -1,9 +1,9 @@
 package io.puharesource.mc.titlemanager.api;
 
-import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.events.TitleEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import io.puharesource.mc.titlemanager.backend.packet.TitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
 import org.bukkit.Bukkit;
@@ -46,14 +46,12 @@ public class TitleObject implements ITitleObject {
     }
     
     private void updateTimes() {
-        Config config = TitleManager.getInstance().getConfigManager();
-        if (config.isUsingConfig()) return;
+        ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
+        if (config.usingConfig) return;
 
-        try {
-            fadeIn = config.getConfig().getInt("welcome_message.fadeIn");
-            stay = config.getConfig().getInt("welcome_message.stay");
-            fadeOut = config.getConfig().getInt("welcome_message.fadeOut");
-        } catch (Exception ignored) {}
+        fadeIn = config.welcomeMessageFadeIn;
+        stay = config.welcomeMessageStay;
+        fadeOut = config.welcomeMessageFadeOut;
     }
     
     @Override
@@ -168,7 +166,7 @@ public class TitleObject implements ITitleObject {
         return this;
     }
 
-    public static enum TitleType {
+    public enum TitleType {
         TITLE(0),
         SUBTITLE(1),
         TIMES(2),
@@ -177,12 +175,16 @@ public class TitleObject implements ITitleObject {
 
         private final int i;
 
-        private TitleType(final int i) {
+        TitleType(final int i) {
             this.i = i;
         }
 
         public Object getHandle() {
             return TitleManager.getInstance().getReflectionManager().getClasses().get("EnumTitleAction").getHandle().getEnumConstants()[i];
+        }
+
+        public static Class<?> getTypeClass() {
+            return TitleManager.getInstance().getReflectionManager().getClasses().get("EnumTitleAction").getHandle();
         }
     }
 }
