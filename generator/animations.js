@@ -1,6 +1,6 @@
 /*!
  * TitleManager Generator By Tarkan Nielsen.
- * I am by now means a JavaScripts developer, I just made this script to help others.
+ * I am by no means a JavaScripts developer, I just made this script to help others.
  */
 
 var TypeEnum = {

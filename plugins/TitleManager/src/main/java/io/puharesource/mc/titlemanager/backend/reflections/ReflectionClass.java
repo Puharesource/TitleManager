@@ -31,7 +31,7 @@ public final class ReflectionClass {
         for (Constructor constructor : handle.getDeclaredConstructors()) {
             if (constructor.getParameterTypes().length != params.length) continue;
             for (int i = 0; constructor.getParameterTypes().length > i; i++)
-                if (!constructor.getParameterTypes()[i].equals(params[i])) continue main;
+                if (constructor.getParameterTypes()[i] != params[i]) continue main;
             return constructor;
         }
 
