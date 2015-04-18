@@ -1,6 +1,5 @@
 package io.puharesource.mc.titlemanager.api.variables;
 
-import io.puharesource.mc.titlemanager.backend.config.ConfigField;
 import io.puharesource.mc.titlemanager.backend.hooks.PluginHook;
 import io.puharesource.mc.titlemanager.backend.variables.RegisteredVariable;
 import org.bukkit.entity.Player;
@@ -26,9 +25,8 @@ public class VariableManager {
         int rReplacer = replacers.size();
         replacers.put(rReplacer, replacer);
 
-        for (Method method : replacer.getClass().getMethods()) {
-            if (!method.isAnnotationPresent(ConfigField.class)) continue;
-
+        for (Method method : replacer.getClass().getDeclaredMethods()) {
+            if (!method.isAnnotationPresent(Variable.class)) continue;
             Variable variable = null;
             for (Annotation annotation : method.getDeclaredAnnotations()) {
                 if (annotation instanceof Variable) {
@@ -64,10 +62,22 @@ public class VariableManager {
 
     public String replaceText(final Player player, String text) {
         for (RegisteredVariable variable : variables) {
-            PluginHook hook = hooks.get(variable.getVariable().hook().toUpperCase().trim());
-            if (!hook.isEnabled()) continue;
-            VariableRule rule = rules.get(variable.getVariable().rule().toUpperCase().trim());
-            if (!rule.rule(player)) continue;
+
+            String hookString = variable.getVariable().hook();
+            if (!hookString.isEmpty()) {
+                PluginHook hook = hooks.get(hookString.toUpperCase().trim());
+                if (hook != null && !hook.isEnabled()) {
+                    continue;
+                }
+            }
+
+            String ruleString = variable.getVariable().rule();
+            if (!ruleString.isEmpty()) {
+                VariableRule rule = rules.get(ruleString.toUpperCase().trim());
+                if (rule != null && !rule.rule(player)) {
+                    continue;
+                }
+            }
 
             for (String var : variable.getVariable().vars()) {
                 String invoked;
@@ -76,7 +86,8 @@ public class VariableManager {
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     invoked = "UNSUPPORTED";
                 }
-                text = var.replaceAll("(?i)\\{" + var + "\\}", invoked);
+                text = text.replaceAll("(?i)\\{" + var + "\\}", invoked);
+                System.out.println(text);
             }
         }
 

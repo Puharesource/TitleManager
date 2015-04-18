@@ -1,7 +1,7 @@
 package io.puharesource.mc.titlemanager.backend.reflections;
 
-import io.puharesource.mc.titlemanager.backend.reflections.managers.LatestReflectionManager;
-import io.puharesource.mc.titlemanager.backend.reflections.managers.SecondReflectionManager;
+import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManager183;
+import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManager18;
 import org.bukkit.Bukkit;
 
 import java.util.Map;
@@ -15,9 +15,9 @@ public abstract class ReflectionManager {
      * This will create a ReflectionManager for the current version of Spigot / CraftBukkit.
      */
     public static ReflectionManager createManager() {
-        if (getServerVersion().equalsIgnoreCase("v1_8_R2")) return new LatestReflectionManager();
-        else if (getServerVersion().equalsIgnoreCase("v1_8_R1")) return new SecondReflectionManager();
-        return new LatestReflectionManager();
+        if (getServerVersion().equalsIgnoreCase("v1_8_R2.")) return new ReflectionManager183();
+        else if (getServerVersion().equalsIgnoreCase("v1_8_R1.")) return new ReflectionManager18();
+        return new ReflectionManager183();
     }
 
     /**
