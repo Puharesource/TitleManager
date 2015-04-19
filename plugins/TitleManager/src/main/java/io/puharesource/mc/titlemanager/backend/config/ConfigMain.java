@@ -59,6 +59,19 @@ public class ConfigMain {
     public String firstJoinSubtitle = "&7Hope you enjoy your stay!";
 
     /*
+     * New player actionbar-welcome section
+     * ----------------------------------
+     */
+    @ConfigField(path = "actionbar-welcome.enabled")
+    public boolean actionbarWelcomeEnabled = true;
+
+    @ConfigField(path = "actionbar-welcome.message")
+    public String actionbarWelcomeMessage = "&a&lWelcome!";
+
+    @ConfigField(path = "actionbar-welcome.first-join.message")
+    public String actionbarFirstWelcomeMessage = "&2&lWelcome It's your first time!";
+
+    /*
      * Number format
      * -------------
      */

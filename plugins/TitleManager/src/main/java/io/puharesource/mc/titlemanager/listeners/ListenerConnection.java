@@ -6,6 +6,7 @@ import io.puharesource.mc.titlemanager.api.TabTitleCache;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,13 +21,13 @@ public class ListenerConnection implements Listener {
         final ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
 
         if (!config.usingConfig) return;
-
+        final Player player = event.getPlayer();
 
         if (config.welcomeMessageEnabled) {
             Bukkit.getScheduler().runTaskLater(TitleManager.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    (event.getPlayer().hasPlayedBefore() ? configManager.getWelcomeObject() : configManager.getFirstWelcomeObject()).send(event.getPlayer());
+                    (player.hasPlayedBefore() ? configManager.getWelcomeObject() : configManager.getFirstWelcomeObject()).send(player);
                 }
             }, 10l);
         }
@@ -36,11 +37,19 @@ public class ListenerConnection implements Listener {
             Bukkit.getScheduler().runTaskLater(TitleManager.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    configManager.getTabTitleObject().send(event.getPlayer());
+                    configManager.getTabTitleObject().send(player);
                 }
             }, 10l);
         }
 
+        if (config.actionbarWelcomeEnabled) {
+            Bukkit.getScheduler().runTaskLater(TitleManager.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    (player.hasPlayedBefore() ? configManager.getActionbarWelcomeObject() : configManager.getActionbarFirstWelcomeObject()).send(player);
+                }
+            }, 10l);
+        }
     }
 
     @EventHandler

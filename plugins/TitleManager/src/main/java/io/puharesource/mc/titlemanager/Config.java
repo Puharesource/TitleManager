@@ -2,6 +2,7 @@ package io.puharesource.mc.titlemanager;
 
 import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
 import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
+import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.backend.config.ConfigFile;
@@ -25,15 +26,22 @@ public class Config {
     private Map<String, FrameSequence> animations = new HashMap<>();
     private ITabObject tabmenu;
     private ITitleObject welcomeTitle, firstWelcomeTitle;
+    private IActionbarObject actionbar, firstActionbar;
 
     private ConfigMain config;
 
     public void load() {
         TitleManager plugin = TitleManager.getInstance();
 
-        configFile = new ConfigFile(plugin, plugin.getDataFolder(), "config", true);
+        configFile = new ConfigFile(plugin, plugin.getDataFolder(), "config", false);
         animationConfigFile = new ConfigFile(plugin, plugin.getDataFolder(), "animations", true);
 
+        configFile.reload();
+        try {
+            ConfigSerializer.saveDefaults(ConfigMain.class, configFile.getFile(), false);
+        } catch (IllegalAccessException | InvocationTargetException | IOException | InstantiationException e) {
+            e.printStackTrace();
+        }
         ConfigUpdater.update(plugin, configFile);
 
         plugin.reloadConfig();
@@ -50,9 +58,8 @@ public class Config {
         configFile.reload();
 
         try {
-            ConfigSerializer.saveDefaults(ConfigMain.class, configFile.getFile(), false);
             config = ConfigSerializer.deserialize(ConfigMain.class, configFile.getFile());
-        } catch (IllegalAccessException | InvocationTargetException | InstantiationException | IOException e) {
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }
 
@@ -85,6 +92,11 @@ public class Config {
             firstWelcomeTitle = MiscellaneousUtils.generateTitleObject(config.firstJoinTitle, config.firstJoinSubtitle,
                     config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
         }
+
+        if (config.actionbarWelcomeEnabled) {
+            actionbar = MiscellaneousUtils.generateActionbarObject(config.actionbarWelcomeMessage);
+            firstActionbar = MiscellaneousUtils.generateActionbarObject(config.actionbarFirstWelcomeMessage);
+        }
     }
 
     public ConfigMain getConfig() {
@@ -109,5 +121,13 @@ public class Config {
 
     public ITabObject getTabTitleObject() {
         return tabmenu;
+    }
+
+    public IActionbarObject getActionbarWelcomeObject() {
+        return actionbar;
+    }
+
+    public IActionbarObject getActionbarFirstWelcomeObject() {
+        return firstActionbar;
     }
 }

@@ -2,11 +2,10 @@ package io.puharesource.mc.titlemanager.backend.utils;
 
 import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
 import io.puharesource.mc.titlemanager.api.TitleObject;
-import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
-import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
-import io.puharesource.mc.titlemanager.api.animations.TabTitleAnimation;
-import io.puharesource.mc.titlemanager.api.animations.TitleAnimation;
+import io.puharesource.mc.titlemanager.api.animations.*;
+import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
@@ -183,5 +182,13 @@ public final class MiscellaneousUtils {
         if (titleObject instanceof FrameSequence || subtitleObject instanceof FrameSequence)
             return new TitleAnimation(title, subtitle);
         return new TitleObject((String) titleObject, (String) subtitleObject).setFadeIn(fadeIn).setStay(stay).setFadeOut(fadeOut);
+    }
+
+    public static IActionbarObject generateActionbarObject(final String message) {
+        Object messageObject = isValidAnimationString(message);
+
+        messageObject = messageObject == null ? MiscellaneousUtils.format(message).replace("\\n", "\n") : messageObject;
+
+        return messageObject instanceof String ? new ActionbarTitleObject((String) messageObject) : new ActionbarTitleAnimation((FrameSequence) messageObject);
     }
 }
