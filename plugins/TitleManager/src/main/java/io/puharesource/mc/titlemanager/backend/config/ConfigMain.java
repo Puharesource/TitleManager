@@ -36,7 +36,7 @@ public class ConfigMain {
     @ConfigField(path = "welcome_message.title")
     public String welcomeMessageTitle = "&7Welcome back &a{PLAYER}&7!";
 
-    @ConfigField(path = "welcome_message.title")
+    @ConfigField(path = "welcome_message.subtitle")
     public String welcomeMessageSubtitle = "&7To my server";
 
     @ConfigField(path = "welcome_message.fadeIn")

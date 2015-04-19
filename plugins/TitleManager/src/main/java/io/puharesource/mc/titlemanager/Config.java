@@ -58,8 +58,9 @@ public class Config {
         configFile.reload();
 
         try {
+            ConfigSerializer.saveDefaults(ConfigMain.class, configFile.getFile(), false);
             config = ConfigSerializer.deserialize(ConfigMain.class, configFile.getFile());
-        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException | IOException e) {
             e.printStackTrace();
         }
 
