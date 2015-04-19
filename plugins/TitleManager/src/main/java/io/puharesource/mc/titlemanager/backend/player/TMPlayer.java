@@ -4,6 +4,7 @@ import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.backend.packet.Packet;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionClass;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
+import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManagerProtocolHack1718;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -34,6 +35,7 @@ public final class TMPlayer implements Comparable<TMPlayer> {
     }
 
     public void sendPacket(final Packet packet) {
+        if (!shouldSendPacket()) return;
         Object connection = getPlayerConnection();
         ReflectionManager reflectionManager = TitleManager.getInstance().getReflectionManager();
         try {
@@ -61,6 +63,18 @@ public final class TMPlayer implements Comparable<TMPlayer> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private boolean shouldSendPacket() {
+        if (!(TitleManager.getInstance().getReflectionManager() instanceof ReflectionManagerProtocolHack1718)) return true;
+        try {
+            Object playerConnection = getPlayerConnection();
+            Object networkManager = playerConnection.getClass().getField("networkManager").get(playerConnection);
+            return (int) networkManager.getClass().getMethod("getVersion").invoke(networkManager) == 47;
+        } catch (NoSuchFieldException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public int getPing() {
