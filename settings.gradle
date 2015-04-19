@@ -3,3 +3,6 @@ rootProject.name = 'TitleManager-Main'
 include 'plugins/TitleManager'
 rootProject.children.find { it.name == 'plugins/TitleManager' }.name = 'TitleManager'
 
+include 'plugins/TitleAnnouncer'
+rootProject.children.find { it.name == 'plugins/TitleAnnouncer' }.name = 'TitleAnnouncer'
+
