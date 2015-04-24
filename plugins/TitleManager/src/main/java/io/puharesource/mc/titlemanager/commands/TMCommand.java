@@ -6,7 +6,7 @@ import org.bukkit.command.*;
 
 import java.util.*;
 
-public class TMCommand implements CommandExecutor, TabCompleter {
+public final class TMCommand implements CommandExecutor, TabCompleter {
 
     private Map<String, TMSubCommand> commands = new HashMap<>();
 

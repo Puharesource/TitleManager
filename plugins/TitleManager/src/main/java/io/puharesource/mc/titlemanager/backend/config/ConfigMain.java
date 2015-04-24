@@ -12,6 +12,8 @@ public class ConfigMain {
     @ConfigField(path = "config-version")
     public int configVersion = 3;
 
+    @ConfigField(path = "using-bungeecord")
+    public boolean usingBungeecord = false;
 
     /*
      * Tabmenu section

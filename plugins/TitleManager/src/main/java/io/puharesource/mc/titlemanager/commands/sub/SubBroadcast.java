@@ -9,13 +9,13 @@ import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class SubBroadcast extends TMSubCommand {
+public final class SubBroadcast extends TMSubCommand {
     public SubBroadcast() {
         super("bc", "titlemanager.command.broadcast", "<message>", "Sends a title message to everyone on the server, put inside of the message, to add a subtitle.", "broadcast");
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String[] args, String[] params) {
         if (args.length < 1) {
             syntaxError(sender);
             return;

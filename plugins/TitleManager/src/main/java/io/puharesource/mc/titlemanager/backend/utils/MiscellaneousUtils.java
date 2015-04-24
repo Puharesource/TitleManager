@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -166,8 +166,8 @@ public final class MiscellaneousUtils {
         headerObject = headerObject == null ? MiscellaneousUtils.format(header).replace("\\n", "\n") : headerObject;
         footerObject = footerObject == null ? MiscellaneousUtils.format(footer).replace("\\n", "\n") : footerObject;
 
-        headerObject = headerObject instanceof String ? new FrameSequence(Arrays.asList(new AnimationFrame((String) headerObject, 0, 5, 0))) : headerObject;
-        footerObject = footerObject instanceof String ? new FrameSequence(Arrays.asList(new AnimationFrame((String) footerObject, 0, 5, 0))) : footerObject;
+        headerObject = headerObject instanceof String ? new FrameSequence(Collections.singletonList(new AnimationFrame((String) headerObject, 0, 5, 0))) : headerObject;
+        footerObject = footerObject instanceof String ? new FrameSequence(Collections.singletonList(new AnimationFrame((String) footerObject, 0, 5, 0))) : footerObject;
 
         return new TabTitleAnimation(headerObject, footerObject);
     }

@@ -7,13 +7,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SubReload extends TMSubCommand {
+public final class SubReload extends TMSubCommand {
     public SubReload() {
         super("reload", "titlemanager.command.reload", "", "Reloads the config.");
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String[] args, String[] params) {
         TitleManager.getInstance().getConfigManager().reload();
         sender.sendMessage(ChatColor.GREEN + "The configuration has been reloaded.");
         if (sender instanceof Player)

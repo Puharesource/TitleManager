@@ -18,9 +18,13 @@ public final class ActionbarTitlePacket extends Packet {
             Map<String, ReflectionClass> classes = manager.getClasses();
 
             if (manager instanceof ReflectionManagerProtocolHack1718) {
-                handle = classes.get("PacketPlayOutChat").
-                        getConstructor(classes.get("IChatBaseComponent").getHandle(), Integer.TYPE)
-                        .newInstance(manager.getIChatBaseComponent(text), 2);
+                try {
+                    handle = classes.get("PacketPlayOutChat").
+                            getConstructor(classes.get("IChatBaseComponent").getHandle(), Integer.TYPE)
+                            .newInstance(manager.getIChatBaseComponent(text), 2);
+                } catch (NoSuchMethodException e) {
+                    System.out.println("(If you're using Spigot #1649) Your version of Spigot #1649 doesn't support actionbar messages. Please find that spigot version from another source!");
+                }
             } else {
                 handle = classes.get("PacketPlayOutChat").
                         getConstructor(classes.get("IChatBaseComponent").getHandle(), Byte.TYPE)

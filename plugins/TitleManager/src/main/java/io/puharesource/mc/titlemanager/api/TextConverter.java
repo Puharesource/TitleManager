@@ -1,6 +1,8 @@
 package io.puharesource.mc.titlemanager.api;
 
 import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.backend.hooks.PluginHook;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -19,14 +21,21 @@ public class TextConverter {
     public static String setVariables(final Player player, final String text) {
         if (!containsVariable(text)) return text;
 
-        return TitleManager.getInstance().getVariableManager().replaceText(player, text);
+        String replacedText = TitleManager.getInstance().getVariableManager().replaceText(player, text);
+
+        PluginHook placeholderAPIHook = TitleManager.getInstance().getVariableManager().getHook("PLACEHOLDERAPI");
+        if (placeholderAPIHook != null && placeholderAPIHook.isEnabled()) {
+            replacedText = PlaceholderAPI.setPlaceholders(player, replacedText);
+        }
+
+        return replacedText;
     }
 
     public static boolean containsVariable(String str, String... strings) {
-        if (str != null && str.contains("{") && str.contains("}")) return true;
+        if (str != null && ((str.contains("{") && str.contains("}")) || str.contains("%"))) return true;
 
         for (String str0 : strings)
-            if (str != null && str0.contains("{") || str0.contains("}")) return true;
+            if (str0 != null && ((str0.contains("{") && str0.contains("}")) || str0.contains("%"))) return true;
 
         return false;
     }

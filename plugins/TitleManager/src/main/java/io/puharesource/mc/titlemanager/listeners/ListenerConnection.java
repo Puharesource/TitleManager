@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class ListenerConnection implements Listener {
+public final class ListenerConnection implements Listener {
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
         final Config configManager = TitleManager.getInstance().getConfigManager();

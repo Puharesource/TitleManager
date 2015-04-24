@@ -1,8 +1,10 @@
 package io.puharesource.mc.titlemanager;
 
 import io.puharesource.mc.titlemanager.api.variables.VariableManager;
+import io.puharesource.mc.titlemanager.backend.bungee.BungeeManager;
 import io.puharesource.mc.titlemanager.backend.hooks.essentials.EssentialsHook;
 import io.puharesource.mc.titlemanager.backend.hooks.ezrankslite.EZRanksLiteHook;
+import io.puharesource.mc.titlemanager.backend.hooks.placeholderapi.PlaceholderAPIHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vanishnopacket.VanishNoPacketHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultRuleEconomy;
@@ -27,6 +29,7 @@ public final class TitleManager extends JavaPlugin {
     private Config config;
     private ReflectionManager reflectionManager;
     private VariableManager variableManager;
+    private BungeeManager bungeeManager;
 
     private static List<Integer> runningAnimations = Collections.synchronizedList(new ArrayList<Integer>());
 
@@ -37,6 +40,8 @@ public final class TitleManager extends JavaPlugin {
         variableManager = new VariableManager();
 
         getServer().getPluginManager().registerEvents(new ListenerConnection(), this);
+        //getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        //getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", bungeeManager = new BungeeManager());
 
         TMCommand cmd = new TMCommand();
         cmd.addSubCommand(new SubBroadcast());
@@ -50,6 +55,7 @@ public final class TitleManager extends JavaPlugin {
         variableManager.registerHook("ESSENTIALS", new EssentialsHook());
         variableManager.registerHook("VANISHNOPACKET", new VanishNoPacketHook());
         variableManager.registerHook("EZRANKSLITE", new EZRanksLiteHook());
+        variableManager.registerHook("PLACEHOLDERAPI", new PlaceholderAPIHook());
 
         variableManager.registerRule("VANISH", new VanishRule());
         variableManager.registerRule("VAULT-ECONOMY", new VaultRuleEconomy());
@@ -89,5 +95,9 @@ public final class TitleManager extends JavaPlugin {
 
     public VariableManager getVariableManager() {
         return variableManager;
+    }
+
+    public BungeeManager getBungeeManager() {
+        return bungeeManager;
     }
 }

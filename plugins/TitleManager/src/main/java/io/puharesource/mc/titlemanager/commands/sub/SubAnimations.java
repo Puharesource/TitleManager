@@ -6,13 +6,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 
-public class SubAnimations extends TMSubCommand {
+public final class SubAnimations extends TMSubCommand {
     public SubAnimations() {
         super("animations", "titlemanager.command.animations", "", "Lists you all of the animations.", "animationslist");
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String[] args, String[] params) {
         StringBuilder sb = new StringBuilder();
         String[] animations = Config.getAnimations().keySet().toArray(new String[Config.getAnimations().size()]);
         for (int i = 0; animations.length > i; i++)

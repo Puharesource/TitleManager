@@ -10,13 +10,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SubAMessage extends TMSubCommand {
+public final class SubAMessage extends TMSubCommand {
     public SubAMessage() {
         super("amsg", "titlemanager.command.amessage", "<player> <message>", "Sends an actionbar title message to the specified player.", "amessage");
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String[] args, String[] params) {
         if (args.length < 2) {
             syntaxError(sender);
             return;

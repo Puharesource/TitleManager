@@ -100,7 +100,7 @@ public class TitleAnimation implements IAnimation, ITitleObject {
             if (p != null) {
                 TMPlayer tmPlayer = new TMPlayer(p);
 
-                tmPlayer.sendPacket(new TitlePacket(frame.getFadeIn(), frame.getStay(), frame.getFadeOut()));
+                tmPlayer.sendPacket(new TitlePacket(frame.getFadeIn(), frame.getStay() + 1, frame.getFadeOut()));
 
                 tmPlayer.sendPacket(new TitlePacket(isSubtitle ? TitleObject.TitleType.SUBTITLE : TitleObject.TitleType.TITLE, TextConverter.setVariables(p, frame.getText())));
             }

@@ -10,13 +10,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SubMessage extends TMSubCommand {
+public final class SubMessage extends TMSubCommand {
     public SubMessage() {
         super("msg", "titlemanager.command.message", "<player> <message>", "Sends a title message to the specified player, put inside of the message, to add a subtitle.", "message");
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String[] args, String[] params) {
         if (args.length < 2) {
             syntaxError(sender);
             return;
