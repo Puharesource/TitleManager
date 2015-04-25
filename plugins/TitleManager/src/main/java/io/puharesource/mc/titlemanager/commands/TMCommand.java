@@ -38,9 +38,11 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
         if (args.length >= 1) {
             TMSubCommand subCommand = commands.get(args[0].toUpperCase());
             if (subCommand != null)
-                if (sender.hasPermission(subCommand.getNode()))
-                    subCommand.onCommand(sender, Arrays.copyOfRange(args, 1, args.length));
-                else sender.sendMessage(ChatColor.RED + "You do not have permission to use that command!");
+                if (sender.hasPermission(subCommand.getNode())) {
+                    String[] subArgs = Arrays.copyOfRange(args, 1, args.length);
+                    Map<String, CommandParameter> parameters = getParameters(subCommand, subArgs);
+                    subCommand.onCommand(sender, Arrays.copyOfRange(subArgs, parameters.size(), subArgs.length), parameters);
+                } else sender.sendMessage(ChatColor.RED + "You do not have permission to use that command!");
             else syntaxError(sender);
         } else syntaxError(sender);
         return true;
@@ -56,5 +58,36 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
                     possibilities.add(sub.toLowerCase());
 
         return possibilities.size() <= 0 ? null : possibilities;
+    }
+
+    private Map<String, CommandParameter> getParameters(TMSubCommand cmd, String[] args) {
+        Collection<String> supportedParameters = cmd.getSupportedParameters();
+        Map<String, CommandParameter> parameters = new HashMap<>();
+
+        for (String arg : args) {
+            if (!arg.startsWith("-")) break;
+
+            char[] chars = arg.toCharArray();
+            String fullParameter = "";
+            for (int i = 1; chars.length > i; i++) {
+                fullParameter += chars[i];
+            }
+
+            if (fullParameter.contains("=")) {
+                String[] paramValues = fullParameter.split("=", 2);
+                String param = paramValues[0].toUpperCase();
+
+                if (supportedParameters.contains(param)) {
+                    parameters.put(param, new CommandParameter(param, paramValues[1]));
+                } else break;
+            } else {
+                String param = fullParameter.toUpperCase();
+                if (supportedParameters.contains(param)) {
+                    parameters.put(param, new CommandParameter(param, null));
+                } else break;
+            }
+        }
+
+        return parameters;
     }
 }

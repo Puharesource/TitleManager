@@ -1,22 +1,28 @@
 package io.puharesource.mc.titlemanager.commands.sub;
 
-import io.puharesource.mc.titlemanager.Config;
+import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TitleObject;
-import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
-import io.puharesource.mc.titlemanager.api.animations.TitleAnimation;
+import io.puharesource.mc.titlemanager.api.iface.IAnimation;
+import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
+import io.puharesource.mc.titlemanager.commands.CommandParameter;
+import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
+
+@ParameterSupport(supportedParams = {"SILENT", "FADEIN", "STAY", "FADEOUT"})
 public final class SubMessage extends TMSubCommand {
     public SubMessage() {
         super("msg", "titlemanager.command.message", "<player> <message>", "Sends a title message to the specified player, put inside of the message, to add a subtitle.", "message");
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args, String[] params) {
+    public void onCommand(CommandSender sender, String[] args, Map<String, CommandParameter> params) {
         if (args.length < 2) {
             syntaxError(sender);
             return;
@@ -28,58 +34,56 @@ public final class SubMessage extends TMSubCommand {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
+        boolean silent = params.containsKey("SILENT");
+        ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
+        int fadeIn = config.welcomeMessageFadeIn;
+        int stay = config.welcomeMessageStay;
+        int fadeOut = config.welcomeMessageFadeOut;
 
-        for (int i = 1; args.length > i; i++)
-            sb.append(i == args.length - 1 ? args[i] : args[i] + " ");
-
-        String argsString = sb.toString();
-
-        if (argsString.toLowerCase().contains("<nl>") || argsString.toLowerCase().contains("{nl}")) {
-            String[] lines = null;
-            if (argsString.toLowerCase().contains("{nl}"))
-                argsString = argsString.replace("{nl}", "<nl>");
-            if (argsString.toLowerCase().contains("<nl>"))
-                lines = argsString.split("<nl>", 2);
-            if (lines != null && (lines[0].toLowerCase().startsWith("animation:") || lines[1].toLowerCase().startsWith("animation:"))) {
-                FrameSequence title = null;
-                FrameSequence subtitle = null;
-
-                if (lines[0].toLowerCase().startsWith("animation:")) {
-                    String str = lines[0].substring("animation:".length());
-                    title = Config.getAnimation(str);
-                    if (title == null) {
-                        sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
-                        return;
-                    }
-                }
-                if (lines[1].toLowerCase().startsWith("animation:")) {
-                    String str = lines[1].substring("animation:".length());
-                    subtitle = Config.getAnimation(str);
-                    if (subtitle == null) {
-                        sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
-                        return;
-                    }
-                }
-                new TitleAnimation(title == null ? lines[0] : title, subtitle == null ? lines[1] : subtitle).send(player);
-                sender.sendMessage(ChatColor.GREEN + "You have sent an animation to " + player.getName() + ".");
-                return;
+        if (params.containsKey("FADEIN")) {
+            CommandParameter param = params.get("FADEIN");
+            if (param.getValue() != null) {
+                try {
+                    fadeIn = Integer.valueOf(param.getValue());
+                } catch (NumberFormatException ignored) {}
             }
-        } else if (args[1].toLowerCase().startsWith("animation:")) {
-            String str = args[1].substring("animation:".length());
-            FrameSequence animation = Config.getAnimation(str);
-            if (animation != null) {
-                new TitleAnimation(animation, "").send(player);
-                sender.sendMessage(ChatColor.GREEN + "You have sent an animation to " + player.getName() + ".");
-            } else sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
-            return;
+        }
+        if (params.containsKey("STAY")) {
+            CommandParameter param = params.get("STAY");
+            if (param.getValue() != null) {
+                try {
+                    stay = Integer.valueOf(param.getValue());
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        if (params.containsKey("FADEOUT")) {
+            CommandParameter param = params.get("FADEOUT");
+            if (param.getValue() != null) {
+                try {
+                    fadeOut = Integer.valueOf(param.getValue());
+                } catch (NumberFormatException ignored) {}
+            }
         }
 
-        TitleObject object = MiscellaneousUtils.generateTitleObjectFromArgs(1, args);
+        String text = MiscellaneousUtils.combineArray(1, args).replaceFirst("(?i)\\{nl\\}", "<nl>");
+        text = text.replaceFirst("(?i)\\{nl\\}", "<nl>");
+
+        String[] lines = text.toLowerCase().contains("<nl>") ? text.split("(?i)<nl>") : new String[]{text, ""};
+
+        ITitleObject object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1] == null ? "" : lines[1], fadeIn, stay, fadeOut);
+
+        if (!silent) {
+            if (object instanceof IAnimation) {
+                sender.sendMessage(ChatColor.GREEN + "You have sent an animation to " + player.getName() + ".");
+            } else {
+                TitleObject titleObject = (TitleObject) object;
+
+                if (titleObject.getSubtitle() != null)
+                    sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\" \"" + ChatColor.RESET + titleObject.getSubtitle() + ChatColor.GREEN + "\"");
+                else sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\"");
+            }
+        }
+
         object.send(player);
-        if (object.getSubtitle() != null)
-            sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + ChatColor.RESET + object.getTitle() + ChatColor.GREEN + "\" \"" + ChatColor.RESET + object.getSubtitle() + ChatColor.GREEN + "\"");
-        else
-            sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + ChatColor.RESET + object.getTitle() + ChatColor.GREEN + "\"");
     }
 }

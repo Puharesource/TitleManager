@@ -22,18 +22,20 @@ public class TitleAnimation implements IAnimation, ITitleObject {
     private Object subtitle;
 
     public TitleAnimation(FrameSequence title, FrameSequence subtitle) {
-        this(title, (Object) subtitle);
+        this((Object) title, (Object) subtitle);
     }
 
     public TitleAnimation(FrameSequence title, String subtitle) {
-        this(title, (Object) subtitle);
+        this((Object) title, (Object) subtitle);
     }
 
     public TitleAnimation(String title, FrameSequence subtitle) {
-        this(title, (Object) subtitle);
+        this((Object) title, (Object) subtitle);
     }
 
     public TitleAnimation(Object title, Object subtitle) {
+        if (title != null && !(title instanceof FrameSequence) && !(title instanceof String)) throw new IllegalArgumentException("The title must be a String or a FrameSequence!");
+        if (subtitle != null && !(subtitle instanceof FrameSequence) && !(subtitle instanceof String)) throw new IllegalArgumentException("The subtitle must be a String or a FrameSequence!");
         this.title = title;
         this.subtitle = subtitle;
     }

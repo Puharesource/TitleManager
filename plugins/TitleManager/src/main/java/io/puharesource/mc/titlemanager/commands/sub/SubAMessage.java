@@ -1,45 +1,49 @@
 package io.puharesource.mc.titlemanager.commands.sub;
 
-import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
-import io.puharesource.mc.titlemanager.api.animations.ActionbarTitleAnimation;
-import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
+import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
+import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
+import io.puharesource.mc.titlemanager.commands.CommandParameter;
+import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
+
+@ParameterSupport(supportedParams = {"SILENT"})
 public final class SubAMessage extends TMSubCommand {
     public SubAMessage() {
         super("amsg", "titlemanager.command.amessage", "<player> <message>", "Sends an actionbar title message to the specified player.", "amessage");
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args, String[] params) {
+    public void onCommand(CommandSender sender, String[] args, Map<String, CommandParameter> params) {
         if (args.length < 2) {
             syntaxError(sender);
             return;
         }
 
+        boolean silent = params.containsKey("SILENT");
+
         Player player = MiscellaneousUtils.getPlayer(args[0]);
         if (player == null) {
-            sender.sendMessage(ChatColor.RED + args[0] + " is not a player!");
+            sender.sendMessage(ChatColor.RED + args[0] + " is not currently online!");
             return;
         }
 
-        if (args[1].toLowerCase().startsWith("animation:")) {
-            String str = args[1].substring("animation:".length());
-            FrameSequence sequence = Config.getAnimation(str);
-            if (sequence != null) {
-                new ActionbarTitleAnimation(sequence).send(player);
+        String text = MiscellaneousUtils.combineArray(1, args);
+
+        IActionbarObject object = MiscellaneousUtils.generateActionbarObject(text);
+
+        if (!silent) {
+            if (object instanceof IAnimation)
                 sender.sendMessage(ChatColor.GREEN + "You have sent an actionbar animation to " + player.getName() + ".");
-            } else sender.sendMessage(ChatColor.RED + str + " is an invalid animation!");
-            return;
+            else sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + ChatColor.RESET + ((ActionbarTitleObject) object).getTitle() + ChatColor.GREEN + "\"");
         }
 
-        ActionbarTitleObject object = new ActionbarTitleObject(MiscellaneousUtils.combineArray(1, args));
         object.send(player);
-        sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + ChatColor.RESET + object.getTitle() + ChatColor.GREEN + "\"");
     }
 }

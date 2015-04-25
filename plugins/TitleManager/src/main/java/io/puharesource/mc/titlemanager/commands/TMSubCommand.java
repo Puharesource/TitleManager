@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +34,7 @@ public abstract class TMSubCommand {
         }
     }
 
-    public abstract void onCommand(CommandSender sender, String[] args, String[] params);
+    public abstract void onCommand(CommandSender sender, String[] args, Map<String, CommandParameter> params);
 
     public void syntaxError(CommandSender sender) {
         sender.sendMessage(ChatColor.RED + "Wrong usage! Correct usage:");
@@ -61,25 +61,7 @@ public abstract class TMSubCommand {
         return aliases;
     }
 
-    public Map<String, CommandParameter> getParameters(String[] args) {
-        Map<String, CommandParameter> parameters = new HashMap<>();
-
-        for (String arg : args) {
-            if (!arg.startsWith("-")) break;
-
-            char[] chars = arg.toCharArray();
-            String fullParameter = "";
-            for (int i = 1; chars.length > i; i++) {
-                fullParameter += chars[i];
-            }
-
-            if (fullParameter.contains("=")) {
-                String[] paramValues = fullParameter.split("=", 2);
-
-                if (!supportedParameters.contains(paramValues[0])) {
-
-                }
-            }
-        }
+    public Collection<String> getSupportedParameters() {
+        return supportedParameters;
     }
 }

@@ -33,6 +33,8 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
     }
 
     public TabTitleAnimation(Object header, Object footer) {
+        if (header != null && !(header instanceof FrameSequence) && !(header instanceof String)) throw new IllegalArgumentException("The header must be a String or a FrameSequence!");
+        if (footer != null && !(footer instanceof FrameSequence) && !(footer instanceof String)) throw new IllegalArgumentException("The footer must be a String or a FrameSequence!");
         this.header = header;
         this.footer = footer;
     }

@@ -50,6 +50,7 @@ public final class TitleManager extends JavaPlugin {
         cmd.addSubCommand(new SubABroadcast());
         cmd.addSubCommand(new SubAMessage());
         cmd.addSubCommand(new SubAnimations());
+        cmd.addSubCommand(new SubVersion());
 
         variableManager.registerHook("VAULT", new VaultHook());
         variableManager.registerHook("ESSENTIALS", new EssentialsHook());

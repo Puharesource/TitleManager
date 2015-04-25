@@ -34,64 +34,6 @@ public final class MiscellaneousUtils {
                 Config.getAnimation(text.substring(10)) : null;
     }
 
-    public static TitleObject generateTitleObjectFromArgs(int offset, String[] args) {
-        int fadeIn = -1;
-        int stay = -1;
-        int fadeOut = -1;
-
-        StringBuilder sb = new StringBuilder();
-        boolean isReadingTimes = true;
-        for (int i = offset; args.length > i; i++) {
-            if (isReadingTimes) {
-                String lower = args[i].toLowerCase();
-                int amount = -1;
-                try {
-                    amount = Integer.parseInt(lower.replaceAll("\\D", ""));
-                } catch (NumberFormatException ignored) {
-                }
-
-                if (lower.startsWith("-fadein=")) {
-                    if (amount != -1) fadeIn = amount;
-                    continue;
-                } else if (lower.startsWith("-stay=")) {
-                    if (amount != -1) stay = amount;
-                    continue;
-                } else if (lower.startsWith("-fadeout=")) {
-                    if (amount != -1) fadeOut = amount;
-                    continue;
-                } else {
-                    isReadingTimes = false;
-                    sb.append(args[i]);
-                    continue;
-                }
-
-            }
-
-            sb.append(" ").append(args[i]);
-        }
-
-
-        String title = format(sb.toString());
-        String subtitle = null;
-
-        if (title.contains("{nl}")) title = title.replace("{nl}", "<nl>");
-        if (title.contains("<nl>")) {
-            String[] titles = title.split("<nl>", 2);
-            title = titles[0];
-            subtitle = titles[1];
-        }
-
-        TitleObject object = subtitle == null ? new TitleObject(title, TitleObject.TitleType.TITLE) : new TitleObject(title, subtitle);
-
-        ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
-
-        object.setFadeIn(fadeIn != -1 ? fadeIn : config.welcomeMessageFadeIn);
-        object.setStay(stay != -1 ? stay : config.welcomeMessageStay);
-        object.setFadeOut(fadeOut != -1 ? fadeOut : config.welcomeMessageFadeOut);
-
-        return object;
-    }
-
     public static String combineArray(int offset, String[] array) {
         StringBuilder sb = new StringBuilder(array[offset]);
         for (int i = offset + 1; array.length > i; i++) sb.append(" ").append(array[i]);
@@ -176,11 +118,11 @@ public final class MiscellaneousUtils {
         Object titleObject = isValidAnimationString(title);
         Object subtitleObject = isValidAnimationString(subtitle);
 
-        titleObject = titleObject == null ? MiscellaneousUtils.format(title).replace("\\n", "\n") : titleObject;
-        subtitleObject = subtitleObject == null ? MiscellaneousUtils.format(subtitle).replace("\\n", "\n") : subtitleObject;
+        titleObject = titleObject == null ? MiscellaneousUtils.format(title) : titleObject;
+        subtitleObject = subtitleObject == null ? MiscellaneousUtils.format(subtitle) : subtitleObject;
 
         if (titleObject instanceof FrameSequence || subtitleObject instanceof FrameSequence)
-            return new TitleAnimation(title, subtitle);
+            return new TitleAnimation(titleObject, subtitleObject);
         return new TitleObject((String) titleObject, (String) subtitleObject).setFadeIn(fadeIn).setStay(stay).setFadeOut(fadeOut);
     }
 
