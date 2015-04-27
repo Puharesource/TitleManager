@@ -1,5 +1,5 @@
 name: TitleManager
-version: 1.5.4
+version: 1.5.5
 author: Puharesource
 
 main: io.puharesource.mc.titlemanager.TitleManager

@@ -10,6 +10,7 @@ import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultRuleEconomy;
 import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultRuleGroups;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
+import io.puharesource.mc.titlemanager.backend.updatechecker.UpdateManager;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesDefault;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesEZRanksLite;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesVault;
@@ -30,6 +31,7 @@ public final class TitleManager extends JavaPlugin {
     private ReflectionManager reflectionManager;
     private VariableManager variableManager;
     private BungeeManager bungeeManager;
+    private UpdateManager updateManager;
 
     private static List<Integer> runningAnimations = Collections.synchronizedList(new ArrayList<Integer>());
 
@@ -38,6 +40,7 @@ public final class TitleManager extends JavaPlugin {
         instance = this;
         reflectionManager = ReflectionManager.createManager();
         variableManager = new VariableManager();
+        updateManager = new UpdateManager();
 
         getServer().getPluginManager().registerEvents(new ListenerConnection(), this);
         //getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -100,5 +103,9 @@ public final class TitleManager extends JavaPlugin {
 
     public BungeeManager getBungeeManager() {
         return bungeeManager;
+    }
+
+    public UpdateManager getUpdateManager() {
+        return updateManager;
     }
 }
