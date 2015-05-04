@@ -7,7 +7,6 @@ import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.backend.packet.TitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
-import io.puharesource.mc.titlemanager.backend.variables.PluginVariable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -23,18 +22,20 @@ public class TitleAnimation implements IAnimation, ITitleObject {
     private Object subtitle;
 
     public TitleAnimation(FrameSequence title, FrameSequence subtitle) {
-        this(title, (Object) subtitle);
+        this((Object) title, (Object) subtitle);
     }
 
     public TitleAnimation(FrameSequence title, String subtitle) {
-        this(title, (Object) subtitle);
+        this((Object) title, (Object) subtitle);
     }
 
     public TitleAnimation(String title, FrameSequence subtitle) {
-        this(title, (Object) subtitle);
+        this((Object) title, (Object) subtitle);
     }
 
     public TitleAnimation(Object title, Object subtitle) {
+        if (title != null && !(title instanceof FrameSequence) && !(title instanceof String)) throw new IllegalArgumentException("The title must be a String or a FrameSequence!");
+        if (subtitle != null && !(subtitle instanceof FrameSequence) && !(subtitle instanceof String)) throw new IllegalArgumentException("The subtitle must be a String or a FrameSequence!");
         this.title = title;
         this.subtitle = subtitle;
     }
@@ -46,7 +47,7 @@ public class TitleAnimation implements IAnimation, ITitleObject {
 
     @Override
     public void send(Player player) {
-        Plugin plugin = TitleManager.getPlugin();
+        Plugin plugin = TitleManager.getInstance();
         BukkitScheduler scheduler = Bukkit.getScheduler();
 
         long times = 0;
@@ -101,9 +102,9 @@ public class TitleAnimation implements IAnimation, ITitleObject {
             if (p != null) {
                 TMPlayer tmPlayer = new TMPlayer(p);
 
-                tmPlayer.sendPacket(new TitlePacket(frame.getFadeIn(), frame.getStay(), frame.getFadeOut()));
+                tmPlayer.sendPacket(new TitlePacket(frame.getFadeIn(), frame.getStay() + 1, frame.getFadeOut()));
 
-                tmPlayer.sendPacket(new TitlePacket(isSubtitle ? TitleObject.TitleType.SUBTITLE : TitleObject.TitleType.TITLE, TextConverter.containsVariable(frame.getText()) ? PluginVariable.replace(p, frame.getText()) : frame.getText()));
+                tmPlayer.sendPacket(new TitlePacket(isSubtitle ? TitleObject.TitleType.SUBTITLE : TitleObject.TitleType.TITLE, TextConverter.setVariables(p, frame.getText())));
             }
         }
     }

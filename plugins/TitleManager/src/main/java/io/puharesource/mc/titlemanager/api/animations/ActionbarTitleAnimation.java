@@ -6,7 +6,6 @@ import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.backend.packet.ActionbarTitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
-import io.puharesource.mc.titlemanager.backend.variables.PluginVariable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -30,7 +29,7 @@ public class ActionbarTitleAnimation implements IAnimation, IActionbarObject {
 
     @Override
     public void send(Player player) {
-        Plugin plugin = TitleManager.getPlugin();
+        Plugin plugin = TitleManager.getInstance();
         BukkitScheduler scheduler = Bukkit.getScheduler();
 
         long times = 0;
@@ -59,7 +58,7 @@ public class ActionbarTitleAnimation implements IAnimation, IActionbarObject {
 
         private void send(Player p, AnimationFrame frame) {
             if (p != null) {
-                new TMPlayer(p).sendPacket(new ActionbarTitlePacket(TextConverter.containsVariable(frame.getText()) ? PluginVariable.replace(p, frame.getText()) : frame.getText()));
+                new TMPlayer(p).sendPacket(new ActionbarTitlePacket(TextConverter.setVariables(p, frame.getText())));
             }
         }
     }

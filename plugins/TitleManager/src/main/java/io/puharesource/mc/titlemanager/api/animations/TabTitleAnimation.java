@@ -33,6 +33,8 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
     }
 
     public TabTitleAnimation(Object header, Object footer) {
+        if (header != null && !(header instanceof FrameSequence) && !(header instanceof String)) throw new IllegalArgumentException("The header must be a String or a FrameSequence!");
+        if (footer != null && !(footer instanceof FrameSequence) && !(footer instanceof String)) throw new IllegalArgumentException("The footer must be a String or a FrameSequence!");
         this.header = header;
         this.footer = footer;
     }
@@ -44,7 +46,7 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
 
     @Override
     public void send(Player player) {
-        Plugin plugin = TitleManager.getPlugin();
+        Plugin plugin = TitleManager.getInstance();
         BukkitScheduler scheduler = Bukkit.getScheduler();
 
         long times = 0;

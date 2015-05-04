@@ -1,24 +1,18 @@
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'maven'
-    apply plugin: 'idea'
-    apply plugin: 'groovy'
 
     group = 'io.puharesource.mc'
     version = ''
 
     compileJava.options.encoding = 'UTF-8'
-    
+
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
 
     sourceSets {
         main {
             java {
-                srcDir 'src/main/java'
-            }
-            resources {
-                srcDir 'src/main/resources'
+                srcDirs = ['src/main/java']
             }
         }
     }
@@ -28,9 +22,13 @@ subprojects {
         into "../../jars/"
     }
 
+    configurations {
+        provided
+        compile.extendsFrom provided
+    }
+
     repositories {
         mavenCentral()
-        jcenter()
 
         maven {
             name 'Spigot'
@@ -41,15 +39,40 @@ subprojects {
             name 'Vault'
             url 'http://nexus.theyeticave.net/content/repositories/pub_releases'
         }
+
+        maven {
+            name 'ess-repo'
+            url 'http://repo.ess3.net/content/groups/essentials'
+        }
+
+        maven {
+            name 'kitteh-repo'
+            url 'http://repo.kitteh.org/content/groups/public'
+        }
     }
 
     dependencies {
-        compile 'org.bukkit:bukkit:1.8.3-R0.1-SNAPSHOT'
-
-        testCompile group: 'junit', name: 'junit', version: '4.11'
+        provided 'org.bukkit:bukkit:1.8.3-R0.1-SNAPSHOT'
     }
 
     artifacts {
         archives jar
+    }
+
+    jar {
+        dependsOn configurations.runtime
+        from {
+            (configurations.runtime - configurations.provided).collect {
+                it.isDirectory() ? it : zipTree(it)
+            }
+        } {
+            exclude "META-INF/*.SF"
+            exclude "META-INF/*.DSA"
+            exclude "META-INF/*.RSA"
+        }
+    }
+
+    if (!JavaVersion.current().isJava7Compatible()) {
+        logger.lifecycle("WARNING! You're trying to compile using an unsupported Java version! Please use JDK 1.7 or above!")
     }
 }
