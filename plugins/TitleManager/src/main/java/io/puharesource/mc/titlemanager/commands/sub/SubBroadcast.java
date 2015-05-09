@@ -59,7 +59,9 @@ public final class SubBroadcast extends TMSubCommand {
         }
 
         String text = MiscellaneousUtils.combineArray(0, args).replaceFirst("(?i)\\{nl\\}", "<nl>");
-        text = text.replaceFirst("(?i)\\{nl\\}", "<nl>");
+        text = text.replaceFirst("(?i)\\{nl\\}", "<nl>")
+        //.replaceFirst("[%{][Nn][Ll][%}]","<nl>") // Uncomment this to add support for {nl}, %nl%, and any case variants.
+        ;
 
         String[] lines = text.toLowerCase().contains("<nl>") ? text.split("(?i)<nl>") : new String[]{text, ""};
 
