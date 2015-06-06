@@ -44,7 +44,7 @@ public final class BungeeManager implements PluginMessageListener {
                 }
 
                 for (final String server : newServers) {
-                    if (!server.contains(server)) {
+                    if (!servers.containsKey(server)) {
                         servers.put(server, new BungeeServerInfo(server));
                     }
 
