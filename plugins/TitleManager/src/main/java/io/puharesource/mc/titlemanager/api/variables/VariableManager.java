@@ -77,7 +77,7 @@ public final class VariableManager {
 
             for (String var : variable.getVariable().vars()) {
                 if (TitleManager.getInstance().getConfigManager().getConfig().disabledVariables.contains(var)) continue;
-                if (!text.toLowerCase().contains("{" + var + "}")) continue;
+                if (!text.toLowerCase().contains("{" + var.toLowerCase() + "}")) continue;
 
                 String invoked;
                 try {
