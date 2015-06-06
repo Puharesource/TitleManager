@@ -1,5 +1,8 @@
 package io.puharesource.mc.titlemanager.backend.config;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ConfigMain {
 
     /*
@@ -89,4 +92,11 @@ public class ConfigMain {
      */
     @ConfigField(path = "date-format.format")
     public String dateFormat = "EEE, dd MMM yyyy HH:mm:ss z";
+
+    /*
+     * Disabled variables
+     * ---------------------
+     */
+    @ConfigField(path = "disabled-variables")
+    public List<String> disabledVariables = Arrays.asList("my-disabled-variable", "also-called-placeholders");
 }

@@ -98,6 +98,10 @@ public class Config {
             actionbar = MiscellaneousUtils.generateActionbarObject(config.actionbarWelcomeMessage);
             firstActionbar = MiscellaneousUtils.generateActionbarObject(config.actionbarFirstWelcomeMessage);
         }
+
+        for (int i = 0; config.disabledVariables.size() > i; i++) {
+            config.disabledVariables.set(i, config.disabledVariables.get(i).trim().toLowerCase());
+        }
     }
 
     public ConfigMain getConfig() {

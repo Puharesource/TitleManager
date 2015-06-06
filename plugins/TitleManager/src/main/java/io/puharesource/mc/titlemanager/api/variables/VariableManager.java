@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.api.variables;
 
+import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.backend.hooks.PluginHook;
 import io.puharesource.mc.titlemanager.backend.variables.RegisteredVariable;
 import org.bukkit.entity.Player;
@@ -62,24 +63,22 @@ public class VariableManager {
 
     public String replaceText(final Player player, String text) {
         for (RegisteredVariable variable : variables) {
-
             String hookString = variable.getVariable().hook();
             if (!hookString.isEmpty()) {
                 PluginHook hook = hooks.get(hookString.toUpperCase().trim());
-                if (hook != null && !hook.isEnabled()) {
-                    continue;
-                }
+                if (hook != null && !hook.isEnabled()) continue;
             }
 
             String ruleString = variable.getVariable().rule();
             if (!ruleString.isEmpty()) {
                 VariableRule rule = rules.get(ruleString.toUpperCase().trim());
-                if (rule != null && !rule.rule(player)) {
-                    continue;
-                }
+                if (rule != null && !rule.rule(player)) continue;
             }
 
             for (String var : variable.getVariable().vars()) {
+                if (TitleManager.getInstance().getConfigManager().getConfig().disabledVariables.contains(var)) continue;
+                if (!text.toLowerCase().contains("{" + var + "}")) continue;
+
                 String invoked;
                 try {
                     invoked = variable.invoke(replacers.get(variable.getReplacer()), player);

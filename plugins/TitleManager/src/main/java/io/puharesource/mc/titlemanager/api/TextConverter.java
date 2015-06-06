@@ -6,7 +6,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class TextConverter {
+public final class TextConverter {
     /**
      * @deprecated Because it is the inferior method and replaces fewer variables.
      */
