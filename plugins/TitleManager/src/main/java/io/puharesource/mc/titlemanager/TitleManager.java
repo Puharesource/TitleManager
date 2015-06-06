@@ -43,8 +43,8 @@ public final class TitleManager extends JavaPlugin {
         updateManager = new UpdateManager();
 
         getServer().getPluginManager().registerEvents(new ListenerConnection(), this);
-        //getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        //getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", bungeeManager = new BungeeManager());
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", bungeeManager = new BungeeManager());
 
         TMCommand cmd = new TMCommand();
         cmd.addSubCommand(new SubBroadcast());

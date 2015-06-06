@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-public class VariableManager {
+public final class VariableManager {
 
     private final Map<Integer, VariableReplacer> replacers = new HashMap<>();
     private final List<RegisteredVariable> variables = Collections.synchronizedList(new ArrayList<RegisteredVariable>());
