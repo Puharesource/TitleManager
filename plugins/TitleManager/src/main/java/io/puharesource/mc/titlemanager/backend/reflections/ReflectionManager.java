@@ -14,6 +14,7 @@ public abstract class ReflectionManager {
 
     /**
      * This will create a ReflectionManager for the current version of Spigot / CraftBukkit.
+     * @return Returns the reflection manager suited for the server's version.
      */
     public static ReflectionManager createManager() {
         if (getServerVersion().equalsIgnoreCase("v1_8_R2.")) return new ReflectionManager183();

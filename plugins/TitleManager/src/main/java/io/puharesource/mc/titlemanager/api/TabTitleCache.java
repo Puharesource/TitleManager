@@ -6,7 +6,7 @@ import java.util.UUID;
 
 /**
  * Due to the fact that you can't simply change the header or footer by themselves, this class acts as a cache for and easy way to do so.
- * Whenever a player's tabmenu has been changed using the TabTitleObject.java the header & footer will be stored in this cache.
+ * Whenever a player's tabmenu has been changed using the TabTitleObject.java the header and footer will be stored in this cache.
  */
 public class TabTitleCache {
     final private static Map<UUID, TabTitleCache> playerTabTitles = new HashMap<>();

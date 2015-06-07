@@ -1,4 +1,12 @@
-version = '1.5.5'
+version = '1.5.6'
+
+javadoc {
+    exclude '**/io/puharesource/mc/titlemanager/backend/**'
+    exclude '**/io/puharesource/mc/titlemanager/commands/**'
+    exclude '**/io/puharesource/mc/titlemanager/listeners/**'
+
+    options.links 'http://download.oracle.com/javase/7/docs/api/'
+}
 
 dependencies {
     provided 'net.milkbowl.vault:VaultAPI:1.5'

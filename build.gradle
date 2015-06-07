@@ -1,5 +1,6 @@
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'maven'
 
     group = 'io.puharesource.mc'
     version = ''
@@ -20,6 +21,21 @@ subprojects {
     task copyToJars(dependsOn: 'build', type: Copy) {
         from 'build/libs/'
         into "../../jars/"
+    }
+
+    task createPom << {
+        pom {
+            project {
+                inceptionYear '2007'
+                licenses {
+                    license {
+                        name 'GNU GENERAL PUBLIC LICENSE, Version 3'
+                        url 'http://www.gnu.org/licenses/gpl.txt'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }.writeTo("${project.name}-${version}.pom")
     }
 
     configurations {

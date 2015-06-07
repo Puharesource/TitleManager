@@ -10,6 +10,9 @@ import org.bukkit.entity.Player;
 public final class TextConverter {
     /**
      * @deprecated Because it is the inferior method and replaces fewer variables.
+     * @param player This is the player that the information will be taken from.
+     * @param text This is the text that will be converted.
+     * @return The converted text.
      */
     @Deprecated
     public static String setPlayerName(Player player, String text) {
