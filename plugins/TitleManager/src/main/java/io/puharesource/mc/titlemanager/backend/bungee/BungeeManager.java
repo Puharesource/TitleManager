@@ -13,6 +13,8 @@ import java.util.*;
 public final class BungeeManager implements PluginMessageListener {
 
     private Map<String, BungeeServerInfo> servers = new HashMap<>();
+    private String currentServer;
+
     private int onlinePlayers = -1;
 
     public BungeeManager() {
@@ -55,6 +57,7 @@ public final class BungeeManager implements PluginMessageListener {
             }
             case "GetServer": {
                 final String server = in.readUTF();
+                currentServer = server;
                 if (!servers.containsKey(server)) {
                     servers.put(server, new BungeeServerInfo(server));
                 }
@@ -63,8 +66,8 @@ public final class BungeeManager implements PluginMessageListener {
                 info.setMaxPlayers(Bukkit.getMaxPlayers());
                 info.setPlayerCount(Bukkit.getOnlinePlayers().size());
 
+                onlinePlayers = 0;
                 for (final BungeeServerInfo serverInfo : servers.values()) {
-                    onlinePlayers = 0;
                     if (!(serverInfo.getPlayerCount() < 0)) {
                         onlinePlayers += serverInfo.getPlayerCount();
                     }
@@ -120,5 +123,9 @@ public final class BungeeManager implements PluginMessageListener {
 
     public int getOnlinePlayers() {
         return onlinePlayers;
+    }
+
+    public BungeeServerInfo getCurrentServer() {
+        return servers.get(currentServer);
     }
 }
