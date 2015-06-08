@@ -5,8 +5,8 @@ import io.puharesource.mc.titlemanager.TitleManager;
 public final class BungeeServerInfo {
 
     private final String name;
-    private int playerCount = -1;
-    private int maxPlayers = -1;
+    private int playerCount = 0;
+    private int maxPlayers = 0;
 
     public BungeeServerInfo(final String name) {
         this.name = name;

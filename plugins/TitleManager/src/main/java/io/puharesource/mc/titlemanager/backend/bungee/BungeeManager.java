@@ -9,16 +9,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class BungeeManager implements PluginMessageListener {
 
-    private Map<String, BungeeServerInfo> servers = new HashMap<>();
+    private Map<String, BungeeServerInfo> servers = new ConcurrentHashMap<>();
     private String currentServer;
 
     private int onlinePlayers = -1;
 
     public BungeeManager() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(TitleManager.getInstance(), new Runnable() {
+        Bukkit.getScheduler().runTaskTimer(TitleManager.getInstance(), new Runnable() {
             @Override
             public void run() {
                 if (TitleManager.getInstance().getConfigManager().getConfig().usingBungeecord) {
@@ -38,40 +39,46 @@ public final class BungeeManager implements PluginMessageListener {
 
         switch (subChannel) {
             case "GetServers": {
-                final List<String> newServers = Arrays.asList(in.readUTF().split(", "));
+                final Map<String, String> newServers = new HashMap<>();
+                for (String newServer : in.readUTF().split(", ")) {
+                    newServers.put(newServer.toUpperCase().trim(), newServer);
+                }
 
                 for (final String server : servers.keySet()) {
-                    if (!newServers.contains(server)) {
-                        servers.remove(server);
+                    if (!newServers.containsKey(server.toUpperCase().trim())) {
+                        servers.remove(server.toUpperCase().trim());
                     }
                 }
 
-                for (final String server : newServers) {
-                    if (!servers.containsKey(server)) {
-                        servers.put(server, new BungeeServerInfo(server));
+                for (final Map.Entry<String, String> server : newServers.entrySet()) {
+                    if (!servers.containsKey(server.getKey())) {
+                        servers.put(server.getKey(), new BungeeServerInfo(server.getValue()));
                     }
 
-                    servers.get(server).update();
+                    servers.get(server.getKey()).update();
                 }
                 break;
             }
             case "GetServer": {
                 final String server = in.readUTF();
                 currentServer = server;
-                if (!servers.containsKey(server)) {
-                    servers.put(server, new BungeeServerInfo(server));
+                if (!servers.containsKey(server.toUpperCase().trim())) {
+                    servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
                 }
 
-                final BungeeServerInfo info = servers.get(server);
+                final BungeeServerInfo info = servers.get(server.toUpperCase().trim());
                 info.setMaxPlayers(Bukkit.getMaxPlayers());
                 info.setPlayerCount(Bukkit.getOnlinePlayers().size());
 
-                onlinePlayers = 0;
-                for (final BungeeServerInfo serverInfo : servers.values()) {
-                    if (!(serverInfo.getPlayerCount() < 0)) {
+                int onlinePlayers = 0;
+                if (servers.containsKey("ALL")) {
+                    onlinePlayers = servers.get("ALL").getPlayerCount();
+                } else {
+                    for (final BungeeServerInfo serverInfo : servers.values()) {
                         onlinePlayers += serverInfo.getPlayerCount();
                     }
                 }
+                this.onlinePlayers = onlinePlayers;
 
                 break;
             }
@@ -79,18 +86,21 @@ public final class BungeeManager implements PluginMessageListener {
                 final String server = in.readUTF();
                 final int playerCount = in.readInt();
 
-                if (!servers.containsKey(server)) {
-                    servers.put(server, new BungeeServerInfo(server));
+                if (!servers.containsKey(server.toUpperCase().trim())) {
+                    servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
                 }
 
-                servers.get(server).setPlayerCount(playerCount);
+                servers.get(server.toUpperCase().trim()).setPlayerCount(playerCount);
 
-                onlinePlayers = 0;
-                for (final BungeeServerInfo serverInfo : servers.values()) {
-                    if (!(serverInfo.getPlayerCount() < 0)) {
+                int onlinePlayers = 0;
+                if (servers.containsKey("ALL")) {
+                    onlinePlayers = servers.get("ALL").getPlayerCount();
+                } else {
+                    for (final BungeeServerInfo serverInfo : servers.values()) {
                         onlinePlayers += serverInfo.getPlayerCount();
                     }
                 }
+                this.onlinePlayers = onlinePlayers;
 
                 break;
             }
