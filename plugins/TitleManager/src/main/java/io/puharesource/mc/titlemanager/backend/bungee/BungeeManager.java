@@ -85,8 +85,8 @@ public final class BungeeManager implements PluginMessageListener {
 
                 servers.get(server).setPlayerCount(playerCount);
 
+                onlinePlayers = 0;
                 for (final BungeeServerInfo serverInfo : servers.values()) {
-                    onlinePlayers = 0;
                     if (!(serverInfo.getPlayerCount() < 0)) {
                         onlinePlayers += serverInfo.getPlayerCount();
                     }
