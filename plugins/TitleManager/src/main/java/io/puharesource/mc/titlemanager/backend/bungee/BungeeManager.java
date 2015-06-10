@@ -24,6 +24,7 @@ public final class BungeeManager implements PluginMessageListener {
             public void run() {
                 if (TitleManager.getInstance().getConfigManager().getConfig().usingBungeecord) {
                     sendMessage("GetServers");
+                    sendMessage("GetServer");
                 }
             }
         }, 0l, 200l);
@@ -136,6 +137,6 @@ public final class BungeeManager implements PluginMessageListener {
     }
 
     public BungeeServerInfo getCurrentServer() {
-        return servers.get(currentServer);
+        return currentServer == null ? null : servers.get(currentServer.toUpperCase().trim());
     }
 }
