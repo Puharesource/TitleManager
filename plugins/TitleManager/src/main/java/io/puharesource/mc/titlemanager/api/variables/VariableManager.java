@@ -61,6 +61,17 @@ public final class VariableManager {
         return rules.get(name.toUpperCase().trim());
     }
 
+    private static String getVariablePattern(String var) {
+        String out = "[{]";
+        String f = "[%s]";
+        for(Character c : var.toCharArray()) {
+            out += String.format(f, c);
+        }
+        out += "[:]";
+        out += "\\d+[,]?(\\d+)?";
+        return out + "[}]";
+    }
+
     public String replaceText(final Player player, String text) {
         for (RegisteredVariable variable : variables) {
             String hookString = variable.getVariable().hook();
@@ -77,13 +88,51 @@ public final class VariableManager {
 
             for (String var : variable.getVariable().vars()) {
                 if (TitleManager.getInstance().getConfigManager().getConfig().disabledVariables.contains(var)) continue;
-                if (!text.toLowerCase().contains("{" + var.toLowerCase() + "}")) continue;
+                Matcher m = Pattern.compile(getVariablePattern(var), Pattern.CASE_INSENSITIVE).matcher(text);
+                int from = 0, to = 0;
+                if(m.find()) {
+                    String k = text.substring(m.start(), m.end());
+                    String[] parts = k.split(":");
+                    String[] subinf;
+                    boolean end = false;
+                    if(parts[1].contains(",")) {
+                        end = true;
+                        subinf = parts[1].split(",");
+                    } else {
+                        subinf = parts;
+                    }
+                    subinf[1] = subinf[1].replace("}","");
+                    try {
+                        if(end) {
+                        from = Integer.parseInt(subinf[0]);
+                        } else {
+                            
+                        from = Integer.parseInt(subinf[1]);
+                        }
+                    } catch(Exception e) {}
+                    if(end) {
+                        try {
+                            to = Integer.parseInt(subinf[1]);
+                        } catch(Exception e) {}
+                    }
+                }
+                 else if (!text.toLowerCase().contains("{" + var.toLowerCase() + "}")) continue;
 
                 String invoked;
                 try {
                     invoked = variable.invoke(replacers.get(variable.getReplacer()), player);
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     invoked = "UNSUPPORTED";
+                }
+                if(invoked!="UNSUPPORTED") {
+                    if(to<=0 || to >= invoked.length()) {
+                        to = invoked.length()-1;
+                    }
+                    if(from < invoked.length()-1 && from > -1) {
+                        invoked = invoked.substring(from, to);
+                    } else {
+                        invoked = "";
+                    }
                 }
                 text = text.replaceAll("(?i)\\{" + var + "\\}", invoked);
             }
