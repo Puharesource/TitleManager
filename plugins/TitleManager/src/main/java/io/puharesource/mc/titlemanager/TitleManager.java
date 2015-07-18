@@ -20,6 +20,8 @@ import io.puharesource.mc.titlemanager.backend.hooks.specialrules.VanishRule;
 import io.puharesource.mc.titlemanager.commands.TMCommand;
 import io.puharesource.mc.titlemanager.commands.sub.*;
 import io.puharesource.mc.titlemanager.listeners.ListenerConnection;
+import io.puharesource.mc.titlemanager.listeners.ListenerItemSlot;
+import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -28,12 +30,12 @@ import java.util.List;
 
 public final class TitleManager extends JavaPlugin {
 
-    private static TitleManager instance;
-    private Config config;
-    private ReflectionManager reflectionManager;
-    private VariableManager variableManager;
-    private BungeeManager bungeeManager;
-    private UpdateManager updateManager;
+    private @Getter static TitleManager instance;
+    private @Getter Config configManager;
+    private @Getter ReflectionManager reflectionManager;
+    private @Getter VariableManager variableManager;
+    private @Getter BungeeManager bungeeManager;
+    private @Getter UpdateManager updateManager;
 
     private static List<Integer> runningAnimations = Collections.synchronizedList(new ArrayList<Integer>());
 
@@ -45,6 +47,8 @@ public final class TitleManager extends JavaPlugin {
         updateManager = new UpdateManager();
 
         getServer().getPluginManager().registerEvents(new ListenerConnection(), this);
+        getServer().getPluginManager().registerEvents(new ListenerItemSlot(), this);
+
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", bungeeManager = new BungeeManager());
 
@@ -73,20 +77,8 @@ public final class TitleManager extends JavaPlugin {
         variableManager.registerVariableReplacer(new VariablesEZRanksLite());
         variableManager.registerVariableReplacer(new VariablesBungee());
 
-        config = new Config();
-        config.load();
-    }
-
-    public static TitleManager getInstance() {
-        return instance;
-    }
-
-    public Config getConfigManager() {
-        return config;
-    }
-
-    public ReflectionManager getReflectionManager() {
-        return reflectionManager;
+        configManager = new Config();
+        configManager.load();
     }
 
     public static void addRunningAnimationId(int id) {
@@ -99,17 +91,5 @@ public final class TitleManager extends JavaPlugin {
 
     public static List<Integer> getRunningAnimations() {
         return runningAnimations;
-    }
-
-    public VariableManager getVariableManager() {
-        return variableManager;
-    }
-
-    public BungeeManager getBungeeManager() {
-        return bungeeManager;
-    }
-
-    public UpdateManager getUpdateManager() {
-        return updateManager;
     }
 }

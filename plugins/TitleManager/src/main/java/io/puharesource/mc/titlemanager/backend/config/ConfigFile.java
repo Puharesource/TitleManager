@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.backend.config;
 
+import lombok.Getter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -9,12 +10,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class ConfigFile {
-
     private JavaPlugin plugin;
     private File path;
-    private File file;
+    private @Getter File file;
     private String fileName;
-    private FileConfiguration config;
+    private @Getter FileConfiguration config;
     private boolean locatedInJar;
 
     public ConfigFile(JavaPlugin plugin, File path, String fileName, boolean locatedInJar) {
@@ -72,14 +72,6 @@ public class ConfigFile {
 
 
         config = YamlConfiguration.loadConfiguration(file);
-    }
-
-    public FileConfiguration getConfig() {
-        return config;
-    }
-
-    public File getFile() {
-        return file;
     }
 
     public FileConfiguration getCopy() {

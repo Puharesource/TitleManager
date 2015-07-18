@@ -8,8 +8,8 @@ import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.backend.config.ConfigFile;
 import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import io.puharesource.mc.titlemanager.backend.config.ConfigSerializer;
-import io.puharesource.mc.titlemanager.backend.config.ConfigUpdater;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -20,15 +20,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Config {
+public final class Config {
 
     private ConfigFile configFile, animationConfigFile;
     private Map<String, FrameSequence> animations = new HashMap<>();
-    private ITabObject tabmenu;
-    private ITitleObject welcomeTitle, firstWelcomeTitle;
-    private IActionbarObject actionbar, firstActionbar;
+    private @Getter ITabObject tabTitleObject;
+    private @Getter ITitleObject welcomeObject;
+    private @Getter ITitleObject firstWelcomeObject;
+    private @Getter IActionbarObject actionbarWelcomeObject;
+    private @Getter IActionbarObject actionbarFirstWelcomeObject;
 
-    private ConfigMain config;
+    private @Getter ConfigMain config;
 
     public void load() {
         TitleManager plugin = TitleManager.getInstance();
@@ -39,10 +41,9 @@ public class Config {
         configFile.reload();
         try {
             ConfigSerializer.saveDefaults(ConfigMain.class, configFile.getFile(), false);
-        } catch (IllegalAccessException | InvocationTargetException | IOException | InstantiationException e) {
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException | IOException e) {
             e.printStackTrace();
         }
-        ConfigUpdater.update(plugin, configFile);
 
         plugin.reloadConfig();
         reload();
@@ -60,7 +61,7 @@ public class Config {
         try {
             ConfigSerializer.saveDefaults(ConfigMain.class, configFile.getFile(), false);
             config = ConfigSerializer.deserialize(ConfigMain.class, configFile.getFile());
-        } catch (IllegalAccessException | InvocationTargetException | InstantiationException | IOException e) {
+        } catch (IllegalAccessException | InvocationTargetException | IOException | InstantiationException e) {
             e.printStackTrace();
         }
 
@@ -81,31 +82,27 @@ public class Config {
         if (!config.usingConfig) return;
 
         if (config.tabmenuEnabled) {
-            tabmenu = MiscellaneousUtils.generateTabObject(config.tabmenuHeader, config.tabmenuFooter);
-            tabmenu.broadcast();
+            tabTitleObject = MiscellaneousUtils.generateTabObject(config.tabmenuHeader, config.tabmenuFooter);
+            tabTitleObject.broadcast();
         }
 
         if (config.welcomeMessageEnabled) {
-            welcomeTitle = MiscellaneousUtils.generateTitleObject(config.welcomeMessageTitle, config.welcomeMessageSubtitle,
+            welcomeObject = MiscellaneousUtils.generateTitleObject(config.welcomeMessageTitle, config.welcomeMessageSubtitle,
                     config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
 
 
-            firstWelcomeTitle = MiscellaneousUtils.generateTitleObject(config.firstJoinTitle, config.firstJoinSubtitle,
+            firstWelcomeObject = MiscellaneousUtils.generateTitleObject(config.firstJoinTitle, config.firstJoinSubtitle,
                     config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
         }
 
         if (config.actionbarWelcomeEnabled) {
-            actionbar = MiscellaneousUtils.generateActionbarObject(config.actionbarWelcomeMessage);
-            firstActionbar = MiscellaneousUtils.generateActionbarObject(config.actionbarFirstWelcomeMessage);
+            actionbarWelcomeObject = MiscellaneousUtils.generateActionbarObject(config.actionbarWelcomeMessage);
+            actionbarFirstWelcomeObject = MiscellaneousUtils.generateActionbarObject(config.actionbarFirstWelcomeMessage);
         }
 
         for (int i = 0; config.disabledVariables.size() > i; i++) {
             config.disabledVariables.set(i, config.disabledVariables.get(i).trim().toLowerCase());
         }
-    }
-
-    public ConfigMain getConfig() {
-        return config;
     }
 
     public static FrameSequence getAnimation(String animation) {
@@ -114,25 +111,5 @@ public class Config {
 
     public static Map<String, FrameSequence> getAnimations() {
         return TitleManager.getInstance().getConfigManager().animations;
-    }
-
-    public ITitleObject getWelcomeObject() {
-        return welcomeTitle;
-    }
-
-    public ITitleObject getFirstWelcomeObject() {
-        return firstWelcomeTitle;
-    }
-
-    public ITabObject getTabTitleObject() {
-        return tabmenu;
-    }
-
-    public IActionbarObject getActionbarWelcomeObject() {
-        return actionbar;
-    }
-
-    public IActionbarObject getActionbarFirstWelcomeObject() {
-        return firstActionbar;
     }
 }

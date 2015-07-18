@@ -5,12 +5,13 @@ import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionClass;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
 import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManagerProtocolHack1718;
+import lombok.Getter;
+import lombok.SneakyThrows;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 public final class TitlePacket extends Packet {
-    private Object handle;
+    private @Getter Object handle;
     public TitlePacket(TitleObject.TitleType action, String text) {
         this(action, text, -1, -1, -1);
     }
@@ -19,43 +20,35 @@ public final class TitlePacket extends Packet {
         this(TitleObject.TitleType.TIMES, null, fadeIn, stay, fadeOut);
     }
 
+    @SneakyThrows
     public TitlePacket(TitleObject.TitleType action, String text, int fadeIn, int stay, int fadeOut) {
         ReflectionManager manager = TitleManager.getInstance().getReflectionManager();
         Map<String, ReflectionClass> classes = manager.getClasses();
 
-        try {
-            if (manager instanceof ReflectionManagerProtocolHack1718) {
-                ReflectionClass packetTitle = classes.get("PacketTitle");
+        if (manager instanceof ReflectionManagerProtocolHack1718) {
+            ReflectionClass packetTitle = classes.get("PacketTitle");
 
-                if (text == null) {
-                    handle = packetTitle.getConstructor(
-                            classes.get("Action").getHandle(),
-                            Integer.TYPE, Integer.TYPE, Integer.TYPE).
-                            newInstance(action.getHandle(), fadeIn, stay, fadeOut);
-                } else {
-                    handle = packetTitle.getConstructor(
-                            classes.get("Action").getHandle(),
-                            classes.get("IChatBaseComponent").getHandle()).
-                            newInstance(action.getHandle(), manager.getIChatBaseComponent(text));
-                }
+            if (text == null) {
+                handle = packetTitle.getConstructor(
+                        classes.get("Action").getHandle(),
+                        Integer.TYPE, Integer.TYPE, Integer.TYPE).
+                        newInstance(action.getHandle(), fadeIn, stay, fadeOut);
             } else {
-                handle = classes.get("PacketPlayOutTitle").
-                        getConstructor(
-                                classes.get("EnumTitleAction").getHandle(),
-                                classes.get("IChatBaseComponent").getHandle(),
-                                Integer.TYPE, Integer.TYPE, Integer.TYPE)
-                        .newInstance(
-                                action.getHandle(),
-                                manager.getIChatBaseComponent(text),
-                                fadeIn, stay, fadeOut);
+                handle = packetTitle.getConstructor(
+                        classes.get("Action").getHandle(),
+                        classes.get("IChatBaseComponent").getHandle()).
+                        newInstance(action.getHandle(), manager.getIChatBaseComponent(text));
             }
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
+        } else {
+            handle = classes.get("PacketPlayOutTitle").
+                    getConstructor(
+                            classes.get("EnumTitleAction").getHandle(),
+                            classes.get("IChatBaseComponent").getHandle(),
+                            Integer.TYPE, Integer.TYPE, Integer.TYPE)
+                    .newInstance(
+                            action.getHandle(),
+                            manager.getIChatBaseComponent(text),
+                            fadeIn, stay, fadeOut);
         }
-    }
-
-    @Override
-    public Object getHandle() {
-        return handle;
     }
 }
