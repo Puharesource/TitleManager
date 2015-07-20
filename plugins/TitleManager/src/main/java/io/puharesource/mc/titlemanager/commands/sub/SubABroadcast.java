@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Map;
 
-@ParameterSupport(supportedParams = {"SILENT"})
+@ParameterSupport(supportedParams = {"SILENT", "WORLD"})
 public final class SubABroadcast extends TMSubCommand {
     public SubABroadcast() {
         super("abc", "titlemanager.command.abroadcast", "<message>", "Sends an actionbar title message to everyone on the server.", "abroadcast");
@@ -24,19 +24,33 @@ public final class SubABroadcast extends TMSubCommand {
             syntaxError(sender);
             return;
         }
-
+        World world = null;
         boolean silent = params.containsKey("SILENT");
 
         String text = MiscellaneousUtils.combineArray(0, args);
 
         IActionbarObject object = MiscellaneousUtils.generateActionbarObject(text);
 
++        if(params.containsKey("WORLD")) {
++            CommandParameter param = params.get("WORLD");
++            if(param.getValue()!=null) {
++                world = Bukkit.getWorld(param.getValue());
++            }
++        }
         if (!silent) {
             if (object instanceof IAnimation)
                 sender.sendMessage(ChatColor.GREEN + "You have sent an actionbar animation broadcast.");
             else sender.sendMessage(ChatColor.GREEN + "You have sent an actionbar broadcast with the message \"" + ChatColor.RESET + ((ActionbarTitleObject) object).getTitle() + ChatColor.GREEN + "\"");
         }
 
++        if(world!=null) {
++            for(Player p : Bukkit.getOnlinePlayers()) {
++                if(p.getWorld()==world) {
++                    object.send(p);
++                }
++            }
++            return;
++        }
         object.broadcast();
     }
 }
