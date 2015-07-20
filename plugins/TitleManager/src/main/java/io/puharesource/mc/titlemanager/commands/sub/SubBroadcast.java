@@ -32,7 +32,7 @@ public final class SubBroadcast extends TMSubCommand {
         int fadeIn = config.welcomeMessageFadeIn;
         int stay = config.welcomeMessageStay;
         int fadeOut = config.welcomeMessageFadeOut;
-
+        World world = null;
         if (params.containsKey("FADEIN")) {
             CommandParameter param = params.get("FADEIN");
             if (param.getValue() != null) {
