@@ -9,6 +9,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class VariableManager {
 
@@ -61,15 +63,8 @@ public final class VariableManager {
         return rules.get(name.toUpperCase().trim());
     }
 
-    private static String getVariablePattern(String var) {
-        String out = "[{]";
-        String f = "[%s]";
-        for(Character c : var.toCharArray()) {
-            out += String.format(f, c);
-        }
-        out += "[:]";
-        out += "\\d+[,]?(\\d+)?";
-        return out + "[}]";
+    private Pattern getVariablePattern(final String var) {
+        return Pattern.compile("[{](?i)" + var + "[:]\\d+[,]?(\\d+)?[}]");
     }
 
     public String replaceText(final Player player, String text) {
@@ -88,35 +83,32 @@ public final class VariableManager {
 
             for (String var : variable.getVariable().vars()) {
                 if (TitleManager.getInstance().getConfigManager().getConfig().disabledVariables.contains(var)) continue;
-                Matcher m = Pattern.compile(getVariablePattern(var), Pattern.CASE_INSENSITIVE).matcher(text);
-                int from = 0, to = 0;
-                if(m.find()) {
-                    String k = text.substring(m.start(), m.end());
-                    String[] parts = k.split(":");
-                    String[] subinf;
-                    boolean end = false;
+                Matcher matcher = getVariablePattern(var).matcher(text);
+
+                int[] dimensions = new int[]{-1, -1};
+                boolean found = false;
+
+                if(matcher.find()) {
+                    found = true;
+                    String varText = text.substring(matcher.start(), matcher.end());
+                    String[] parts = varText.split(":");
+
                     if(parts[1].contains(",")) {
-                        end = true;
-                        subinf = parts[1].split(",");
-                    } else {
-                        subinf = parts;
-                    }
-                    subinf[1] = subinf[1].replace("}","");
-                    try {
-                        if(end) {
-                        from = Integer.parseInt(subinf[0]);
-                        } else {
-                            
-                        from = Integer.parseInt(subinf[1]);
-                        }
-                    } catch(Exception e) {}
-                    if(end) {
+                        String[] strDims = parts[1].split(",", 2);
+
                         try {
-                            to = Integer.parseInt(subinf[1]);
-                        } catch(Exception e) {}
+                            dimensions[0] = Integer.parseInt(strDims[0]);
+                        } catch (NumberFormatException ignored) {}
+
+                        try {
+                            dimensions[1] = Integer.parseInt(strDims[1].substring(0, strDims[1].length() - 1));
+                        } catch (NumberFormatException ignored) {}
+                    } else {
+                        try {
+                            dimensions[1] = Integer.parseInt(parts[1].substring(0, parts[1].length() - 1));
+                        } catch (NumberFormatException ignored) {}
                     }
-                }
-                 else if (!text.toLowerCase().contains("{" + var.toLowerCase() + "}")) continue;
+                } else if (!text.toLowerCase().contains("{" + var.toLowerCase() + "}")) continue;
 
                 String invoked;
                 try {
@@ -124,17 +116,21 @@ public final class VariableManager {
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     invoked = "UNSUPPORTED";
                 }
-                if(invoked!="UNSUPPORTED") {
-                    if(to<=0 || to >= invoked.length()) {
-                        to = invoked.length()-1;
+                if(!invoked.equals("UNSUPPORTED")) {
+                    if (dimensions[0] <= -1) {
+                        dimensions[0] = 0;
                     }
-                    if(from < invoked.length()-1 && from > -1) {
-                        invoked = invoked.substring(from, to);
-                    } else {
-                        invoked = "";
+
+                    if (dimensions[1] > invoked.length() || dimensions[1] <= -1) {
+                        dimensions[1] = invoked.length();
+                    }
+
+                    if (dimensions[0] != 0 || dimensions[1] != invoked.length()) {
+                        invoked = invoked.substring(dimensions[0], dimensions[1]);
                     }
                 }
-                text = text.replaceAll("(?i)\\{" + var + "\\}", invoked);
+
+                text = text.replaceAll(found ? matcher.pattern().pattern() : "(?i)\\{" + var + "\\}", invoked);
             }
         }
 

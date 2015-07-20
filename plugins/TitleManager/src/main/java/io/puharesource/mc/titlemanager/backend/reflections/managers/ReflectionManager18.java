@@ -2,14 +2,15 @@ package io.puharesource.mc.titlemanager.backend.reflections.managers;
 
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionClass;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
+import lombok.Getter;
+import lombok.SneakyThrows;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class ReflectionManager18 extends ReflectionManager {
 
-    private final Map<String, ReflectionClass> classes;
+    private @Getter final Map<String, ReflectionClass> classes;
 
     public ReflectionManager18() {
         classes = new LinkedHashMap<>();
@@ -26,17 +27,9 @@ public final class ReflectionManager18 extends ReflectionManager {
         classes.put("EnumTitleAction", ReflectionType.NET_MINECRAFT_SERVER.getReflectionClass("EnumTitleAction"));
     }
 
-    public Object getIChatBaseComponent(String text) {
-        try {
-            return text == null ? null : classes.get("ChatComponentText").getConstructor(String.class).newInstance(text);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
+    @SneakyThrows
     @Override
-    public Map<String, ReflectionClass> getClasses() {
-        return classes;
+    public Object getIChatBaseComponent(String text) {
+        return text == null ? null : classes.get("ChatComponentText").getConstructor(String.class).newInstance(text);
     }
 }

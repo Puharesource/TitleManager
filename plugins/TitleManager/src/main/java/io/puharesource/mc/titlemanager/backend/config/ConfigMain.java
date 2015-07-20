@@ -6,7 +6,7 @@ import java.util.List;
 public class ConfigMain {
 
     /*
-     * Root Section
+     * Root section
      * ------------
      */
     @ConfigField(path = "usingConfig")
@@ -17,6 +17,16 @@ public class ConfigMain {
 
     @ConfigField(path = "using-bungeecord")
     public boolean usingBungeecord = false;
+
+    @ConfigField(path = "legacy-client-support")
+    public boolean legacyClientSupport = false;
+
+    /*
+     * Updater section
+     * ---------------
+     */
+    @ConfigField(path = "updater.check-automatically")
+    public boolean updaterAutoCheck = true;
 
     /*
      * Tabmenu section

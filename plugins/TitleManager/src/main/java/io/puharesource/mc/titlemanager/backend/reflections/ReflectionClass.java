@@ -1,8 +1,9 @@
 package io.puharesource.mc.titlemanager.backend.reflections;
 
+import lombok.SneakyThrows;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public final class ReflectionClass {
@@ -38,7 +39,8 @@ public final class ReflectionClass {
         throw new NoSuchMethodException("Couldn't find constructor for " + handle.getName() + ".");
     }
 
-    public Object createInstance(Object... objects) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    @SneakyThrows
+    public Object createInstance(Object... objects) {
         Class<?>[] classes = new Class<?>[objects.length];
 
         for (int i = 0; objects.length > i; i++) {
@@ -48,15 +50,18 @@ public final class ReflectionClass {
         return getConstructor(classes).newInstance(objects);
     }
 
-    public Class<?> getInnerClass(String className) throws ClassNotFoundException {
+    @SneakyThrows(ClassNotFoundException.class)
+    public Class<?> getInnerClass(final String className) {
         return Class.forName(path + "$" + className);
     }
 
-    public ReflectionClass getInnerReflectionClass(String className) throws ClassNotFoundException {
+    @SneakyThrows(ClassNotFoundException.class)
+    public ReflectionClass getInnerReflectionClass(final String className) {
         return new ReflectionClass(path + "$" + className);
     }
 
-    public Field getField(String name) throws NoSuchFieldException {
+    @SneakyThrows(NoSuchFieldException.class)
+    public Field getField(final String name) {
         return handle.getField(name);
     }
 

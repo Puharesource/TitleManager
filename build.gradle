@@ -68,7 +68,8 @@ subprojects {
     }
 
     dependencies {
-        provided 'org.bukkit:bukkit:1.8.3-R0.1-SNAPSHOT'
+        provided group: 'org.projectlombok', name: 'lombok', version: '1.16.2'
+        provided group: 'org.bukkit', name: 'bukkit', version: '1.8.7-R0.1-SNAPSHOT'
     }
 
     artifacts {

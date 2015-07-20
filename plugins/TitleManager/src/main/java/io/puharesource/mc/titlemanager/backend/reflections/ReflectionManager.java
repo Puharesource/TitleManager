@@ -3,6 +3,7 @@ package io.puharesource.mc.titlemanager.backend.reflections;
 import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManager183;
 import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManager18;
 import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManagerProtocolHack1718;
+import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 
 import java.util.Map;
@@ -53,23 +54,14 @@ public abstract class ReflectionManager {
             this.path = path;
         }
 
+        @SneakyThrows(ClassNotFoundException.class)
         public ReflectionClass getReflectionClass(final String path) {
             if (this != ORG_SPIGOTMC) {
                 final String version = ReflectionManager.getServerVersion();
-                try {
-                    return new ReflectionClass(this.path + "." + version + path);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    return new ReflectionClass(this.path + "." + path);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+                return new ReflectionClass(this.path + "." + version + path);
             }
 
-            return null;
+            return new ReflectionClass(this.path + "." + path);
         }
 
         private String path;

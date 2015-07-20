@@ -1,6 +1,7 @@
 package io.puharesource.mc.titlemanager.backend.updatechecker;
 
 import io.puharesource.mc.titlemanager.TitleManager;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 
 import java.io.BufferedReader;
@@ -10,16 +11,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.logging.Logger;
 
-public class UpdateManager {
-
-    private String latestVersion;
+public final class UpdateManager {
+    private @Getter String latestVersion;
 
     public UpdateManager() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(TitleManager.getInstance(), new Checker(), 0, 20 * 60 * 60);
-    }
-
-    public String getLatestVersion() {
-        return latestVersion;
     }
 
     public String getCurrentVersion() {
@@ -27,12 +23,16 @@ public class UpdateManager {
     }
 
     public boolean isUpdateAvailable() {
-        return latestVersion != null && !getCurrentVersion().equalsIgnoreCase(latestVersion);
+        return  TitleManager.getInstance().getConfigManager().getConfig().updaterAutoCheck &&
+                latestVersion != null &&
+                !getCurrentVersion().equalsIgnoreCase(latestVersion);
     }
 
-    private class Checker implements Runnable {
+    private final class Checker implements Runnable {
         @Override
         public void run() {
+            if (!TitleManager.getInstance().getConfigManager().getConfig().updaterAutoCheck) return;
+
             Logger logger = TitleManager.getInstance().getLogger();
             logger.info("Searching for updates.");
 

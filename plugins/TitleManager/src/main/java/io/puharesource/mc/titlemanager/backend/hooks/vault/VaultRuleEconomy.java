@@ -14,5 +14,4 @@ public final class VaultRuleEconomy extends VariableRule {
     public String[] replace(Player player, String text) {
         return new String[0];
     }
-
 }

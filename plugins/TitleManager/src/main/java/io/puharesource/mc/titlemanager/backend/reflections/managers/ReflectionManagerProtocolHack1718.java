@@ -2,8 +2,9 @@ package io.puharesource.mc.titlemanager.backend.reflections.managers;
 
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionClass;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
+import lombok.Getter;
+import lombok.SneakyThrows;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 public final class ReflectionManagerProtocolHack1718 extends ReflectionManager {
 
-    private final Map<String, ReflectionClass> classes;
+    private @Getter final Map<String, ReflectionClass> classes;
 
     public ReflectionManagerProtocolHack1718() {
         classes = new LinkedHashMap<>();
@@ -24,30 +25,21 @@ public final class ReflectionManagerProtocolHack1718 extends ReflectionManager {
         classes.put("PlayerConnection", ReflectionType.NET_MINECRAFT_SERVER.getReflectionClass("PlayerConnection"));
         classes.put("Packet", ReflectionType.NET_MINECRAFT_SERVER.getReflectionClass("Packet"));
         classes.put("PacketPlayOutChat", ReflectionType.NET_MINECRAFT_SERVER.getReflectionClass("PacketPlayOutChat"));
-        try {
-            ReflectionClass protocolInjector = ReflectionType.ORG_SPIGOTMC.getReflectionClass("ProtocolInjector");
-            ReflectionClass packetTitle = protocolInjector.getInnerReflectionClass("PacketTitle");
-            classes.put("ProtocolInjector", protocolInjector);
-            classes.put("PacketTitle", packetTitle);
-            classes.put("Action", packetTitle.getInnerReflectionClass("Action"));
-            classes.put("PacketTabHeader", protocolInjector.getInnerReflectionClass("PacketTabHeader"));
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        classes.put("PacketPlayOutSetSlot", ReflectionType.NET_MINECRAFT_SERVER.getReflectionClass("PacketPlayOutSetSlot"));
+        classes.put("ItemStack", ReflectionType.NET_MINECRAFT_SERVER.getReflectionClass("ItemStack"));
+        classes.put("CraftItemStack", ReflectionType.ORG_BUKKIT_CRAFTBUKKIT.getReflectionClass("inventory.CraftItemStack"));
+
+        ReflectionClass protocolInjector = ReflectionType.ORG_SPIGOTMC.getReflectionClass("ProtocolInjector");
+        ReflectionClass packetTitle = protocolInjector.getInnerReflectionClass("PacketTitle");
+        classes.put("ProtocolInjector", protocolInjector);
+        classes.put("PacketTitle", packetTitle);
+        classes.put("Action", packetTitle.getInnerReflectionClass("Action"));
+        classes.put("PacketTabHeader", protocolInjector.getInnerReflectionClass("PacketTabHeader"));
     }
 
+    @SneakyThrows
     @Override
-    public Map<String, ReflectionClass> getClasses() {
-        return classes;
-    }
-
-    @Override
-    public Object getIChatBaseComponent(String text) {
-        try {
-            return text == null ? null : classes.get("ChatComponentText").getConstructor(String.class).newInstance(text);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public Object getIChatBaseComponent(final String text) {
+        return text == null ? null : classes.get("ChatComponentText").getConstructor(String.class).newInstance(text);
     }
 }

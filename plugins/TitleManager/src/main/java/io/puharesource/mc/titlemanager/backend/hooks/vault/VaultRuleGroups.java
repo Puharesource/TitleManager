@@ -13,5 +13,4 @@ public final class VaultRuleGroups extends VariableRule {
     public String[] replace(Player player, String text) {
         return new String[0];
     }
-
 }

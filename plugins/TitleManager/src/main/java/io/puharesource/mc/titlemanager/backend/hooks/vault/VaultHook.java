@@ -2,6 +2,8 @@ package io.puharesource.mc.titlemanager.backend.hooks.vault;
 
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.backend.hooks.PluginHook;
+import lombok.Getter;
+import lombok.Setter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
@@ -11,10 +13,10 @@ import java.util.logging.Logger;
 
 public final class VaultHook extends PluginHook {
 
-    private static Economy economy;
-    private static Permission permissions;
-    private static boolean economySupported;
-    private static boolean permissionsSupported;
+    private @Getter @Setter static Economy economy;
+    private @Getter @Setter static Permission permissions;
+    private @Getter @Setter static boolean economySupported;
+    private @Getter @Setter static boolean permissionsSupported;
 
     public VaultHook() {
         super("Vault");
@@ -47,45 +49,5 @@ public final class VaultHook extends PluginHook {
 
     public static boolean hasGroupSupport() {
         return permissions != null && permissions.hasGroupSupport();
-    }
-
-    public static Economy getEconomy() {
-        return economy;
-    }
-
-    public static void setEconomy(Economy economy) {
-        VaultHook.economy = economy;
-    }
-
-    public static Permission getPermissions() {
-        return permissions;
-    }
-
-    public static void setPermissions(Permission permissions) {
-        VaultHook.permissions = permissions;
-    }
-
-    public static boolean getEconomySupported() {
-        return economySupported;
-    }
-
-    public static boolean isEconomySupported() {
-        return economySupported;
-    }
-
-    public static void setEconomySupported(boolean economySupported) {
-        VaultHook.economySupported = economySupported;
-    }
-
-    public static boolean getPermissionsSupported() {
-        return permissionsSupported;
-    }
-
-    public static boolean isPermissionsSupported() {
-        return permissionsSupported;
-    }
-
-    public static void setPermissionsSupported(boolean permissionsSupported) {
-        VaultHook.permissionsSupported = permissionsSupported;
     }
 }
