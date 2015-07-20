@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Map;
 
-@ParameterSupport(supportedParams = {"SILENT", "FADEIN", "STAY", "FADEOUT"})
+@ParameterSupport(supportedParams = {"SILENT", "FADEIN", "STAY", "FADEOUT", "WORLD"})
 public final class SubBroadcast extends TMSubCommand {
     public SubBroadcast() {
         super("bc", "titlemanager.command.broadcast", "<message>", "Sends a title message to everyone on the server, put inside of the message, to add a subtitle.", "broadcast");
@@ -32,6 +32,7 @@ public final class SubBroadcast extends TMSubCommand {
         int fadeIn = config.welcomeMessageFadeIn;
         int stay = config.welcomeMessageStay;
         int fadeOut = config.welcomeMessageFadeOut;
+        World world = null;
 
         if (params.containsKey("FADEIN")) {
             CommandParameter param = params.get("FADEIN");
@@ -57,7 +58,12 @@ public final class SubBroadcast extends TMSubCommand {
                 } catch (NumberFormatException ignored) {}
             }
         }
-
+        if(params.containsKey("WORLD")) {
+            CommandParameter param = params.get("WORLD");
+            if(param.getValue()!=null) {
+                world = Bukkit.getWorld(param.getValue());
+            }
+        }
         String text = MiscellaneousUtils.combineArray(0, args);
         text = text.replaceFirst("[%{][Nn][Ll][%}]","<nl>");
 
@@ -76,7 +82,14 @@ public final class SubBroadcast extends TMSubCommand {
                 else sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\"");
             }
         }
-
+        if(world!=null) {
+            for(Player p : Bukkit.getOnlinePlayers()) {
+                if(p.getWorld()==world) {
+                    object.send(p);
+                }
+            }
+            return;
+        }
         object.broadcast();
     }
 }
