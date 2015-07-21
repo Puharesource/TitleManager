@@ -64,7 +64,7 @@ public final class VariableManager {
     }
 
     private Pattern getVariablePattern(final String var) {
-        return Pattern.compile("[{](?i)" + var + "[:]\\d+[,]?(\\d+)?[}]");
+        return Pattern.compile("[{](?i)" + var + "([:]\\d+[,]?(\\d+)?)?[}]");
     }
 
     public String replaceText(final Player player, String text) {
