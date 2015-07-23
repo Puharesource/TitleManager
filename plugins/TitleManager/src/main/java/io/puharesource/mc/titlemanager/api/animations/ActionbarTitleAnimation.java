@@ -8,8 +8,6 @@ import io.puharesource.mc.titlemanager.backend.packet.ActionbarTitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  * This is the actionbar title animation.
@@ -29,12 +27,9 @@ public class ActionbarTitleAnimation implements IAnimation, IActionbarObject {
 
     @Override
     public void send(Player player) {
-        Plugin plugin = TitleManager.getInstance();
-        BukkitScheduler scheduler = Bukkit.getScheduler();
-
-        long times = 0;
+        int times = 0;
         for (AnimationFrame frame : title.getFrames()) {
-            scheduler.runTaskLaterAsynchronously(plugin, new Task(frame, player), times);
+            TitleManager.getInstance().getEngine().schedule(new Task(frame, player), times);
             times += frame.getTotalTime();
         }
     }

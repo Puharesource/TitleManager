@@ -1,11 +1,14 @@
 package io.puharesource.mc.titlemanager;
 
+import com.google.common.collect.ImmutableList;
 import io.puharesource.mc.titlemanager.api.variables.VariableManager;
 import io.puharesource.mc.titlemanager.backend.bungee.BungeeManager;
+import io.puharesource.mc.titlemanager.backend.engine.Engine;
 import io.puharesource.mc.titlemanager.backend.hooks.essentials.EssentialsHook;
 import io.puharesource.mc.titlemanager.backend.hooks.ezrankslite.EZRanksLiteHook;
 import io.puharesource.mc.titlemanager.backend.hooks.placeholderapi.PlaceholderAPIHook;
 import io.puharesource.mc.titlemanager.backend.hooks.specialrules.BungeeRule;
+import io.puharesource.mc.titlemanager.backend.hooks.specialrules.VanishRule;
 import io.puharesource.mc.titlemanager.backend.hooks.vanishnopacket.VanishNoPacketHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultRuleEconomy;
@@ -16,7 +19,6 @@ import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesBung
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesDefault;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesEZRanksLite;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesVault;
-import io.puharesource.mc.titlemanager.backend.hooks.specialrules.VanishRule;
 import io.puharesource.mc.titlemanager.commands.TMCommand;
 import io.puharesource.mc.titlemanager.commands.sub.*;
 import io.puharesource.mc.titlemanager.listeners.ListenerConnection;
@@ -36,6 +38,7 @@ public final class TitleManager extends JavaPlugin {
     private @Getter VariableManager variableManager;
     private @Getter BungeeManager bungeeManager;
     private @Getter UpdateManager updateManager;
+    private @Getter Engine engine;
 
     private static List<Integer> runningAnimations = Collections.synchronizedList(new ArrayList<Integer>());
 
@@ -45,6 +48,7 @@ public final class TitleManager extends JavaPlugin {
         reflectionManager = ReflectionManager.createManager();
         variableManager = new VariableManager();
         updateManager = new UpdateManager();
+        engine = new Engine();
 
         getServer().getPluginManager().registerEvents(new ListenerConnection(), this);
         getServer().getPluginManager().registerEvents(new ListenerItemSlot(), this);
@@ -81,15 +85,21 @@ public final class TitleManager extends JavaPlugin {
         configManager.load();
     }
 
+    @Override
+    public void onDisable() {
+        engine.cancelAll();
+        runningAnimations.clear();
+    }
+
+    public static List<Integer> getRunningAnimations() {
+        return ImmutableList.copyOf(runningAnimations);
+    }
+
     public static void addRunningAnimationId(int id) {
         runningAnimations.add(id);
     }
 
     public static void removeRunningAnimationId(int id) {
         runningAnimations.remove((Integer) id);
-    }
-
-    public static List<Integer> getRunningAnimations() {
-        return runningAnimations;
     }
 }

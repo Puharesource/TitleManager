@@ -10,7 +10,6 @@ import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import io.puharesource.mc.titlemanager.backend.config.ConfigSerializer;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.IOException;
@@ -52,7 +51,7 @@ public final class Config {
     public void reload() {
         for (int i = 0; TitleManager.getRunningAnimations().size() > i; i++) {
             int id = TitleManager.getRunningAnimations().get(i);
-            Bukkit.getScheduler().cancelTask(id);
+            TitleManager.getInstance().getEngine().cancelAll();
             TitleManager.removeRunningAnimationId(id);
         }
 

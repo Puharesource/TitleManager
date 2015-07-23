@@ -9,12 +9,15 @@ import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import io.puharesource.mc.titlemanager.commands.CommandParameter;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-+@ParameterSupport(supportedParams = {"SILENT", "FADEIN", "STAY", "FADEOUT", "WORLD"})
+@ParameterSupport(supportedParams = {"SILENT", "FADEIN", "STAY", "FADEOUT", "WORLD"})
 public final class SubBroadcast extends TMSubCommand {
     public SubBroadcast() {
         super("bc", "titlemanager.command.broadcast", "<message>", "Sends a title message to everyone on the server, put inside of the message, to add a subtitle.", "broadcast");
@@ -57,12 +60,13 @@ public final class SubBroadcast extends TMSubCommand {
                 } catch (NumberFormatException ignored) {}
             }
         }
-+       if(params.containsKey("WORLD")) {
-+           CommandParameter param = params.get("WORLD");
-+           if(param.getValue()!=null) {
-+               world = Bukkit.getWorld(param.getValue());
-+           }
-+       }
+
+        if(params.containsKey("WORLD")) {
+            CommandParameter param = params.get("WORLD");
+            if(param.getValue() != null) {
+                world = Bukkit.getWorld(param.getValue());
+            }
+        }
 
         String text = MiscellaneousUtils.combineArray(0, args);
         text = text.replaceFirst("[%{][Nn][Ll][%}]","<nl>");
@@ -83,14 +87,14 @@ public final class SubBroadcast extends TMSubCommand {
             }
         }
 
-+        if(world!=null) {
-+            for(Player p : Bukkit.getOnlinePlayers()) {
-+                if(p.getWorld()==world) {
-+                    object.send(p);
-+                }
-+            }
-+            return;
-+        }
-        object.broadcast();
+        if (world != null) {
+            for (final Player player : Bukkit.getOnlinePlayers()) {
+                if (player.getWorld() == world) {
+                    object.send(player);
+                }
+            }
+        } else {
+            object.broadcast();
+        }
     }
 }

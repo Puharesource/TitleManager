@@ -5,12 +5,11 @@ import io.puharesource.mc.titlemanager.api.TextConverter;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.backend.engine.Engine;
 import io.puharesource.mc.titlemanager.backend.packet.TitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  * This is the title animation.
@@ -47,34 +46,33 @@ public class TitleAnimation implements IAnimation, ITitleObject {
 
     @Override
     public void send(Player player) {
-        Plugin plugin = TitleManager.getInstance();
-        BukkitScheduler scheduler = Bukkit.getScheduler();
+        final Engine engine = TitleManager.getInstance().getEngine();
 
-        long times = 0;
+        int times = 0;
         if (title instanceof FrameSequence && subtitle instanceof FrameSequence) {
             for (AnimationFrame frame : ((FrameSequence) title).getFrames()) {
-                scheduler.runTaskLaterAsynchronously(plugin, new Task(false, frame, player), times);
+                engine.schedule(new Task(false, frame, player), times);
                 times += frame.getTotalTime();
             }
             times = 0;
             for (AnimationFrame frame : ((FrameSequence) subtitle).getFrames()) {
-                scheduler.runTaskLaterAsynchronously(plugin, new Task(true, frame, player), times);
+                engine.schedule(new Task(true, frame, player), times);
                 times += frame.getTotalTime();
             }
         } else if (title instanceof FrameSequence) {
             for (AnimationFrame frame : ((FrameSequence) title).getFrames()) {
-                scheduler.runTaskLaterAsynchronously(plugin, new Task(false, frame, player), times);
+                engine.schedule(new Task(false, frame, player), times);
                 times += frame.getTotalTime();
             }
             FrameSequence sequence = (FrameSequence) title;
-            scheduler.runTaskAsynchronously(plugin, new Task(true, new AnimationFrame((String) subtitle, sequence.getFadeIn(), sequence.getStay(), sequence.getFadeOut()), player));
+            engine.schedule(new Task(true, new AnimationFrame((String) subtitle, sequence.getFadeIn(), sequence.getStay(), sequence.getFadeOut()), player), 0);
         } else if (subtitle instanceof FrameSequence) {
             for (AnimationFrame frame : ((FrameSequence) subtitle).getFrames()) {
-                scheduler.runTaskLaterAsynchronously(plugin, new Task(true, frame, player), times);
+                engine.schedule(new Task(true, frame, player), times);
                 times += frame.getTotalTime();
             }
             FrameSequence sequence = (FrameSequence) subtitle;
-            scheduler.runTaskAsynchronously(plugin, new Task(false, new AnimationFrame((String) title, sequence.getFadeIn(), sequence.getStay(), sequence.getFadeOut()), player));
+            engine.schedule(new Task(false, new AnimationFrame((String) title, sequence.getFadeIn(), sequence.getStay(), sequence.getFadeOut()), player), 0);
         }
     }
 

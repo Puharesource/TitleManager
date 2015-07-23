@@ -4,10 +4,9 @@ import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TabTitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
+import io.puharesource.mc.titlemanager.backend.engine.Engine;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.UUID;
 
@@ -46,27 +45,26 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
 
     @Override
     public void send(Player player) {
-        Plugin plugin = TitleManager.getInstance();
-        BukkitScheduler scheduler = Bukkit.getScheduler();
+        final Engine engine = TitleManager.getInstance().getEngine();
 
-        long times = 0;
+        int times = 0;
         if (header instanceof FrameSequence && footer instanceof FrameSequence) {
             FrameSequence headerSequence = (FrameSequence) header;
             FrameSequence footerSequence = (FrameSequence) footer;
             MultiTask task = new MultiTask(headerSequence, footerSequence, player);
-            int id = scheduler.runTaskTimerAsynchronously(plugin, task, 0, 1).getTaskId();
+            int id = engine.schedule(task, 0, 1);
             task.setId(id);
         } else if (header instanceof FrameSequence) {
             for (AnimationFrame frame : ((FrameSequence) header).getFrames()) {
                 Task task = new Task(frame.getText(), (String) footer, player);
-                int id = scheduler.runTaskTimerAsynchronously(plugin, task, times, ((FrameSequence) header).getTotalTime()).getTaskId();
+                int id = engine.schedule(task, times, ((FrameSequence) header).getTotalTime());
                 task.setId(id);
                 times += frame.getTotalTime();
             }
         } else if (footer instanceof FrameSequence) {
             for (AnimationFrame frame : ((FrameSequence) footer).getFrames()) {
                 Task task = new Task((String) header, frame.getText(), player);
-                int id = scheduler.runTaskTimerAsynchronously(plugin, task, times, ((FrameSequence) footer).getTotalTime()).getTaskId();
+                int id = engine.schedule(task, times, ((FrameSequence) footer).getTotalTime());
                 task.setId(id);
                 times += frame.getTotalTime();
             }
@@ -125,7 +123,7 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
                         new TabTitleObject(footer, TabTitleObject.Position.FOOTER).send(player);
                     else new TabTitleObject(header, footer).send(player);
                 } else {
-                    Bukkit.getScheduler().cancelTask(id);
+                    TitleManager.getInstance().getEngine().cancel(id);
                     TitleManager.removeRunningAnimationId(id);
                 }
             }
@@ -196,7 +194,7 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
                     if (player != null && player.isOnline()) {
                         new TabTitleObject(currentHeaderFrame.getText(), currentFooterFrame.getText()).send(player);
                     } else {
-                        Bukkit.getScheduler().cancelTask(id);
+                        TitleManager.getInstance().getEngine().cancel(id);
                         TitleManager.removeRunningAnimationId(id);
                     }
                 }
