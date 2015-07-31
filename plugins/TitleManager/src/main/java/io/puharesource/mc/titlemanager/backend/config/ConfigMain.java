@@ -109,4 +109,29 @@ public class ConfigMain {
      */
     @ConfigField(path = "disabled-variables")
     public List<String> disabledVariables = Arrays.asList("my-disabled-variable", "also-called-placeholders");
+    
+    /*
+     * Per World Messages
+     * ---------------------
+     */
+    @ConfigField(path = "world_message.enabled")
+    public boolean worldMessageEnabled = true;
+
+    @ConfigField(path = "world_message.title")
+    public String worldMessageTitle = "&7You have joined";
+
+    @ConfigField(path = "world_message.subtitle")
+    public String worldMessageSubtitle = "&7the {WORLD} world!";
+    
+    @ConfigField(path = "world_message.actionbar")
+    public String worldMessageActionBar = "Enjoy your stay!";
+
+    @ConfigField(path = "world_message.fadeIn")
+    public int worldMessageFadeIn = 20;
+
+    @ConfigField(path = "world_message.stay")
+    public int worldMessageStay = 40;
+
+    @ConfigField(path = "world_message.fadeOut")
+    public int worldMessageFadeOut = 20;
 }
