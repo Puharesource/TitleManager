@@ -28,35 +28,21 @@ public final class ListenerConnection implements Listener {
         final Player player = event.getPlayer();
 
         if (!config.usingConfig) return;
-        
-        //TODO check for per world titles and stuff, I don't have time right now for this
 
-        if (config.welcomeMessageEnabled) {
+        if (config.worldMessageEnabled) {
             Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
                 @Override
                 public void run() {
-                    configManager.getWelcomeObject().send(player);
+                    configManager.getWorldObject().send(player);
+                }
+            }, 10l);
+            Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
+                @Override
+                public void run() {
+                    configManager.getWorldActionbarObject().send(player);
                 }
             }, 10l);
         }
 
-
-        if (config.tabmenuEnabled && !(configManager.getTabTitleObject() instanceof IAnimation)) {
-            Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
-                @Override
-                public void run() {
-                    configManager.getTabTitleObject().send(player);
-                }
-            }, 10l);
-        }
-
-        if (config.actionbarWelcomeEnabled) {
-            Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
-                @Override
-                public void run() {
-                    configManager.getActionbarWelcomeObject().send(player);
-                }
-            }, 10l);
-        }
     }
 }
