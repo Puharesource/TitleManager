@@ -13,40 +13,40 @@ public final class EZRanksLiteHook extends PluginHook {
         super("EZRanksLite");
     }
 
+    @SuppressWarnings("deprecation")
     public static EZAPI getEZAPI() {
         return EZRanksLite.getAPI();
     }
 
-    public static String getRankPrefix(Player player) {
-        return getEZAPI().getRankData(player).getPrefix();
+    public static String getRankPrefix(final Player player) {
+        return getEZAPI().getRankPrefix(player);
     }
 
-    public static String getRankupPrefix(Player player) {
+    public static String getRankupPrefix(final Player player) {
         return getEZAPI().getRankupPrefix(player);
     }
 
-    public static String getCurrentRank(Player player) {
-        return getEZAPI().getRankData(player).getRank();
+    public static String getCurrentRank(final Player player) {
+        return getEZAPI().getCurrentRank(player);
     }
 
-    public static String getRankup(Player player) {
+    public static String getRankup(final Player player) {
         return getEZAPI().getRankupName(player);
     }
 
-    public static String getRankupCost(Player player) {
+    public static String getRankupCost(final Player player) {
         return MiscellaneousUtils.formatNumber(new BigDecimal(getEZAPI().getRankupCost(player)));
     }
 
-    public static String getProgress(Player player) {
+    public static String getProgress(final Player player) {
         return String.valueOf(getEZAPI().getRankupProgress(player));
     }
 
-    public static String getProgressBar(Player player) {
+    public static String getProgressBar(final Player player) {
         return getEZAPI().getRankupProgressBar(player);
     }
 
-    public static String getNeeded(Player player) {
-        return getEZAPI().getRankData(player).getResetCost();
+    public static String getNeeded(final Player player) {
+        return getEZAPI().getRankupCostFormatted(player);
     }
-
 }

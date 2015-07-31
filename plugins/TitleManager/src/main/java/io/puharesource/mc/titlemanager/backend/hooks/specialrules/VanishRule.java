@@ -2,6 +2,8 @@ package io.puharesource.mc.titlemanager.backend.hooks.specialrules;
 
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.backend.hooks.essentials.EssentialsHook;
+import io.puharesource.mc.titlemanager.backend.hooks.supervanish.PremiumVanishHook;
+import io.puharesource.mc.titlemanager.backend.hooks.supervanish.SuperVanishHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vanishnopacket.VanishNoPacketHook;
 import io.puharesource.mc.titlemanager.api.variables.VariableRule;
 import org.bukkit.Bukkit;
@@ -10,7 +12,7 @@ import org.bukkit.entity.Player;
 public final class VanishRule extends VariableRule {
     @Override
     public boolean rule(Player player) {
-        return getEssentials().isEnabled() || getVanishHook().isEnabled();
+        return getEssentials().isEnabled() || getVanishHook().isEnabled() || getSuperVanishHook().isEnabled() || getPremiumVanishHook().isEnabled();
     }
 
     @Override
@@ -23,6 +25,9 @@ public final class VanishRule extends VariableRule {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (getEssentials().isEnabled() && getEssentials().isPlayerVanished(player)) continue;
             if (getVanishHook().isEnabled() && getVanishHook().isPlayerVanished(player)) continue;
+            if (getSuperVanishHook().isEnabled() && getSuperVanishHook().isPlayerVanished(player)) continue;
+            if (getPremiumVanishHook().isEnabled() && getPremiumVanishHook().isPlayerVanished(player)) continue;
+
             nonVanished++;
         }
 
@@ -30,10 +35,18 @@ public final class VanishRule extends VariableRule {
     }
 
     private static EssentialsHook getEssentials() {
-        return ((EssentialsHook) (TitleManager.getInstance().getVariableManager().getHook("ESSENTIALS")));
+        return (EssentialsHook) TitleManager.getInstance().getVariableManager().getHook("ESSENTIALS");
     }
 
     private static VanishNoPacketHook getVanishHook() {
-        return ((VanishNoPacketHook) (TitleManager.getInstance().getVariableManager().getHook("VANISHNOPACKET")));
+        return (VanishNoPacketHook) TitleManager.getInstance().getVariableManager().getHook("VANISHNOPACKET");
+    }
+
+    private static SuperVanishHook getSuperVanishHook() {
+        return (SuperVanishHook) TitleManager.getInstance().getVariableManager().getHook("SUPERVANISH");
+    }
+
+    private static PremiumVanishHook getPremiumVanishHook() {
+        return (PremiumVanishHook) TitleManager.getInstance().getVariableManager().getHook("PREMIUMVANISH");
     }
 }
