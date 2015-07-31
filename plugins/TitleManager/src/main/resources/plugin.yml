@@ -3,7 +3,7 @@ version: 1.5.10
 author: Puharesource
 
 main: io.puharesource.mc.titlemanager.TitleManager
-softdepend: [Vault, Essentials, VanishNoPacket, EZRanksLite, PlaceholderAPI]
+softdepend: [Vault, Essentials, VanishNoPacket, EZRanksLite, PlaceholderAPI, SuperVanish, PremiumVanish]
 
 commands:
   tm:

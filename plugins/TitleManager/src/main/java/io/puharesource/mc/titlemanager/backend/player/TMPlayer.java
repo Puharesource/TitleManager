@@ -39,6 +39,8 @@ public final class TMPlayer implements Comparable<TMPlayer> {
             } else if (!(packet instanceof ItemMessagePacket)) {
                 packet = null;
             }
+        } else if (isUsing17()) {
+            packet = null;
         } else {
             if (packet instanceof ItemMessagePacket) {
                 packet = null;

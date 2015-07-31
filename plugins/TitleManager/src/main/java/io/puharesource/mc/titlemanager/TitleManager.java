@@ -9,6 +9,8 @@ import io.puharesource.mc.titlemanager.backend.hooks.ezrankslite.EZRanksLiteHook
 import io.puharesource.mc.titlemanager.backend.hooks.placeholderapi.PlaceholderAPIHook;
 import io.puharesource.mc.titlemanager.backend.hooks.specialrules.BungeeRule;
 import io.puharesource.mc.titlemanager.backend.hooks.specialrules.VanishRule;
+import io.puharesource.mc.titlemanager.backend.hooks.supervanish.PremiumVanishHook;
+import io.puharesource.mc.titlemanager.backend.hooks.supervanish.SuperVanishHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vanishnopacket.VanishNoPacketHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultHook;
 import io.puharesource.mc.titlemanager.backend.hooks.vault.VaultRuleEconomy;
@@ -68,6 +70,8 @@ public final class TitleManager extends JavaPlugin {
         variableManager.registerHook("VAULT", new VaultHook());
         variableManager.registerHook("ESSENTIALS", new EssentialsHook());
         variableManager.registerHook("VANISHNOPACKET", new VanishNoPacketHook());
+        variableManager.registerHook("SUPERVANISH", new SuperVanishHook());
+        variableManager.registerHook("PREMIUMVANISH", new PremiumVanishHook());
         variableManager.registerHook("EZRANKSLITE", new EZRanksLiteHook());
         variableManager.registerHook("PLACEHOLDERAPI", new PlaceholderAPIHook());
 

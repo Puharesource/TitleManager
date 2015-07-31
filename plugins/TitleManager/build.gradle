@@ -15,4 +15,5 @@ dependencies {
 
     provided files('../../libs/EZRanksLite.jar')
     provided files('../../libs/PlaceholderAPI.jar')
+    provided files('../../libs/SuperVanish.jar')
 }
