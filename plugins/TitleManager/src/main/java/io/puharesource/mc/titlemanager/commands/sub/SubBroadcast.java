@@ -44,6 +44,17 @@ public final class SubBroadcast extends TMSubCommand {
             }
             BungeeManager m = TitleManager.getInstance().getBungeeManager();
             m.sendMessage("Broadcast", cmd);
+            boolean silent = params.containsKey("SILENT");
+            if(!silent) {
+                if (object instanceof IAnimation) {
+                    sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord broadcast animation.");
+                } else {
+                    TitleObject titleObject = (TitleObject) object;
+                    if (titleObject.getSubtitle() != null && !titleObject.getSubtitle().isEmpty())
+                        sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord broadcast with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\" \"" + ChatColor.RESET + titleObject.getSubtitle() + ChatColor.GREEN + "\"");
+                    else sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord broadcast with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\"");
+                }
+            }
             return;
         }
 
