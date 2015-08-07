@@ -31,7 +31,7 @@ public final class SubABroadcast extends TMSubCommand {
         
         
         if(params.containsKey("BUNGEE")) {
-            String cmd = "tm bc ";
+            String cmd = "tm abc ";
             for(String s : params.keySet()) {
                 cmd+="-"+s;
                 if(params.get(s).getValue()!=null) {
