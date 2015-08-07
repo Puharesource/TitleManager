@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-@ParameterSupport(supportedParams = {"SILENT", "WORLD"})
+@ParameterSupport(supportedParams = {"SILENT", "WORLD", "BUNGEE"})
 public final class SubABroadcast extends TMSubCommand {
     public SubABroadcast() {
         super("abc", "titlemanager.command.abroadcast", "<message>", "Sends an actionbar title message to everyone on the server.", "abroadcast");
@@ -25,6 +25,23 @@ public final class SubABroadcast extends TMSubCommand {
     public void onCommand(CommandSender sender, String[] args, Map<String, CommandParameter> params) {
         if (args.length < 1) {
             syntaxError(sender);
+            return;
+        }
+        
+        if(params.containsKey("BUNGEE")) {
+            String cmd = "tm abc ";
+            for(String s : params.keySet()) {
+                cmd+="-"+s;
+                if(params.get(s).getValue()!=null) {
+                    cmd+="="+params.get(s).getValue();
+                }
+                cmd+=" ";
+            }
+            for(String s : args) {
+                cmd += args+" ";
+            }
+            BungeeManager m = TitleManager.getInstance().getBungeeManager();
+            m.sendMessage("Broadcast", cmd);
             return;
         }
 
