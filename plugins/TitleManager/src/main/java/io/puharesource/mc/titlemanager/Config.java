@@ -24,14 +24,30 @@ public final class Config {
     private ConfigFile configFile, animationConfigFile;
     private Map<String, FrameSequence> animations = new HashMap<>();
     private @Getter ITabObject tabTitleObject;
-    private @Getter ITitleObject welcomeObject;
-    private @Getter ITitleObject firstWelcomeObject;
-    private @Getter IActionbarObject actionbarWelcomeObject;
-    private @Getter IActionbarObject actionbarFirstWelcomeObject;
+    private ArrayList<ITitleObject> welcomeObjects;
+    private ArrayList<ITitleObject> firstWelcomeObjects;
+    private ArrayList<IActionbarObject> actionbarWelcomeObjects;
+    private ArrayList<IActionbarObject> actionbarFirstWelcomeObjects;
     private @Getter ITitleObject worldObject;
     private @Getter IActionbarObject worldActionbarObject;
 
     private @Getter ConfigMain config;
+    
+    public ITitleObject getWelcomeObject() {
+        return welcomeObjects.get(new Random().nextInt(welcomeObjects.size()));
+    }
+    
+    public ITitleObject getFirstWelcomeObject() {
+        return welcomeObjects.get(new Random().nextInt(firstWelcomeObjects.size()));
+    }
+    
+    public ITitleObject getActionbarWelcomeObject() {
+        return welcomeObjects.get(new Random().nextInt(actionbarWelcomeObjects.size()));
+    }
+    
+    public ITitleObject getActionbarFirstWelcomeObject() {
+        return welcomeObjects.get(new Random().nextInt(actionbarFirstWelcomeObjects.size()));
+    }
 
     public void load() {
         TitleManager plugin = TitleManager.getInstance();
