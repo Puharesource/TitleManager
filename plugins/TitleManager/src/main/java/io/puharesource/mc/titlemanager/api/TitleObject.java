@@ -49,7 +49,7 @@ public class TitleObject implements ITitleObject {
     
     private void updateTimes() {
         ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
-        if (config.usingConfig) return;
+        if (!config.usingConfig) return;
 
         fadeIn = config.welcomeMessageFadeIn;
         stay = config.welcomeMessageStay;
