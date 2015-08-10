@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
+
 public final class Config {
 
     private ConfigFile configFile, animationConfigFile;
@@ -95,6 +97,10 @@ public final class Config {
 
             animations.put(str.toUpperCase().trim(), new FrameSequence(frames));
         }
+        welcomeObjects = Lists.newArrayList();
+        firstWelcomeObjects = Lists.newArrayList();
+        actionbarWelcomeObjects = Lists.newArrayList();
+        actionbarFirstWelcomeObjects = Lists.newArrayList();
 
         if (!config.usingConfig) return;
 
@@ -104,17 +110,31 @@ public final class Config {
         }
 
         if (config.welcomeMessageEnabled) {
-            welcomeObject = MiscellaneousUtils.generateTitleObject(config.welcomeMessageTitle, config.welcomeMessageSubtitle,
+            for(String s : config.welcomeMessageTitle) {
+                for(String t : config.welcomeMessageSubtitle) {
+                    ITitleObject welcomeObject = MiscellaneousUtils.generateTitleObject(s, t,
                     config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
+                    welcomeObjects.add(welcomeObject);
+                }
+            }
 
-
-            firstWelcomeObject = MiscellaneousUtils.generateTitleObject(config.firstJoinTitle, config.firstJoinSubtitle,
+            
+            for(String s : config.firstJoinTitle) {
+                for(String t : config.firstJoinSubtitle) {
+                    ITitleObject welcomeObject = MiscellaneousUtils.generateTitleObject(s, t,
                     config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
+                    firstWelcomeObjects.add(welcomeObject);
+                }
+            }
         }
 
         if (config.actionbarWelcomeEnabled) {
-            actionbarWelcomeObject = MiscellaneousUtils.generateActionbarObject(config.actionbarWelcomeMessage);
-            actionbarFirstWelcomeObject = MiscellaneousUtils.generateActionbarObject(config.actionbarFirstWelcomeMessage);
+            for(String s : config.actionbarWelcomeMessage) {
+                actionbarWelcomeObjects.add(MiscellaneousUtils.generateActionbarObject(s));
+            }
+            for(String s : config.actionbarFirstWelcomeMessage) {
+                actionbarFirstWelcomeObjects.add(MiscellaneousUtils.generateActionbarObject(s));
+            }
         }
 
         for (int i = 0; config.disabledVariables.size() > i; i++) {
