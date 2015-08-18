@@ -28,6 +28,33 @@ public final class SubMessage extends TMSubCommand {
             return;
         }
         
+        if(params.containsKey("BUNGEE")) {//cannot confirm player online/offline easily
+            String cmd = "tm msg ";
+            for(String s : params.keySet()) {
+                cmd+="-"+s;
+                if(params.get(s).getValue()!=null) {
+                    cmd+="="+params.get(s).getValue();
+                }
+                cmd+=" ";
+            }
+            for(String s : args) {
+                cmd += args+" ";
+            }
+            BungeeManager m = TitleManager.getInstance().getBungeeManager();
+            m.sendMessage("Broadcast", cmd);
+            boolean silent = params.containsKey("SILENT");
+            if(!silent) {
+                if (object instanceof IAnimation) {
+                    sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord message animation.");
+                } else {
+                    TitleObject titleObject = (TitleObject) object;
+                    if (titleObject.getSubtitle() != null && !titleObject.getSubtitle().isEmpty())
+                        sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord message with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\" \"" + ChatColor.RESET + titleObject.getSubtitle() + ChatColor.GREEN + "\"");
+                    else sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord message with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\"");
+                }
+            }
+            return;
+        }
 
         Player player = MiscellaneousUtils.getPlayer(args[0]);
         if (player == null) {
