@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-@ParameterSupport(supportedParams = {"SILENT", "FADEIN", "STAY", "FADEOUT"})
+@ParameterSupport(supportedParams = {"BUNGEE", "SILENT", "FADEIN", "STAY", "FADEOUT"})
 public final class SubMessage extends TMSubCommand {
     public SubMessage() {
         super("msg", "titlemanager.command.message", "<player> <message>", "Sends a title message to the specified player, put inside of the message, to add a subtitle.", "message");
@@ -27,6 +27,7 @@ public final class SubMessage extends TMSubCommand {
             syntaxError(sender);
             return;
         }
+        
 
         Player player = MiscellaneousUtils.getPlayer(args[0]);
         if (player == null) {
