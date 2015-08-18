@@ -52,7 +52,7 @@ public final class BungeeManager implements PluginMessageListener {
                     if(!server.trim().equalsIgnoreCase(currentServer.trim())) {
                         break;//if spec server is not this, there is no need to continue
                     }
-                    cmd = Pattern.compile("(-bungee=)\\w+").matcher(cmd).replaceAll("");
+                    cmd = Pattern.compile("(-bungee=)\\w+", Pattern.CASE_INSENSITIVE).matcher(cmd).replaceAll("");
                 }
                 //data sent as a cmd is easier to parse than sent as data, so dispatched as cmd instead.
                 //Also allows for event support among other things.
