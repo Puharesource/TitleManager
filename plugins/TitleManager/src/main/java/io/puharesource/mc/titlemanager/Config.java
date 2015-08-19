@@ -28,6 +28,8 @@ public final class Config {
     private @Getter ITitleObject firstWelcomeObject;
     private @Getter IActionbarObject actionbarWelcomeObject;
     private @Getter IActionbarObject actionbarFirstWelcomeObject;
+    private @Getter ITitleObject worldObject;
+    private @Getter IActionbarObject worldActionbarObject;
 
     private @Getter ConfigMain config;
 
@@ -101,6 +103,14 @@ public final class Config {
 
         for (int i = 0; config.disabledVariables.size() > i; i++) {
             config.disabledVariables.set(i, config.disabledVariables.get(i).trim().toLowerCase());
+        }
+        
+        
+        if (config.worldMessageEnabled) {
+            worldObject = MiscellaneousUtils.generateTitleObject(config.worldMessageTitle, config.worldMessageSubtitle,
+                    config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut);
+
+            worldActionbarObject = MiscellaneousUtils.generateActionbarObject(config.worldMessageActionBar);
         }
     }
 

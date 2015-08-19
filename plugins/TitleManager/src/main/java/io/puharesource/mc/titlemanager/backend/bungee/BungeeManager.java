@@ -39,6 +39,25 @@ public final class BungeeManager implements PluginMessageListener {
         final String subChannel = in.readUTF();
 
         switch (subChannel) {
+            case "Broadcast": {
+                //data sent for bungee broadcast: BungeeCord Broadcast /tm bc -bungee(=server) -silent HELLO YOYOYO
+                //will tell console all information that sender would normally see. 
+                String cmd = in.readUTF();
+                //removes -bungee param
+                if(Pattern.compile("(-bungee )", Pattern.CASE_INSENSITIVE).matcher(cmd).find()) {
+                    cmd = Pattern.compile("(-bungee )", Pattern.CASE_INSENSITIVE).matcher(cmd).replaceAll("");
+                } else {//if server specified
+                    String server = Pattern.compile("(-bungee=)\\w+", Pattern.CASE_INSENSITIVE).matcher(cmd).group();
+                    server = Pattern.compile("(-bungee=)", Pattern.CASE_INSENSITIVE).matcher(server).replaceAll("");
+                    if(!server.trim().equalsIgnoreCase(currentServer.trim())) {
+                        break;//if spec server is not this, there is no need to continue
+                    }
+                    cmd = Pattern.compile("(-bungee=)\\w+", Pattern.CASE_INSENSITIVE).matcher(cmd).replaceAll("");
+                }
+                //data sent as a cmd is easier to parse than sent as data, so dispatched as cmd instead.
+                //Also allows for event support among other things.
+                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), cmd);
+            }
             case "GetServers": {
                 final Map<String, String> newServers = new HashMap<>();
                 for (String newServer : in.readUTF().split(", ")) {
