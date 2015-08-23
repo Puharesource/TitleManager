@@ -49,10 +49,10 @@ public class ConfigMain {
     public boolean welcomeMessageEnabled = true;
 
     @ConfigField(path = "welcome_message.title")
-    public String welcomeMessageTitle = "&7Welcome back &a{PLAYER}&7!";
+    public List<String> welcomeMessageTitle = Arrays.asList("&7Welcome back &a{PLAYER}&7!", "&7Hello &a{PLAYER}&7!");
 
     @ConfigField(path = "welcome_message.subtitle")
-    public String welcomeMessageSubtitle = "&7To my server";
+    public List<String> welcomeMessageSubtitle = Arrays.asList("&7To my server");
 
     @ConfigField(path = "welcome_message.fadeIn")
     public int welcomeMessageFadeIn = 20;
@@ -68,10 +68,10 @@ public class ConfigMain {
      * ----------------------------------
      */
     @ConfigField(path = "welcome_message.first-join.title")
-    public String firstJoinTitle = "&7Welcome to MyServer &a{PLAYER}";
+    public List<String> welcomeMessageTitle = Arrays.asList("&7Welcome to MyServer &a{PLAYER}&7!", "&7Hello &a{PLAYER}&7!");
 
     @ConfigField(path = "welcome_message.first-join.subtitle")
-    public String firstJoinSubtitle = "&7Hope you enjoy your stay!";
+    public List<String> welcomeMessageSubtitle = Arrays.asList("&7Hope you enjoy your stay!", "&bStay a while!");
 
     /*
      * New player actionbar-welcome section
@@ -81,10 +81,10 @@ public class ConfigMain {
     public boolean actionbarWelcomeEnabled = true;
 
     @ConfigField(path = "actionbar-welcome.message")
-    public String actionbarWelcomeMessage = "&a&lWelcome!";
+    public List<String> actionbarWelcomeMessage = Arrays.asList("&bWelcome!");
 
     @ConfigField(path = "actionbar-welcome.first-join.message")
-    public String actionbarFirstWelcomeMessage = "&2&lWelcome It's your first time!";
+    public List<String> actionbarFirstWelcomeMessage = Arrays.asList("&2&lWelcome It's your first time!");
 
     /*
      * Number format
