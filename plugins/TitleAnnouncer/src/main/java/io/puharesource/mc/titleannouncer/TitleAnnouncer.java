@@ -75,27 +75,11 @@ public final class TitleAnnouncer extends JavaPlugin {
         }
 
         if (!hoveringMessages.isEmpty()) {
-            hoveringId = Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
-                int i = 0;
-
-                @Override
-                public void run() {
-                    hoveringMessages.get(i).broadcast();
-                    i = (hoveringMessages.size() - 1 > i) ? i++ : 0;
-                }
-            }, hoveringInterval, hoveringInterval).getTaskId();
+            hoveringId = Bukkit.getScheduler().runTaskTimerAsynchronously(this, new LoopingRunnable<>(hoveringMessages), hoveringInterval, hoveringInterval).getTaskId();
         }
 
         if (!actionbarMessages.isEmpty()) {
-            actionbarId = Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
-                int i = 0;
-
-                @Override
-                public void run() {
-                    actionbarMessages.get(i).broadcast();
-                    i = (hoveringMessages.size() - 1 > i) ? i++ : 0;
-                }
-            }, actionbarInterval, actionbarInterval).getTaskId();
+            actionbarId = Bukkit.getScheduler().runTaskTimerAsynchronously(this, new LoopingRunnable<>(actionbarMessages), actionbarInterval, actionbarInterval).getTaskId();
         }
     }
 }
