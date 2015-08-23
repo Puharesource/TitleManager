@@ -1,6 +1,7 @@
 name: TitleManager
-version: 1.5.12
+version: 1.6.0
 author: Puharesource
+website: https://puharesource.io
 
 main: io.puharesource.mc.titlemanager.TitleManager
 softdepend: [Vault, Essentials, VanishNoPacket, EZRanksLite, PlaceholderAPI, SuperVanish, PremiumVanish]

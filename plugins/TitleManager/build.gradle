@@ -1,4 +1,4 @@
-version = '1.5.12'
+version = '1.6.0'
 
 javadoc {
     exclude '**/io/puharesource/mc/titlemanager/backend/**'
@@ -16,4 +16,6 @@ dependencies {
     provided files('../../libs/EZRanksLite.jar')
     provided files('../../libs/PlaceholderAPI.jar')
     provided files('../../libs/SuperVanish.jar')
+
+    compile group: 'org.luaj', name: 'luaj-jse', version: '2.0'
 }
