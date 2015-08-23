@@ -67,131 +67,120 @@ public final class BungeeManager implements PluginMessageListener {
         if (!TitleManager.getInstance().getConfigManager().getConfig().usingBungeecord) return;
         if (!channel.equals("BungeeCord")) return;
 
-        StringBuilder sb = new StringBuilder();
-        try {
-            ByteArrayDataInput in = ByteStreams.newDataInput(message);
-            String line = null;
-            while ((line = in.readUTF()) != null) {
-                sb.append(line).append(" ** ");
+        val in = ByteStreams.newDataInput(message);
+        val subChannel = in.readUTF();
+
+        switch (subChannel) {
+            case "TitleManager": {
+                byte[] bytes = new byte[in.readShort()];
+                in.readFully(bytes);
+                final ByteArrayDataInput tmIn = ByteStreams.newDataInput(bytes);
+
+                switch (tmIn.readUTF()) {
+                    case "TitleObject-Message": {
+                        final ITitleObject titleObject = gson.fromJson(tmIn.readUTF(), ITitleObject.class);
+                        final String playerName = gson.fromJson(tmIn.readUTF(), String.class);
+                        final Player receiver = MiscellaneousUtils.getPlayer(playerName);
+
+                        if (receiver != null) {
+                            titleObject.send(receiver);
+                        }
+
+                        break;
+                    }
+                    case "TitleObject-Broadcast": {
+                        final ITitleObject titleObject = gson.fromJson(tmIn.readUTF(), ITitleObject.class);
+
+                        titleObject.broadcast();
+
+                        break;
+                    }
+                    case "ActionbarTitle-Message": {
+                        final IActionbarObject titleObject = gson.fromJson(tmIn.readUTF(), IActionbarObject.class);
+                        final String playerName = gson.fromJson(tmIn.readUTF(), String.class);
+                        final Player receiver = MiscellaneousUtils.getPlayer(playerName);
+
+                        if (receiver != null) {
+                            titleObject.send(receiver);
+                        }
+
+                        break;
+                    }
+                    case "ActionbarTitle-Broadcast": {
+                        final IActionbarObject titleObject = gson.fromJson(tmIn.readUTF(), IActionbarObject.class);
+
+                        titleObject.broadcast();
+
+                        break;
+                    }
+                }
+                break;
             }
-        } catch (Exception ignored) {}
-        Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + channel + " ; " + player.getName() + " ; " + sb.toString());
-        if (channel.equals("BungeeCord")) {
-            val in = ByteStreams.newDataInput(message);
-            val subChannel = in.readUTF();
-
-            switch (subChannel) {
-                case "TitleManager": {
-                    byte[] bytes = new byte[in.readShort()];
-                    in.readFully(bytes);
-                    final ByteArrayDataInput tmIn = ByteStreams.newDataInput(bytes);
-
-                    switch (tmIn.readUTF()) {
-                        case "TitleObject-Message": {
-                            final ITitleObject titleObject = gson.fromJson(tmIn.readUTF(), ITitleObject.class);
-                            final String playerName = gson.fromJson(tmIn.readUTF(), String.class);
-                            final Player receiver = MiscellaneousUtils.getPlayer(playerName);
-
-                            if (receiver != null) {
-                                titleObject.send(receiver);
-                            }
-
-                            break;
-                        }
-                        case "TitleObject-Broadcast": {
-                            final ITitleObject titleObject = gson.fromJson(tmIn.readUTF(), ITitleObject.class);
-
-                            titleObject.broadcast();
-
-                            break;
-                        }
-                        case "ActionbarTitle-Message": {
-                            final IActionbarObject titleObject = gson.fromJson(tmIn.readUTF(), IActionbarObject.class);
-                            final String playerName = gson.fromJson(tmIn.readUTF(), String.class);
-                            final Player receiver = MiscellaneousUtils.getPlayer(playerName);
-
-                            if (receiver != null) {
-                                titleObject.send(receiver);
-                            }
-
-                            break;
-                        }
-                        case "ActionbarTitle-Broadcast": {
-                            final IActionbarObject titleObject = gson.fromJson(tmIn.readUTF(), IActionbarObject.class);
-
-                            titleObject.broadcast();
-
-                            break;
-                        }
-                    }
-                    break;
+            case "GetServers": {
+                final Map<String, String> newServers = new HashMap<>();
+                for (String newServer : in.readUTF().split(", ")) {
+                    newServers.put(newServer.toUpperCase().trim(), newServer);
                 }
-                case "GetServers": {
-                    final Map<String, String> newServers = new HashMap<>();
-                    for (String newServer : in.readUTF().split(", ")) {
-                        newServers.put(newServer.toUpperCase().trim(), newServer);
-                    }
 
-                    for (final String server : servers.keySet()) {
-                        if (!newServers.containsKey(server.toUpperCase().trim())) {
-                            servers.remove(server.toUpperCase().trim());
-                        }
+                for (final String server : servers.keySet()) {
+                    if (!newServers.containsKey(server.toUpperCase().trim())) {
+                        servers.remove(server.toUpperCase().trim());
                     }
-
-                    for (final Map.Entry<String, String> server : newServers.entrySet()) {
-                        if (!servers.containsKey(server.getKey())) {
-                            servers.put(server.getKey(), new BungeeServerInfo(server.getValue()));
-                        }
-
-                        servers.get(server.getKey()).update();
-                    }
-                    break;
                 }
-                case "GetServer": {
-                    final String server = in.readUTF();
-                    currentServer = server;
-                    if (!servers.containsKey(server.toUpperCase().trim())) {
-                        servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
+
+                for (final Map.Entry<String, String> server : newServers.entrySet()) {
+                    if (!servers.containsKey(server.getKey())) {
+                        servers.put(server.getKey(), new BungeeServerInfo(server.getValue()));
                     }
 
-                    final BungeeServerInfo info = servers.get(server.toUpperCase().trim());
-                    info.setMaxPlayers(Bukkit.getMaxPlayers());
-                    info.setPlayerCount(Bukkit.getOnlinePlayers().size());
-
-                    int onlinePlayers = 0;
-                    if (servers.containsKey("ALL")) {
-                        onlinePlayers = servers.get("ALL").getPlayerCount();
-                    } else {
-                        for (final BungeeServerInfo serverInfo : servers.values()) {
-                            onlinePlayers += serverInfo.getPlayerCount();
-                        }
-                    }
-                    this.onlinePlayers = onlinePlayers;
-
-                    break;
+                    servers.get(server.getKey()).update();
                 }
-                case "PlayerCount": {
-                    final String server = in.readUTF();
-                    final int playerCount = in.readInt();
-
-                    if (!servers.containsKey(server.toUpperCase().trim())) {
-                        servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
-                    }
-
-                    servers.get(server.toUpperCase().trim()).setPlayerCount(playerCount);
-
-                    int onlinePlayers = 0;
-                    if (servers.containsKey("ALL")) {
-                        onlinePlayers = servers.get("ALL").getPlayerCount();
-                    } else {
-                        for (final BungeeServerInfo serverInfo : servers.values()) {
-                            onlinePlayers += serverInfo.getPlayerCount();
-                        }
-                    }
-                    this.onlinePlayers = onlinePlayers;
-
-                    break;
+                break;
+            }
+            case "GetServer": {
+                final String server = in.readUTF();
+                currentServer = server;
+                if (!servers.containsKey(server.toUpperCase().trim())) {
+                    servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
                 }
+
+                final BungeeServerInfo info = servers.get(server.toUpperCase().trim());
+                info.setMaxPlayers(Bukkit.getMaxPlayers());
+                info.setPlayerCount(Bukkit.getOnlinePlayers().size());
+
+                int onlinePlayers = 0;
+                if (servers.containsKey("ALL")) {
+                    onlinePlayers = servers.get("ALL").getPlayerCount();
+                } else {
+                    for (final BungeeServerInfo serverInfo : servers.values()) {
+                        onlinePlayers += serverInfo.getPlayerCount();
+                    }
+                }
+                this.onlinePlayers = onlinePlayers;
+
+                break;
+            }
+            case "PlayerCount": {
+                final String server = in.readUTF();
+                final int playerCount = in.readInt();
+
+                if (!servers.containsKey(server.toUpperCase().trim())) {
+                    servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
+                }
+
+                servers.get(server.toUpperCase().trim()).setPlayerCount(playerCount);
+
+                int onlinePlayers = 0;
+                if (servers.containsKey("ALL")) {
+                    onlinePlayers = servers.get("ALL").getPlayerCount();
+                } else {
+                    for (final BungeeServerInfo serverInfo : servers.values()) {
+                        onlinePlayers += serverInfo.getPlayerCount();
+                    }
+                }
+                this.onlinePlayers = onlinePlayers;
+
+                break;
             }
         }
     }
