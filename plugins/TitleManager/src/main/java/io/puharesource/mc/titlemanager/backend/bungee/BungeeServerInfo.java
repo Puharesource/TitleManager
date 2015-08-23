@@ -1,6 +1,7 @@
 package io.puharesource.mc.titlemanager.backend.bungee;
 
 import io.puharesource.mc.titlemanager.TitleManager;
+import org.bukkit.entity.Player;
 
 public final class BungeeServerInfo {
 
@@ -13,7 +14,7 @@ public final class BungeeServerInfo {
     }
 
     public void update() {
-        TitleManager.getInstance().getBungeeManager().sendMessage("PlayerCount", name);
+        TitleManager.getInstance().getBungeeManager().sendBungeeMessage("PlayerCount", name);
     }
 
     public String getName() {
@@ -34,5 +35,13 @@ public final class BungeeServerInfo {
 
     public int getMaxPlayers() {
         return maxPlayers;
+    }
+
+    public void sendMessage(final String... args) {
+        TitleManager.getInstance().getBungeeManager().sendServerMessage(name, args);
+    }
+
+    public void sendMessage(final Player player, final String... args) {
+        TitleManager.getInstance().getBungeeManager().sendServerMessage(player, name, args);
     }
 }

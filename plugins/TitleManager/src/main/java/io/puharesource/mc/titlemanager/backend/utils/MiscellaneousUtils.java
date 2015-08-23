@@ -22,6 +22,8 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 public final class MiscellaneousUtils {
+    private static final Pattern SPLIT_PATTERN = Pattern.compile("[%{][Nn][Ll][%}]|\\n");
+
     public static String format(String text) {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
@@ -132,5 +134,11 @@ public final class MiscellaneousUtils {
         messageObject = messageObject == null ? MiscellaneousUtils.format(message).replace("\\n", "\n") : messageObject;
 
         return messageObject instanceof String ? new ActionbarTitleObject((String) messageObject) : new ActionbarTitleAnimation((FrameSequence) messageObject);
+    }
+
+    public static String[] splitString(final String str) {
+        if (str.matches("(.*)" + SPLIT_PATTERN.pattern() + "(.*)"))
+            return str.split(SPLIT_PATTERN.pattern(), 2);
+        return new String[]{str, ""};
     }
 }

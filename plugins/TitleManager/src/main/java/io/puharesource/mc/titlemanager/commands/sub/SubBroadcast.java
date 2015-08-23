@@ -4,13 +4,14 @@ import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
 import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import io.puharesource.mc.titlemanager.commands.CommandParameter;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
+import lombok.val;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,41 +30,25 @@ public final class SubBroadcast extends TMSubCommand {
             syntaxError(sender);
             return;
         }
-        
-        if(params.containsKey("BUNGEE")) {
-            String cmd = "tm bc ";
-            for(String s : params.keySet()) {
-                cmd+="-"+s;
-                if(params.get(s).getValue()!=null) {
-                    cmd+="="+params.get(s).getValue();
-                }
-                cmd+=" ";
-            }
-            for(String s : args) {
-                cmd += args+" ";
-            }
-            BungeeManager m = TitleManager.getInstance().getBungeeManager();
-            m.sendMessage("Broadcast", cmd);
-            boolean silent = params.containsKey("SILENT");
-            if(!silent) {
-                if (object instanceof IAnimation) {
-                    sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord broadcast animation.");
-                } else {
-                    TitleObject titleObject = (TitleObject) object;
-                    if (titleObject.getSubtitle() != null && !titleObject.getSubtitle().isEmpty())
-                        sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord broadcast with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\" \"" + ChatColor.RESET + titleObject.getSubtitle() + ChatColor.GREEN + "\"");
-                    else sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord broadcast with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\"");
-                }
-            }
-            return;
-        }
 
-        boolean silent = params.containsKey("SILENT");
-        ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
+        BungeeServerInfo server = null;
+        final boolean silent = params.containsKey("SILENT");
+        final ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
+
         int fadeIn = config.welcomeMessageFadeIn;
         int stay = config.welcomeMessageStay;
         int fadeOut = config.welcomeMessageFadeOut;
+
         World world = null;
+
+        if(params.containsKey("BUNGEE")) {
+            final CommandParameter param = params.get("BUNGEE");
+
+            if (param.getValue() != null && !param.getValue().isEmpty()) {
+                server = TitleManager.getInstance().getBungeeManager().getServers().get(param.getValue().toUpperCase());
+            }
+        }
+
         if (params.containsKey("FADEIN")) {
             CommandParameter param = params.get("FADEIN");
             if (param.getValue() != null) {
@@ -89,40 +74,95 @@ public final class SubBroadcast extends TMSubCommand {
             }
         }
 
-        if(params.containsKey("WORLD")) {
+        if (params.containsKey("WORLD")) {
             CommandParameter param = params.get("WORLD");
-            if(param.getValue() != null) {
+            if (param.getValue() != null) {
                 world = Bukkit.getWorld(param.getValue());
             }
         }
 
-        String text = MiscellaneousUtils.combineArray(0, args);
-        text = text.replaceFirst("[%{][Nn][Ll][%}]","<nl>");
+        final String[] lines = MiscellaneousUtils.splitString(MiscellaneousUtils.combineArray(0, args));
+        final ITitleObject object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1], fadeIn, stay, fadeOut);
 
-        String[] lines = text.toLowerCase().contains("<nl>") ? text.split("(?i)<nl>") : new String[]{text, ""};
-
-        ITitleObject object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1] == null ? "" : lines[1], fadeIn, stay, fadeOut);
-
-        if (!silent) {
-            if (object instanceof IAnimation) {
-                sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast animation.");
+        if (params.containsKey("WORLD")) {
+            if (world == null) {
+                sendError(sender, "Invalid world!");
             } else {
-                TitleObject titleObject = (TitleObject) object;
-
-                if (titleObject.getSubtitle() != null && !titleObject.getSubtitle().isEmpty())
-                    sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\" \"" + ChatColor.RESET + titleObject.getSubtitle() + ChatColor.GREEN + "\"");
-                else sender.sendMessage(ChatColor.GREEN + "You have sent a broadcast with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\"");
-            }
-        }
-
-        if (world != null) {
-            for (final Player player : Bukkit.getOnlinePlayers()) {
-                if (player.getWorld() == world) {
+                for (final Player player : world.getPlayers()) {
                     object.send(player);
+                }
+
+                if (silent) return;
+
+                if (object instanceof IAnimation) {
+                    sendSuccess(sender, "You have sent a world title animation broadcast to the world \"%s\"", world.getName());
+                } else {
+                    final TitleObject title = (TitleObject) object;
+
+                    if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
+                        sendSuccess(sender, "You have sent a world title broadcast with the message \"%s\" \"%s\" to the world \"%s\"", ((TitleObject) object).getTitle(), world.getName());
+                    } else {
+                        sendSuccess(sender, "You have sent a world title broadcast with the message \"%s\" to the world \"%s\"", ((TitleObject) object).getTitle(), world.getName());
+                    }
+                }
+            }
+        } else if (params.containsKey("BUNGEE")) {
+            val manager = TitleManager.getInstance().getBungeeManager();
+            val json = manager.getGson().toJson(object);
+
+            if (server == null) {
+                if (params.get("BUNGEE").getValue() == null) {
+                    manager.broadcastBungeeMessage("TitleObject-Broadcast", json);
+
+                    if (silent) return;
+
+                    if (object instanceof IAnimation) {
+                        sendSuccess(sender, "You have sent a bungeecord title animation broadcast");
+                    } else {
+                        final TitleObject title = (TitleObject) object;
+
+                        if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
+                            sendSuccess(sender, "You have sent a bungeecord title broadcast with the message \"%s\" \"%s\"", ((TitleObject) object).getTitle());
+                        } else {
+                            sendSuccess(sender, "You have sent a bungeecord title broadcast with the message \"%s\"", ((TitleObject) object).getTitle());
+                        }
+                    }
+                } else {
+                    sendError(sender, "%s is an invalid server!", params.get("BUNGEE").getValue());
+                }
+            } else {
+                server.sendMessage("TitleObject-Broadcast", json);
+
+                if (silent) return;
+
+                if (object instanceof IAnimation) {
+                    sendSuccess(sender, "You have sent a bungeecord title animation broadcast");
+                } else {
+                    final TitleObject title = (TitleObject) object;
+
+                    if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
+                        sendSuccess(sender, "You have sent a bungeecord title broadcast with the message \"%s\" \"%s\" to the server \"%s\"", title.getTitle(), title.getSubtitle(), server.getName());
+                    } else {
+                        sendSuccess(sender, "You have sent a bungeecord title broadcast with the message \"%s\" to the server \"%s\"", title.getTitle(), server.getName());
+                    }
                 }
             }
         } else {
             object.broadcast();
+
+            if (silent) return;
+
+            if (object instanceof IAnimation) {
+                sendSuccess(sender, "You have sent an title animation broadcast.");
+            } else {
+                final TitleObject title = (TitleObject) object;
+
+                if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
+                    sendSuccess(sender, "You have sent a title broadcast with the message \"%s\" \"%s\"", title.getTitle(), title.getSubtitle());
+                } else {
+                    sendSuccess(sender, "You have sent a title broadcast with the message \"%s\"", title.getTitle());
+                }
+            }
         }
     }
 }

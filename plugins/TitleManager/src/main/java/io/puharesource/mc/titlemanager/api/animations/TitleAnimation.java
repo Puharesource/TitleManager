@@ -39,6 +39,14 @@ public class TitleAnimation implements IAnimation, ITitleObject {
         this.subtitle = subtitle;
     }
 
+    public Object getTitle() {
+        return title;
+    }
+
+    public Object getSubtitle() {
+        return subtitle;
+    }
+
     @Override
     public void broadcast() {
         send(null);

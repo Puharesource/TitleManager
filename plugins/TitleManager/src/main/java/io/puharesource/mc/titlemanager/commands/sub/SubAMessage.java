@@ -1,19 +1,20 @@
 package io.puharesource.mc.titlemanager.commands.sub;
 
+import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
-import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
+import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import io.puharesource.mc.titlemanager.commands.CommandParameter;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
+import lombok.val;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-@ParameterSupport(supportedParams = {"BUNGEE","SILENT"})
+@ParameterSupport(supportedParams = {"BUNGEE", "SILENT"})
 public final class SubAMessage extends TMSubCommand {
     public SubAMessage() {
         super("amsg", "titlemanager.command.amessage", "<player> <message>", "Sends an actionbar title message to the specified player.", "amessage");
@@ -25,53 +26,59 @@ public final class SubAMessage extends TMSubCommand {
             syntaxError(sender);
             return;
         }
-        
-        if(params.containsKey("BUNGEE")) {//cannot confirm player online/offline easily
-            String cmd = "tm amsg ";
-            for(String s : params.keySet()) {
-                cmd+="-"+s;
-                if(params.get(s).getValue()!=null) {
-                    cmd+="="+params.get(s).getValue();
-                }
-                cmd+=" ";
+
+        BungeeServerInfo server = null;
+        val silent = params.containsKey("SILENT");
+        val object = MiscellaneousUtils.generateActionbarObject(MiscellaneousUtils.combineArray(1, args));
+        val playerName = args[0];
+
+        if(params.containsKey("BUNGEE")) {
+            val param = params.get("BUNGEE");
+
+            if (param.getValue() != null && !param.getValue().isEmpty()) {
+                server = TitleManager.getInstance().getBungeeManager().getServers().get(param.getValue().toUpperCase());
             }
-            for(String s : args) {
-                cmd += args+" ";
-            }
-            BungeeManager m = TitleManager.getInstance().getBungeeManager();
-            m.sendMessage("Broadcast", cmd);
-            boolean silent = params.containsKey("SILENT");
-            if(!silent) {
-                if (object instanceof IAnimation) {
-                    sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord message animation.");
+        }
+
+        if (params.containsKey("BUNGEE")) {
+            val manager = TitleManager.getInstance().getBungeeManager();
+            val json = manager.getGson().toJson(object);
+
+            if (server == null) {
+                if (params.get("BUNGEE").getValue() == null) {
+                    manager.broadcastBungeeMessage("ActionbarTitle-Message", json, playerName);
+
+                    if (silent) return;
+
+                    if (object instanceof IAnimation)
+                        sendSuccess(sender, "You have sent an actionbar animation to %s over BungeeCord.", playerName);
+                    else sendSuccess(sender, "You have sent %s \"%s\" over BungeeCord", playerName, ((ActionbarTitleObject) object).getTitle());
                 } else {
-                    TitleObject titleObject = (TitleObject) object;
-                    if (titleObject.getSubtitle() != null && !titleObject.getSubtitle().isEmpty())
-                        sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord message with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\" \"" + ChatColor.RESET + titleObject.getSubtitle() + ChatColor.GREEN + "\"");
-                    else sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord message with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\"");
+                    sendError(sender, "%s is an invalid server!", params.get("BUNGEE").getValue());
                 }
+            } else {
+                server.sendMessage("ActionbarTitle-Message", json, playerName);
+
+                if (silent) return;
+
+                if (object instanceof IAnimation)
+                    sendSuccess(sender, "You have sent an actionbar animation to %s in the server \"%s\".", playerName, server.getName());
+                else sendSuccess(sender, "You have sent %s \"%s\" to the server \"%s\"", playerName, ((ActionbarTitleObject) object).getTitle(), server.getName());
             }
-            return;
-        }
+        } else {
+            val player = MiscellaneousUtils.getPlayer(args[0]);
+            if (player == null) {
+                sendError(sender, "%s is not a currently online!", args[0]);
+                return;
+            }
 
-        boolean silent = params.containsKey("SILENT");
+            object.send(player);
 
-        Player player = MiscellaneousUtils.getPlayer(args[0]);
-        if (player == null) {
-            sender.sendMessage(ChatColor.RED + args[0] + " is not currently online!");
-            return;
-        }
+            if (silent) return;
 
-        String text = MiscellaneousUtils.combineArray(1, args);
-
-        IActionbarObject object = MiscellaneousUtils.generateActionbarObject(text);
-
-        if (!silent) {
             if (object instanceof IAnimation)
-                sender.sendMessage(ChatColor.GREEN + "You have sent an actionbar animation to " + player.getName() + ".");
-            else sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + ChatColor.RESET + ((ActionbarTitleObject) object).getTitle() + ChatColor.GREEN + "\"");
+                sendSuccess(sender, "You have sent an actionbar animation to %s.", ChatColor.stripColor(player.getDisplayName()));
+            else sendSuccess(sender, "You have sent %s \"%s\"", ChatColor.stripColor(player.getDisplayName()), ((ActionbarTitleObject) object).getTitle());
         }
-
-        object.send(player);
     }
 }

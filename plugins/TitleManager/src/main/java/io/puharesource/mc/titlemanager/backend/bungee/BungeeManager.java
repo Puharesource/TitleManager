@@ -3,19 +3,51 @@ package io.puharesource.mc.titlemanager.backend.bungee;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
+import io.puharesource.mc.titlemanager.api.TabTitleObject;
+import io.puharesource.mc.titlemanager.api.TitleObject;
+import io.puharesource.mc.titlemanager.api.animations.*;
+import io.puharesource.mc.titlemanager.api.gson.adapters.*;
+import io.puharesource.mc.titlemanager.api.gson.adapters.animations.*;
+import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
+import io.puharesource.mc.titlemanager.api.iface.ITabObject;
+import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
+import lombok.val;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class BungeeManager implements PluginMessageListener {
+    private final Map<String, BungeeServerInfo> servers = new ConcurrentHashMap<>();
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(TitleObject.class, new TitleObjectAdapter())
+            .registerTypeAdapter(ActionbarTitleObject.class, new ActionbarTitleAdapter())
+            .registerTypeAdapter(TabTitleObject.class, new TabTitleObjectAdapter())
 
-    private Map<String, BungeeServerInfo> servers = new ConcurrentHashMap<>();
+            .registerTypeAdapter(AnimationFrame.class, new AnimationFrameAdapter())
+            .registerTypeAdapter(FrameSequence.class, new FrameSequenceAdapter())
+            .registerTypeAdapter(TitleAnimation.class, new TitleAnimationAdapter())
+            .registerTypeAdapter(ActionbarTitleAnimation.class, new ActionbarTitleAnimationAdapter())
+            .registerTypeAdapter(TabTitleAnimation.class, new TabTitleAnimationAdapter())
+
+            .registerTypeAdapter(ITitleObject.class, new ITitleObjectDeserializer())
+            .registerTypeAdapter(IActionbarObject.class, new IActionbarObjectDeserializer())
+            .registerTypeAdapter(ITabObject.class, new ITabTitleObjectDeserializer())
+
+            .create();
+
     private String currentServer;
-
     private int onlinePlayers = -1;
 
     public BungeeManager() {
@@ -23,8 +55,8 @@ public final class BungeeManager implements PluginMessageListener {
             @Override
             public void run() {
                 if (TitleManager.getInstance().getConfigManager().getConfig().usingBungeecord) {
-                    sendMessage("GetServers");
-                    sendMessage("GetServer");
+                    sendBungeeMessage("GetServers");
+                    sendBungeeMessage("GetServer");
                 }
             }
         }, 0l, 200l);
@@ -35,94 +67,131 @@ public final class BungeeManager implements PluginMessageListener {
         if (!TitleManager.getInstance().getConfigManager().getConfig().usingBungeecord) return;
         if (!channel.equals("BungeeCord")) return;
 
-        final ByteArrayDataInput in = ByteStreams.newDataInput(message);
-        final String subChannel = in.readUTF();
-
-        switch (subChannel) {
-            case "Broadcast": {
-                //data sent for bungee broadcast: BungeeCord Broadcast /tm bc -bungee(=server) -silent HELLO YOYOYO
-                //will tell console all information that sender would normally see. 
-                String cmd = in.readUTF();
-                //removes -bungee param
-                if(Pattern.compile("(-bungee )", Pattern.CASE_INSENSITIVE).matcher(cmd).find()) {
-                    cmd = Pattern.compile("(-bungee )", Pattern.CASE_INSENSITIVE).matcher(cmd).replaceAll("");
-                } else {//if server specified
-                    String server = Pattern.compile("(-bungee=)\\w+", Pattern.CASE_INSENSITIVE).matcher(cmd).group();
-                    server = Pattern.compile("(-bungee=)", Pattern.CASE_INSENSITIVE).matcher(server).replaceAll("");
-                    if(!server.trim().equalsIgnoreCase(currentServer.trim())) {
-                        break;//if spec server is not this, there is no need to continue
-                    }
-                    cmd = Pattern.compile("(-bungee=)\\w+", Pattern.CASE_INSENSITIVE).matcher(cmd).replaceAll("");
-                }
-                //data sent as a cmd is easier to parse than sent as data, so dispatched as cmd instead.
-                //Also allows for event support among other things.
-                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), cmd);
+        StringBuilder sb = new StringBuilder();
+        try {
+            ByteArrayDataInput in = ByteStreams.newDataInput(message);
+            String line = null;
+            while ((line = in.readUTF()) != null) {
+                sb.append(line).append(" ** ");
             }
-            case "GetServers": {
-                final Map<String, String> newServers = new HashMap<>();
-                for (String newServer : in.readUTF().split(", ")) {
-                    newServers.put(newServer.toUpperCase().trim(), newServer);
-                }
+        } catch (Exception ignored) {}
+        Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + channel + " ; " + player.getName() + " ; " + sb.toString());
+        if (channel.equals("BungeeCord")) {
+            val in = ByteStreams.newDataInput(message);
+            val subChannel = in.readUTF();
 
-                for (final String server : servers.keySet()) {
-                    if (!newServers.containsKey(server.toUpperCase().trim())) {
-                        servers.remove(server.toUpperCase().trim());
+            switch (subChannel) {
+                case "TitleManager": {
+                    byte[] bytes = new byte[in.readShort()];
+                    in.readFully(bytes);
+                    final ByteArrayDataInput tmIn = ByteStreams.newDataInput(bytes);
+
+                    switch (tmIn.readUTF()) {
+                        case "TitleObject-Message": {
+                            final ITitleObject titleObject = gson.fromJson(tmIn.readUTF(), ITitleObject.class);
+                            final String playerName = gson.fromJson(tmIn.readUTF(), String.class);
+                            final Player receiver = MiscellaneousUtils.getPlayer(playerName);
+
+                            if (receiver != null) {
+                                titleObject.send(receiver);
+                            }
+
+                            break;
+                        }
+                        case "TitleObject-Broadcast": {
+                            final ITitleObject titleObject = gson.fromJson(tmIn.readUTF(), ITitleObject.class);
+
+                            titleObject.broadcast();
+
+                            break;
+                        }
+                        case "ActionbarTitle-Message": {
+                            final IActionbarObject titleObject = gson.fromJson(tmIn.readUTF(), IActionbarObject.class);
+                            final String playerName = gson.fromJson(tmIn.readUTF(), String.class);
+                            final Player receiver = MiscellaneousUtils.getPlayer(playerName);
+
+                            if (receiver != null) {
+                                titleObject.send(receiver);
+                            }
+
+                            break;
+                        }
+                        case "ActionbarTitle-Broadcast": {
+                            final IActionbarObject titleObject = gson.fromJson(tmIn.readUTF(), IActionbarObject.class);
+
+                            titleObject.broadcast();
+
+                            break;
+                        }
                     }
+                    break;
                 }
-
-                for (final Map.Entry<String, String> server : newServers.entrySet()) {
-                    if (!servers.containsKey(server.getKey())) {
-                        servers.put(server.getKey(), new BungeeServerInfo(server.getValue()));
+                case "GetServers": {
+                    final Map<String, String> newServers = new HashMap<>();
+                    for (String newServer : in.readUTF().split(", ")) {
+                        newServers.put(newServer.toUpperCase().trim(), newServer);
                     }
 
-                    servers.get(server.getKey()).update();
-                }
-                break;
-            }
-            case "GetServer": {
-                final String server = in.readUTF();
-                currentServer = server;
-                if (!servers.containsKey(server.toUpperCase().trim())) {
-                    servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
-                }
-
-                final BungeeServerInfo info = servers.get(server.toUpperCase().trim());
-                info.setMaxPlayers(Bukkit.getMaxPlayers());
-                info.setPlayerCount(Bukkit.getOnlinePlayers().size());
-
-                int onlinePlayers = 0;
-                if (servers.containsKey("ALL")) {
-                    onlinePlayers = servers.get("ALL").getPlayerCount();
-                } else {
-                    for (final BungeeServerInfo serverInfo : servers.values()) {
-                        onlinePlayers += serverInfo.getPlayerCount();
+                    for (final String server : servers.keySet()) {
+                        if (!newServers.containsKey(server.toUpperCase().trim())) {
+                            servers.remove(server.toUpperCase().trim());
+                        }
                     }
-                }
-                this.onlinePlayers = onlinePlayers;
 
-                break;
-            }
-            case "PlayerCount": {
-                final String server = in.readUTF();
-                final int playerCount = in.readInt();
+                    for (final Map.Entry<String, String> server : newServers.entrySet()) {
+                        if (!servers.containsKey(server.getKey())) {
+                            servers.put(server.getKey(), new BungeeServerInfo(server.getValue()));
+                        }
 
-                if (!servers.containsKey(server.toUpperCase().trim())) {
-                    servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
-                }
-
-                servers.get(server.toUpperCase().trim()).setPlayerCount(playerCount);
-
-                int onlinePlayers = 0;
-                if (servers.containsKey("ALL")) {
-                    onlinePlayers = servers.get("ALL").getPlayerCount();
-                } else {
-                    for (final BungeeServerInfo serverInfo : servers.values()) {
-                        onlinePlayers += serverInfo.getPlayerCount();
+                        servers.get(server.getKey()).update();
                     }
+                    break;
                 }
-                this.onlinePlayers = onlinePlayers;
+                case "GetServer": {
+                    final String server = in.readUTF();
+                    currentServer = server;
+                    if (!servers.containsKey(server.toUpperCase().trim())) {
+                        servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
+                    }
 
-                break;
+                    final BungeeServerInfo info = servers.get(server.toUpperCase().trim());
+                    info.setMaxPlayers(Bukkit.getMaxPlayers());
+                    info.setPlayerCount(Bukkit.getOnlinePlayers().size());
+
+                    int onlinePlayers = 0;
+                    if (servers.containsKey("ALL")) {
+                        onlinePlayers = servers.get("ALL").getPlayerCount();
+                    } else {
+                        for (final BungeeServerInfo serverInfo : servers.values()) {
+                            onlinePlayers += serverInfo.getPlayerCount();
+                        }
+                    }
+                    this.onlinePlayers = onlinePlayers;
+
+                    break;
+                }
+                case "PlayerCount": {
+                    final String server = in.readUTF();
+                    final int playerCount = in.readInt();
+
+                    if (!servers.containsKey(server.toUpperCase().trim())) {
+                        servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
+                    }
+
+                    servers.get(server.toUpperCase().trim()).setPlayerCount(playerCount);
+
+                    int onlinePlayers = 0;
+                    if (servers.containsKey("ALL")) {
+                        onlinePlayers = servers.get("ALL").getPlayerCount();
+                    } else {
+                        for (final BungeeServerInfo serverInfo : servers.values()) {
+                            onlinePlayers += serverInfo.getPlayerCount();
+                        }
+                    }
+                    this.onlinePlayers = onlinePlayers;
+
+                    break;
+                }
             }
         }
     }
@@ -131,20 +200,79 @@ public final class BungeeManager implements PluginMessageListener {
         return ByteStreams.newDataOutput();
     }
 
-    public void sendMessage(final String... args) {
-        final Iterator<? extends Player> players = Bukkit.getOnlinePlayers().iterator();
+    public void sendBungeeMessage(final String... args) {
+        val players = Bukkit.getOnlinePlayers().iterator();
 
         if (players.hasNext()) {
-            sendMessage(players.next(), args);
+            sendBungeeMessage(players.next(), args);
         }
     }
 
-    public void sendMessage(final Player player, final String... args) {
-        ByteArrayDataOutput output = createOutput();
-        for (final String arg : args) {
+    public void sendBungeeMessage(final Player player, final String... args) {
+        val output = createOutput();
+        for (val arg : args) {
             output.writeUTF(arg);
         }
         player.sendPluginMessage(TitleManager.getInstance(), "BungeeCord", output.toByteArray());
+    }
+
+    public void sendServerMessage(final String serverName, final String... args) {
+        val players = Bukkit.getOnlinePlayers().iterator();
+
+        if (players.hasNext()) {
+            sendServerMessage(players.next(), serverName, args);
+        }
+    }
+
+    public void sendServerMessage(final Player player, final String serverName, final String... args) {
+        val output = createOutput();
+
+        output.writeUTF("Forward");
+        output.writeUTF(serverName);
+        output.writeUTF("TitleManager");
+
+        final ByteArrayDataOutput msg = createOutput();
+
+        for (val arg : args) {
+            msg.writeUTF(arg);
+        }
+
+        output.writeShort(msg.toByteArray().length);
+        output.write(msg.toByteArray());
+
+        player.sendPluginMessage(TitleManager.getInstance(), "BungeeCord", output.toByteArray());
+    }
+
+    public void broadcastBungeeMessage(final String... args) {
+        val players = Bukkit.getOnlinePlayers().iterator();
+
+        if (players.hasNext()) {
+            broadcastBungeeMessage(players.next(), args);
+        }
+    }
+
+    public void broadcastBungeeMessage(final Player player, final String... args) {
+        val output = createOutput();
+        val internal = createOutput();
+
+        output.writeUTF("Forward");
+        output.writeUTF("ALL");
+        output.writeUTF("TitleManager");
+        internal.writeUTF("TitleManager");
+
+        final ByteArrayDataOutput msg = createOutput();
+
+        for (val arg : args) {
+            msg.writeUTF(arg);
+        }
+
+        internal.writeShort(msg.toByteArray().length);
+        internal.write(msg.toByteArray());
+        output.writeShort(msg.toByteArray().length);
+        output.write(msg.toByteArray());
+
+        player.sendPluginMessage(TitleManager.getInstance(), "BungeeCord", output.toByteArray());
+        onPluginMessageReceived("BungeeCord", player, internal.toByteArray());
     }
 
     public Map<String, BungeeServerInfo> getServers() {
@@ -157,5 +285,9 @@ public final class BungeeManager implements PluginMessageListener {
 
     public BungeeServerInfo getCurrentServer() {
         return currentServer == null ? null : servers.get(currentServer.toUpperCase().trim());
+    }
+
+    public Gson getGson() {
+        return gson;
     }
 }

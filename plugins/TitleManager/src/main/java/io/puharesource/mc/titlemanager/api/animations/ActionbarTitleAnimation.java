@@ -20,6 +20,14 @@ public class ActionbarTitleAnimation implements IAnimation, IActionbarObject {
         this.title = title;
     }
 
+    public FrameSequence getTitle() {
+        return title;
+    }
+
+    public void setTitle(final FrameSequence title) {
+        this.title = title;
+    }
+
     @Override
     public void broadcast() {
         send(null);

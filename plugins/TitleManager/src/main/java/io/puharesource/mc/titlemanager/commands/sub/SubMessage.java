@@ -3,15 +3,13 @@ package io.puharesource.mc.titlemanager.commands.sub;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
-import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
-import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
+import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import io.puharesource.mc.titlemanager.commands.CommandParameter;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
-import org.bukkit.ChatColor;
+import lombok.val;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.Map;
 
@@ -27,46 +25,21 @@ public final class SubMessage extends TMSubCommand {
             syntaxError(sender);
             return;
         }
-        
-        if(params.containsKey("BUNGEE")) {//cannot confirm player online/offline easily
-            String cmd = "tm msg ";
-            for(String s : params.keySet()) {
-                cmd+="-"+s;
-                if(params.get(s).getValue()!=null) {
-                    cmd+="="+params.get(s).getValue();
-                }
-                cmd+=" ";
-            }
-            for(String s : args) {
-                cmd += args+" ";
-            }
-            BungeeManager m = TitleManager.getInstance().getBungeeManager();
-            m.sendMessage("Broadcast", cmd);
-            boolean silent = params.containsKey("SILENT");
-            if(!silent) {
-                if (object instanceof IAnimation) {
-                    sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord message animation.");
-                } else {
-                    TitleObject titleObject = (TitleObject) object;
-                    if (titleObject.getSubtitle() != null && !titleObject.getSubtitle().isEmpty())
-                        sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord message with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\" \"" + ChatColor.RESET + titleObject.getSubtitle() + ChatColor.GREEN + "\"");
-                    else sender.sendMessage(ChatColor.GREEN + "You have sent a bungeecord message with the message \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\"");
-                }
-            }
-            return;
-        }
 
-        Player player = MiscellaneousUtils.getPlayer(args[0]);
-        if (player == null) {
-            sender.sendMessage(ChatColor.RED + args[0] + " is not a player!");
-            return;
-        }
-
-        boolean silent = params.containsKey("SILENT");
-        ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
+        BungeeServerInfo server = null;
+        val silent = params.containsKey("SILENT");
+        val config = TitleManager.getInstance().getConfigManager().getConfig();
         int fadeIn = config.welcomeMessageFadeIn;
         int stay = config.welcomeMessageStay;
         int fadeOut = config.welcomeMessageFadeOut;
+
+        if(params.containsKey("BUNGEE")) {
+            final CommandParameter param = params.get("BUNGEE");
+
+            if (param.getValue() != null && !param.getValue().isEmpty()) {
+                server = TitleManager.getInstance().getBungeeManager().getServers().get(param.getValue().toUpperCase());
+            }
+        }
 
         if (params.containsKey("FADEIN")) {
             CommandParameter param = params.get("FADEIN");
@@ -93,25 +66,73 @@ public final class SubMessage extends TMSubCommand {
             }
         }
 
-        String text = MiscellaneousUtils.combineArray(1, args);
-        text = text.replaceFirst("[%{][Nn][Ll][%}]","<nl>");
+        val lines = MiscellaneousUtils.splitString(MiscellaneousUtils.combineArray(1, args));
+        val object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1], fadeIn, stay, fadeOut);
 
-        String[] lines = text.toLowerCase().contains("<nl>") ? text.split("(?i)<nl>") : new String[]{text, ""};
+        val playerName = args[0];
+        if (params.containsKey("BUNGEE")) {
+            val manager = TitleManager.getInstance().getBungeeManager();
+            val json = manager.getGson().toJson(object);
 
-        ITitleObject object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1] == null ? "" : lines[1], fadeIn, stay, fadeOut);
+            if (server == null) {
+                if (params.get("BUNGEE").getValue() == null) {
+                    manager.broadcastBungeeMessage("TitleObject-Message", json, args[0]);
 
-        if (!silent) {
-            if (object instanceof IAnimation) {
-                sender.sendMessage(ChatColor.GREEN + "You have sent an animation to " + player.getName() + ".");
+                    if (silent) return;
+
+                    if (object instanceof IAnimation) {
+                        sendSuccess(sender, "You have sent a bungeecord title animation broadcast");
+                    } else {
+                        final TitleObject title = (TitleObject) object;
+
+                        if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
+                            sendSuccess(sender, "You have sent a bungeecord title with the message \"%s\" \"%s\" to \"%s\" in all servers", ((TitleObject) object).getTitle(), playerName);
+                        } else {
+                            sendSuccess(sender, "You have sent a bungeecord title with the message \"%s\" to \"%s\" in all servers", ((TitleObject) object).getTitle(), playerName);
+                        }
+                    }
+                } else {
+                    sendError(sender, "%s is an invalid server!", params.get("BUNGEE").getValue());
+                }
             } else {
-                TitleObject titleObject = (TitleObject) object;
+                server.sendMessage("TitleObject-Message", json, playerName);
 
-                if (titleObject.getSubtitle() != null)
-                    sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\" \"" + ChatColor.RESET + titleObject.getSubtitle() + ChatColor.GREEN + "\"");
-                else sender.sendMessage(ChatColor.GREEN + "You have sent " + ChatColor.stripColor(player.getDisplayName()) + " \"" + ChatColor.RESET + titleObject.getTitle() + ChatColor.GREEN + "\"");
+                if (silent) return;
+
+                if (object instanceof IAnimation) {
+                    sendSuccess(sender, "You have sent a bungeecord title animation");
+                } else {
+                    final TitleObject title = (TitleObject) object;
+
+                    if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
+                        sendSuccess(sender, "You have sent a bungeecord title with the message \"%s\" \"%s\" to %s in the server \"%s\"", title.getTitle(), title.getSubtitle(), playerName, server.getName());
+                    } else {
+                        sendSuccess(sender, "You have sent a bungeecord title with the message \"%s\" to %s in the server \"%s\"", title.getTitle(), playerName, server.getName());
+                    }
+                }
+            }
+        } else {
+            val player = MiscellaneousUtils.getPlayer(playerName);
+            if (player == null) {
+                sendError(sender, "%s is not a player!", playerName);
+                return;
+            }
+
+            object.send(player);
+
+            if (silent) return;
+
+            if (object instanceof IAnimation) {
+                sendSuccess(sender, "You have sent a title animation to %s.", player.getName());
+            } else {
+                final TitleObject title = (TitleObject) object;
+
+                if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
+                    sendSuccess(sender, "You have sent a title with the message \"%s\" \"%s\" to %s", title.getTitle(), title.getSubtitle(), player.getName());
+                } else {
+                    sendSuccess(sender, "You have sent a title with the message \"%s\" to %s", title.getTitle(), player.getName());
+                }
             }
         }
-
-        object.send(player);
     }
 }

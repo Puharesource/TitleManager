@@ -38,6 +38,14 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
         this.footer = footer;
     }
 
+    public Object getHeader() {
+        return header;
+    }
+
+    public Object getFooter() {
+        return footer;
+    }
+
     @Override
     public void broadcast() {
         send(null);

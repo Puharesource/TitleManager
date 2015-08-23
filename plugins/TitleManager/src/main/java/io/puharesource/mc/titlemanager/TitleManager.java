@@ -25,7 +25,9 @@ import io.puharesource.mc.titlemanager.commands.TMCommand;
 import io.puharesource.mc.titlemanager.commands.sub.*;
 import io.puharesource.mc.titlemanager.listeners.ListenerConnection;
 import io.puharesource.mc.titlemanager.listeners.ListenerItemSlot;
+import io.puharesource.mc.titlemanager.listeners.ListenerWorldChange;
 import lombok.Getter;
+import lombok.val;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -52,10 +54,14 @@ public final class TitleManager extends JavaPlugin {
         updateManager = new UpdateManager();
         engine = new Engine();
 
-        getServer().getPluginManager().registerEvents(new ListenerConnection(), this);
-        getServer().getPluginManager().registerEvents(new ListenerItemSlot(), this);
+        val pluginManager = getServer().getPluginManager();
+
+        pluginManager.registerEvents(new ListenerConnection(), this);
+        pluginManager.registerEvents(new ListenerItemSlot(), this);
+        pluginManager.registerEvents(new ListenerWorldChange(), this);
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", bungeeManager = new BungeeManager());
 
         TMCommand cmd = new TMCommand();

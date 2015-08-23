@@ -16,9 +16,9 @@ public final class SubReload extends TMSubCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args, Map<String, CommandParameter> params) {
+    public void onCommand(final CommandSender sender, final String[] args, final Map<String, CommandParameter> params) {
         TitleManager.getInstance().getConfigManager().reload();
-        sender.sendMessage(ChatColor.GREEN + "The configuration has been reloaded.");
+        sendSuccess(sender, "The configuration has been reloaded.");
         if (sender instanceof Player)
             new TitleObject(ChatColor.GREEN + "Config Reloaded!", TitleObject.TitleType.TITLE).setFadeIn(10).setStay(15).setFadeOut(10).send((Player) sender);
     }

@@ -114,24 +114,24 @@ public class ConfigMain {
      * Per World Messages
      * ---------------------
      */
-    @ConfigField(path = "world_message.enabled")
+    @ConfigField(path = "world-message.enabled")
     public boolean worldMessageEnabled = true;
 
-    @ConfigField(path = "world_message.title")
+    @ConfigField(path = "world-message.title")
     public String worldMessageTitle = "&7You have joined";
 
-    @ConfigField(path = "world_message.subtitle")
+    @ConfigField(path = "world-message.subtitle")
     public String worldMessageSubtitle = "&7the {WORLD} world!";
     
-    @ConfigField(path = "world_message.actionbar")
+    @ConfigField(path = "world-message.actionbar")
     public String worldMessageActionBar = "Enjoy your stay!";
 
-    @ConfigField(path = "world_message.fadeIn")
+    @ConfigField(path = "world-message.fadeIn")
     public int worldMessageFadeIn = 20;
 
-    @ConfigField(path = "world_message.stay")
+    @ConfigField(path = "world-message.stay")
     public int worldMessageStay = 40;
 
-    @ConfigField(path = "world_message.fadeOut")
+    @ConfigField(path = "world-message.fadeOut")
     public int worldMessageFadeOut = 20;
 }

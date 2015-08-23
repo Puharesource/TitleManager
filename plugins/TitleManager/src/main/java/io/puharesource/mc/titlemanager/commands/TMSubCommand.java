@@ -4,7 +4,10 @@ import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class TMSubCommand {
 
@@ -16,7 +19,7 @@ public abstract class TMSubCommand {
 
     private final Set<String> supportedParameters;
 
-    public TMSubCommand(String alias, String node, String usage, String description, String... aliases) {
+    public TMSubCommand(final String alias, final String node, final String usage, final String description, final String... aliases) {
         this.alias = alias;
         this.node = node;
         this.usage = usage;
@@ -32,14 +35,26 @@ public abstract class TMSubCommand {
         }
     }
 
-    public abstract void onCommand(CommandSender sender, String[] args, Map<String, CommandParameter> params);
+    public abstract void onCommand(final CommandSender sender, final String[] args, final Map<String, CommandParameter> params);
 
-    public void syntaxError(CommandSender sender) {
+    public void syntaxError(final CommandSender sender) {
         sender.sendMessage(ChatColor.RED + "Wrong usage! Correct usage:");
         sender.sendMessage(ChatColor.RED + "   /" + getAlias() + " " + getUsage());
     }
 
     public Collection<String> getSupportedParameters() {
         return supportedParameters;
+    }
+
+    private void sendFormattedMessage(final CommandSender sender, final ChatColor color, final String message, final Object... args) {
+        sender.sendMessage(color + String.format(message.replace("%s", ChatColor.RESET + "%s" + color), args));
+    }
+
+    protected void sendSuccess(final CommandSender sender, final String message, final Object... args) {
+        sendFormattedMessage(sender, ChatColor.GREEN, message, args);
+    }
+
+    protected void sendError(final CommandSender sender, final String message, final Object... args) {
+        sendFormattedMessage(sender, ChatColor.RED, message, args);
     }
 }
