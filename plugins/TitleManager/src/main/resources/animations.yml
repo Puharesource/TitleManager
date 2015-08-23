@@ -1,5 +1,5 @@
-# For a generator go to: https://puharesource.io/titlemanager-generator.html
-test1:
+# For a generator go to: https://puharesource.io/titlemanager/generator
+left-to-right:
   frames:
   - '[5;5;0]&b&d-&b---------'
   - '[0;2;0]&b-&d-&b--------'
@@ -18,9 +18,8 @@ test1:
   - '[0;2;0]&b----&d-&b-----'
   - '[0;2;0]&b---&d-&b------'
   - '[0;2;0]&b--&d-&b-------'
-  - '[0;2;0]&b-&d-&b--------'
-  - '[0;5;5]&b&d-&b---------'
-test2:
+  - '[0;5;5]&b-&d-&b--------'
+right-to-left:
   frames:
   - '[5;5;0]&b---------&d-&b'
   - '[0;2;0]&b--------&d-&b-'
@@ -39,5 +38,4 @@ test2:
   - '[0;2;0]&b-----&d-&b----'
   - '[0;2;0]&b------&d-&b---'
   - '[0;2;0]&b-------&d-&b--'
-  - '[0;2;0]&b--------&d-&b-'
-  - '[0;5;5]&b---------&d-&b'
+  - '[0;5;5]&b--------&d-&b-'
