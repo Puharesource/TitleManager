@@ -17,5 +17,5 @@ dependencies {
     provided files('../../libs/PlaceholderAPI.jar')
     provided files('../../libs/SuperVanish.jar')
 
-    compile group: 'org.luaj', name: 'luaj-jse', version: '2.0'
+    compile group: 'org.luaj', name: 'luaj-jse', version: '3.0.1'
 }

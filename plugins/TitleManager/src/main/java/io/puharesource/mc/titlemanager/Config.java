@@ -1,17 +1,24 @@
 package io.puharesource.mc.titlemanager;
 
+import com.google.common.collect.ImmutableMap;
 import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
 import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
 import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.api.iface.Script;
+import io.puharesource.mc.titlemanager.api.scripts.LuaScript;
 import io.puharesource.mc.titlemanager.backend.config.ConfigFile;
 import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import io.puharesource.mc.titlemanager.backend.config.ConfigSerializer;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import lombok.Getter;
+import lombok.val;
 import org.bukkit.configuration.ConfigurationSection;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.JsePlatform;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -23,6 +30,9 @@ public final class Config {
 
     private ConfigFile configFile, animationConfigFile;
     private Map<String, FrameSequence> animations = new HashMap<>();
+    private Map<String, Script> scripts = new HashMap<>();
+    private File scriptDir;
+
     private @Getter ITabObject tabTitleObject;
     private @Getter ITitleObject welcomeObject;
     private @Getter ITitleObject firstWelcomeObject;
@@ -38,6 +48,9 @@ public final class Config {
 
         configFile = new ConfigFile(plugin, plugin.getDataFolder(), "config", false);
         animationConfigFile = new ConfigFile(plugin, plugin.getDataFolder(), "animations", true);
+
+        scriptDir = new File(plugin.getDataFolder(), "scripts");
+        scriptDir.mkdir();
 
         configFile.reload();
         try {
@@ -112,6 +125,26 @@ public final class Config {
 
             worldActionbarObject = MiscellaneousUtils.generateActionbarObject(config.worldMessageActionBar);
         }
+
+        for (val file : scriptDir.listFiles()) {
+            if (!file.isDirectory() && file.getName().matches("(.*)(?i).lua")) {
+                try {
+                    val globals = JsePlatform.standardGlobals();
+                    globals.get("dofile").call(LuaValue.valueOf(file.getPath()));
+                    globals.get("tm_load").invoke();
+
+                    val script = new LuaScript(globals);
+                    TitleManager.getInstance().getLogger().info("Loaded script: " + script.getName() + " v" + script.getVersion() + " by: " + script.getAuthor());
+                    scripts.put(script.getName(), script);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public Map<String, Script> getScripts() {
+        return ImmutableMap.copyOf(scripts);
     }
 
     public static FrameSequence getAnimation(String animation) {
@@ -119,6 +152,6 @@ public final class Config {
     }
 
     public static Map<String, FrameSequence> getAnimations() {
-        return TitleManager.getInstance().getConfigManager().animations;
+        return ImmutableMap.copyOf(TitleManager.getInstance().getConfigManager().animations);
     }
 }
