@@ -23,21 +23,6 @@ subprojects {
         into "../../jars/"
     }
 
-    task createPom << {
-        pom {
-            project {
-                inceptionYear '2007'
-                licenses {
-                    license {
-                        name 'GNU GENERAL PUBLIC LICENSE, Version 3'
-                        url 'http://www.gnu.org/licenses/gpl.txt'
-                        distribution 'repo'
-                    }
-                }
-            }
-        }.writeTo("${project.name}-${version}.pom")
-    }
-
     configurations {
         provided
         compile.extendsFrom provided
@@ -69,7 +54,7 @@ subprojects {
 
     dependencies {
         provided group: 'org.projectlombok', name: 'lombok', version: '1.16.2'
-        provided group: 'org.bukkit', name: 'bukkit', version: '1.8.7-R0.1-SNAPSHOT'
+        provided group: 'org.bukkit', name: 'bukkit', version: '1.8.8-R0.1-SNAPSHOT'
     }
 
     artifacts {
