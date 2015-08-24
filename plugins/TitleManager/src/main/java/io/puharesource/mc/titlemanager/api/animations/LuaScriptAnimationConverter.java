@@ -12,6 +12,7 @@ import java.util.List;
 public final class LuaScriptAnimationConverter implements ScriptConverter {
     private final LuaValue value;
 
+    @Override
     public FrameSequence convert(final String textToAnimation) {
         boolean done = false;
         int i = 0;
