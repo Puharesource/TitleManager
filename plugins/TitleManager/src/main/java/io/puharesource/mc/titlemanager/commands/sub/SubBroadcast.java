@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-@ParameterSupport(supportedParams = {"SILENT", "FADEIN", "STAY", "FADEOUT", "WORLD", "BUNGEE"})
+@ParameterSupport(supportedParams = {"SILENT", "FADEIN", "STAY", "FADEOUT", "WORLD", "BUNGEE", "RADIUS"})
 public final class SubBroadcast extends TMSubCommand {
     public SubBroadcast() {
         super("bc", "titlemanager.command.broadcast", "<message>", "Sends a title message to everyone on the server, put inside of the message, to add a subtitle.", "broadcast");
@@ -84,12 +84,28 @@ public final class SubBroadcast extends TMSubCommand {
         final String[] lines = MiscellaneousUtils.splitString(MiscellaneousUtils.combineArray(0, args));
         final ITitleObject object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1], fadeIn, stay, fadeOut);
 
-        if (params.containsKey("WORLD")) {
+        if (params.containsKey("WORLD")) {//No support for radius if world != own world
             if (world == null) {
                 sendError(sender, "Invalid world!");
             } else {
-                for (final Player player : world.getPlayers()) {
-                    object.send(player);
+                boolean b = true;
+                if(sender instanceof Player && (((Player)sender).getWorld()==world) {
+                    if(params.containsKey("RADIUS") && param.getValue()!=null) {
+                        try {
+                        for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(param.getValue()))) {
+                                object.send(player);
+                            }
+                            b = false;
+                        } catch(Exception e) {
+                            //Optional: tell the user that the param value must be a number?
+                        }
+                    }
+                }
+                
+                if(b) {
+                    for (final Player player : world.getPlayers()) {
+                        object.send(player);
+                    }
                 }
 
                 if (silent) return;
@@ -148,7 +164,22 @@ public final class SubBroadcast extends TMSubCommand {
                 }
             }
         } else {
-            object.broadcast();
+            boolean b = true;
+            if(sender instanceof Player && (((Player)sender).getWorld()==world) {
+                if(params.containsKey("RADIUS") && param.getValue()!=null) {
+                    try {
+                        for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(param.getValue()))) {
+                            object.send(player);
+                        }
+                        b = false;
+                    } catch(Exception e) {
+                        //Optional: tell the user that the param value must be a number?
+                    }
+                }
+            }
+            if(b) {
+                object.broadcast();
+            }
 
             if (silent) return;
 
