@@ -20,12 +20,27 @@ import java.text.DecimalFormatSymbols;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 public final class MiscellaneousUtils {
     private static final Pattern SPLIT_PATTERN = Pattern.compile("[%{][Nn][Ll][%}]|\\n");
 
     public static String format(String text) {
         return ChatColor.translateAlternateColorCodes('&', text);
+    }
+    
+    public static ArrayList<Player> getWithinRadius(Location l, double radius) {
+        ArrayList<Player> players = new ArrayList<Player>();
+        World w = l.getWorld();
+        for(Player p : Bukkit.getOnlinePlayers()) {
+            if(p.getWorld()==w) {
+                double dist = l.distance(p.getLocation());
+                if(dist <= radius) {
+                    players.add(p);
+                }
+            }
+        }
+        return players;
     }
 
     public static FrameSequence isValidAnimationString(String text) {
