@@ -15,7 +15,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Map;
 
-@ParameterSupport(supportedParams = {"SILENT", "WORLD", "BUNGEE"})
+@ParameterSupport(supportedParams = {"SILENT", "WORLD", "BUNGEE", "RADIUS"})
 public final class SubABroadcast extends TMSubCommand {
     public SubABroadcast() {
         super("abc", "titlemanager.command.abroadcast", "<message>", "Sends an actionbar title message to everyone on the server.", "abroadcast");
@@ -54,8 +54,23 @@ public final class SubABroadcast extends TMSubCommand {
             if (world == null) {
                 sendError(sender, "Invalid world!");
             } else {
-                for (val player : world.getPlayers()) {
-                    object.send(player);
+                boolean b = true;
+                if(sender instanceof Player && (((Player)sender).getWorld()==world) {
+                    if(params.containsKey("RADIUS") && param.getValue()!=null) {
+                        try {
+                            for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(param.getValue()))) {
+                                object.send(player);
+                            }
+                            b = false;
+                        } catch(Exception e) {
+                            //Optional: tell the user that the param value must be a number?
+                        }
+                    }
+                }
+                if(b) {
+                    for (val player : world.getPlayers()) {
+                        object.send(player);
+                    }
                 }
 
                 if (silent) return;
@@ -96,7 +111,22 @@ public final class SubABroadcast extends TMSubCommand {
                 }
             }
         } else {
-            object.broadcast();
+            boolean b = true;
+            if(sender instanceof Player) {
+                if(params.containsKey("RADIUS") && param.getValue()!=null) {
+                    try {
+                        for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(param.getValue()))) {
+                            object.send(player);
+                        }
+                        b = false;
+                    } catch(Exception e) {
+                        //Optional: tell the user that the param value must be a number?
+                    }
+                }
+            }
+            if(b) {
+                object.broadcast();
+            }
 
             if (silent) return;
 
