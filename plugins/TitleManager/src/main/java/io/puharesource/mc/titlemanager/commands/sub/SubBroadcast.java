@@ -165,7 +165,7 @@ public final class SubBroadcast extends TMSubCommand {
             }
         } else {
             boolean b = true;
-            if(sender instanceof Player && (((Player)sender).getWorld()==world) {
+            if(sender instanceof Player) {
                 if(params.containsKey("RADIUS") && param.getValue()!=null) {
                     try {
                         for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(param.getValue()))) {
