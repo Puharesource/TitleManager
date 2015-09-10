@@ -15,10 +15,12 @@ import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import lombok.Getter;
 import lombok.val;
 import org.bukkit.configuration.ConfigurationSection;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -130,8 +132,12 @@ public final class Config {
             if (!file.isDirectory() && file.getName().matches("(.*)(?i).lua")) {
                 try {
                     val globals = JsePlatform.standardGlobals();
-                    globals.load(LuaValue.valueOf(file.getPath()));
-                    globals.get("tm_load").invoke();
+                    try (FileReader reader = new FileReader(file)) {
+                        globals.load(reader, file.getName());
+                        globals.get("tm_load").invoke();
+                    } catch (IOException | LuaError e) {
+                        throw new RuntimeException("Unable to load " + file, e);
+                    }
 
                     val script = new LuaScript(globals);
                     TitleManager.getInstance().getLogger().info("Loaded script: " + script.getName() + " v" + script.getVersion() + " by: " + script.getAuthor());
