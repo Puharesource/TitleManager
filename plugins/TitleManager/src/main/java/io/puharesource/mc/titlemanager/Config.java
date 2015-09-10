@@ -130,7 +130,7 @@ public final class Config {
             if (!file.isDirectory() && file.getName().matches("(.*)(?i).lua")) {
                 try {
                     val globals = JsePlatform.standardGlobals();
-                    globals.get("dofile").call(LuaValue.valueOf(file.getPath()));
+                    globals.load(LuaValue.valueOf(file.getPath()));
                     globals.get("tm_load").invoke();
 
                     val script = new LuaScript(globals);
