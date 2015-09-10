@@ -5,6 +5,7 @@ import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.backend.packet.ActionbarTitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 /**
@@ -22,6 +23,13 @@ public class ActionbarTitleObject implements IActionbarObject {
     public void broadcast() {
         for (Player player : Bukkit.getOnlinePlayers())
             send(player);
+    }
+
+    @Override
+    public void broadcast(World world) {
+        for (final Player player : world.getPlayers()) {
+            send(player);
+        }
     }
 
     @Override

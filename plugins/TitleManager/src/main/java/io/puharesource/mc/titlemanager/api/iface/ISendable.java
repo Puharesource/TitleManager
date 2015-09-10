@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.api.iface;
 
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 /**
@@ -10,6 +11,11 @@ public interface ISendable {
      * This broadcasts the object to all players on the server.
      */
     void broadcast();
+
+    /**
+     * This broadcasts the object to all players in the given world.
+     */
+    void broadcast(World world);
 
     /**
      * This sends the object to a specific player.

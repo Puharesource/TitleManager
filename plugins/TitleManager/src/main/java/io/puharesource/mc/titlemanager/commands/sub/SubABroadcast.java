@@ -12,6 +12,7 @@ import lombok.val;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Map;
 
@@ -54,23 +55,20 @@ public final class SubABroadcast extends TMSubCommand {
             if (world == null) {
                 sendError(sender, "Invalid world!");
             } else {
-                boolean b = true;
-                if(sender instanceof Player && (((Player)sender).getWorld()==world) {
-                    if(params.containsKey("RADIUS") && param.getValue()!=null) {
-                        try {
-                            for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(param.getValue()))) {
-                                object.send(player);
-                            }
-                            b = false;
-                        } catch(Exception e) {
-                            //Optional: tell the user that the param value must be a number?
+                if(sender instanceof Player && (((Player) sender).getWorld().equals(world)) && params.containsKey("RADIUS") && params.get("RADIUS").getValue() != null) {
+                    try {
+                        for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(params.get("RADIUS").getValue()))) {
+                            object.send(player);
                         }
+                    } catch(NumberFormatException e) {
+                        sendError(sender, "The radius specified is not valid! %s is not a valid number!", params.get("RADIUS").getValue());
+                        return;
                     }
-                }
-                if(b) {
-                    for (val player : world.getPlayers()) {
-                        object.send(player);
-                    }
+                } else if (params.containsKey("RADIUS") && params.get("RADIUS").getValue() != null) {
+                    sendError(sender, "You need to be in the world specified!");
+                    return;
+                } else {
+                    object.broadcast(world);
                 }
 
                 if (silent) return;
@@ -111,20 +109,16 @@ public final class SubABroadcast extends TMSubCommand {
                 }
             }
         } else {
-            boolean b = true;
-            if(sender instanceof Player) {
-                if(params.containsKey("RADIUS") && param.getValue()!=null) {
-                    try {
-                        for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(param.getValue()))) {
-                            object.send(player);
-                        }
-                        b = false;
-                    } catch(Exception e) {
-                        //Optional: tell the user that the param value must be a number?
+            if(sender instanceof Player && params.containsKey("RADIUS") && params.get("RADIUS").getValue()!=null) {
+                try {
+                    for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(params.get("RADIUS").getValue()))) {
+                        object.send(player);
                     }
+                } catch(NumberFormatException e) {
+                    sendError(sender, "The radius specified is not valid! %s is not a valid number!", params.get("RADIUS").getValue());
+                    return;
                 }
-            }
-            if(b) {
+            } else {
                 object.broadcast();
             }
 

@@ -9,6 +9,7 @@ import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
 import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManagerProtocolHack1718;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 /**
@@ -60,6 +61,13 @@ public class TitleObject implements ITitleObject {
     public void broadcast() {
         for (Player player : Bukkit.getOnlinePlayers())
             send(player);
+    }
+
+    @Override
+    public void broadcast(final World world) {
+        for (final Player player : world.getPlayers()) {
+            send(player);
+        }
     }
 
     @Override

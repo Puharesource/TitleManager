@@ -12,15 +12,15 @@ import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Collections;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Pattern;
-import java.util.ArrayList;
 
 public final class MiscellaneousUtils {
     private static final Pattern SPLIT_PATTERN = Pattern.compile("[%{][Nn][Ll][%}]|\\n");
@@ -29,14 +29,16 @@ public final class MiscellaneousUtils {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
     
-    public static ArrayList<Player> getWithinRadius(Location l, double radius) {
-        ArrayList<Player> players = new ArrayList<Player>();
-        World w = l.getWorld();
-        for(Player p : Bukkit.getOnlinePlayers()) {
-            if(p.getWorld()==w) {
-                double dist = l.distance(p.getLocation());
+    public static Set<Player> getWithinRadius(Location location, double radius) {
+        final Set<Player> players = new HashSet<>();
+        final World world = location.getWorld();
+
+        for(final Player player : Bukkit.getOnlinePlayers()) {
+            if(player.getWorld().equals(world)) {
+                final double dist = location.distance(player.getLocation());
+
                 if(dist <= radius) {
-                    players.add(p);
+                    players.add(player);
                 }
             }
         }
@@ -72,6 +74,7 @@ public final class MiscellaneousUtils {
         return String.valueOf(number.doubleValue());
     }
 
+    @SuppressWarnings("deprecation")
     public static Player getPlayer(final String name) {
         if (!Pattern.matches("^[a-z0-9A-Z_]+", name) && name.length() <= 16) return null;
         Player correctPlayer = Bukkit.getPlayerExact(name);
