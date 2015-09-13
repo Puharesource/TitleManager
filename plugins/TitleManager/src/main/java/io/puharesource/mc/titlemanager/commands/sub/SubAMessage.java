@@ -6,6 +6,7 @@ import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import io.puharesource.mc.titlemanager.commands.CommandParameter;
+import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import lombok.val;
@@ -21,26 +22,18 @@ public final class SubAMessage extends TMSubCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args, Map<String, CommandParameter> params) {
+    public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) {
         if (args.length < 2) {
             syntaxError(sender);
             return;
         }
 
-        BungeeServerInfo server = null;
-        val silent = params.containsKey("SILENT");
+        val server = params.getServer("BUNGEE");
+        val silent = params.getBoolean("SILENT");
         val object = MiscellaneousUtils.generateActionbarObject(MiscellaneousUtils.combineArray(1, args));
         val playerName = args[0];
 
-        if(params.containsKey("BUNGEE")) {
-            val param = params.get("BUNGEE");
-
-            if (param.getValue() != null && !param.getValue().isEmpty()) {
-                server = TitleManager.getInstance().getBungeeManager().getServers().get(param.getValue().toUpperCase());
-            }
-        }
-
-        if (params.containsKey("BUNGEE")) {
+        if (params.contains("BUNGEE")) {
             val manager = TitleManager.getInstance().getBungeeManager();
             val json = manager.getGson().toJson(object);
 

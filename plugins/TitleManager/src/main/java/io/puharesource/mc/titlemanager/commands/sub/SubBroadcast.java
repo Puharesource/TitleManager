@@ -8,6 +8,7 @@ import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
 import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import io.puharesource.mc.titlemanager.commands.CommandParameter;
+import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import lombok.val;
@@ -25,23 +26,22 @@ public final class SubBroadcast extends TMSubCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args, Map<String, CommandParameter> params) {
+    public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) {
         if (args.length < 1) {
             syntaxError(sender);
             return;
         }
 
         BungeeServerInfo server = null;
-        final boolean silent = params.containsKey("SILENT");
+        final boolean silent = params.getBoolean("SILENT");
         final ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
 
-        int fadeIn = config.welcomeMessageFadeIn;
-        int stay = config.welcomeMessageStay;
-        int fadeOut = config.welcomeMessageFadeOut;
+        int fadeIn = params.getInt("FADEIN", config.welcomeMessageFadeIn);
+        int stay = params.getInt("STAY", config.welcomeMessageStay);
+        int fadeOut = params.getInt("FADEOUT", config.welcomeMessageFadeOut);
+        val world = params.getWorld("WORLD");
 
-        World world = null;
-
-        if(params.containsKey("BUNGEE")) {
+        if(params.contains("BUNGEE")) {
             final CommandParameter param = params.get("BUNGEE");
 
             if (param.getValue() != null && !param.getValue().isEmpty()) {
@@ -49,46 +49,14 @@ public final class SubBroadcast extends TMSubCommand {
             }
         }
 
-        if (params.containsKey("FADEIN")) {
-            CommandParameter param = params.get("FADEIN");
-            if (param.getValue() != null) {
-                try {
-                    fadeIn = Integer.valueOf(param.getValue());
-                } catch (NumberFormatException ignored) {}
-            }
-        }
-        if (params.containsKey("STAY")) {
-            CommandParameter param = params.get("STAY");
-            if (param.getValue() != null) {
-                try {
-                    stay = Integer.valueOf(param.getValue());
-                } catch (NumberFormatException ignored) {}
-            }
-        }
-        if (params.containsKey("FADEOUT")) {
-            CommandParameter param = params.get("FADEOUT");
-            if (param.getValue() != null) {
-                try {
-                    fadeOut = Integer.valueOf(param.getValue());
-                } catch (NumberFormatException ignored) {}
-            }
-        }
-
-        if (params.containsKey("WORLD")) {
-            CommandParameter param = params.get("WORLD");
-            if (param.getValue() != null) {
-                world = Bukkit.getWorld(param.getValue());
-            }
-        }
-
         final String[] lines = MiscellaneousUtils.splitString(MiscellaneousUtils.combineArray(0, args));
         final ITitleObject object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1], fadeIn, stay, fadeOut);
 
-        if (params.containsKey("WORLD")) {//No support for radius if world != own world
+        if (params.contains("WORLD")) {//No support for radius if world != own world
             if (world == null) {
                 sendError(sender, "Invalid world!");
             } else {
-                if(sender instanceof Player && (((Player) sender).getWorld().equals(world)) && params.containsKey("RADIUS") && params.get("RADIUS").getValue() != null) {
+                if(sender instanceof Player && (((Player) sender).getWorld().equals(world)) && params.contains("RADIUS") && params.get("RADIUS").getValue() != null) {
                     try {
                         for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(params.get("RADIUS").getValue()))) {
                             object.send(player);
@@ -97,7 +65,7 @@ public final class SubBroadcast extends TMSubCommand {
                         sendError(sender, "The radius specified is not valid! %s is not a valid number!", params.get("RADIUS").getValue());
                         return;
                     }
-                } else if (params.containsKey("RADIUS") && params.get("RADIUS").getValue() != null) {
+                } else if (params.contains("RADIUS") && params.get("RADIUS").getValue() != null) {
                     sendError(sender, "You need to be in the world specified!");
                     return;
                 } else {
@@ -118,7 +86,7 @@ public final class SubBroadcast extends TMSubCommand {
                     }
                 }
             }
-        } else if (params.containsKey("BUNGEE")) {
+        } else if (params.contains("BUNGEE")) {
             val manager = TitleManager.getInstance().getBungeeManager();
             val json = manager.getGson().toJson(object);
 
@@ -160,7 +128,7 @@ public final class SubBroadcast extends TMSubCommand {
                 }
             }
         } else {
-            if(sender instanceof Player && params.containsKey("RADIUS") && params.get("RADIUS").getValue()!=null) {
+            if(sender instanceof Player && params.contains("RADIUS")) {
                 try {
                     for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(params.get("RADIUS").getValue()))) {
                         object.send(player);

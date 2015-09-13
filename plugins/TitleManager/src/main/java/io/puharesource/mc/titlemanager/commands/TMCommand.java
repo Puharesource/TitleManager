@@ -41,7 +41,7 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
                 if (sender.hasPermission(subCommand.getNode())) {
                     String[] subArgs = Arrays.copyOfRange(args, 1, args.length);
                     Map<String, CommandParameter> parameters = getParameters(subCommand, subArgs);
-                    subCommand.onCommand(sender, Arrays.copyOfRange(subArgs, parameters.size(), subArgs.length), parameters);
+                    subCommand.onCommand(sender, Arrays.copyOfRange(subArgs, parameters.size(), subArgs.length), new CommandParameters(parameters));
                 } else sender.sendMessage(ChatColor.RED + "You do not have permission to use that command!");
             else syntaxError(sender);
         } else syntaxError(sender);

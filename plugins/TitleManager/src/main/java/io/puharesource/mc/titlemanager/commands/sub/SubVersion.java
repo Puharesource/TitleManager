@@ -2,6 +2,7 @@ package io.puharesource.mc.titlemanager.commands.sub;
 
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.commands.CommandParameter;
+import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import org.bukkit.command.CommandSender;
 
@@ -13,7 +14,7 @@ public final class SubVersion extends TMSubCommand {
     }
 
     @Override
-    public void onCommand(final CommandSender sender, final String[] args, final Map<String, CommandParameter> params) {
+    public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) {
         sendSuccess(sender, "This server is running %s.", TitleManager.getInstance().getDescription().getFullName());
     }
 }

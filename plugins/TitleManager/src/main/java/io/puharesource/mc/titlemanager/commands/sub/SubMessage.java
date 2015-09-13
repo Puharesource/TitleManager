@@ -3,15 +3,12 @@ package io.puharesource.mc.titlemanager.commands.sub;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
-import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
-import io.puharesource.mc.titlemanager.commands.CommandParameter;
+import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import lombok.val;
 import org.bukkit.command.CommandSender;
-
-import java.util.Map;
 
 @ParameterSupport(supportedParams = {"BUNGEE", "SILENT", "FADEIN", "STAY", "FADEOUT"})
 public final class SubMessage extends TMSubCommand {
@@ -20,57 +17,24 @@ public final class SubMessage extends TMSubCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args, Map<String, CommandParameter> params) {
+    public void onCommand(CommandSender sender, String[] args, final CommandParameters params) {
         if (args.length < 2) {
             syntaxError(sender);
             return;
         }
 
-        BungeeServerInfo server = null;
-        val silent = params.containsKey("SILENT");
+        val server = params.getServer("BUNGEE");
+        val silent = params.getBoolean("SILENT");
         val config = TitleManager.getInstance().getConfigManager().getConfig();
-        int fadeIn = config.welcomeMessageFadeIn;
-        int stay = config.welcomeMessageStay;
-        int fadeOut = config.welcomeMessageFadeOut;
-
-        if(params.containsKey("BUNGEE")) {
-            final CommandParameter param = params.get("BUNGEE");
-
-            if (param.getValue() != null && !param.getValue().isEmpty()) {
-                server = TitleManager.getInstance().getBungeeManager().getServers().get(param.getValue().toUpperCase());
-            }
-        }
-
-        if (params.containsKey("FADEIN")) {
-            CommandParameter param = params.get("FADEIN");
-            if (param.getValue() != null) {
-                try {
-                    fadeIn = Integer.valueOf(param.getValue());
-                } catch (NumberFormatException ignored) {}
-            }
-        }
-        if (params.containsKey("STAY")) {
-            CommandParameter param = params.get("STAY");
-            if (param.getValue() != null) {
-                try {
-                    stay = Integer.valueOf(param.getValue());
-                } catch (NumberFormatException ignored) {}
-            }
-        }
-        if (params.containsKey("FADEOUT")) {
-            CommandParameter param = params.get("FADEOUT");
-            if (param.getValue() != null) {
-                try {
-                    fadeOut = Integer.valueOf(param.getValue());
-                } catch (NumberFormatException ignored) {}
-            }
-        }
+        int fadeIn = params.getInt("FADEIN", config.welcomeMessageFadeIn);
+        int stay = params.getInt("STAY", config.welcomeMessageStay);
+        int fadeOut = params.getInt("FADEOUT", config.welcomeMessageFadeOut);
 
         val lines = MiscellaneousUtils.splitString(MiscellaneousUtils.combineArray(1, args));
         val object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1], fadeIn, stay, fadeOut);
 
         val playerName = args[0];
-        if (params.containsKey("BUNGEE")) {
+        if (params.getBoolean("BUNGEE")) {
             val manager = TitleManager.getInstance().getBungeeManager();
             val json = manager.getGson().toJson(object);
 

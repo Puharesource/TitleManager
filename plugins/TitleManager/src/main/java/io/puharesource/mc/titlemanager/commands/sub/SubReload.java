@@ -3,6 +3,7 @@ package io.puharesource.mc.titlemanager.commands.sub;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.commands.CommandParameter;
+import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -16,7 +17,7 @@ public final class SubReload extends TMSubCommand {
     }
 
     @Override
-    public void onCommand(final CommandSender sender, final String[] args, final Map<String, CommandParameter> params) {
+    public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) {
         TitleManager.getInstance().getConfigManager().reload();
         sendSuccess(sender, "The configuration has been reloaded.");
         if (sender instanceof Player)

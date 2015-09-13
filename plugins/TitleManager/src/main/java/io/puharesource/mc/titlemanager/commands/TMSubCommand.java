@@ -35,7 +35,7 @@ public abstract class TMSubCommand {
         }
     }
 
-    public abstract void onCommand(final CommandSender sender, final String[] args, final Map<String, CommandParameter> params);
+    public abstract void onCommand(final CommandSender sender, final String[] args, final CommandParameters params);
 
     public void syntaxError(final CommandSender sender) {
         sender.sendMessage(ChatColor.RED + "Wrong usage! Correct usage:");
