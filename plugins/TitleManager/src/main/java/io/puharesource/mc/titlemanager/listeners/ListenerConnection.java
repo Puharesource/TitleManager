@@ -5,6 +5,7 @@ import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TabTitleCache;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
+import io.puharesource.mc.titlemanager.backend.language.Messages;
 import io.puharesource.mc.titlemanager.backend.updatechecker.UpdateManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,10 +33,10 @@ public final class ListenerConnection implements Listener {
             scheduler.runTaskLater(manager, new Runnable() {
                 @Override
                 public void run() {
-                    player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + "TitleManager" + ChatColor.WHITE + "] " + ChatColor.YELLOW +
-                            "And update was found for TitleManager!\n" +
-                            "You're currently on version " + updateManager.getCurrentVersion() + " while version " + updateManager.getLatestVersion() + " is available!\n" +
-                            "Download it here:" + ChatColor.GOLD + " http://www.spigotmc.org/resources/titlemanager.1049");
+                    player.sendMessage(String.format(Messages.UPDATE_MESSAGE.getMessage(),
+                            updateManager.getCurrentVersion(),
+                            updateManager.getLatestVersion(),
+                            "http://www.spigotmc.org/resources/titlemanager.1049"));
                 }
             }, 30l);
         }

@@ -16,7 +16,6 @@ import lombok.Getter;
 import lombok.val;
 import org.bukkit.configuration.ConfigurationSection;
 import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.File;
@@ -31,6 +30,7 @@ import java.util.Map;
 public final class Config {
 
     private ConfigFile configFile, animationConfigFile;
+    private @Getter ConfigFile messagesConfigFile;
     private Map<String, FrameSequence> animations = new HashMap<>();
     private Map<String, Script> scripts = new HashMap<>();
     private File scriptDir;
@@ -50,6 +50,7 @@ public final class Config {
 
         configFile = new ConfigFile(plugin, plugin.getDataFolder(), "config", false);
         animationConfigFile = new ConfigFile(plugin, plugin.getDataFolder(), "animations", true);
+        messagesConfigFile = new ConfigFile(plugin, plugin.getDataFolder(), "messages", true);
 
         scriptDir = new File(plugin.getDataFolder(), "scripts");
         scriptDir.mkdir();

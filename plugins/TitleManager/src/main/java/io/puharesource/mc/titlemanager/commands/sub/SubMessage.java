@@ -3,6 +3,7 @@ package io.puharesource.mc.titlemanager.commands.sub;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
+
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
@@ -10,10 +11,12 @@ import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import lombok.val;
 import org.bukkit.command.CommandSender;
 
+import static io.puharesource.mc.titlemanager.backend.language.Messages.*;
+
 @ParameterSupport(supportedParams = {"BUNGEE", "SILENT", "FADEIN", "STAY", "FADEOUT"})
 public final class SubMessage extends TMSubCommand {
     public SubMessage() {
-        super("msg", "titlemanager.command.message", "<player> <message>", "Sends a title message to the specified player, put inside of the message, to add a subtitle.", "message");
+        super("msg", "titlemanager.command.message", COMMAND_MESSAGE_USAGE, COMMAND_MESSAGE_DESCRIPTION, "message");
     }
 
     @Override
@@ -45,18 +48,18 @@ public final class SubMessage extends TMSubCommand {
                     if (silent) return;
 
                     if (object instanceof IAnimation) {
-                        sendSuccess(sender, "You have sent a bungeecord title animation broadcast");
+                        sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_ANIMATION, playerName);
                     } else {
                         final TitleObject title = (TitleObject) object;
 
                         if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                            sendSuccess(sender, "You have sent a bungeecord title with the message \"%s\" \"%s\" to \"%s\" in all servers", ((TitleObject) object).getTitle(), playerName);
+                            sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_SUBTITLE, ((TitleObject) object).getTitle(), playerName);
                         } else {
-                            sendSuccess(sender, "You have sent a bungeecord title with the message \"%s\" to \"%s\" in all servers", ((TitleObject) object).getTitle(), playerName);
+                            sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_TITLE, ((TitleObject) object).getTitle(), playerName);
                         }
                     }
                 } else {
-                    sendError(sender, "%s is an invalid server!", params.get("BUNGEE").getValue());
+                    sendError(sender, INVALID_SERVER, params.get("BUNGEE").getValue());
                 }
             } else {
                 server.sendMessage("TitleObject-Message", json, playerName);
@@ -64,21 +67,21 @@ public final class SubMessage extends TMSubCommand {
                 if (silent) return;
 
                 if (object instanceof IAnimation) {
-                    sendSuccess(sender, "You have sent a bungeecord title animation");
+                    sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_ANIMATION_IN_SERVER, playerName, server.getName());
                 } else {
                     final TitleObject title = (TitleObject) object;
 
                     if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                        sendSuccess(sender, "You have sent a bungeecord title with the message \"%s\" \"%s\" to %s in the server \"%s\"", title.getTitle(), title.getSubtitle(), playerName, server.getName());
+                        sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_SUBTITLE_IN_SERVER, title.getTitle(), title.getSubtitle(), playerName, server.getName());
                     } else {
-                        sendSuccess(sender, "You have sent a bungeecord title with the message \"%s\" to %s in the server \"%s\"", title.getTitle(), playerName, server.getName());
+                        sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_TITLE_IN_SERVER, title.getTitle(), playerName, server.getName());
                     }
                 }
             }
         } else {
             val player = MiscellaneousUtils.getPlayer(playerName);
             if (player == null) {
-                sendError(sender, "%s is not a player!", playerName);
+                sendError(sender, INVALID_PLAYER, playerName);
                 return;
             }
 
@@ -87,14 +90,14 @@ public final class SubMessage extends TMSubCommand {
             if (silent) return;
 
             if (object instanceof IAnimation) {
-                sendSuccess(sender, "You have sent a title animation to %s.", player.getName());
+                sendSuccess(sender, COMMAND_MESSAGE_BASIC_SUCCESS_ANIMATION, player.getName());
             } else {
                 final TitleObject title = (TitleObject) object;
 
                 if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                    sendSuccess(sender, "You have sent a title with the message \"%s\" \"%s\" to %s", title.getTitle(), title.getSubtitle(), player.getName());
+                    sendSuccess(sender, COMMAND_MESSAGE_BASIC_SUCCESS_WITH_SUBTITLE, title.getTitle(), title.getSubtitle(), player.getName());
                 } else {
-                    sendSuccess(sender, "You have sent a title with the message \"%s\" to %s", title.getTitle(), player.getName());
+                    sendSuccess(sender, COMMAND_MESSAGE_BASIC_SUCCESS_WITH_TITLE, title.getTitle(), player.getName());
                 }
             }
         }

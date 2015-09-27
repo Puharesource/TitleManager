@@ -3,7 +3,7 @@ package io.puharesource.mc.titlemanager.backend.config;
 import java.util.Arrays;
 import java.util.List;
 
-public class ConfigMain {
+public final class ConfigMain {
 
     /*
      * Root section

@@ -3,9 +3,7 @@ package io.puharesource.mc.titlemanager.commands.sub;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
-import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
-import io.puharesource.mc.titlemanager.commands.CommandParameter;
 import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
@@ -13,12 +11,12 @@ import lombok.val;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Map;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.*;
 
 @ParameterSupport(supportedParams = {"BUNGEE", "SILENT"})
 public final class SubAMessage extends TMSubCommand {
     public SubAMessage() {
-        super("amsg", "titlemanager.command.amessage", "<player> <message>", "Sends an actionbar title message to the specified player.", "amessage");
+        super("amsg", "titlemanager.command.amessage", COMMAND_AMESSAGE_USAGE, COMMAND_AMESSAGE_DESCRIPTION, "amessage");
     }
 
     @Override
@@ -44,10 +42,10 @@ public final class SubAMessage extends TMSubCommand {
                     if (silent) return;
 
                     if (object instanceof IAnimation)
-                        sendSuccess(sender, "You have sent an actionbar animation to %s over BungeeCord.", playerName);
-                    else sendSuccess(sender, "You have sent %s \"%s\" over BungeeCord", playerName, ((ActionbarTitleObject) object).getTitle());
+                        sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS_ANIMATION, playerName);
+                    else sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS, playerName, ((ActionbarTitleObject) object).getTitle());
                 } else {
-                    sendError(sender, "%s is an invalid server!", params.get("BUNGEE").getValue());
+                    sendError(sender, INVALID_SERVER, params.get("BUNGEE").getValue());
                 }
             } else {
                 server.sendMessage("ActionbarTitle-Message", json, playerName);
@@ -55,13 +53,13 @@ public final class SubAMessage extends TMSubCommand {
                 if (silent) return;
 
                 if (object instanceof IAnimation)
-                    sendSuccess(sender, "You have sent an actionbar animation to %s in the server \"%s\".", playerName, server.getName());
-                else sendSuccess(sender, "You have sent %s \"%s\" to the server \"%s\"", playerName, ((ActionbarTitleObject) object).getTitle(), server.getName());
+                    sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS_ANIMATION_IN_SERVER, playerName, server.getName());
+                else sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS_IN_SERVER, playerName, ((ActionbarTitleObject) object).getTitle(), server.getName());
             }
         } else {
             val player = MiscellaneousUtils.getPlayer(args[0]);
             if (player == null) {
-                sendError(sender, "%s is not a currently online!", args[0]);
+                sendError(sender, INVALID_PLAYER, args[0]);
                 return;
             }
 
@@ -70,8 +68,8 @@ public final class SubAMessage extends TMSubCommand {
             if (silent) return;
 
             if (object instanceof IAnimation)
-                sendSuccess(sender, "You have sent an actionbar animation to %s.", ChatColor.stripColor(player.getDisplayName()));
-            else sendSuccess(sender, "You have sent %s \"%s\"", ChatColor.stripColor(player.getDisplayName()), ((ActionbarTitleObject) object).getTitle());
+                sendSuccess(sender, COMMAND_AMESSAGE_BASIC_SUCCESS, ChatColor.stripColor(player.getDisplayName()));
+            else sendSuccess(sender, COMMAND_AMESSAGE_BASIC_SUCCESS_ANIMATION, ChatColor.stripColor(player.getDisplayName()), ((ActionbarTitleObject) object).getTitle());
         }
     }
 }

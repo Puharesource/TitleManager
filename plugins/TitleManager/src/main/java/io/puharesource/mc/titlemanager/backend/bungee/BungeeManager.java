@@ -18,12 +18,9 @@ import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import lombok.val;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,7 +65,13 @@ public final class BungeeManager implements PluginMessageListener {
         if (!channel.equals("BungeeCord")) return;
 
         val in = ByteStreams.newDataInput(message);
-        val subChannel = in.readUTF();
+        final String subChannel;
+
+        try {
+            subChannel = in.readUTF();
+        } catch (Exception e) {
+            return; // Doesn't print anything, due to the fact that some plugins might send malformed messages.
+        }
 
         switch (subChannel) {
             case "TitleManager": {

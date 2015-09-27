@@ -5,22 +5,20 @@ import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
-import io.puharesource.mc.titlemanager.commands.CommandParameter;
 import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import lombok.val;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.*;
 
 @ParameterSupport(supportedParams = {"SILENT", "WORLD", "BUNGEE", "RADIUS"})
 public final class SubABroadcast extends TMSubCommand {
     public SubABroadcast() {
-        super("abc", "titlemanager.command.abroadcast", "<message>", "Sends an actionbar title message to everyone on the server.", "abroadcast");
+        super("abc", "titlemanager.command.abroadcast", COMMAND_ABROADCAST_USAGE, COMMAND_ABROADCAST_DESCRIPTION, "abroadcast");
     }
 
     @Override
@@ -46,7 +44,7 @@ public final class SubABroadcast extends TMSubCommand {
             final World world = params.getWorld("WORLD");
 
             if (world == null) {
-                sendError(sender, "Invalid world!");
+                sendError(sender, INVALID_WORLD);
             } else {
                 if(sender instanceof Player && (((Player) sender).getWorld().equals(world)) && params.contains("RADIUS")) {
                     try {
@@ -54,11 +52,11 @@ public final class SubABroadcast extends TMSubCommand {
                             object.send(player);
                         }
                     } catch(NumberFormatException e) {
-                        sendError(sender, "The radius specified is not valid! %s is not a valid number!", params.get("RADIUS").getValue());
+                        sendError(sender, INVALID_RADIUS, params.get("RADIUS").getValue());
                         return;
                     }
                 } else if (params.contains("RADIUS")) {
-                    sendError(sender, "You need to be in the world specified!");
+                    sendError(sender, WRONG_WORLD);
                     return;
                 } else {
                     object.broadcast(world);
@@ -67,9 +65,9 @@ public final class SubABroadcast extends TMSubCommand {
                 if (silent) return;
 
                 if (object instanceof IAnimation) {
-                    sendSuccess(sender, "You have sent a world actionbar animation broadcast to the world \"%s\"", world.getName());
+                    sendSuccess(sender, COMMAND_ABROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
                 } else {
-                    sendSuccess(sender, "You have sent a world actionbar broadcast with the message \"%s\" to the world \"%s\"", ((ActionbarTitleObject) object).getTitle(), world.getName());
+                    sendSuccess(sender, COMMAND_ABROADCAST_WORLD_SUCCESS, ((ActionbarTitleObject) object).getTitle(), world.getName());
                 }
             }
         } else if (params.getBoolean("BUNGEE")) {
@@ -83,12 +81,12 @@ public final class SubABroadcast extends TMSubCommand {
                     if (silent) return;
 
                     if (object instanceof IAnimation) {
-                        sendSuccess(sender, "You have sent a bungeecord actionbar animation broadcast");
+                        sendSuccess(sender, COMMAND_ABROADCAST_BUNGEECORD_SUCCESS);
                     } else {
-                        sendSuccess(sender, "You have sent a bungeecord actionbar broadcast with the message \"%s\"", ((ActionbarTitleObject) object).getTitle());
+                        sendSuccess(sender, COMMAND_ABROADCAST_BUNGEECORD_SUCCESS_ANIMATION, ((ActionbarTitleObject) object).getTitle());
                     }
                 } else {
-                    sendError(sender, "%s is an invalid server!", params.get("BUNGEE").getValue());
+                    sendError(sender, INVALID_SERVER, params.get("BUNGEE").getValue());
                 }
             } else {
                 server.sendMessage("ActionbarTitle-Broadcast", json);
@@ -96,9 +94,9 @@ public final class SubABroadcast extends TMSubCommand {
                 if (silent) return;
 
                 if (object instanceof IAnimation) {
-                    sendSuccess(sender, "You have sent a bungeecord actionbar animation broadcast to the server \"%s\"", server.getName());
+                    sendSuccess(sender, COMMAND_ABROADCAST_BUNGEECORD_SUCCESS_ANIMATION_TO_SERVER, server.getName());
                 } else {
-                    sendSuccess(sender, "You have sent a bungeecord actionbar broadcast with the message \"%s\" to the server \"%s\"", ((ActionbarTitleObject) object).getTitle(), server.getName());
+                    sendSuccess(sender, COMMAND_ABROADCAST_BUNGEECORD_SUCCESS_TO_SERVER, ((ActionbarTitleObject) object).getTitle(), server.getName());
                 }
             }
         } else {
@@ -108,7 +106,7 @@ public final class SubABroadcast extends TMSubCommand {
                         object.send(player);
                     }
                 } catch(NumberFormatException e) {
-                    sendError(sender, "The radius specified is not valid! %s is not a valid number!", params.get("RADIUS").getValue());
+                    sendError(sender, INVALID_RADIUS, params.get("RADIUS").getValue());
                     return;
                 }
             } else {
@@ -118,9 +116,9 @@ public final class SubABroadcast extends TMSubCommand {
             if (silent) return;
 
             if (object instanceof IAnimation) {
-                sendSuccess(sender, "You have sent an actionbar animation broadcast.");
+                sendSuccess(sender, COMMAND_ABROADCAST_BASIC_SUCCESS_ANIMATION);
             } else {
-                sendSuccess(sender, "You have sent an actionbar broadcast with the message \"%s\"", ((ActionbarTitleObject) object).getTitle());
+                sendSuccess(sender, COMMAND_ABROADCAST_BASIC_SUCCESS, ((ActionbarTitleObject) object).getTitle());
             }
         }
     }

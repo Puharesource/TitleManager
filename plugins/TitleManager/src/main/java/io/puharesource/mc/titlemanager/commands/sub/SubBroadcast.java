@@ -12,17 +12,15 @@ import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import lombok.val;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.*;
 
 @ParameterSupport(supportedParams = {"SILENT", "FADEIN", "STAY", "FADEOUT", "WORLD", "BUNGEE", "RADIUS"})
 public final class SubBroadcast extends TMSubCommand {
     public SubBroadcast() {
-        super("bc", "titlemanager.command.broadcast", "<message>", "Sends a title message to everyone on the server, put inside of the message, to add a subtitle.", "broadcast");
+        super("bc", "titlemanager.command.broadcast", COMMAND_BROADCAST_USAGE, COMMAND_BROADCAST_DESCRIPTION, "broadcast");
     }
 
     @Override
@@ -54,7 +52,7 @@ public final class SubBroadcast extends TMSubCommand {
 
         if (params.contains("WORLD")) {//No support for radius if world != own world
             if (world == null) {
-                sendError(sender, "Invalid world!");
+                sendError(sender, INVALID_WORLD, params.get("WORLD").getValue());
             } else {
                 if(sender instanceof Player && (((Player) sender).getWorld().equals(world)) && params.contains("RADIUS") && params.get("RADIUS").getValue() != null) {
                     try {
@@ -62,11 +60,11 @@ public final class SubBroadcast extends TMSubCommand {
                             object.send(player);
                         }
                     } catch(NumberFormatException e) {
-                        sendError(sender, "The radius specified is not valid! %s is not a valid number!", params.get("RADIUS").getValue());
+                        sendError(sender, INVALID_RADIUS, params.get("RADIUS").getValue());
                         return;
                     }
                 } else if (params.contains("RADIUS") && params.get("RADIUS").getValue() != null) {
-                    sendError(sender, "You need to be in the world specified!");
+                    sendError(sender, WRONG_WORLD);
                     return;
                 } else {
                     object.broadcast(world);
@@ -75,14 +73,14 @@ public final class SubBroadcast extends TMSubCommand {
                 if (silent) return;
 
                 if (object instanceof IAnimation) {
-                    sendSuccess(sender, "You have sent a world title animation broadcast to the world \"%s\"", world.getName());
+                    sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
                 } else {
                     final TitleObject title = (TitleObject) object;
 
                     if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                        sendSuccess(sender, "You have sent a world title broadcast with the message \"%s\" \"%s\" to the world \"%s\"", ((TitleObject) object).getTitle(), world.getName());
+                        sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_SUBTITLE, ((TitleObject) object).getTitle(), world.getName());
                     } else {
-                        sendSuccess(sender, "You have sent a world title broadcast with the message \"%s\" to the world \"%s\"", ((TitleObject) object).getTitle(), world.getName());
+                        sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_TITLE, ((TitleObject) object).getTitle(), world.getName());
                     }
                 }
             }
@@ -97,18 +95,18 @@ public final class SubBroadcast extends TMSubCommand {
                     if (silent) return;
 
                     if (object instanceof IAnimation) {
-                        sendSuccess(sender, "You have sent a bungeecord title animation broadcast");
+                        sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_ANIMATION);
                     } else {
                         final TitleObject title = (TitleObject) object;
 
                         if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                            sendSuccess(sender, "You have sent a bungeecord title broadcast with the message \"%s\" \"%s\"", ((TitleObject) object).getTitle());
+                            sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_WITH_Subtitle, ((TitleObject) object).getTitle());
                         } else {
-                            sendSuccess(sender, "You have sent a bungeecord title broadcast with the message \"%s\"", ((TitleObject) object).getTitle());
+                            sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_WITH_Title, ((TitleObject) object).getTitle());
                         }
                     }
                 } else {
-                    sendError(sender, "%s is an invalid server!", params.get("BUNGEE").getValue());
+                    sendError(sender, INVALID_SERVER, params.get("BUNGEE").getValue());
                 }
             } else {
                 server.sendMessage("TitleObject-Broadcast", json);
@@ -116,14 +114,14 @@ public final class SubBroadcast extends TMSubCommand {
                 if (silent) return;
 
                 if (object instanceof IAnimation) {
-                    sendSuccess(sender, "You have sent a bungeecord title animation broadcast");
+                    sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_ANIMATION_TO_SERVER);
                 } else {
                     final TitleObject title = (TitleObject) object;
 
                     if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                        sendSuccess(sender, "You have sent a bungeecord title broadcast with the message \"%s\" \"%s\" to the server \"%s\"", title.getTitle(), title.getSubtitle(), server.getName());
+                        sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_WITH_SUBTITLE_TO_SERVER, title.getTitle(), title.getSubtitle(), server.getName());
                     } else {
-                        sendSuccess(sender, "You have sent a bungeecord title broadcast with the message \"%s\" to the server \"%s\"", title.getTitle(), server.getName());
+                        sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_WITH_TITLE_TO_SERVER, title.getTitle(), server.getName());
                     }
                 }
             }
@@ -134,7 +132,7 @@ public final class SubBroadcast extends TMSubCommand {
                         object.send(player);
                     }
                 } catch(NumberFormatException e) {
-                    sendError(sender, "The radius specified is not valid! %s is not a valid number!", params.get("RADIUS").getValue());
+                    sendError(sender, INVALID_RADIUS, params.get("RADIUS").getValue());
                     return;
                 }
             } else {
@@ -144,14 +142,14 @@ public final class SubBroadcast extends TMSubCommand {
             if (silent) return;
 
             if (object instanceof IAnimation) {
-                sendSuccess(sender, "You have sent an title animation broadcast.");
+                sendSuccess(sender, COMMAND_BROADCAST_BASIC_SUCCESS_ANIMATION);
             } else {
                 final TitleObject title = (TitleObject) object;
 
                 if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                    sendSuccess(sender, "You have sent a title broadcast with the message \"%s\" \"%s\"", title.getTitle(), title.getSubtitle());
+                    sendSuccess(sender, COMMAND_BROADCAST_BASIC_SUCCESS_WITH_SUBTITLE, title.getTitle(), title.getSubtitle());
                 } else {
-                    sendSuccess(sender, "You have sent a title broadcast with the message \"%s\"", title.getTitle());
+                    sendSuccess(sender, COMMAND_BROADCAST_BASIC_SUCCESS_WITH_TITLE, title.getTitle());
                 }
             }
         }

@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
  * This object is being used in both tabmenu animations and simply when changing the header and/or footer of the tabmenu.
  */
 public class TabTitleObject implements ITabObject {
-
     private String header;
     private String footer;
 
@@ -35,7 +34,7 @@ public class TabTitleObject implements ITabObject {
     }
 
     @Override
-    public void broadcast(World world) {
+    public void broadcast(final World world) {
         for (final Player player : world.getPlayers()) {
             send(player);
         }

@@ -61,7 +61,6 @@ public final class TitleManager extends JavaPlugin {
         pluginManager.registerEvents(new ListenerWorldChange(), this);
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", bungeeManager = new BungeeManager());
 
         TMCommand cmd = new TMCommand();

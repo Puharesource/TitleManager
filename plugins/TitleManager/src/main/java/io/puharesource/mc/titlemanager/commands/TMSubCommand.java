@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.commands;
 
+import io.puharesource.mc.titlemanager.backend.language.Messages;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -19,11 +20,11 @@ public abstract class TMSubCommand {
 
     private final Set<String> supportedParameters;
 
-    public TMSubCommand(final String alias, final String node, final String usage, final String description, final String... aliases) {
+    public TMSubCommand(final String alias, final String node, final Messages usage, final Messages description, final String... aliases) {
         this.alias = alias;
         this.node = node;
-        this.usage = usage;
-        this.description = description;
+        this.usage = usage.getMessage();
+        this.description = description.getMessage();
         this.aliases = aliases;
         this.supportedParameters = new HashSet<>();
 
@@ -46,15 +47,15 @@ public abstract class TMSubCommand {
         return supportedParameters;
     }
 
-    private void sendFormattedMessage(final CommandSender sender, final ChatColor color, final String message, final Object... args) {
-        sender.sendMessage(color + String.format(message.replace("%s", ChatColor.RESET + "%s" + color), args));
+    private void sendFormattedMessage(final CommandSender sender, final ChatColor color, final Messages message, final Object... args) {
+        sender.sendMessage(color + String.format(message.getMessage().replace("%s", ChatColor.RESET + "%s" + color), args));
     }
 
-    protected void sendSuccess(final CommandSender sender, final String message, final Object... args) {
+    protected void sendSuccess(final CommandSender sender, final Messages message, final Object... args) {
         sendFormattedMessage(sender, ChatColor.GREEN, message, args);
     }
 
-    protected void sendError(final CommandSender sender, final String message, final Object... args) {
+    protected void sendError(final CommandSender sender, final Messages message, final Object... args) {
         sendFormattedMessage(sender, ChatColor.RED, message, args);
     }
 }

@@ -39,6 +39,10 @@ public class ConfigFile {
             e.printStackTrace();
         }
         config = YamlConfiguration.loadConfiguration(file);
+
+        if (locatedInJar) {
+            config.addDefaults(YamlConfiguration.loadConfiguration(plugin.getResource(fileName)).getDefaults());
+        }
     }
 
     public void save() {

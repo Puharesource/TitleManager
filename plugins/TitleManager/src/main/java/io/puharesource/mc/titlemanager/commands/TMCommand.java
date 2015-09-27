@@ -1,6 +1,8 @@
 package io.puharesource.mc.titlemanager.commands;
 
 import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.backend.language.Messages;
+import lombok.val;
 import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 
@@ -23,11 +25,11 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
     }
 
     private void syntaxError(CommandSender sender) {
-        sender.sendMessage(ChatColor.RED + "Wrong usage! Correct usages: ");
+        sender.sendMessage(ChatColor.RED + Messages.COMMAND_WRONG_USAGE.getMessage());
         List<String> aliases = new ArrayList<>();
         for (TMSubCommand cmd : commands.values()) {
             if (aliases.contains(cmd.getAlias().toUpperCase())) continue;
-            sender.sendMessage(ChatColor.RED + "    /tm " + cmd.getAlias() + " " + cmd.getUsage() + ChatColor.GRAY + (cmd.getUsage().isEmpty() ? "- " : " - ") + cmd.getDescription());
+            sender.sendMessage(String.format(ChatColor.RED + Messages.COMMAND_WRONG_USAGE_TRAIL.getMessage(), "/tm " + cmd.getAlias(), cmd.getUsage() + ChatColor.GRAY + (cmd.getUsage().isEmpty() ? "- " : " - ") + cmd.getDescription()));
             aliases.add(cmd.getAlias().toUpperCase());
         }
     }
@@ -40,9 +42,9 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
             if (subCommand != null)
                 if (sender.hasPermission(subCommand.getNode())) {
                     String[] subArgs = Arrays.copyOfRange(args, 1, args.length);
-                    Map<String, CommandParameter> parameters = getParameters(subCommand, subArgs);
-                    subCommand.onCommand(sender, Arrays.copyOfRange(subArgs, parameters.size(), subArgs.length), new CommandParameters(parameters));
-                } else sender.sendMessage(ChatColor.RED + "You do not have permission to use that command!");
+                    val parameters = getParameters(subCommand, subArgs);
+                    subCommand.onCommand(sender, Arrays.copyOfRange(subArgs, parameters.getParams().size(), subArgs.length), parameters);
+                } else sender.sendMessage(ChatColor.RED + Messages.COMMAND_NO_PERMISSION.getMessage());
             else syntaxError(sender);
         } else syntaxError(sender);
         return true;
@@ -60,9 +62,9 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
         return possibilities.size() <= 0 ? null : possibilities;
     }
 
-    private Map<String, CommandParameter> getParameters(TMSubCommand cmd, String[] args) {
-        Collection<String> supportedParameters = cmd.getSupportedParameters();
-        Map<String, CommandParameter> parameters = new HashMap<>();
+    private CommandParameters getParameters(final TMSubCommand cmd, final String[] args) {
+        final Collection<String> supportedParameters = cmd.getSupportedParameters();
+        final Map<String, CommandParameter> parameters = new HashMap<>();
 
         for (String arg : args) {
             if (!arg.startsWith("-")) break;
@@ -88,6 +90,6 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        return parameters;
+        return new CommandParameters(parameters);
     }
 }
