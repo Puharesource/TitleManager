@@ -38,7 +38,7 @@ public final class VariablesDefault implements VariableReplacer {
     public String worldPlayerCountVar(Player player) { return String.valueOf(player.getWorld().getPlayers().size()); }
 
     @Variable(vars = {"SERVER-TIME"})
-    public String serverTimeVar(Player player) { return new SimpleDateFormat(TitleManager.getInstance().getConfig().getString("date-format.format")).format(new Date(System.currentTimeMillis())); }
+    public String serverTimeVar(Player player) { return new SimpleDateFormat(TitleManager.getInstance().getConfigManager().getConfig().dateFormat).format(new Date(System.currentTimeMillis())); }
 
     @Variable(rule = "VANISH-RULE", vars = {"SAFE-ONLINE", "SAFE-ONLINE-PLAYERS"})
     public String safeOnlineVar(Player player) { return String.valueOf(VanishRule.getOnlinePlayers()); }

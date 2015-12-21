@@ -39,7 +39,7 @@ public final class ConfigMain {
     public String tabmenuHeader = "&3MyServer\\n&bSecond line!\\n&fThird line!";
 
     @ConfigField(path = "tabmenu.footer")
-    public String tabmenuFooter = "animation:test1";
+    public String tabmenuFooter = "animation:left-to-right";
 
     /*
      * welcome_message section
@@ -49,10 +49,13 @@ public final class ConfigMain {
     public boolean welcomeMessageEnabled = true;
 
     @ConfigField(path = "welcome_message.title")
-    public String welcomeMessageTitle = "&7Welcome back &a{PLAYER}&7!";
+    public Object welcomeMessageTitle = "&7Welcome back &a{PLAYER}&7!";
 
     @ConfigField(path = "welcome_message.subtitle")
     public String welcomeMessageSubtitle = "&7To my server";
+
+    @ConfigField(path = "welcome_message.mode")
+    public String welcomeMessageMode = "NONE";
 
     @ConfigField(path = "welcome_message.fadeIn")
     public int welcomeMessageFadeIn = 20;
@@ -68,23 +71,23 @@ public final class ConfigMain {
      * ----------------------------------
      */
     @ConfigField(path = "welcome_message.first-join.title")
-    public String firstJoinTitle = "&7Welcome to MyServer &a{PLAYER}";
+    public Object firstJoinTitle = "&7Welcome to MyServer &a{PLAYER}";
 
     @ConfigField(path = "welcome_message.first-join.subtitle")
     public String firstJoinSubtitle = "&7Hope you enjoy your stay!";
 
     /*
      * New player actionbar-welcome section
-     * ----------------------------------
+     * ------------------------------------
      */
     @ConfigField(path = "actionbar-welcome.enabled")
     public boolean actionbarWelcomeEnabled = true;
 
     @ConfigField(path = "actionbar-welcome.message")
-    public String actionbarWelcomeMessage = "&a&lWelcome!";
+    public Object actionbarWelcomeMessage = "&a&lWelcome!";
 
     @ConfigField(path = "actionbar-welcome.first-join.message")
-    public String actionbarFirstWelcomeMessage = "&2&lWelcome It's your first time!";
+    public Object actionbarFirstWelcomeMessage = "&2&lWelcome It's your first time!";
 
     /*
      * Number format
@@ -105,26 +108,29 @@ public final class ConfigMain {
 
     /*
      * Disabled variables
-     * ---------------------
+     * ------------------
      */
     @ConfigField(path = "disabled-variables")
     public List<String> disabledVariables = Arrays.asList("my-disabled-variable", "also-called-placeholders");
     
     /*
      * Per World Messages
-     * ---------------------
+     * ------------------
      */
     @ConfigField(path = "world-message.enabled")
     public boolean worldMessageEnabled = true;
 
     @ConfigField(path = "world-message.title")
-    public String worldMessageTitle = "&7You have joined";
+    public Object worldMessageTitle = "&7You have joined";
 
     @ConfigField(path = "world-message.subtitle")
     public String worldMessageSubtitle = "&7the {WORLD} world!";
+
+    @ConfigField(path = "world-message.mode")
+    public String worldMessageMode = "NONE";
     
     @ConfigField(path = "world-message.actionbar")
-    public String worldMessageActionBar = "Enjoy your stay!";
+    public Object worldMessageActionBar = "Enjoy your stay!";
 
     @ConfigField(path = "world-message.fadeIn")
     public int worldMessageFadeIn = 20;
@@ -134,4 +140,11 @@ public final class ConfigMain {
 
     @ConfigField(path = "world-message.fadeOut")
     public int worldMessageFadeOut = 20;
+
+    /*
+     * Language
+     * --------
+     */
+    @ConfigField(path = "locale")
+    public String locale = "en_US";
 }

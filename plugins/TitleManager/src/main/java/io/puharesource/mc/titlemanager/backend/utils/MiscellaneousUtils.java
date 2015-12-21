@@ -8,6 +8,7 @@ import io.puharesource.mc.titlemanager.api.animations.*;
 import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.api.iface.Script;
 import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -23,13 +24,15 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public final class MiscellaneousUtils {
-    private static final Pattern SPLIT_PATTERN = Pattern.compile("[%{][Nn][Ll][%}]|\\n");
+    private static final Pattern SPLIT_PATTERN = Pattern.compile("(([<{%]((?i)nl)[>}%])|\\n)");
+    private static final Pattern ANIMATION_PATTERN = Pattern.compile("^((i?)animation:).*$");
+    private static final Pattern SCRIPT_PATTERN = Pattern.compile("^((i?)script:).*(:).*$");
 
-    public static String format(String text) {
+    public static String format(final String text) {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
     
-    public static Set<Player> getWithinRadius(Location location, double radius) {
+    public static Set<Player> getWithinRadius(final Location location, final double radius) {
         final Set<Player> players = new HashSet<>();
         final World world = location.getWorld();
 
@@ -45,25 +48,36 @@ public final class MiscellaneousUtils {
         return players;
     }
 
-    public static FrameSequence isValidAnimationString(String text) {
+    public static FrameSequence isValidAnimationString(final String text) {
         if (text == null) return null;
-        text = text.toUpperCase().trim();
 
-        return text.startsWith("ANIMATION:") ?
-                Config.getAnimation(text.substring(10)) : null;
+        return ANIMATION_PATTERN.matcher(text).matches() ? Config.getAnimation(text.split(":", 2)[1]) : null;
     }
 
-    public static String combineArray(int offset, String[] array) {
+    public static FrameSequence isValidScriptString(final String text) {
+        if (text == null) return null;
+
+        if (SCRIPT_PATTERN.matcher(text).matches()) {
+            final String[] parts = text.split(":", 3);
+            final Script script = TitleManager.getInstance().getConfigManager().getScript(parts[1]);
+
+            return script != null ? new FrameSequence(script, parts[2]) : null;
+        }
+
+        return null;
+    }
+
+    public static String combineArray(final int offset, final String[] array) {
         StringBuilder sb = new StringBuilder(array[offset]);
         for (int i = offset + 1; array.length > i; i++) sb.append(" ").append(array[i]);
         return format(sb.toString());
     }
 
-    public static String formatNumber(double number) {
+    public static String formatNumber(final double number) {
         return formatNumber(new BigDecimal(number));
     }
 
-    public static String formatNumber(BigDecimal number) {
+    public static String formatNumber(final BigDecimal number) {
         ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
 
         if (config.numberFormatEnabled) {
@@ -108,7 +122,6 @@ public final class MiscellaneousUtils {
                 timesString += chars[i];
             }
 
-
             try {
                 String[] times = timesString.split(";", 3);
                 fadeIn = Integer.valueOf(times[0]);
@@ -125,6 +138,9 @@ public final class MiscellaneousUtils {
         Object headerObject = isValidAnimationString(header);
         Object footerObject = isValidAnimationString(footer);
 
+        headerObject = headerObject == null ? isValidScriptString(header) : headerObject;
+        footerObject = footerObject == null ? isValidScriptString(footer) : footerObject;
+
         headerObject = headerObject == null ? MiscellaneousUtils.format(header).replace("\\n", "\n") : headerObject;
         footerObject = footerObject == null ? MiscellaneousUtils.format(footer).replace("\\n", "\n") : footerObject;
 
@@ -138,6 +154,9 @@ public final class MiscellaneousUtils {
         Object titleObject = isValidAnimationString(title);
         Object subtitleObject = isValidAnimationString(subtitle);
 
+        titleObject = titleObject == null ? isValidScriptString(title) : titleObject;
+        subtitleObject = subtitleObject == null ? isValidScriptString(subtitle) : subtitleObject;
+
         titleObject = titleObject == null ? MiscellaneousUtils.format(title) : titleObject;
         subtitleObject = subtitleObject == null ? MiscellaneousUtils.format(subtitle) : subtitleObject;
 
@@ -149,14 +168,18 @@ public final class MiscellaneousUtils {
     public static IActionbarObject generateActionbarObject(final String message) {
         Object messageObject = isValidAnimationString(message);
 
+        messageObject = messageObject == null ? isValidScriptString(message) : messageObject;
         messageObject = messageObject == null ? MiscellaneousUtils.format(message).replace("\\n", "\n") : messageObject;
 
         return messageObject instanceof String ? new ActionbarTitleObject((String) messageObject) : new ActionbarTitleAnimation((FrameSequence) messageObject);
     }
 
-    public static String[] splitString(final String str) {
-        if (str.matches("(.*)" + SPLIT_PATTERN.pattern() + "(.*)"))
+    public static String[] splitString(String str) {
+        str = str.replaceFirst("\\n", "\n");
+
+        if (str.matches("^.*" + SPLIT_PATTERN.pattern() + ".*$")) {
             return str.split(SPLIT_PATTERN.pattern(), 2);
+        }
         return new String[]{str, ""};
     }
 }

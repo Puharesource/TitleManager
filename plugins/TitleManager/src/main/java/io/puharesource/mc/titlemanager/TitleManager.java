@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.List;
 
 public final class TitleManager extends JavaPlugin {
-
     private @Getter static TitleManager instance;
     private @Getter Config configManager;
     private @Getter ReflectionManager reflectionManager;
@@ -54,6 +53,9 @@ public final class TitleManager extends JavaPlugin {
         updateManager = new UpdateManager();
         engine = new Engine();
 
+        configManager = new Config();
+        configManager.load();
+
         val pluginManager = getServer().getPluginManager();
 
         pluginManager.registerEvents(new ListenerConnection(), this);
@@ -63,7 +65,7 @@ public final class TitleManager extends JavaPlugin {
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", bungeeManager = new BungeeManager());
 
-        TMCommand cmd = new TMCommand();
+        val cmd = new TMCommand();
         cmd.addSubCommand(new SubBroadcast());
         cmd.addSubCommand(new SubMessage());
         cmd.addSubCommand(new SubReload());
@@ -71,6 +73,8 @@ public final class TitleManager extends JavaPlugin {
         cmd.addSubCommand(new SubAMessage());
         cmd.addSubCommand(new SubAnimations());
         cmd.addSubCommand(new SubVersion());
+        cmd.addSubCommand(new SubScripts());
+        cmd.addSubCommand(new SubDebug());
 
         variableManager.registerHook("VAULT", new VaultHook());
         variableManager.registerHook("ESSENTIALS", new EssentialsHook());
@@ -89,9 +93,6 @@ public final class TitleManager extends JavaPlugin {
         variableManager.registerVariableReplacer(new VariablesVault());
         variableManager.registerVariableReplacer(new VariablesEZRanksLite());
         variableManager.registerVariableReplacer(new VariablesBungee());
-
-        configManager = new Config();
-        configManager.load();
     }
 
     @Override

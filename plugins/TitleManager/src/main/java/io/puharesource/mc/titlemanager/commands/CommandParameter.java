@@ -64,14 +64,14 @@ public final class CommandParameter {
     }
 
     public BungeeServerInfo getServer() {
-        return value == null ? null : TitleManager.getInstance().getBungeeManager().getServers().get(value.toUpperCase().trim());
+        return value == null ? null : TitleManager.getInstance().getBungeeManager().getServers().get(value);
     }
 
     public BungeeServerInfo getServer(final BungeeServerInfo defaultValue) {
         if (value == null) {
             return defaultValue;
         } else {
-            final BungeeServerInfo server = TitleManager.getInstance().getBungeeManager().getServers().get(value.toUpperCase().trim());
+            final BungeeServerInfo server = TitleManager.getInstance().getBungeeManager().getServers().get(value);
             return server == null ? defaultValue : server;
         }
     }

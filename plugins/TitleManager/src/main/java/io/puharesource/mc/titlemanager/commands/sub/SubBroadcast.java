@@ -7,10 +7,7 @@ import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
 import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
-import io.puharesource.mc.titlemanager.commands.CommandParameter;
-import io.puharesource.mc.titlemanager.commands.CommandParameters;
-import io.puharesource.mc.titlemanager.commands.ParameterSupport;
-import io.puharesource.mc.titlemanager.commands.TMSubCommand;
+import io.puharesource.mc.titlemanager.commands.*;
 import lombok.val;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,7 +21,7 @@ public final class SubBroadcast extends TMSubCommand {
     }
 
     @Override
-    public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) {
+    public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) throws TMCommandException {
         if (args.length < 1) {
             syntaxError(sender);
             return;
@@ -43,7 +40,7 @@ public final class SubBroadcast extends TMSubCommand {
             final CommandParameter param = params.get("BUNGEE");
 
             if (param.getValue() != null && !param.getValue().isEmpty()) {
-                server = TitleManager.getInstance().getBungeeManager().getServers().get(param.getValue().toUpperCase());
+                server = TitleManager.getInstance().getBungeeManager().getServers().get(param.getValue());
             }
         }
 
@@ -51,37 +48,33 @@ public final class SubBroadcast extends TMSubCommand {
         final ITitleObject object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1], fadeIn, stay, fadeOut);
 
         if (params.contains("WORLD")) {//No support for radius if world != own world
-            if (world == null) {
-                sendError(sender, INVALID_WORLD, params.get("WORLD").getValue());
-            } else {
-                if(sender instanceof Player && (((Player) sender).getWorld().equals(world)) && params.contains("RADIUS") && params.get("RADIUS").getValue() != null) {
-                    try {
-                        for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(params.get("RADIUS").getValue()))) {
-                            object.send(player);
-                        }
-                    } catch(NumberFormatException e) {
-                        sendError(sender, INVALID_RADIUS, params.get("RADIUS").getValue());
-                        return;
+            if (world == null) throw new TMCommandException(INVALID_WORLD, params.get("WORLD").getValue());
+
+            if(sender instanceof Player && (((Player) sender).getWorld().equals(world)) && params.contains("RADIUS") && params.get("RADIUS").getValue() != null) {
+                try {
+                    for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(params.get("RADIUS").getValue()))) {
+                        object.send(player);
                     }
-                } else if (params.contains("RADIUS") && params.get("RADIUS").getValue() != null) {
-                    sendError(sender, WRONG_WORLD);
-                    return;
-                } else {
-                    object.broadcast(world);
+                } catch(NumberFormatException e) {
+                    throw new TMCommandException(INVALID_RADIUS, params.get("RADIUS").getValue());
                 }
+            } else if (params.contains("RADIUS") && params.get("RADIUS").getValue() != null) {
+                throw new TMCommandException(WRONG_WORLD);
+            } else {
+                object.broadcast(world);
+            }
 
-                if (silent) return;
+            if (silent) return;
 
-                if (object instanceof IAnimation) {
-                    sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
+            if (object instanceof IAnimation) {
+                sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
+            } else {
+                final TitleObject title = (TitleObject) object;
+
+                if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
+                    sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_SUBTITLE, ((TitleObject) object).getTitle(), world.getName());
                 } else {
-                    final TitleObject title = (TitleObject) object;
-
-                    if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                        sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_SUBTITLE, ((TitleObject) object).getTitle(), world.getName());
-                    } else {
-                        sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_TITLE, ((TitleObject) object).getTitle(), world.getName());
-                    }
+                    sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_TITLE, ((TitleObject) object).getTitle(), world.getName());
                 }
             }
         } else if (params.contains("BUNGEE")) {
@@ -106,7 +99,7 @@ public final class SubBroadcast extends TMSubCommand {
                         }
                     }
                 } else {
-                    sendError(sender, INVALID_SERVER, params.get("BUNGEE").getValue());
+                    throw new TMCommandException(INVALID_SERVER, params.get("BUNGEE").getValue());
                 }
             } else {
                 server.sendMessage("TitleObject-Broadcast", json);
@@ -132,8 +125,7 @@ public final class SubBroadcast extends TMSubCommand {
                         object.send(player);
                     }
                 } catch(NumberFormatException e) {
-                    sendError(sender, INVALID_RADIUS, params.get("RADIUS").getValue());
-                    return;
+                    throw new TMCommandException(INVALID_RADIUS, params.get("RADIUS").getValue());
                 }
             } else {
                 object.broadcast();

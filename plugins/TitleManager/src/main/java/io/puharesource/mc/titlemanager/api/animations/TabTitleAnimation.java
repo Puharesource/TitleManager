@@ -1,14 +1,18 @@
 package io.puharesource.mc.titlemanager.api.animations;
 
-import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TabTitleObject;
+import io.puharesource.mc.titlemanager.api.iface.AnimationIterable;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
-import io.puharesource.mc.titlemanager.backend.engine.Engine;
+import lombok.val;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is the actionbar title animation.
@@ -19,21 +23,21 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
     private Object header;
     private Object footer;
 
-    public TabTitleAnimation(FrameSequence header, FrameSequence footer) {
+    public TabTitleAnimation(AnimationIterable header, AnimationIterable footer) {
         this((Object) header, (Object) footer);
     }
 
-    public TabTitleAnimation(FrameSequence header, String footer) {
+    public TabTitleAnimation(AnimationIterable header, String footer) {
         this((Object) header, (Object) footer);
     }
 
-    public TabTitleAnimation(String header, FrameSequence footer) {
+    public TabTitleAnimation(String header, AnimationIterable footer) {
         this((Object) header, (Object) footer);
     }
 
     public TabTitleAnimation(Object header, Object footer) {
-        if (header != null && !(header instanceof FrameSequence) && !(header instanceof String)) throw new IllegalArgumentException("The header must be a String or a FrameSequence!");
-        if (footer != null && !(footer instanceof FrameSequence) && !(footer instanceof String)) throw new IllegalArgumentException("The footer must be a String or a FrameSequence!");
+        if (header != null && !(header instanceof AnimationIterable) && !(header instanceof String)) throw new IllegalArgumentException("The header must be a String or implement AnimationIterable!");
+        if (footer != null && !(footer instanceof AnimationIterable) && !(footer instanceof String)) throw new IllegalArgumentException("The footer must be a String or implement AnimationIterable!");
         this.header = header;
         this.footer = footer;
     }
@@ -48,170 +52,48 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
 
     @Override
     public void broadcast() {
-        send(null);
+        for (val player : Bukkit.getOnlinePlayers()) {
+            send(player);
+        }
     }
 
     @Override
-    public void send(Player player) {
-        final Engine engine = TitleManager.getInstance().getEngine();
-
-        int times = 0;
-        if (header instanceof FrameSequence && footer instanceof FrameSequence) {
-            FrameSequence headerSequence = (FrameSequence) header;
-            FrameSequence footerSequence = (FrameSequence) footer;
-            MultiTask task = new MultiTask(headerSequence, footerSequence, player);
-            int id = engine.schedule(task, 0, 1);
-            task.setId(id);
-        } else if (header instanceof FrameSequence) {
-            for (AnimationFrame frame : ((FrameSequence) header).getFrames()) {
-                Task task = new Task(frame.getText(), (String) footer, player);
-                int id = engine.schedule(task, times, ((FrameSequence) header).getTotalTime());
-                task.setId(id);
-                times += frame.getTotalTime();
-            }
-        } else if (footer instanceof FrameSequence) {
-            for (AnimationFrame frame : ((FrameSequence) footer).getFrames()) {
-                Task task = new Task((String) header, frame.getText(), player);
-                int id = engine.schedule(task, times, ((FrameSequence) footer).getTotalTime());
-                task.setId(id);
-                times += frame.getTotalTime();
-            }
+    public void broadcast(World world) {
+        for (val player : world.getPlayers()) {
+            send(player);
         }
     }
 
-    private class Task implements Runnable {
-        private String header;
-        private String footer;
 
-        private UUID uuid;
-        private int id;
 
-        public Task(String header, String footer, UUID uuid) {
-            this.header = header;
-            this.footer = footer;
-            this.uuid = uuid;
-        }
-
-        public Task(String header, String footer, Player player) {
-            this(header, footer, player == null ? null : player.getUniqueId());
-        }
-
-        public Task(String title, TabTitleObject.Position position, UUID uuid) {
-            if (position == TabTitleObject.Position.HEADER)
-                header = title;
-            else footer = title;
-            this.uuid = uuid;
-        }
-
-        public Task(String title, TabTitleObject.Position position, Player player) {
-            this(title, position, player == null ? null : player.getUniqueId());
-        }
-
-        public void setId(int id) {
-            this.id = id;
-            TitleManager.addRunningAnimationId(id);
-        }
-
-        @Override
-        public void run() {
-            if (uuid == null) {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (header != null && footer == null)
-                        new TabTitleObject(header, TabTitleObject.Position.HEADER).send(player);
-                    else if (header == null && footer != null)
-                        new TabTitleObject(footer, TabTitleObject.Position.FOOTER).send(player);
-                    else new TabTitleObject(header, footer).send(player);
+    @Override
+    public void send(final Player player) {
+        if (header instanceof AnimationIterable) {
+            val animation = new EasyAnimation((AnimationIterable) header, player, new EasyAnimation.Updatable() {
+                @Override
+                public void run(final AnimationFrame frame) {
+                    new TabTitleObject(frame.getText(), TabTitleObject.Position.HEADER).send(player);
                 }
-            } else {
-                Player player = Bukkit.getPlayer(uuid);
-                if (player != null && player.isOnline()) {
-                    if (header != null && footer == null)
-                        new TabTitleObject(header, TabTitleObject.Position.HEADER).send(player);
-                    else if (header == null && footer != null)
-                        new TabTitleObject(footer, TabTitleObject.Position.FOOTER).send(player);
-                    else new TabTitleObject(header, footer).send(player);
-                } else {
-                    TitleManager.getInstance().getEngine().cancel(id);
-                    TitleManager.removeRunningAnimationId(id);
-                }
-            }
-        }
-    }
+            });
 
-    private class MultiTask implements Runnable {
-        private int i;
-        private int j;
-
-        private int id;
-
-        private int headerTimeLeft;
-        private int footerTimeLeft;
-
-        private AnimationFrame currentHeaderFrame;
-        private AnimationFrame currentFooterFrame;
-
-        private FrameSequence header;
-        private FrameSequence footer;
-        private UUID uuid;
-
-        public MultiTask(FrameSequence header, FrameSequence footer, UUID uuid) {
-            this.header = header;
-            this.footer = footer;
-            this.uuid = uuid;
+            animation.setContinuous(true);
+            animation.start();
+        } else {
+            new TabTitleObject((String) header, TabTitleObject.Position.HEADER).send(player);
         }
 
-        public MultiTask(FrameSequence header, FrameSequence footer, Player player) {
-            this(header, footer, player == null ? null : player.getUniqueId());
-        }
-
-        public void setId(int id) {
-            this.id = id;
-            TitleManager.addRunningAnimationId(id);
-        }
-
-        @Override
-        public void run() {
-            boolean headerChanged = false;
-            boolean footerChanged = false;
-
-            if (headerTimeLeft == 0 || footerTimeLeft == 0) {
-                if (headerTimeLeft == 0) {
-                    currentHeaderFrame = header.getFrames().get(i);
-                    headerTimeLeft = header.getFrames().get(i).getTotalTime();
-                    if (header.getFrames().size() - 1 == i)
-                        i = 0;
-                    else i++;
-                    headerChanged = true;
+        if (footer instanceof AnimationIterable) {
+            val animation = new EasyAnimation((AnimationIterable) footer, player, new EasyAnimation.Updatable() {
+                @Override
+                public void run(final AnimationFrame frame) {
+                    new TabTitleObject(frame.getText(), TabTitleObject.Position.FOOTER).send(player);
                 }
+            });
 
-                if (footerTimeLeft == 0) {
-                    currentFooterFrame = footer.getFrames().get(j);
-                    footerTimeLeft = footer.getFrames().get(j).getTotalTime();
-                    if (footer.getFrames().size() - 1 == j)
-                        j = 0;
-                    else j++;
-                    footerChanged = true;
-                }
-
-                if (uuid == null) {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        new TabTitleObject(currentHeaderFrame.getText(), currentFooterFrame.getText()).send(player);
-                    }
-                } else {
-                    Player player = Bukkit.getPlayer(uuid);
-                    if (player != null && player.isOnline()) {
-                        new TabTitleObject(currentHeaderFrame.getText(), currentFooterFrame.getText()).send(player);
-                    } else {
-                        TitleManager.getInstance().getEngine().cancel(id);
-                        TitleManager.removeRunningAnimationId(id);
-                    }
-                }
-            }
-
-            if (!headerChanged)
-                headerTimeLeft--;
-            if (!footerChanged)
-                footerTimeLeft--;
+            animation.setContinuous(true);
+            animation.start();
+        } else {
+            new TabTitleObject((String) footer, TabTitleObject.Position.HEADER).send(player);
         }
     }
 }

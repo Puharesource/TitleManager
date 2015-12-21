@@ -24,13 +24,8 @@ public final class ListenerWorldChange implements Listener {
             Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
                 @Override
                 public void run() {
-                    configManager.getWorldObject().send(player);
-                }
-            }, 10l);
-            Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
-                @Override
-                public void run() {
-                    configManager.getWorldActionbarObject().send(player);
+                    configManager.getWorldTitleMessage().send(player);
+                    configManager.getWorldActionbarTitleMessage().send(player);
                 }
             }, 10l);
         }

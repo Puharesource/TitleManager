@@ -1,23 +1,31 @@
-var isNumber;
+var app = require('app');
+var BrowserWindow = require('browser-window');
 
-isNumber = function(number) {
-    return !isNaN(parseFloat(number)) && isFinite(number);
-};
+require('crash-reporter').start();
+var mainWindow = null;
 
-Array.prototype.moveUp = function(i) {
-    var value = this[i], newPos = i - 1;
+app.on('window-all-closed', onClosed);
+app.on('ready', onReady);
 
-    this.splice(i, 1);
-    if(i === 0)
-        newPos = this.length;
-    this.splice(newPos, 0, value);
-};
+function onClosed() {
+  if (process.platform != 'darwin') {
+    app.quit();
+  }
+}
 
-Array.prototype.moveDown = function(i) {
-    var value = this[i], newPos = i + 1;
+function onReady() {
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    'node-integration': false,
+    icon: 'icon.jpg'
+  });
 
-    this.splice(i, 1);
-    if(i >= this.length)
-        newPos = 0;
-    this.splice(newPos, 0, value);
-};
+  mainWindow.loadUrl('file://' + __dirname + '/main.html');
+
+  mainWindow.openDevTools();
+
+  mainWindow.on('closed', function() {
+    mainWindow = null;
+  });
+}

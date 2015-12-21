@@ -10,7 +10,7 @@ javadoc {
 
 dependencies {
     provided group: 'net.milkbowl.vault', name: 'VaultAPI', version: '1.5'
-    provided group: 'net.ess3', name: 'Essentials', version: 'Pre2.14.1.3'
+    provided group: 'net.ess3', name: 'EssentialsX', version: '2.0.1-SNAPSHOT', transitive: false, ext: 'jar'
     provided group: 'org.kitteh', name: 'VanishNoPacket', version: '3.19.2-SNAPSHOT'
 
     provided files('../../libs/EZRanksLite.jar')

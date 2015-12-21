@@ -1,14 +1,14 @@
 package io.puharesource.mc.titlemanager.api.animations;
 
-import io.puharesource.mc.titlemanager.TitleManager;
-import io.puharesource.mc.titlemanager.api.TextConverter;
 import io.puharesource.mc.titlemanager.api.TitleObject;
+import io.puharesource.mc.titlemanager.api.iface.AnimationIterable;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
-import io.puharesource.mc.titlemanager.backend.engine.Engine;
 import io.puharesource.mc.titlemanager.backend.packet.TitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
+import lombok.val;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 /**
@@ -20,21 +20,21 @@ public class TitleAnimation implements IAnimation, ITitleObject {
     private Object title;
     private Object subtitle;
 
-    public TitleAnimation(FrameSequence title, FrameSequence subtitle) {
+    public TitleAnimation(AnimationIterable title, AnimationIterable subtitle) {
         this((Object) title, (Object) subtitle);
     }
 
-    public TitleAnimation(FrameSequence title, String subtitle) {
+    public TitleAnimation(AnimationIterable title, String subtitle) {
         this((Object) title, (Object) subtitle);
     }
 
-    public TitleAnimation(String title, FrameSequence subtitle) {
+    public TitleAnimation(String title, AnimationIterable subtitle) {
         this((Object) title, (Object) subtitle);
     }
 
     public TitleAnimation(Object title, Object subtitle) {
-        if (title != null && !(title instanceof FrameSequence) && !(title instanceof String)) throw new IllegalArgumentException("The title must be a String or a FrameSequence!");
-        if (subtitle != null && !(subtitle instanceof FrameSequence) && !(subtitle instanceof String)) throw new IllegalArgumentException("The subtitle must be a String or a FrameSequence!");
+        if (title != null && !(title instanceof AnimationIterable) && !(title instanceof String)) throw new IllegalArgumentException("The title must be a String or implement AnimationIterable!");
+        if (subtitle != null && !(subtitle instanceof AnimationIterable) && !(subtitle instanceof String)) throw new IllegalArgumentException("The subtitle must be a String or implement AnimationIterable!");
         this.title = title;
         this.subtitle = subtitle;
     }
@@ -49,69 +49,62 @@ public class TitleAnimation implements IAnimation, ITitleObject {
 
     @Override
     public void broadcast() {
-        send(null);
+        for (val player : Bukkit.getOnlinePlayers()) {
+            send(player);
+        }
     }
 
     @Override
-    public void send(Player player) {
-        final Engine engine = TitleManager.getInstance().getEngine();
-
-        int times = 0;
-        if (title instanceof FrameSequence && subtitle instanceof FrameSequence) {
-            for (AnimationFrame frame : ((FrameSequence) title).getFrames()) {
-                engine.schedule(new Task(false, frame, player), times);
-                times += frame.getTotalTime();
-            }
-            times = 0;
-            for (AnimationFrame frame : ((FrameSequence) subtitle).getFrames()) {
-                engine.schedule(new Task(true, frame, player), times);
-                times += frame.getTotalTime();
-            }
-        } else if (title instanceof FrameSequence) {
-            for (AnimationFrame frame : ((FrameSequence) title).getFrames()) {
-                engine.schedule(new Task(false, frame, player), times);
-                times += frame.getTotalTime();
-            }
-            FrameSequence sequence = (FrameSequence) title;
-            engine.schedule(new Task(true, new AnimationFrame((String) subtitle, sequence.getFadeIn(), sequence.getStay(), sequence.getFadeOut()), player), 0);
-        } else if (subtitle instanceof FrameSequence) {
-            for (AnimationFrame frame : ((FrameSequence) subtitle).getFrames()) {
-                engine.schedule(new Task(true, frame, player), times);
-                times += frame.getTotalTime();
-            }
-            FrameSequence sequence = (FrameSequence) subtitle;
-            engine.schedule(new Task(false, new AnimationFrame((String) title, sequence.getFadeIn(), sequence.getStay(), sequence.getFadeOut()), player), 0);
+    public void broadcast(World world) {
+        for (val player : world.getPlayers()) {
+            send(player);
         }
     }
 
-    private class Task implements Runnable {
+    @Override
+    public void send(final Player player) {
+        if (title instanceof AnimationIterable) {
+            final EasyAnimation animation = new EasyAnimation((AnimationIterable) title, player, new EasyAnimation.Updatable() {
+                @Override
+                public void run(final AnimationFrame frame) {
+                    new TitleObject(frame.getText(), TitleObject.TitleType.TITLE).setFadeIn(frame.getFadeIn()).setStay(frame.getStay() + 1).setFadeOut(frame.getFadeOut()).send(player);
+                }
+            });
 
-        private boolean isSubtitle;
-        private AnimationFrame frame;
-        private Player player;
-
-        public Task(boolean isSubtitle, AnimationFrame frame, Player player) {
-            this.isSubtitle = isSubtitle;
-            this.frame = frame;
-            this.player = player;
-        }
-
-        @Override
-        public void run() {
-            if (player == null) {
-                for (Player p : Bukkit.getServer().getOnlinePlayers())
-                    send(p, frame);
-            } else send(player, frame);
-        }
-
-        private void send(Player p, AnimationFrame frame) {
-            if (p != null) {
-                TMPlayer tmPlayer = new TMPlayer(p);
-
-                tmPlayer.sendPacket(new TitlePacket(frame.getFadeIn(), frame.getStay() + 1, frame.getFadeOut()));
-
-                tmPlayer.sendPacket(new TitlePacket(isSubtitle ? TitleObject.TitleType.SUBTITLE : TitleObject.TitleType.TITLE, TextConverter.setVariables(p, frame.getText())));
+            if (!(subtitle instanceof AnimationIterable)) {
+                animation.onStop(new Runnable() {
+                    @Override
+                    public void run() {
+                        new TitleObject(" ", TitleObject.TitleType.SUBTITLE).setFadeIn(20).setStay(40).setFadeOut(20).send(player);
+                    }
+                });
             }
+
+            animation.start();
+        } else {
+            new TMPlayer(player).sendPacket(new TitlePacket(TitleObject.TitleType.TITLE, (String) title, 0, Integer.MAX_VALUE, 0));
+        }
+
+        if (subtitle instanceof AnimationIterable) {
+            final EasyAnimation animation = new EasyAnimation((AnimationIterable) subtitle, player, new EasyAnimation.Updatable() {
+                @Override
+                public void run(final AnimationFrame frame) {
+                    new TitleObject(frame.getText(), TitleObject.TitleType.SUBTITLE).setFadeIn(frame.getFadeIn()).setStay(frame.getStay() + 1).setFadeOut(frame.getFadeOut()).send(player);
+                }
+            });
+
+            if (!(title instanceof AnimationIterable)) {
+                animation.onStop(new Runnable() {
+                    @Override
+                    public void run() {
+                        new TitleObject(" ", TitleObject.TitleType.TITLE).setFadeIn(20).setStay(40).setFadeOut(20).send(player);
+                    }
+                });
+            }
+
+            animation.start();
+        } else {
+            new TMPlayer(player).sendPacket(new TitlePacket(TitleObject.TitleType.SUBTITLE, (String) subtitle, 0, Integer.MAX_VALUE, 0));
         }
     }
 }

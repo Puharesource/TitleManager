@@ -4,14 +4,13 @@ package io.puharesource.mc.titlemanager.api.animations;
  * This is a frame used in every type of animation.
  */
 public class AnimationFrame {
-
     private String text;
 
     private int fadeIn = -1;
     private int stay = -1;
     private int fadeOut = -1;
 
-    public AnimationFrame(String text, int fadeIn, int stay, int fadeOut) {
+    public AnimationFrame(final String text, int fadeIn, int stay, int fadeOut) {
         setText(text);
         this.fadeIn = fadeIn;
         this.stay = stay;
@@ -22,7 +21,7 @@ public class AnimationFrame {
         return text;
     }
 
-    public void setText(String text) {
+    public void setText(final String text) {
         this.text = text;
     }
 
@@ -30,7 +29,7 @@ public class AnimationFrame {
         return fadeIn;
     }
 
-    public void setFadeIn(int fadeIn) {
+    public void setFadeIn(final int fadeIn) {
         this.fadeIn = fadeIn;
     }
 
@@ -38,7 +37,7 @@ public class AnimationFrame {
         return stay;
     }
 
-    public void setStay(int stay) {
+    public void setStay(final int stay) {
         this.stay = stay;
     }
 
@@ -46,7 +45,7 @@ public class AnimationFrame {
         return fadeOut;
     }
 
-    public void setFadeOut(int fadeOut) {
+    public void setFadeOut(final int fadeOut) {
         this.fadeOut = fadeOut;
     }
 

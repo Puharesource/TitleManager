@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <title>TitleManager Generator</title>
+
+    <link href="bower_components/semantic/dist/semantic.css" rel="stylesheet">
+    <link href="bower_components/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="mc-font.css" rel="stylesheet">
+
+    <script src="bower_components/react/react.js"></script>
+    <script src="bower_components/react/react-with-addons.js"></script>
+    <script src="bower_components/react/JSXTransformer.js"></script>
+  </head>
+  <body style="background-color: #242424">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/semantic/dist/semantic.js"></script>
+    <script src="titlemanager_components.jsx" type="text/jsx"></script>
+
+    <!-- Live Preview
+    ------------------------------------------------------->
+    <div class="ui center aligned segment mc-font mc-colors" id="real-time-display" style="border-bottom-style: solid; border-width: 3px; border-color: black; font-size: 24px; min-height: 65px; height: 65px; max-height: 65px; margin-top: 0; margin-bottom: 0; background-color: #262626">
+      Not running!
+    </div>
+
+    <!-- Start/Stop/Restart Buttons
+    ------------------------------------------------------->
+    <div class="center aligned ui grid" style="margin-top: 0;">
+      <div class="sixteen wide center aligned ui buttons">
+        <button class="ui green animated fade button" onclick="startEngine()" id="start-engine"}>
+          <div class="hidden content">Play</div>
+          <div class="visible content">
+            <i class="play icon"></i>
+          </div>
+        </button>
+        <button class="ui red animated fade button" onclick="stopEngine()" id="stop-engine">
+          <div class="hidden content">Stop</div>
+          <div class="visible content">
+            <i class="stop icon"></i>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Error Messages
+    ------------------------------------------------------->
+    <div id="error-popup"></div>
+
+    <h4 class="ui horizontal inverted divider header">
+      <i class="list layout icon"></i>
+      Frames
+    </h4>
+
+    <div class="ui container">
+      <div id="frames"></div>
+    </div>
+
+    <script type="text/jsx">
+    React.render(
+      <AnimationFrame i="0" text="Swag" />,
+      document.getElementById('frames')
+    );
+    </script>
+
+    <div class="ui sticky inverted menu">
+      <div class="item">
+        <div class="ui input" style="width: 60px">
+          <input type="number" placeholder="Ticks" id="fade-in" value="1">
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="ui input" style="width: 60px">
+          <input type="number" placeholder="Ticks" id="stay" value="2">
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="ui input" style="width: 60px">
+          <input type="number" placeholder="Ticks" id="fade-out" value="1">
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="ui input">
+          <input type="text" placeholder="Frame text">
+        </div>
+      </div>
+
+      <div id="text-preview" class="item mc-font mc-colors">Test</div>
+
+      <div class="right item">
+        <div class="ui icon green button"><i class="plus icon"></i></div>
+      </div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="mc-colors.js"></script>
+    <script src="animations.js"></script>
+  </body>
+</html>

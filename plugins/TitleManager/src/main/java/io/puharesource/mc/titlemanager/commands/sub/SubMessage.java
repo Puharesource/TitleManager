@@ -7,6 +7,7 @@ import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
+import io.puharesource.mc.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import lombok.val;
 import org.bukkit.command.CommandSender;
@@ -20,7 +21,7 @@ public final class SubMessage extends TMSubCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args, final CommandParameters params) {
+    public void onCommand(CommandSender sender, String[] args, final CommandParameters params) throws TMCommandException {
         if (args.length < 2) {
             syntaxError(sender);
             return;
@@ -59,7 +60,7 @@ public final class SubMessage extends TMSubCommand {
                         }
                     }
                 } else {
-                    sendError(sender, INVALID_SERVER, params.get("BUNGEE").getValue());
+                    throw new TMCommandException(INVALID_SERVER, params.get("BUNGEE").getValue());
                 }
             } else {
                 server.sendMessage("TitleObject-Message", json, playerName);

@@ -9,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class RegisteredVariable {
-
     private final Method method;
     private @Getter final Variable variable;
     private @Getter final int replacer;

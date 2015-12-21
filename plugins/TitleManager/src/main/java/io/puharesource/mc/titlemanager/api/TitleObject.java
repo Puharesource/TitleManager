@@ -34,6 +34,8 @@ public class TitleObject implements ITitleObject {
             setTitle(title);
         else if (type == TitleType.SUBTITLE)
             setSubtitle(title);
+        else
+            setTitle(title);
         updateTimes();
     }
 

@@ -67,11 +67,11 @@ createColoredSpan = function(text, color, format) {
 
     item.classList.add('mc-format');
 
-    if (color != null) {
+    if (color !== null) {
         item.classList.add(color);
     }
 
-    if (format.length != 0) {
+    if (format.length !== 0) {
         for (var i = 0; format.length > i; i++) {
             item.classList.add(format[i]);
         }
@@ -110,14 +110,14 @@ getFormattedTextAt = function(text, from, to) {
             var color = mcColors[c + text.charAt(i + 1)];
             var format = mcFormats[c + text.charAt(i + 1)];
 
-            if (color != null || format != null) {
+            if (color !== null || format !== null) {
                 i++;
                 realIndex--;
             }
 
-            if ((color == null && format == null) && (!split || (realIndex >= from && realIndex <= to))) {
+            if ((color === null && format === null) && (!split || (realIndex >= from && realIndex <= to))) {
                 currentText += c;
-            } else if (color != null || format === 'mc-format-r') {
+            } else if (color !== null || format === 'mc-format-r') {
                 itemList.push(createColoredSpan(currentText, currentColor, currentFormats));
                 if (format === 'mc-format-r') {
                     itemList.push(createColoredSpan('', null, 'mc-format-r'));
@@ -125,7 +125,7 @@ getFormattedTextAt = function(text, from, to) {
                 currentColor = color;
                 currentFormats = [];
                 currentText = "";
-            } else if (format != null) {
+            } else if (format !== null) {
                 itemList.push(createColoredSpan(currentText, currentColor, currentFormats));
                 currentFormats.push(format);
                 currentText = "";
@@ -159,12 +159,12 @@ getPlainText = function(itemList) {
             color = mcColorsBackwards[clazz];
             var format = mcFormatsBackwards[clazz];
 
-            if (format != null) {
+            if (format !== null) {
                 formats.push(format);
             }
         }
 
-        if (color != null) {
+        if (color !== null) {
             text += color;
         }
 

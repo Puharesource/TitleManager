@@ -5,10 +5,7 @@ import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class TMSubCommand {
 
@@ -26,17 +23,15 @@ public abstract class TMSubCommand {
         this.usage = usage.getMessage();
         this.description = description.getMessage();
         this.aliases = aliases;
-        this.supportedParameters = new HashSet<>();
+        this.supportedParameters = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
         if (this.getClass().isAnnotationPresent(ParameterSupport.class)) {
             ParameterSupport parameterSupport = this.getClass().getAnnotation(ParameterSupport.class);
-
-            for (String param : parameterSupport.supportedParams())
-                supportedParameters.add(param.toUpperCase().trim());
+            Collections.addAll(supportedParameters, parameterSupport.supportedParams());
         }
     }
 
-    public abstract void onCommand(final CommandSender sender, final String[] args, final CommandParameters params);
+    public abstract void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) throws TMCommandException;
 
     public void syntaxError(final CommandSender sender) {
         sender.sendMessage(ChatColor.RED + "Wrong usage! Correct usage:");

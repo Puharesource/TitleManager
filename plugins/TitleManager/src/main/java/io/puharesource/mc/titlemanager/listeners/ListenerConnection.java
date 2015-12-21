@@ -3,12 +3,10 @@ package io.puharesource.mc.titlemanager.listeners;
 import io.puharesource.mc.titlemanager.Config;
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TabTitleCache;
-import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import io.puharesource.mc.titlemanager.backend.language.Messages;
 import io.puharesource.mc.titlemanager.backend.updatechecker.UpdateManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -47,13 +45,12 @@ public final class ListenerConnection implements Listener {
             Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
                 @Override
                 public void run() {
-                    (player.hasPlayedBefore() ? configManager.getWelcomeObject() : configManager.getFirstWelcomeObject()).send(player);
+                    configManager.getTitleWelcomeMessage(!player.hasPlayedBefore()).send(player);
                 }
-            }, 10l);
+            }, 10);
         }
 
-
-        if (config.tabmenuEnabled && !(configManager.getTabTitleObject() instanceof IAnimation)) {
+        if (config.tabmenuEnabled) {
             Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
                 @Override
                 public void run() {
@@ -66,7 +63,7 @@ public final class ListenerConnection implements Listener {
             Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
                 @Override
                 public void run() {
-                    (player.hasPlayedBefore() ? configManager.getActionbarWelcomeObject() : configManager.getActionbarFirstWelcomeObject()).send(player);
+                    configManager.getActionbarWelcomeMessage(!player.hasPlayedBefore()).send(player);
                 }
             }, 10l);
         }

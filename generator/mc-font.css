@@ -1,7 +1,7 @@
 @font-face {
 	font-family: 'minecraftfont';
-	src: url('/static/fonts/minecraftfont.eot');
-	src: local('minecraftfont'), url('/static/fonts/minecraftfont.woff') format('woff'), url('/static/fonts/minecraftfont.ttf') format('truetype');
+	src: url('fonts/minecraftfont.eot');
+	src: local('minecraftfont'), url('fonts/minecraftfont.woff') format('woff'), url('fonts/minecraftfont.ttf') format('truetype');
 }
 
 .mc-font {
@@ -9,8 +9,8 @@
 }
 
 .mc-colors {
-	background-color: #262626;
 	color: white;
+	background-color: #262626;
 }
 
 .mc-format {

@@ -42,8 +42,8 @@ subprojects {
         }
 
         maven {
-            name 'ess-repo'
-            url 'http://repo.ess3.net/content/groups/essentials'
+            name 'drtshock'
+            url 'http://ci.drtshock.net/plugin/repository/everything/'
         }
 
         maven {
@@ -53,7 +53,7 @@ subprojects {
     }
 
     dependencies {
-        provided group: 'org.projectlombok', name: 'lombok', version: '1.16.2'
+        provided group: 'org.projectlombok', name: 'lombok', version: '1.16.6'
         provided group: 'org.bukkit', name: 'bukkit', version: '1.8.8-R0.1-SNAPSHOT'
     }
 

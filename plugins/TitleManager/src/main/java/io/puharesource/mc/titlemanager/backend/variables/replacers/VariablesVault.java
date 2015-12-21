@@ -7,7 +7,6 @@ import io.puharesource.mc.titlemanager.api.variables.VariableReplacer;
 import org.bukkit.entity.Player;
 
 public final class VariablesVault implements VariableReplacer {
-
     @Variable(hook = "VAULT", rule = "VAULT-GROUPS", vars = {"GROUP", "GROUP-NAME"})
     public String groupVar(Player player) { return VaultHook.getPermissions().getPrimaryGroup(player); }
 

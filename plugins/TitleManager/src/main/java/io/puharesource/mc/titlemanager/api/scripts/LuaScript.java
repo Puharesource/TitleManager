@@ -1,10 +1,12 @@
 package io.puharesource.mc.titlemanager.api.scripts;
 
-import io.puharesource.mc.titlemanager.api.animations.LuaScriptAnimationConverter;
+import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
 import io.puharesource.mc.titlemanager.api.iface.Script;
-import io.puharesource.mc.titlemanager.api.iface.ScriptConverter;
 import lombok.Data;
+import org.bukkit.entity.Player;
 import org.luaj.vm2.LuaValue;
+
+import java.util.Iterator;
 
 @Data
 public class LuaScript implements Script {
@@ -26,7 +28,7 @@ public class LuaScript implements Script {
     }
 
     @Override
-    public ScriptConverter getConverter() {
-        return new LuaScriptAnimationConverter(value);
+    public Iterator<AnimationFrame> getIterator(final String originalString, final Player player) {
+        return new LuaScriptIterator(value, originalString, player);
     }
 }

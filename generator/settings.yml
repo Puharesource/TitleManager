@@ -1,0 +1,210 @@
+version: 3.2.7
+platform: Bukkit
+clear:
+  'on':
+    ban: false
+  auto:
+    calibration:
+      variety: 0
+      changes_sd: 1
+      faces: 0
+      data_sd: 0
+      air: 0
+      air_sd: 0
+      faces_sd: 0
+      data: 0
+      variety_sd: 0
+      changes: 1
+    days: 100
+    clear-interval-seconds: 120
+    threshold: 1
+    enabled: false
+  fastmode: true
+confirmation:
+  clear: true
+  delete: true
+  unlink: true
+UUID:
+  offline: false
+  force-lowercase: false
+cache:
+  permissions: false
+  ratings: true
+chunk-processor:
+  auto-trim: false
+  auto-unload: false
+  enabled: false
+  max-blockstates: 4096
+  experimental-fast-async-worldedit: true
+  max-entities: 512
+  disable-physics: false
+worldedit:
+  require-selection-in-mask: true
+  max-volume: 500000
+  enable-for-helpers: false
+  queue-commands: false
+  max-iterations: 1000
+  blacklist:
+  - cs
+  - .s
+  - restore
+  - snapshot
+  - delchunks
+  - listchunks
+schematics:
+  save_path: plugins/PlotSquared/schematics
+web:
+  url: https://mineactivity.com/
+  server-ip: freebuild.mineactivity.com
+approval:
+  done:
+    required-for-download: false
+    restrict-building: false
+    counts-towards-limit: false
+  ratings:
+    require-done: false
+chat:
+  fancy: true
+console:
+  color: true
+kill_road_mobs: false
+mob_pathfinding: true
+plotme-alias: true
+plotme-convert:
+  enabled: false
+  cache-uuids: false
+global_limit: false
+update-notifications: true
+metrics: true
+comments:
+  notifications:
+    enabled: false
+protection:
+  redstone:
+    disable-unoccupied: false
+    disable-offline: false
+  tnt-listener:
+    enabled: false
+  piston:
+    falling-blocks: true
+teleport:
+  on_login: false
+  delay: 0
+claim:
+  max-auto-area: 4
+uuid:
+  use_sqluuidhandler: false
+  read-from-disk: false
+max_plots: 127
+bo3:
+  save_path: BO3
+kill_road_vehicles: true
+debug: true
+clusters:
+  enabled: false
+titles: false
+worlds:
+  Plots:
+    road:
+      width: 7
+      height: 64
+      block: '159:9'
+    plot:
+      size: 57
+      floor:
+      - 2
+      filling:
+      - 3
+      height: 64
+      biome: FOREST
+      auto_merge: true
+      bedrock: true
+      create_signs: true
+    wall:
+      filling: '1:0'
+      block_claimed: '44:7'
+      height: 64
+      block: '44:7'
+    event:
+      pve: false
+      pvp: false
+      spawn:
+        egg: false
+        breeding: false
+        custom: true
+    home:
+      default: side
+      allow-nonmembers: false
+    schematic:
+      specify_on_claim: false
+      on_claim: false
+      file: 'null'
+    economy:
+      prices:
+        merge: 100.0
+        sell: 75.0
+        claim: 100.0
+      use: false
+    chat:
+      enabled: false
+    limits:
+      max-members: 128
+    world:
+      max_height: 256
+      gamemode: creative
+      min_height: 1
+      border: false
+    natural_mob_spawning: false
+    flags: {}
+  BigPlots:
+    road:
+      width: 7
+      height: 64
+      block: '155:0'
+    plot:
+      size: 157
+      floor:
+      - 2
+      filling:
+      - 3
+      height: 64
+      biome: FOREST
+      auto_merge: false
+      bedrock: true
+      create_signs: true
+    wall:
+      filling: '1:0'
+      block_claimed: '44:7'
+      height: 64
+      block: '44:7'
+    event:
+      pve: false
+      pvp: false
+      spawn:
+        egg: false
+        breeding: false
+        custom: true
+    home:
+      default: side
+      allow-nonmembers: false
+    schematic:
+      specify_on_claim: false
+      on_claim: false
+      file: 'null'
+    economy:
+      prices:
+        merge: 100.0
+        sell: 75.0
+        claim: 100.0
+      use: false
+    chat:
+      enabled: false
+    limits:
+      max-members: 128
+    world:
+      max_height: 256
+      gamemode: creative
+      min_height: 1
+      border: false
+    natural_mob_spawning: false
+    flags: {}

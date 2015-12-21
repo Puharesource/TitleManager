@@ -9,28 +9,28 @@ import org.bukkit.command.*;
 import java.util.*;
 
 public final class TMCommand implements CommandExecutor, TabCompleter {
-
-    private Map<String, TMSubCommand> commands = new HashMap<>();
+    private final Map<String, TMSubCommand> commands = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public TMCommand() {
-        PluginCommand cmd = TitleManager.getInstance().getCommand("tm");
+        val cmd = TitleManager.getInstance().getCommand("tm");
+
         cmd.setExecutor(this);
         cmd.setTabCompleter(this);
     }
 
-    public void addSubCommand(TMSubCommand cmd) {
-        commands.put(cmd.getAlias().toUpperCase(), cmd);
+    public void addSubCommand(final TMSubCommand cmd) {
+        commands.put(cmd.getAlias(), cmd);
         for (String alias : cmd.getAliases())
-            commands.put(alias.toUpperCase(), cmd);
+            commands.put(alias, cmd);
     }
 
     private void syntaxError(CommandSender sender) {
         sender.sendMessage(ChatColor.RED + Messages.COMMAND_WRONG_USAGE.getMessage());
-        List<String> aliases = new ArrayList<>();
+        final Set<String> aliases = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         for (TMSubCommand cmd : commands.values()) {
-            if (aliases.contains(cmd.getAlias().toUpperCase())) continue;
-            sender.sendMessage(String.format(ChatColor.RED + Messages.COMMAND_WRONG_USAGE_TRAIL.getMessage(), "/tm " + cmd.getAlias(), cmd.getUsage() + ChatColor.GRAY + (cmd.getUsage().isEmpty() ? "- " : " - ") + cmd.getDescription()));
-            aliases.add(cmd.getAlias().toUpperCase());
+            if (aliases.contains(cmd.getAlias())) continue;
+            sender.sendMessage(String.format(ChatColor.RED + Messages.COMMAND_WRONG_USAGE_TRAIL.getMessage(), "tm " + cmd.getAlias(), cmd.getUsage() + ChatColor.GRAY + (cmd.getUsage().isEmpty() ? "- " : " - ") + cmd.getDescription()));
+            aliases.add(cmd.getAlias());
         }
     }
 
@@ -38,12 +38,16 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!cmd.getName().equalsIgnoreCase("tm")) return false;
         if (args.length >= 1) {
-            TMSubCommand subCommand = commands.get(args[0].toUpperCase());
+            final TMSubCommand subCommand = commands.get(args[0]);
             if (subCommand != null)
                 if (sender.hasPermission(subCommand.getNode())) {
                     String[] subArgs = Arrays.copyOfRange(args, 1, args.length);
                     val parameters = getParameters(subCommand, subArgs);
-                    subCommand.onCommand(sender, Arrays.copyOfRange(subArgs, parameters.getParams().size(), subArgs.length), parameters);
+                    try {
+                        subCommand.onCommand(sender, Arrays.copyOfRange(subArgs, parameters.getParams().size(), subArgs.length), parameters);
+                    } catch (TMCommandException e) {
+                        sender.sendMessage(e.getMessage());
+                    }
                 } else sender.sendMessage(ChatColor.RED + Messages.COMMAND_NO_PERMISSION.getMessage());
             else syntaxError(sender);
         } else syntaxError(sender);
@@ -77,15 +81,14 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
 
             if (fullParameter.contains("=")) {
                 String[] paramValues = fullParameter.split("=", 2);
-                String param = paramValues[0].toUpperCase();
+                String param = paramValues[0];
 
                 if (supportedParameters.contains(param)) {
                     parameters.put(param, new CommandParameter(param, paramValues[1]));
                 } else break;
             } else {
-                String param = fullParameter.toUpperCase();
-                if (supportedParameters.contains(param)) {
-                    parameters.put(param, new CommandParameter(param, null));
+                if (supportedParameters.contains(fullParameter)) {
+                    parameters.put(fullParameter, new CommandParameter(fullParameter, null));
                 } else break;
             }
         }

@@ -17,8 +17,8 @@ public final class VariableManager {
     private final Map<Integer, VariableReplacer> replacers = new HashMap<>();
     private final List<RegisteredVariable> variables = Collections.synchronizedList(new ArrayList<RegisteredVariable>());
 
-    private Map<String, PluginHook> hooks = new HashMap<>();
-    private Map<String, VariableRule> rules = new HashMap<>();
+    private Map<String, PluginHook> hooks = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private Map<String, VariableRule> rules = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     private void registerMethod(final Method method, int replacer, final Variable variable) {
         variables.add(new RegisteredVariable(method, variable, replacer));
@@ -48,19 +48,19 @@ public final class VariableManager {
     }
 
     public void registerHook(final String name, final PluginHook hook) {
-        hooks.put(name.toUpperCase().trim(), hook);
+        hooks.put(name, hook);
     }
 
     public void registerRule(final String name, final VariableRule rule) {
-        rules.put(name.toUpperCase().trim(), rule);
+        rules.put(name, rule);
     }
 
     public PluginHook getHook(final String name) {
-        return hooks.get(name.toUpperCase().trim());
+        return hooks.get(name);
     }
 
     public VariableRule getRule(final String name) {
-        return rules.get(name.toUpperCase().trim());
+        return rules.get(name);
     }
 
     private Pattern getVariablePattern(final String var) {
@@ -71,13 +71,13 @@ public final class VariableManager {
         for (RegisteredVariable variable : variables) {
             String hookString = variable.getVariable().hook();
             if (!hookString.isEmpty()) {
-                PluginHook hook = hooks.get(hookString.toUpperCase().trim());
+                PluginHook hook = hooks.get(hookString);
                 if (hook != null && !hook.isEnabled()) continue;
             }
 
             String ruleString = variable.getVariable().rule();
             if (!ruleString.isEmpty()) {
-                VariableRule rule = rules.get(ruleString.toUpperCase().trim());
+                VariableRule rule = rules.get(ruleString);
                 if (rule != null && !rule.rule(player)) continue;
             }
 

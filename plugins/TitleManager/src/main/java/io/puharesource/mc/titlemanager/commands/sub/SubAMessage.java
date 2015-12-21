@@ -6,6 +6,7 @@ import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
+import io.puharesource.mc.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import lombok.val;
 import org.bukkit.ChatColor;
@@ -20,7 +21,7 @@ public final class SubAMessage extends TMSubCommand {
     }
 
     @Override
-    public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) {
+    public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) throws TMCommandException {
         if (args.length < 2) {
             syntaxError(sender);
             return;
@@ -45,7 +46,7 @@ public final class SubAMessage extends TMSubCommand {
                         sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS_ANIMATION, playerName);
                     else sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS, playerName, ((ActionbarTitleObject) object).getTitle());
                 } else {
-                    sendError(sender, INVALID_SERVER, params.get("BUNGEE").getValue());
+                    throw new TMCommandException(INVALID_SERVER, params.get("BUNGEE").getValue());
                 }
             } else {
                 server.sendMessage("ActionbarTitle-Message", json, playerName);
@@ -58,10 +59,7 @@ public final class SubAMessage extends TMSubCommand {
             }
         } else {
             val player = MiscellaneousUtils.getPlayer(args[0]);
-            if (player == null) {
-                sendError(sender, INVALID_PLAYER, args[0]);
-                return;
-            }
+            if (player == null) throw new TMCommandException(INVALID_PLAYER, args[0]);
 
             object.send(player);
 

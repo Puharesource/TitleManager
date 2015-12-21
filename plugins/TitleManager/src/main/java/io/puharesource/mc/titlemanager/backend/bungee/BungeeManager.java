@@ -21,12 +21,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public final class BungeeManager implements PluginMessageListener {
-    private final Map<String, BungeeServerInfo> servers = new ConcurrentHashMap<>();
+    private final Map<String, BungeeServerInfo> servers = new ConcurrentSkipListMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(TitleObject.class, new TitleObjectAdapter())
             .registerTypeAdapter(ActionbarTitleObject.class, new ActionbarTitleAdapter())
@@ -120,34 +120,32 @@ public final class BungeeManager implements PluginMessageListener {
                 break;
             }
             case "GetServers": {
-                final Map<String, String> newServers = new HashMap<>();
-                for (String newServer : in.readUTF().split(", ")) {
-                    newServers.put(newServer.toUpperCase().trim(), newServer);
-                }
+                final Set<String> newServers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+                Collections.addAll(newServers, in.readUTF().split(", "));
 
                 for (final String server : servers.keySet()) {
-                    if (!newServers.containsKey(server.toUpperCase().trim())) {
-                        servers.remove(server.toUpperCase().trim());
+                    if (!newServers.contains(server)) {
+                        servers.remove(server);
                     }
                 }
 
-                for (final Map.Entry<String, String> server : newServers.entrySet()) {
-                    if (!servers.containsKey(server.getKey())) {
-                        servers.put(server.getKey(), new BungeeServerInfo(server.getValue()));
+                for (final String server : newServers) {
+                    if (!servers.containsKey(server)) {
+                        servers.put(server, new BungeeServerInfo(server));
                     }
 
-                    servers.get(server.getKey()).update();
+                    servers.get(server).update();
                 }
                 break;
             }
             case "GetServer": {
                 final String server = in.readUTF();
                 currentServer = server;
-                if (!servers.containsKey(server.toUpperCase().trim())) {
-                    servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
+                if (!servers.containsKey(server)) {
+                    servers.put(server, new BungeeServerInfo(server));
                 }
 
-                final BungeeServerInfo info = servers.get(server.toUpperCase().trim());
+                final BungeeServerInfo info = servers.get(server);
                 info.setMaxPlayers(Bukkit.getMaxPlayers());
                 info.setPlayerCount(Bukkit.getOnlinePlayers().size());
 
@@ -167,11 +165,11 @@ public final class BungeeManager implements PluginMessageListener {
                 final String server = in.readUTF();
                 final int playerCount = in.readInt();
 
-                if (!servers.containsKey(server.toUpperCase().trim())) {
-                    servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
+                if (!servers.containsKey(server)) {
+                    servers.put(server, new BungeeServerInfo(server));
                 }
 
-                servers.get(server.toUpperCase().trim()).setPlayerCount(playerCount);
+                servers.get(server).setPlayerCount(playerCount);
 
                 int onlinePlayers = 0;
                 if (servers.containsKey("ALL")) {
@@ -276,7 +274,7 @@ public final class BungeeManager implements PluginMessageListener {
     }
 
     public BungeeServerInfo getCurrentServer() {
-        return currentServer == null ? null : servers.get(currentServer.toUpperCase().trim());
+        return currentServer == null ? null : servers.get(currentServer);
     }
 
     public Gson getGson() {

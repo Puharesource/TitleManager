@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 
 public class ConfigFile {
@@ -17,7 +18,9 @@ public class ConfigFile {
     private @Getter FileConfiguration config;
     private boolean locatedInJar;
 
-    public ConfigFile(JavaPlugin plugin, File path, String fileName, boolean locatedInJar) {
+    private InputStream stream;
+
+    public ConfigFile(final JavaPlugin plugin, final File path, final String fileName, final boolean locatedInJar) {
         this.plugin = plugin;
         this.path = path;
         this.fileName = fileName + ".yml";
@@ -27,7 +30,18 @@ public class ConfigFile {
         reload();
     }
 
+    public ConfigFile(final InputStream stream) {
+        this.stream = stream;
+
+        reload();
+    }
+
     public void reload() {
+        if (stream != null) {
+            config = YamlConfiguration.loadConfiguration(stream);
+            return;
+        }
+
         if (!path.exists()) path.mkdirs();
 
         try {
@@ -39,10 +53,6 @@ public class ConfigFile {
             e.printStackTrace();
         }
         config = YamlConfiguration.loadConfiguration(file);
-
-        if (locatedInJar) {
-            config.addDefaults(YamlConfiguration.loadConfiguration(plugin.getResource(fileName)).getDefaults());
-        }
     }
 
     public void save() {

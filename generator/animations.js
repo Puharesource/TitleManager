@@ -1,10 +1,3 @@
-
-/**
- * TitleManager Generator By Tarkan Nielsen.
- * I am by no means a JavaScripts developer, I just made this script to help others.
- **/
-
-/* All of the functions */
 var createFrame, addLine, generateConfig, errorPopup, marqueeGenerator, textTypeGenerator, wordTypeGenerator, colorTypeGenerator, setDisplay, setAdditionType,
     addLines, addRows, generateText, startEngine, stopEngine, engineTick, engineLoop, deleteRow, clearRows, createRow, getFadeIn, getStay, getFadeOut, stay, editFrame;
 
@@ -76,7 +69,7 @@ editFrame = function(i) {
     lines[i] = createFrame(text, fadeIn, stay, fadeOut);
     addRows();
 
-    $('#animation-frame-modal-' + i).modal('hide')
+    $('#animation-frame-modal-' + i).modal('hide');
 };
 
 /**
@@ -84,7 +77,7 @@ editFrame = function(i) {
  * @param line (string) = The line that will be added onto the output area.
  */
 addLine = function(line) {
-    document.getElementById("config-output").value += line + "\n"
+    document.getElementById("config-output").value += line + "\n";
 };
 
 generateConfig = function () {
@@ -94,14 +87,14 @@ generateConfig = function () {
 
     addLine("'" + name + "':");
     addLine("  frames:");
-    if (lines != null) {
+    if (lines !== null) {
         for (var i = 0; lines.length > i; i++) {
             var frame = lines[i];
-            addLine("  - '[" + frame.fadeIn + ';' + frame.stay + ';' + frame.fadeOut + "]" + frame.text.split("'").join("''") + "'")
+            addLine("  - '[" + frame.fadeIn + ';' + frame.stay + ';' + frame.fadeOut + "]" + frame.text.split("'").join("''") + "'");
         }
     }
 
-    $('#config-output').attr('rows', 3 + lines.length)
+    $('#config-output').attr('rows', 3 + lines.length);
 };
 
 /**
@@ -276,14 +269,14 @@ addLines = function(generatedLines) {
     for (var i = 0; generatedLines.length > i; i++) {
         lines.push(generatedLines[i]);
     }
-    addRows()
+    addRows();
 };
 
 addRows = function() {
     clearRows();
 
     for (var i = 0; lines.length > i; i++) {
-        createRow(lines[i], i, lines.length)
+        createRow(lines[i], i, lines.length);
     }
 };
 
@@ -307,7 +300,7 @@ generateText = function() {
                 textField.val("");
                 lastDisplay.val('');
             } else {
-                errorPopup('The width size needs to be a number!')
+                errorPopup('The width size needs to be a number!');
             }
             break;
         case 'text typer generator':
@@ -318,7 +311,7 @@ generateText = function() {
                 textField.val("");
                 lastDisplay.val('');
             } else {
-                errorPopup('The step size needs to be a number!')
+                errorPopup('The step size needs to be a number!');
             }
             break;
         case 'word typer generator':
@@ -335,7 +328,7 @@ generateText = function() {
                 textField.val("");
                 lastDisplay.val('');
             } else {
-                errorPopup('Please add more than one color! (Remember to separate them by commas!')
+                errorPopup('Please add more than one color! (Remember to separate them by commas!');
             }
             break;
     }
@@ -344,7 +337,7 @@ generateText = function() {
 startEngine = function() {
     running = true;
 
-    if (lines == null || lines.length === 0) return;
+    if (lines === null || lines.length === 0) return;
 
     engineLoop();
     $("#stop-engine").removeClass("disabled");
@@ -365,7 +358,7 @@ engineTick = function() {
 
     setDisplay(lines[i].text);
 
-    if (i == 0 && index != 0) {
+    if (i === 0 && index !== 0) {
         index = 0;
     } else {
         index++;
@@ -380,7 +373,7 @@ engineLoop = function() {
         engineLoop();
         var frame = lines[index % lines.length];
         stay = (frame.fadeIn + frame.stay + frame.fadeOut) * 50;
-    }, stay == null ? 0 : stay)
+    }, stay === null ? 0 : stay);
 };
 
 deleteRow = function(i) {
@@ -405,7 +398,7 @@ createRow = function(frame, i, length) {
     main.innerHTML = '\
     <div class="col-lg-3">\
         <div class="btn-group btn-group-justified">\
-            <a href="#" ' + (i == 0 ? '' : ('onClick="lines.moveUp(' + i + '); clearRows(); addRows(); generateConfig();"')) + ' class="btn btn-default' + (i == 0 ? " disabled" : "") + '"><i class="fa fa-arrow-up"></i></a>\
+            <a href="#" ' + (i === 0 ? '' : ('onClick="lines.moveUp(' + i + '); clearRows(); addRows(); generateConfig();"')) + ' class="btn btn-default' + (i === 0 ? " disabled" : "") + '"><i class="fa fa-arrow-up"></i></a>\
             <a href="#" ' + (i + 1 == length ? '' : ('onClick="lines.moveDown(' + i + '); clearRows(); addRows(); generateConfig();"')) + ' class="btn btn-default' + (i + 1 == length ? " disabled" : "") + '"><i class="fa fa-arrow-down"></i></a>\
         </div>\
     </div>\

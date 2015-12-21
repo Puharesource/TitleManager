@@ -6,7 +6,7 @@ INVALID_RADIUS: 'The radius specified is not valid! %s is not a valid number!'
 WRONG_WORLD: 'You need to be in the world specified!'
 
 # Update message
-UPDATE_MESSAGE: '&f[&6TitleManager&f] &eAn update was found for TitleManager!\nYou're currently on version %s while version %s is available!\nDownload it here:&6 %s'
+UPDATE_MESSAGE: '&f[&6TitleManager&f] &eAn update was found for TitleManager!\nYou''re currently on version %s while version %s is available!\nDownload it here:&6 %s'
 
 # Command Based
 COMMAND_WRONG_USAGE: 'Wrong usage! Correct usage:'
@@ -20,8 +20,8 @@ COMMAND_VERSION_USAGE: ''
 COMMAND_VERSION_SUCCESS: 'The server is running %s.'
 
 ## /tm reload
-COMMAND_VERSION_DESCRIPTION: 'Reloads the config.'
-COMMAND_VERSION_USAGE: ''
+COMMAND_RELOAD_DESCRIPTION: 'Reloads the config.'
+COMMAND_RELOAD_USAGE: ''
 
 COMMAND_RELOAD_SUCCESS: 'The configuration has been reloaded.'
 COMMAND_RELOAD_SUCCESS_HOVERING: 'Config relaoded!'
@@ -34,11 +34,11 @@ COMMAND_MESSAGE_BASIC_SUCCESS_WITH_TITLE: 'You have sent a title with the messag
 COMMAND_MESSAGE_BASIC_SUCCESS_WITH_SUBTITLE: 'You have sent a title with the message "%s" "%s" to %s.'
 COMMAND_MESSAGE_BASIC_SUCCESS_ANIMATION: 'You have sent a title animation to %s.'
 
-COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_TITLE: 'You have sent a bungeecord title with the message "&s" to %s.'
+COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_TITLE: 'You have sent a bungeecord title with the message "%s" to %s.'
 COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_SUBTITLE: 'You have sent a bungeecord title with the message "%s" "%s" to %s.'
 COMMAND_MESSAGE_BUNGEECORD_SUCCESS_ANIMATION: 'You have sent a bungeecord title animation to %s.'
 
-COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_TITLE_IN_SERVER: 'You have sent a bungeecord title with the message "&s" to %s in the server "%s".'
+COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_TITLE_IN_SERVER: 'You have sent a bungeecord title with the message "%s" to %s in the server "%s".'
 COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_SUBTITLE_IN_SERVER: 'You have sent a bungeecord title with the message "%s" "%s" to %s in the server "%s".'
 COMMAND_MESSAGE_BUNGEECORD_SUCCESS_ANIMATION_IN_SERVER: 'You have sent a bungeecord title animation to %s in the server "%s".'
 
@@ -67,6 +67,12 @@ COMMAND_ANIMATIONS_DESCRIPTION: 'Lists you all of the animations.'
 COMMAND_ANIMATIONS_USAGE: ''
 
 COMMAND_ANIMATIONS_SUCCESS: 'Available animations (%s): %s'
+
+## /tm scripts
+COMMAND_SCRIPTS_DESCRIPTION: 'Lists you all of the scripts.'
+COMMAND_SCRIPTS_USAGE: ''
+
+COMMAND_SCRIPTS_SUCCESS: 'Available scripts (%s): %s'
 
 ## /tm amsg
 COMMAND_AMESSAGE_DESCRIPTION: 'Sends an actionbar title message to the specified player.'
