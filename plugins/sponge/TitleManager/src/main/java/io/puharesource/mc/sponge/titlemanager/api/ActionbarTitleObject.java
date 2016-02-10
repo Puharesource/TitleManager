@@ -37,7 +37,7 @@ public class ActionbarTitleObject implements IActionbarObject {
 
     @Override
     public void send(final Player player) {
-        player.sendMessage(ChatTypes.ACTION_BAR, Text.of(plugin.setVariables(player, title)));
+        player.sendMessage(ChatTypes.ACTION_BAR, Text.of(plugin.replacePlaceholders(player, title)));
     }
 
     public String getTitle() {

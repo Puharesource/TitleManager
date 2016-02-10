@@ -58,7 +58,7 @@ public class FrameSequence implements AnimationIterable {
         @Override
         public AnimationFrame next() {
             val frame = iterator.next();
-            frame.setText(plugin.setVariables(player, frame.getText()));
+            frame.setText(plugin.replacePlaceholders(player, frame.getText()));
             return frame;
         }
     }

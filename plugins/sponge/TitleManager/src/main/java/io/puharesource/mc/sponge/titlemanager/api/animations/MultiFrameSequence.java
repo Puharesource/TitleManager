@@ -122,7 +122,7 @@ public class MultiFrameSequence implements AnimationIterable {
                 lowestTimings++;
             }
 
-            final String animationString = plugin.setVariables(player, Joiner.on("").skipNulls().join(renderedParts));
+            final String animationString = plugin.replacePlaceholders(player, Joiner.on("").skipNulls().join(renderedParts));
 
             for (int i = 0; parts.size() > i; i++) {
                 final FrameValue frameValue = parts.get(i);

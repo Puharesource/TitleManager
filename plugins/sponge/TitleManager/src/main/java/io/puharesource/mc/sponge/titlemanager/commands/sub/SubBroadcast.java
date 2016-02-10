@@ -1,64 +1,60 @@
 package io.puharesource.mc.sponge.titlemanager.commands.sub;
 
-import io.puharesource.mc.sponge.titlemanager.commands.*;
-import io.puharesource.mc.titlemanager.TitleManager;
-import io.puharesource.mc.titlemanager.api.TitleObject;
-import io.puharesource.mc.titlemanager.api.iface.IAnimation;
-import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
-import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
-import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
-import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
-import lombok.val;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import com.google.inject.Inject;
+import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
+import io.puharesource.mc.sponge.titlemanager.TitleManager;
+import io.puharesource.mc.sponge.titlemanager.api.TitleObject;
+import io.puharesource.mc.sponge.titlemanager.api.iface.IAnimation;
+import io.puharesource.mc.sponge.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
+import io.puharesource.mc.sponge.titlemanager.commands.TMCommandException;
+import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.World;
 
-import static io.puharesource.mc.titlemanager.backend.language.Messages.*;
+import java.util.Optional;
 
-@ParameterSupport(supportedParams = {})
+import static io.puharesource.mc.sponge.titlemanager.Messages.*;
+
 public final class SubBroadcast extends TMSubCommand {
+    @Inject private TitleManager plugin;
+
     public SubBroadcast() {
         super("SILENT", "FADEIN", "STAY", "FADEOUT", "WORLD", "RADIUS");
     }
 
     @Override
-    public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) throws TMCommandException {
-        if (args.length < 1) {
-            syntaxError(sender);
+    public void onCommand(final CommandSource source, final CommandContext args, final CommandParameters params) throws TMCommandException {
+        if (args.hasAny("message")) {
+            syntaxError(source);
             return;
         }
 
-        BungeeServerInfo server = null;
+        final String message = args.<String>getOne("message").get();
         final boolean silent = params.getBoolean("SILENT");
-        final ConfigMain config = TitleManager.getInstance().getConfigManager().getConfig();
+        final ConfigMain config = plugin.getConfigHandler().getConfig();
 
-        int fadeIn = params.getInt("FADEIN", config.welcomeMessageFadeIn);
-        int stay = params.getInt("STAY", config.welcomeMessageStay);
-        int fadeOut = params.getInt("FADEOUT", config.welcomeMessageFadeOut);
-        val world = params.getWorld("WORLD");
+        final int fadeIn = params.getInt("FADEIN", config.welcomeMessageFadeIn);
+        final int stay = params.getInt("STAY", config.welcomeMessageStay);
+        final int fadeOut = params.getInt("FADEOUT", config.welcomeMessageFadeOut);
+        final Optional<World> oWorld = params.getWorld("WORLD");
+        final Optional<Double> oRadius = params.getDouble("radius");
 
-        if(params.contains("BUNGEE")) {
-            final CommandParameter param = params.get("BUNGEE");
-
-            if (param.getValue() != null && !param.getValue().isEmpty()) {
-                server = TitleManager.getInstance().getBungeeManager().getServers().get(param.getValue());
-            }
-        }
-
-        final String[] lines = MiscellaneousUtils.splitString(MiscellaneousUtils.combineArray(0, args));
+        final String[] lines = MiscellaneousUtils.splitString(message);
         final ITitleObject object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1], fadeIn, stay, fadeOut);
 
         if (params.contains("WORLD")) {//No support for radius if world != own world
-            if (world == null) throw new TMCommandException(INVALID_WORLD, params.get("WORLD").getValue());
+            if (!oWorld.isPresent()) throw new TMCommandException(INVALID_WORLD, params.get("WORLD").getValue());
+            final World world = oWorld.get();
 
-            if(sender instanceof Player && (((Player) sender).getWorld().equals(world)) && params.contains("RADIUS") && params.get("RADIUS").getValue() != null) {
-                try {
-                    for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(params.get("RADIUS").getValue()))) {
-                        object.send(player);
-                    }
-                } catch(NumberFormatException e) {
-                    throw new TMCommandException(INVALID_RADIUS, params.get("RADIUS").getValue());
-                }
-            } else if (params.contains("RADIUS") && params.get("RADIUS").getValue() != null) {
+            if(source instanceof Player && (((Player) source).getWorld().equals(world)) && params.contains("RADIUS") && oRadius.isPresent()) {
+                MiscellaneousUtils.getWithinRadius(((Player) source).getLocation(), oRadius.get()).forEach(object::send);
+            } else if (params.contains("RADIUS") && !oRadius.isPresent()) {
                 throw new TMCommandException(WRONG_WORLD);
             } else {
                 object.broadcast(world);
@@ -67,66 +63,19 @@ public final class SubBroadcast extends TMSubCommand {
             if (silent) return;
 
             if (object instanceof IAnimation) {
-                sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
+                sendSuccess(source, COMMAND_BROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
             } else {
                 final TitleObject title = (TitleObject) object;
 
                 if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                    sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_SUBTITLE, ((TitleObject) object).getTitle(), world.getName());
+                    sendSuccess(source, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_SUBTITLE, ((TitleObject) object).getTitle(), world.getName());
                 } else {
-                    sendSuccess(sender, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_TITLE, ((TitleObject) object).getTitle(), world.getName());
-                }
-            }
-        } else if (params.contains("BUNGEE")) {
-            val manager = TitleManager.getInstance().getBungeeManager();
-            val json = manager.getGson().toJson(object);
-
-            if (server == null) {
-                if (params.get("BUNGEE").getValue() == null) {
-                    manager.broadcastBungeeMessage("TitleObject-Broadcast", json);
-
-                    if (silent) return;
-
-                    if (object instanceof IAnimation) {
-                        sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_ANIMATION);
-                    } else {
-                        final TitleObject title = (TitleObject) object;
-
-                        if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                            sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_WITH_Subtitle, ((TitleObject) object).getTitle());
-                        } else {
-                            sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_WITH_Title, ((TitleObject) object).getTitle());
-                        }
-                    }
-                } else {
-                    throw new TMCommandException(INVALID_SERVER, params.get("BUNGEE").getValue());
-                }
-            } else {
-                server.sendMessage("TitleObject-Broadcast", json);
-
-                if (silent) return;
-
-                if (object instanceof IAnimation) {
-                    sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_ANIMATION_TO_SERVER);
-                } else {
-                    final TitleObject title = (TitleObject) object;
-
-                    if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                        sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_WITH_SUBTITLE_TO_SERVER, title.getTitle(), title.getSubtitle(), server.getName());
-                    } else {
-                        sendSuccess(sender, COMMAND_BROADCAST_BUNGEECORD_SUCCESS_WITH_TITLE_TO_SERVER, title.getTitle(), server.getName());
-                    }
+                    sendSuccess(source, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_TITLE, ((TitleObject) object).getTitle(), world.getName());
                 }
             }
         } else {
-            if(sender instanceof Player && params.contains("RADIUS")) {
-                try {
-                    for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), Integer.parseInt(params.get("RADIUS").getValue()))) {
-                        object.send(player);
-                    }
-                } catch(NumberFormatException e) {
-                    throw new TMCommandException(INVALID_RADIUS, params.get("RADIUS").getValue());
-                }
+            if(source instanceof Player && oRadius.isPresent()) {
+                MiscellaneousUtils.getWithinRadius(((Player)source).getLocation(), oRadius.get()).forEach(object::send);
             } else {
                 object.broadcast();
             }
@@ -134,16 +83,28 @@ public final class SubBroadcast extends TMSubCommand {
             if (silent) return;
 
             if (object instanceof IAnimation) {
-                sendSuccess(sender, COMMAND_BROADCAST_BASIC_SUCCESS_ANIMATION);
+                sendSuccess(source, COMMAND_BROADCAST_BASIC_SUCCESS_ANIMATION);
             } else {
                 final TitleObject title = (TitleObject) object;
 
                 if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                    sendSuccess(sender, COMMAND_BROADCAST_BASIC_SUCCESS_WITH_SUBTITLE, title.getTitle(), title.getSubtitle());
+                    sendSuccess(source, COMMAND_BROADCAST_BASIC_SUCCESS_WITH_SUBTITLE, title.getTitle(), title.getSubtitle());
                 } else {
-                    sendSuccess(sender, COMMAND_BROADCAST_BASIC_SUCCESS_WITH_TITLE, title.getTitle());
+                    sendSuccess(source, COMMAND_BROADCAST_BASIC_SUCCESS_WITH_TITLE, title.getTitle());
                 }
             }
         }
+    }
+
+    @Override
+    public CommandSpec createSpec() {
+        return CommandSpec.builder()
+                .permission("titlemanager.command.broadcast")
+                .description(Text.of("Sends a title broadcast."))
+                .extendedDescription(Text.of("Sends a title message to everyone on the server, put <nl> or {nl} or %nl% inside the message, to add a subtitle."))
+                .arguments(GenericArguments.remainingJoinedStrings(Text.of("message")))
+                .inputTokenizer(createTokenizer())
+                .executor(this)
+                .build();
     }
 }

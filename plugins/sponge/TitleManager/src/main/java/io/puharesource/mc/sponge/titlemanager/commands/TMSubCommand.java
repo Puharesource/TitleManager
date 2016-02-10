@@ -2,11 +2,14 @@ package io.puharesource.mc.sponge.titlemanager.commands;
 
 import com.google.common.collect.ImmutableSet;
 import io.puharesource.mc.sponge.titlemanager.Messages;
+import jdk.nashorn.internal.objects.annotations.Getter;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.parsing.InputTokenizer;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
@@ -18,12 +21,17 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public abstract class TMSubCommand implements CommandExecutor {
-    private final Set<String> supportedParameters;
+    private final Set<String> supportedParameters = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
     public TMSubCommand(final String... parameters) {
-        this.supportedParameters = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.supportedParameters.addAll(Arrays.stream(parameters).collect(Collectors.toSet()));
     }
+
+    public InputTokenizer createTokenizer() {
+        return null; //TODO: Make this actually work.
+    }
+
+    public abstract CommandSpec createSpec();
 
     @Override
     @NonnullByDefault

@@ -1,72 +1,70 @@
 package io.puharesource.mc.sponge.titlemanager.commands.sub;
 
+import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
+import io.puharesource.mc.sponge.titlemanager.api.ActionbarTitleObject;
+import io.puharesource.mc.sponge.titlemanager.api.iface.IActionbarObject;
+import io.puharesource.mc.sponge.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
-import io.puharesource.mc.sponge.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
-import io.puharesource.mc.titlemanager.TitleManager;
-import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
-import io.puharesource.mc.titlemanager.api.iface.IAnimation;
-import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
-import lombok.val;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
 
-import static io.puharesource.mc.titlemanager.backend.language.Messages.*;
+import java.util.Optional;
+
+import static io.puharesource.mc.sponge.titlemanager.Messages.*;
 
 public final class SubAMessage extends TMSubCommand {
     public SubAMessage() {
-        super("BUNGEE", "SILENT");
+        super("SILENT");
     }
 
     @Override
-    public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) throws TMCommandException {
-        if (args.length < 2) {
-            syntaxError(sender);
+    public CommandSpec createSpec() {
+        return CommandSpec.builder()
+                .permission("titlemanager.command.amessage")
+                .description(Text.of("Messages the player an actionbar title."))
+                .extendedDescription(Text.of("Sends an actionbar title message to the specified player."))
+                .arguments(GenericArguments.player(Text.of("player")), GenericArguments.remainingJoinedStrings(Text.of("message")))
+                .inputTokenizer(createTokenizer())
+                .executor(this)
+                .build();
+    }
+
+    @Override
+    public void onCommand(final CommandSource source, final CommandContext args, final CommandParameters params) throws TMCommandException {
+        if (!(args.hasAny("player") || args.hasAny("message"))) {
+            syntaxError(source);
             return;
         }
 
-        val server = params.getServer("BUNGEE");
-        val silent = params.getBoolean("SILENT");
-        val object = MiscellaneousUtils.generateActionbarObject(MiscellaneousUtils.combineArray(1, args));
-        val playerName = args[0];
+        final Optional<Player> oPlayer = args.<Player>getOne("player");
+        final Optional<String> oMessage = args.<String>getOne("message");
 
-        if (params.contains("BUNGEE")) {
-            val manager = TitleManager.getInstance().getBungeeManager();
-            val json = manager.getGson().toJson(object);
-
-            if (server == null) {
-                if (params.get("BUNGEE").getValue() == null) {
-                    manager.broadcastBungeeMessage("ActionbarTitle-Message", json, playerName);
-
-                    if (silent) return;
-
-                    if (object instanceof IAnimation)
-                        sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS_ANIMATION, playerName);
-                    else sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS, playerName, ((ActionbarTitleObject) object).getTitle());
-                } else {
-                    throw new TMCommandException(INVALID_SERVER, params.get("BUNGEE").getValue());
-                }
-            } else {
-                server.sendMessage("ActionbarTitle-Message", json, playerName);
-
-                if (silent) return;
-
-                if (object instanceof IAnimation)
-                    sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS_ANIMATION_IN_SERVER, playerName, server.getName());
-                else sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS_IN_SERVER, playerName, ((ActionbarTitleObject) object).getTitle(), server.getName());
-            }
-        } else {
-            val player = MiscellaneousUtils.getPlayer(args[0]);
-            if (player == null) throw new TMCommandException(INVALID_PLAYER, args[0]);
-
-            object.send(player);
-
-            if (silent) return;
-
-            if (object instanceof IAnimation)
-                sendSuccess(sender, COMMAND_AMESSAGE_BASIC_SUCCESS, ChatColor.stripColor(player.getDisplayName()));
-            else sendSuccess(sender, COMMAND_AMESSAGE_BASIC_SUCCESS_ANIMATION, ChatColor.stripColor(player.getDisplayName()), ((ActionbarTitleObject) object).getTitle());
+        if (!oPlayer.isPresent()) {
+            sendError(source, INVALID_PLAYER);
+            return;
+        } else if (!oMessage.isPresent()) {
+            syntaxError(source);
+            return;
         }
+
+        final Player player = oPlayer.get();
+        final String message = oMessage.get();
+
+        final boolean silent = params.getBoolean("SILENT");
+        final IActionbarObject actionbarObject = MiscellaneousUtils.generateActionbarObject(message);
+
+        actionbarObject.send(player);
+
+        if (silent) return;
+
+        if (actionbarObject instanceof IAnimation)
+            sendSuccess(source, COMMAND_AMESSAGE_BASIC_SUCCESS, player.getName());
+        else sendSuccess(source, COMMAND_AMESSAGE_BASIC_SUCCESS_ANIMATION, player.getName(), ((ActionbarTitleObject) actionbarObject).getTitle());
     }
 }

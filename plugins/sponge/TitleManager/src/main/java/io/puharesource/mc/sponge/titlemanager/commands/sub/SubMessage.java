@@ -1,105 +1,86 @@
 package io.puharesource.mc.sponge.titlemanager.commands.sub;
 
+import com.google.inject.Inject;
+import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
+import io.puharesource.mc.sponge.titlemanager.TitleManager;
+import io.puharesource.mc.sponge.titlemanager.api.TitleObject;
+import io.puharesource.mc.sponge.titlemanager.api.iface.IAnimation;
+import io.puharesource.mc.sponge.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
-import io.puharesource.mc.sponge.titlemanager.commands.ParameterSupport;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
-import io.puharesource.mc.titlemanager.TitleManager;
-import io.puharesource.mc.titlemanager.api.TitleObject;
-import io.puharesource.mc.titlemanager.api.iface.IAnimation;
-import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
-import lombok.val;
-import org.bukkit.command.CommandSender;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
 
-import static io.puharesource.mc.titlemanager.backend.language.Messages.*;
+import java.util.Optional;
 
-@ParameterSupport(supportedParams = {"BUNGEE", "SILENT", "FADEIN", "STAY", "FADEOUT"})
+import static io.puharesource.mc.sponge.titlemanager.Messages.*;
+
 public final class SubMessage extends TMSubCommand {
+    @Inject private TitleManager plugin;
+
     public SubMessage() {
-        super("msg", "titlemanager.command.message", COMMAND_MESSAGE_USAGE, COMMAND_MESSAGE_DESCRIPTION, "message");
+        super("SILENT", "FADEIN", "STAY", "FADEOUT");
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args, final CommandParameters params) throws TMCommandException {
-        if (args.length < 2) {
-            syntaxError(sender);
+    public void onCommand(final CommandSource source, final CommandContext args, final CommandParameters params) throws TMCommandException {
+        if (!(args.hasAny("player") || args.hasAny("message"))) {
+            syntaxError(source);
             return;
         }
 
-        val server = params.getServer("BUNGEE");
-        val silent = params.getBoolean("SILENT");
-        val config = TitleManager.getInstance().getConfigManager().getConfig();
-        int fadeIn = params.getInt("FADEIN", config.welcomeMessageFadeIn);
-        int stay = params.getInt("STAY", config.welcomeMessageStay);
-        int fadeOut = params.getInt("FADEOUT", config.welcomeMessageFadeOut);
+        final Optional<Player> oPlayer = args.<Player>getOne("player");
+        final Optional<String> oMessage = args.<String>getOne("message");
 
-        val lines = MiscellaneousUtils.splitString(MiscellaneousUtils.combineArray(1, args));
-        val object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1], fadeIn, stay, fadeOut);
+        if (!oPlayer.isPresent()) {
+            sendError(source, INVALID_PLAYER);
+            return;
+        } else if (!oMessage.isPresent()) {
+            syntaxError(source);
+            return;
+        }
 
-        val playerName = args[0];
-        if (params.getBoolean("BUNGEE")) {
-            val manager = TitleManager.getInstance().getBungeeManager();
-            val json = manager.getGson().toJson(object);
+        final boolean silent = params.getBoolean("SILENT");
+        final ConfigMain config = plugin.getConfigHandler().getConfig();
+        final int fadeIn = params.getInt("FADEIN", config.welcomeMessageFadeIn);
+        final int stay = params.getInt("STAY", config.welcomeMessageStay);
+        final int fadeOut = params.getInt("FADEOUT", config.welcomeMessageFadeOut);
 
-            if (server == null) {
-                if (params.get("BUNGEE").getValue() == null) {
-                    manager.broadcastBungeeMessage("TitleObject-Message", json, args[0]);
+        final String[] lines = MiscellaneousUtils.splitString(oMessage.get());
+        final ITitleObject titleObject = MiscellaneousUtils.generateTitleObject(lines[0], lines[1], fadeIn, stay, fadeOut);
+        final Player player = oPlayer.get();
 
-                    if (silent) return;
+        titleObject.send(player);
 
-                    if (object instanceof IAnimation) {
-                        sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_ANIMATION, playerName);
-                    } else {
-                        final TitleObject title = (TitleObject) object;
+        if (silent) return;
 
-                        if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                            sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_SUBTITLE, ((TitleObject) object).getTitle(), playerName);
-                        } else {
-                            sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_TITLE, ((TitleObject) object).getTitle(), playerName);
-                        }
-                    }
-                } else {
-                    throw new TMCommandException(INVALID_SERVER, params.get("BUNGEE").getValue());
-                }
-            } else {
-                server.sendMessage("TitleObject-Message", json, playerName);
-
-                if (silent) return;
-
-                if (object instanceof IAnimation) {
-                    sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_ANIMATION_IN_SERVER, playerName, server.getName());
-                } else {
-                    final TitleObject title = (TitleObject) object;
-
-                    if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                        sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_SUBTITLE_IN_SERVER, title.getTitle(), title.getSubtitle(), playerName, server.getName());
-                    } else {
-                        sendSuccess(sender, COMMAND_MESSAGE_BUNGEECORD_SUCCESS_WITH_TITLE_IN_SERVER, title.getTitle(), playerName, server.getName());
-                    }
-                }
-            }
+        if (titleObject instanceof IAnimation) {
+            sendSuccess(source, COMMAND_MESSAGE_BASIC_SUCCESS_ANIMATION, player.getName());
         } else {
-            val player = MiscellaneousUtils.getPlayer(playerName);
-            if (player == null) {
-                sendError(sender, INVALID_PLAYER, playerName);
-                return;
-            }
+            final TitleObject title = (TitleObject) titleObject;
 
-            object.send(player);
-
-            if (silent) return;
-
-            if (object instanceof IAnimation) {
-                sendSuccess(sender, COMMAND_MESSAGE_BASIC_SUCCESS_ANIMATION, player.getName());
+            if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
+                sendSuccess(source, COMMAND_MESSAGE_BASIC_SUCCESS_WITH_SUBTITLE, title.getTitle(), title.getSubtitle(), player.getName());
             } else {
-                final TitleObject title = (TitleObject) object;
-
-                if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
-                    sendSuccess(sender, COMMAND_MESSAGE_BASIC_SUCCESS_WITH_SUBTITLE, title.getTitle(), title.getSubtitle(), player.getName());
-                } else {
-                    sendSuccess(sender, COMMAND_MESSAGE_BASIC_SUCCESS_WITH_TITLE, title.getTitle(), player.getName());
-                }
+                sendSuccess(source, COMMAND_MESSAGE_BASIC_SUCCESS_WITH_TITLE, title.getTitle(), player.getName());
             }
         }
+    }
+
+    @Override
+    public CommandSpec createSpec() {
+        return CommandSpec.builder()
+                .permission("titlemanager.command.message")
+                .description(Text.of("Messages the player a title."))
+                .extendedDescription(Text.of("Sends a title message to the specified player, put <nl> or {nl} or %nl% inside of the message, to add a subtitle."))
+                .arguments(GenericArguments.player(Text.of("player")), GenericArguments.remainingJoinedStrings(Text.of("message")))
+                .inputTokenizer(createTokenizer())
+                .executor(this)
+                .build();
     }
 }

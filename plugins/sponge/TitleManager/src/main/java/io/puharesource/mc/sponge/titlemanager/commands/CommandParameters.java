@@ -22,15 +22,19 @@ public final class CommandParameters {
         return params.get(parameter);
     }
 
-    public Optional<Integer> getInt(final String parameter) throws NumberFormatException {
-        return get(parameter).getInt();
+    public Optional<Integer> getInt(final String parameter) {
+        try {
+            return get(parameter).getInt();
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
     }
 
     public int getInt(final String parameter, final int defaultValue) {
         return get(parameter).getInt(defaultValue);
     }
 
-    public Optional<Double> getDouble(final String parameter) throws NumberFormatException {
+    public Optional<Double> getDouble(final String parameter) {
         return get(parameter).getDouble();
     }
 

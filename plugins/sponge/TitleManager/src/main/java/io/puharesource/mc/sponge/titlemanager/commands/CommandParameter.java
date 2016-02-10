@@ -27,28 +27,28 @@ public final class CommandParameter {
         return getValue().orElse(defaultValue);
     }
 
-    public Optional<Integer> getInt() throws NumberFormatException {
-        return Optional.ofNullable(Integer.parseInt(value));
+    public Optional<Integer> getInt() {
+        try {
+            return Optional.ofNullable(Integer.parseInt(value));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
     }
 
     public int getInt(final int defaultValue) {
-        try {
-            return getInt().orElse(defaultValue);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
+        return getInt().orElse(defaultValue);
     }
 
-    public Optional<Double> getDouble() throws NumberFormatException {
-        return Optional.ofNullable(Double.parseDouble(value));
+    public Optional<Double> getDouble() {
+        try {
+            return Optional.ofNullable(Double.parseDouble(value));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
     }
 
     public double getDouble(final double defaultValue) {
-        try {
-            return getDouble().orElse(defaultValue);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
+        return getDouble().orElse(defaultValue);
     }
 
     public Optional<World> getWorld() {

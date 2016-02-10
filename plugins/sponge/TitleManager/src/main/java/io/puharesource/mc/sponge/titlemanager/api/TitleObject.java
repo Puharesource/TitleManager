@@ -78,8 +78,8 @@ public class TitleObject implements ITitleObject {
                 .stay(stay)
                 .fadeOut(fadeOut);
 
-        if (title != null) builder.title(Text.of(plugin.setVariables(player, title)));
-        if (subtitle != null) builder.subtitle(Text.of(plugin.setVariables(player, subtitle)));
+        if (title != null) builder.title(Text.of(plugin.replacePlaceholders(player, title)));
+        if (subtitle != null) builder.subtitle(Text.of(plugin.replacePlaceholders(player, subtitle)));
 
         player.sendTitle(builder.build());
     }

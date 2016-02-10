@@ -8,25 +8,42 @@ import io.puharesource.mc.sponge.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.sponge.titlemanager.api.iface.ITabObject;
 import io.puharesource.mc.sponge.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.sponge.titlemanager.api.iface.Script;
+import io.puharesource.mc.sponge.titlemanager.api.scripts.LuaScript;
 import lombok.Getter;
 import lombok.val;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.JsePlatform;
+import org.slf4j.Logger;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.*;
 
 public final class ConfigHandler {
     @Inject private TitleManager plugin;
-    @Inject @DefaultConfig(sharedRoot = false) private Path defaultConfig;
+    @Inject private Logger logger;
+    @Inject @DefaultConfig(sharedRoot = false) private Path mainConfigPath;
     @Inject @ConfigDir(sharedRoot = false) private Path configDir;
 
-    private ConfigFile configFile, animationConfigFile;
-    private @Getter ConfigFile messagesConfigFile;
+    private final Path animationsConfigPath = new File(configDir.toFile(), "animations").toPath();
+
+
+    private final ConfigurationLoader<CommentedConfigurationNode> mainLoader = HoconConfigurationLoader.builder().setPath(mainConfigPath).build();
+    private final ConfigurationLoader<CommentedConfigurationNode> animationsLoader = HoconConfigurationLoader.builder().setPath(animationsConfigPath).build();
+
+    private final ConfigurationNode mainRootNode = mainLoader.createEmptyNode(ConfigurationOptions.defaults());
+    private final ConfigurationNode animationsConfig = animationsLoader.createEmptyNode(ConfigurationOptions.defaults());
+
     private Map<String, FrameSequence> animations = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private Map<String, Script> scripts = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private File scriptDir;
@@ -39,43 +56,27 @@ public final class ConfigHandler {
     private Object worldObject;
     private Object worldActionbarObject;
 
-    @Getter private ConfigMain config;
-
-    public void load() {
-        configFile = new ConfigFile(plugin, plugin.getDataFolder(), "config", false);
-        animationConfigFile = new ConfigFile(plugin, plugin.getDataFolder(), "animations", true);
-
-        scriptDir = new File(plugin.getDataFolder(), "scripts");
-        scriptDir.mkdir();
-
-        configFile.reload();
-        try {
-            ConfigSerializer.saveDefaults(ConfigMain.class, configFile.getFile(), false);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException | IOException e) {
-            e.printStackTrace();
-        }
-
-        plugin.reloadConfig();
-        reload();
-    }
-
     public void reload() {
-        for (int i = 0; TitleManager.getRunningAnimations().size() > i; i++) {
-            int id = TitleManager.getRunningAnimations().get(i);
-            TitleManager.removeRunningAnimationId(id);
-        }
-
+        logger.debug("Clearing old config data.");
+        plugin.getRunningAnimations().forEach(i -> plugin.removeRunningAnimationId(i));
         plugin.getEngine().cancelAll();
+        logger.debug("Finished clearing of old config data.");
 
-        configFile.reload();
-
+        logger.debug("Loading main configuration file.");
         try {
-            ConfigSerializer.saveDefaults(ConfigMain.class, configFile.getFile(), false);
-            config = ConfigSerializer.deserialize(ConfigMain.class, configFile.getFile());
-        } catch (IllegalAccessException | InvocationTargetException | IOException | InstantiationException e) {
-            e.printStackTrace();
+            mainLoader.load();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load main config!", e);
         }
+        logger.debug("Finished loading main configuration file.");
 
+        logger.debug("Loading animations configuration file.");
+        try {
+            animationsLoader.load();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load animation config!", e);
+        }
+        logger.debug("Finished loading animations configuration file.");
 
         final File locale = new File(plugin.getDataFolder(), config.locale + ".yml");
         final InputStream stream = plugin.getResource(config.locale + ".yml");
@@ -100,21 +101,22 @@ public final class ConfigHandler {
             animations.put(animationName, new FrameSequence(frames));
         }
 
-        for (val file : scriptDir.listFiles()) {
-            if (!file.isDirectory() && file.getName().matches("(.*)(?i).lua")) {
-                try {
-                    val globals = JsePlatform.standardGlobals();
-                    globals.get("dofile").call(LuaValue.valueOf(file.getPath()));
-                    globals.get("tm_load").invoke();
+        Arrays.stream(scriptDir.listFiles())
+                .filter(File::isFile)
+                .filter(file -> file.getName().matches("(.*)(?i).lua"))
+                .forEach(file -> {
+                    try {
+                        final Globals globals = JsePlatform.standardGlobals();
+                        globals.get("dofile").call(LuaValue.valueOf(file.getPath()));
+                        globals.get("tm_load").invoke();
 
-                    val script = new LuaScript(globals);
-                    TitleManager.getInstance().getLogger().info("Loaded script: " + script.getName() + " v" + script.getVersion() + " by: " + script.getAuthor());
-                    scripts.put(script.getName(), script);
-                } catch (Exception e) {
-                    throw new RuntimeException("Unable to load " + file, e);
-                }
-            }
-        }
+                        final LuaScript script = new LuaScript(globals);
+                        logger.info("Loaded script: " + script.getName() + " v" + script.getVersion() + " by: " + script.getAuthor());
+                        scripts.put(script.getName(), script);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Unable to load " + file, e);
+                    }
+                });
 
         if (!config.usingConfig) return;
 

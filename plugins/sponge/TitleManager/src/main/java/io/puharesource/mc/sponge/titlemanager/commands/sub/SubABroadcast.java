@@ -1,42 +1,70 @@
 package io.puharesource.mc.sponge.titlemanager.commands.sub;
 
+import com.google.inject.Inject;
+import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
+import io.puharesource.mc.sponge.titlemanager.TitleManager;
+import io.puharesource.mc.sponge.titlemanager.api.ActionbarTitleObject;
+import io.puharesource.mc.sponge.titlemanager.api.iface.IActionbarObject;
+import io.puharesource.mc.sponge.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
-import lombok.val;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.World;
+
+import java.util.Optional;
 
 import static io.puharesource.mc.sponge.titlemanager.Messages.*;
 
 public final class SubABroadcast extends TMSubCommand {
+    @Inject private TitleManager plugin;
+
     public SubABroadcast() {
         super("SILENT", "WORLD", "RADIUS");
     }
 
     @Override
+    public CommandSpec createSpec() {
+        return CommandSpec.builder()
+                .permission("titlemanager.command.abroadcast")
+                .description(Text.of("Sends an actionbar broadcast."))
+                .extendedDescription(Text.of("Sends an actionbar title message to everyone on the server."))
+                .arguments(GenericArguments.remainingJoinedStrings(Text.of("message")))
+                .inputTokenizer(createTokenizer())
+                .executor(this)
+                .build();
+    }
+
+    @Override
     public void onCommand(final CommandSource source, final CommandContext args, final CommandParameters params) throws TMCommandException {
-        if (args.length < 1) {
-            syntaxError(sender);
+        if (args.hasAny("message")) {
+            syntaxError(source);
             return;
         }
 
-        val silent = params.getBoolean("SILENT");
-        val object = MiscellaneousUtils.generateActionbarObject(MiscellaneousUtils.combineArray(0, args));
+        final String message = args.<String>getOne("message").get();
+        final boolean silent = params.getBoolean("SILENT");
+        final ConfigMain config = plugin.getConfigHandler().getConfig();
+
+        final int fadeIn = params.getInt("FADEIN", config.welcomeMessageFadeIn);
+        final int stay = params.getInt("STAY", config.welcomeMessageStay);
+        final int fadeOut = params.getInt("FADEOUT", config.welcomeMessageFadeOut);
+        final Optional<World> oWorld = params.getWorld("WORLD");
+        final Optional<Double> oRadius = params.getDouble("radius");
+        final IActionbarObject object = MiscellaneousUtils.generateActionbarObject(message);
 
         if (params.contains("WORLD")) {
-            final World world = params.getWorld("WORLD");
-            if (world == null) throw new TMCommandException(INVALID_WORLD);
+            if (!oWorld.isPresent()) throw new TMCommandException(INVALID_WORLD, params.get("WORLD").getValue());
+            final World world = oWorld.get();
 
-            if(sender instanceof Player && (((Player) sender).getWorld().equals(world)) && params.contains("RADIUS")) {
-                try {
-                    for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), params.getDouble("RADIUS"))) {
-                        object.send(player);
-                    }
-                } catch(NumberFormatException e) {
-                    throw new TMCommandException(INVALID_RADIUS, params.get("RADIUS").getValue());
-                }
-            } else if (params.contains("RADIUS")) {
+            if(source instanceof Player && (((Player) source).getWorld().equals(world)) && params.contains("RADIUS") && oRadius.isPresent()) {
+                MiscellaneousUtils.getWithinRadius(((Player) source).getLocation(), oRadius.get()).forEach(object::send);
+            } else if (params.contains("RADIUS") && !oRadius.isPresent()) {
                 throw new TMCommandException(WRONG_WORLD);
             } else {
                 object.broadcast(world);
@@ -45,48 +73,13 @@ public final class SubABroadcast extends TMSubCommand {
             if (silent) return;
 
             if (object instanceof IAnimation) {
-                sendSuccess(sender, COMMAND_ABROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
+                sendSuccess(source, COMMAND_ABROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
             } else {
-                sendSuccess(sender, COMMAND_ABROADCAST_WORLD_SUCCESS, ((ActionbarTitleObject) object).getTitle(), world.getName());
-            }
-        } else if (params.getBoolean("BUNGEE")) {
-            val manager = TitleManager.getInstance().getBungeeManager();
-            val json = manager.getGson().toJson(object);
-
-            if (server == null) {
-                if (params.get("BUNGEE").getValue() == null) {
-                    manager.broadcastBungeeMessage("ActionbarTitle-Broadcast", json);
-
-                    if (silent) return;
-
-                    if (object instanceof IAnimation) {
-                        sendSuccess(sender, COMMAND_ABROADCAST_BUNGEECORD_SUCCESS);
-                    } else {
-                        sendSuccess(sender, COMMAND_ABROADCAST_BUNGEECORD_SUCCESS_ANIMATION, ((ActionbarTitleObject) object).getTitle());
-                    }
-                } else {
-                    throw new TMCommandException(INVALID_SERVER, params.get("BUNGEE").getValue());
-                }
-            } else {
-                server.sendMessage("ActionbarTitle-Broadcast", json);
-
-                if (silent) return;
-
-                if (object instanceof IAnimation) {
-                    sendSuccess(sender, COMMAND_ABROADCAST_BUNGEECORD_SUCCESS_ANIMATION_TO_SERVER, server.getName());
-                } else {
-                    sendSuccess(sender, COMMAND_ABROADCAST_BUNGEECORD_SUCCESS_TO_SERVER, ((ActionbarTitleObject) object).getTitle(), server.getName());
-                }
+                sendSuccess(source, COMMAND_ABROADCAST_WORLD_SUCCESS, ((ActionbarTitleObject) object).getTitle(), world.getName());
             }
         } else {
-            if(sender instanceof Player && params.contains("RADIUS")) {
-                try {
-                    for(final Player player : MiscellaneousUtils.getWithinRadius(((Player) sender).getLocation(), params.getDouble("RADIUS"))) {
-                        object.send(player);
-                    }
-                } catch(NumberFormatException e) {
-                    throw new TMCommandException(INVALID_RADIUS, params.get("RADIUS").getValue());
-                }
+            if(source instanceof Player && oRadius.isPresent()) {
+                MiscellaneousUtils.getWithinRadius(((Player)source).getLocation(), oRadius.get()).forEach(object::send);
             } else {
                 object.broadcast();
             }
@@ -94,9 +87,9 @@ public final class SubABroadcast extends TMSubCommand {
             if (silent) return;
 
             if (object instanceof IAnimation) {
-                sendSuccess(sender, COMMAND_ABROADCAST_BASIC_SUCCESS_ANIMATION);
+                sendSuccess(source, COMMAND_ABROADCAST_BASIC_SUCCESS_ANIMATION);
             } else {
-                sendSuccess(sender, COMMAND_ABROADCAST_BASIC_SUCCESS, ((ActionbarTitleObject) object).getTitle());
+                sendSuccess(source, COMMAND_ABROADCAST_BASIC_SUCCESS, ((ActionbarTitleObject) object).getTitle());
             }
         }
     }

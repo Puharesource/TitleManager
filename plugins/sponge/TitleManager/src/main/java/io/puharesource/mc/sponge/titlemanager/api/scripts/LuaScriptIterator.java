@@ -28,7 +28,7 @@ public final class LuaScriptIterator implements Iterator<AnimationFrame> {
 
     @Override
     public AnimationFrame next() {
-        val args = value.get("tm_main").invoke(LuaValue.valueOf(plugin.setVariables(player, originalString)), LuaValue.valueOf(i));
+        val args = value.get("tm_main").invoke(LuaValue.valueOf(plugin.replacePlaceholders(player, originalString)), LuaValue.valueOf(i));
         done = args.arg(2).toboolean();
         i++;
         return new AnimationFrame(args.arg(1).toString(), args.arg(3).toint(), args.arg(4).toint(), args.arg(5).toint());

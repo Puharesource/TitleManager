@@ -1,5 +1,7 @@
 package io.puharesource.mc.sponge.titlemanager;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.api.placeholder.PlaceholderManager;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommand;
@@ -9,6 +11,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
+
+import java.util.Set;
 
 @Plugin(id = "titlemanager", name = "Title Manager", version = "1.0.0-Sponge")
 public final class TitleManager {
@@ -25,7 +29,7 @@ public final class TitleManager {
         mainCommand = new TMCommand();
     }
 
-    public String setVariables(final Player player, final String text) {
+    public String replacePlaceholders(final Player player, final String text) {
         if (!containsVariable(text)) return text;
 
         return placeholderManager.replaceText(player, text);
@@ -40,13 +44,15 @@ public final class TitleManager {
         return false;
     }
 
-    private String replaceVariable(final String text, final String variable, final String replacement) {
-        try {
-            if (text.toLowerCase().contains("{" + variable.toLowerCase() + "}"))
-                return text.replaceAll("(?i)\\{" + variable + "\\}", replacement);
-            else return text;
-        } catch (Exception e) {
-            return text;
-        }
+    public Set<Integer> getRunningAnimations() {
+        return ImmutableSet.copyOf(runningAnimations);
+    }
+
+    public void addRunningAnimationId(final int id) {
+        runningAnimations.add(id);
+    }
+
+    public void removeRunningAnimationId(final int id) {
+        runningAnimations.remove((Integer) id);
     }
 }

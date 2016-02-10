@@ -4,106 +4,63 @@ import io.puharesource.mc.sponge.titlemanager.commands.sub.*;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.*;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandMapping;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public final class TMCommand implements CommandExecutor {
     @Getter private final CommandSpec commandSpec;
     @Getter private Logger logger;
 
+    private Set<CommandSpec> children = new HashSet<>();
+
     public TMCommand() {
         logger.debug("Registering commands.");
 
-        // /tm abroadcast
-        logger.debug("Building command: /tm abroadcast");
-        final CommandSpec subABroadcast = CommandSpec.builder()
-                .permission("titlemanager.command.abroadcast")
-                .description(Text.of())
-                .executor(new SubABroadcast())
-                .build();
-
-        // /tm amessage
-        logger.debug("Building command: /tm amessage");
-        final CommandSpec subAMessage = CommandSpec.builder()
-                .permission("titlemanager.command.amessage")
-                .description(Text.of())
-                .executor(new SubAMessage())
-                .build();
-
-        // /tm animations
-        logger.debug("Building command: /tm animations");
-        final CommandSpec subAnimations = CommandSpec.builder()
-                .permission("titlemanager.command.animations")
-                .description(Text.of())
-                .executor(new SubAnimations())
-                .build();
-
-        // /tm broadcast
-        logger.debug("Building command: /tm broadcast");
-        final CommandSpec subBroadcast = CommandSpec.builder()
-                .permission("titlemanager.command.broadcast")
-                .description(Text.of())
-                .executor(new SubBroadcast())
-                .build();
-
-        // /tm message
-        logger.debug("Building command: /tm message");
-        final CommandSpec subMessage = CommandSpec.builder()
-                .permission("titlemanager.command.message")
-                .description(Text.of())
-                .executor(new SubMessage())
-                .build();
-
-        // /tm reload
-        logger.debug("Building command: /tm reload");
-        final CommandSpec subReload = CommandSpec.builder()
-                .permission("titlemanager.command.reload")
-                .description(Text.of())
-                .executor(new SubReload())
-                .build();
-
-        // /tm scripts
-        logger.debug("Building command: /tm scripts");
-        final CommandSpec subScripts = CommandSpec.builder()
-                .permission("titlemanager.command.scripts")
-                .description(Text.of())
-                .executor(new SubScripts())
-                .build();
-
-        // /tm version
-        logger.debug("Building command: /tm version");
-        final CommandSpec subVersion = CommandSpec.builder()
-                .permission("titlemanager.command.version")
-                .description(Text.of())
-                .executor(new SubVersion())
-                .build();
-
         // /tm
         logger.debug("Building main command. /tm");
-        final CommandSpec mainCommand = CommandSpec.builder()
+        final CommandSpec.Builder mainCommandBuilder = CommandSpec.builder()
                 .description(Text.of("TitleManager's main command."))
-                .executor(new TMCommand())
-                .child(subABroadcast)
-                .child(subABroadcast)
-                .child(subAnimations)
-                .child(subBroadcast)
-                .child(subMessage)
-                .child(subReload)
-                .child(subScripts)
-                .child(subVersion)
-                .build();
+                .arguments(GenericArguments.none())
+                .executor(new TMCommand());
+
+        registerChild(mainCommandBuilder, new SubABroadcast(), "abc");
+        registerChild(mainCommandBuilder, new SubAMessage(), "amsg");
+        registerChild(mainCommandBuilder, new SubAnimations(), "animations");
+        registerChild(mainCommandBuilder, new SubBroadcast(), "bc");
+        registerChild(mainCommandBuilder, new SubMessage(), "msg");
+        registerChild(mainCommandBuilder, new SubReload(), "reload");
+        registerChild(mainCommandBuilder, new SubScripts(), "scripts");
+        registerChild(mainCommandBuilder, new SubVersion(), "version");
 
         logger.debug("Registering command /tm.");
-        Sponge.getCommandManager().register(this, mainCommand, "tm", "titlemanager");
+        this.commandSpec = mainCommandBuilder.build();
+        Sponge.getCommandManager().register(this, this.commandSpec, "tm", "titlemanager");
 
         logger.debug("Finished registering commands.");
+    }
+
+    private void registerChild(final CommandSpec.Builder rootBuilder, final TMSubCommand sub, final String cmd) {
+        logger.debug("Constructing sub command: " + cmd);
+        final CommandSpec spec = sub.createSpec();
+        logger.debug("Finished construction of sub command: " + cmd);
+
+        logger.debug("Registering sub command: " + cmd);
+        rootBuilder.child(spec);
+        children.add(spec);
+        logger.debug("Finished registering sub command: " + cmd);
     }
 
     private void syntaxError(final CommandSource source) {

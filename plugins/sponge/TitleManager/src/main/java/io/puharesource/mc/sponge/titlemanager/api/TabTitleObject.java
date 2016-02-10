@@ -48,8 +48,8 @@ public class TabTitleObject implements ITabObject {
     public void send(final Player player) {
         final TabList tabList = player.getTabList();
 
-        header.ifPresent(str -> tabList.setHeader(Text.of(plugin.setVariables(player, str))));
-        footer.ifPresent(str -> tabList.setFooter(Text.of(plugin.setVariables(player, str))));
+        header.ifPresent(str -> tabList.setHeader(Text.of(plugin.replacePlaceholders(player, str))));
+        footer.ifPresent(str -> tabList.setFooter(Text.of(plugin.replacePlaceholders(player, str))));
     }
 
     public Optional<String> getHeader() {
