@@ -1,8 +1,18 @@
-rootProject.name = 'TitleManager-Main'
+rootProject.name = 'TitleManager'
 
-include 'plugins/TitleManager'
-rootProject.children.find { it.name == 'plugins/TitleManager' }.name = 'TitleManager'
+/* Spigot */
 
-include 'plugins/TitleAnnouncer'
-rootProject.children.find { it.name == 'plugins/TitleAnnouncer' }.name = 'TitleAnnouncer'
+include 'plugins:spigot:TitleManager'
+findProject(':plugins:spigot:TitleManager')?.name = 'TitleManager-Spigot'
+
+include 'plugins:spigot:TitleAnnouncer'
+findProject(':plugins:spigot:TitleAnnouncer')?.name = 'TitleAnnouncer-Spigot'
+
+/* Sponge */
+
+include 'plugins:sponge:TitleManager'
+findProject(':plugins:sponge:TitleManager')?.name = 'TitleManager-Sponge'
+
+include 'plugins:sponge:TitleAnnouncer'
+findProject(':plugins:sponge:TitleAnnouncer')?.name = 'TitleAnnouncer-Sponge'
 

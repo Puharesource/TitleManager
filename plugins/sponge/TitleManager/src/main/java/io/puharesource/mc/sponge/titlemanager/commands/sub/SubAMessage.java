@@ -1,0 +1,72 @@
+package io.puharesource.mc.sponge.titlemanager.commands.sub;
+
+import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
+import io.puharesource.mc.sponge.titlemanager.commands.ParameterSupport;
+import io.puharesource.mc.sponge.titlemanager.commands.TMCommandException;
+import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
+import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
+import io.puharesource.mc.titlemanager.api.iface.IAnimation;
+import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
+import lombok.val;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+import static io.puharesource.mc.titlemanager.backend.language.Messages.*;
+
+public final class SubAMessage extends TMSubCommand {
+    public SubAMessage() {
+        super("BUNGEE", "SILENT");
+    }
+
+    @Override
+    public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) throws TMCommandException {
+        if (args.length < 2) {
+            syntaxError(sender);
+            return;
+        }
+
+        val server = params.getServer("BUNGEE");
+        val silent = params.getBoolean("SILENT");
+        val object = MiscellaneousUtils.generateActionbarObject(MiscellaneousUtils.combineArray(1, args));
+        val playerName = args[0];
+
+        if (params.contains("BUNGEE")) {
+            val manager = TitleManager.getInstance().getBungeeManager();
+            val json = manager.getGson().toJson(object);
+
+            if (server == null) {
+                if (params.get("BUNGEE").getValue() == null) {
+                    manager.broadcastBungeeMessage("ActionbarTitle-Message", json, playerName);
+
+                    if (silent) return;
+
+                    if (object instanceof IAnimation)
+                        sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS_ANIMATION, playerName);
+                    else sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS, playerName, ((ActionbarTitleObject) object).getTitle());
+                } else {
+                    throw new TMCommandException(INVALID_SERVER, params.get("BUNGEE").getValue());
+                }
+            } else {
+                server.sendMessage("ActionbarTitle-Message", json, playerName);
+
+                if (silent) return;
+
+                if (object instanceof IAnimation)
+                    sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS_ANIMATION_IN_SERVER, playerName, server.getName());
+                else sendSuccess(sender, COMMAND_AMESSAGE_BUNGEECORD_SUCCESS_IN_SERVER, playerName, ((ActionbarTitleObject) object).getTitle(), server.getName());
+            }
+        } else {
+            val player = MiscellaneousUtils.getPlayer(args[0]);
+            if (player == null) throw new TMCommandException(INVALID_PLAYER, args[0]);
+
+            object.send(player);
+
+            if (silent) return;
+
+            if (object instanceof IAnimation)
+                sendSuccess(sender, COMMAND_AMESSAGE_BASIC_SUCCESS, ChatColor.stripColor(player.getDisplayName()));
+            else sendSuccess(sender, COMMAND_AMESSAGE_BASIC_SUCCESS_ANIMATION, ChatColor.stripColor(player.getDisplayName()), ((ActionbarTitleObject) object).getTitle());
+        }
+    }
+}

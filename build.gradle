@@ -50,11 +50,15 @@ subprojects {
             name 'kitteh-repo'
             url 'http://repo.kitteh.org/content/groups/public'
         }
+
+        maven {
+            name = 'sponge'
+            url = 'http://repo.spongepowered.org/maven'
+        }
     }
 
     dependencies {
         provided group: 'org.projectlombok', name: 'lombok', version: '1.16.6'
-        provided group: 'org.bukkit', name: 'bukkit', version: '1.8.8-R0.1-SNAPSHOT'
     }
 
     artifacts {
