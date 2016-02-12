@@ -1,4 +1,4 @@
-package io.puharesource.mc.sponge.titlemanager;
+package io.puharesource.mc.sponge.titlemanager.api;
 
 public enum TitlePosition {
     TITLE,

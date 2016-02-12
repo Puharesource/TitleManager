@@ -2,7 +2,8 @@ package io.puharesource.mc.sponge.titlemanager.api;
 
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
-import io.puharesource.mc.sponge.titlemanager.api.iface.ITabObject;
+import io.puharesource.mc.sponge.titlemanager.api.animations.TabListPosition;
+import io.puharesource.mc.sponge.titlemanager.api.iface.TabListSendable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.tab.TabList;
@@ -12,22 +13,22 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 
 /**
- * This object is being used in both tabmenu animations and simply when changing the header and/or footer of the tabmenu.
+ * This object is being used in both tab list animations and simply when changing the header and/or footer of the tabmenu.
  */
-public class TabTitleObject implements ITabObject {
+public class TabTitleObject implements TabListSendable {
     @Inject private TitleManager plugin;
 
-    private Optional<String> header;
-    private Optional<String> footer;
+    private Optional<Text> header;
+    private Optional<Text> footer;
 
-    public TabTitleObject(final String title, final Position position) {
-        if (position == Position.HEADER)
+    public TabTitleObject(final Text title, final TabListPosition position) {
+        if (position == TabListPosition.HEADER)
             setHeader(title);
-        else if (position == Position.FOOTER)
+        else if (position == TabListPosition.FOOTER)
             setFooter(title);
     }
 
-    public TabTitleObject(final String header, final String footer) {
+    public TabTitleObject(final Text header, final Text footer) {
         setHeader(header);
         setFooter(footer);
     }
@@ -48,27 +49,27 @@ public class TabTitleObject implements ITabObject {
     public void send(final Player player) {
         final TabList tabList = player.getTabList();
 
-        header.ifPresent(str -> tabList.setHeader(Text.of(plugin.replacePlaceholders(player, str))));
-        footer.ifPresent(str -> tabList.setFooter(Text.of(plugin.replacePlaceholders(player, str))));
+        header.ifPresent(text -> tabList.setHeader(plugin.replacePlaceholders(player, text)));
+        footer.ifPresent(text -> tabList.setFooter(plugin.replacePlaceholders(player, text)));
     }
 
-    public Optional<String> getHeader() {
+    public Optional<Text> getHeader() {
         return header;
     }
 
-    public TabTitleObject setHeader(final String header) {
-        this.header = Optional.ofNullable(header == null ? null : header.replace("\\n", "\n"));
+    public TabTitleObject setHeader(final Text header) {
+        this.header = Optional.ofNullable(header);
         return this;
     }
 
-    public Optional<String> getFooter() {
+    public Optional<Text> getFooter() {
         return footer;
     }
 
-    public TabTitleObject setFooter(final String footer) {
-        this.footer = Optional.ofNullable(footer == null ? null : footer.replace("\\n", "\n"));
+    public TabTitleObject setFooter(final Text footer) {
+        this.footer = Optional.ofNullable(footer);
         return this;
     }
 
-    public enum Position {HEADER, FOOTER}
+
 }

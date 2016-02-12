@@ -5,14 +5,14 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class Engine {
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
     private final Map<Integer, ScheduledFuture<?>> scheduled = new ConcurrentHashMap<>();
     private final AtomicInteger ids = new AtomicInteger(0);
 
     public int schedule(final Runnable runnable, int delay) {
         final int id = ids.incrementAndGet();
 
-        scheduled.put(id, scheduler.schedule((Runnable) () -> {
+        scheduled.put(id, scheduler.schedule(() -> {
             runnable.run();
             scheduled.remove(id);
         }, delay * 50, TimeUnit.MILLISECONDS));
@@ -36,9 +36,7 @@ public final class Engine {
     }
 
     public void cancelAll() {
-        for (final ScheduledFuture task : scheduled.values()) {
-            task.cancel(false);
-        }
+        scheduled.values().forEach(task -> task.cancel(false));
         scheduled.clear();
     }
 }

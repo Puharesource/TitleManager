@@ -1,10 +1,11 @@
 package io.puharesource.mc.sponge.titlemanager.api.animations;
 
-import io.puharesource.mc.sponge.titlemanager.api.TabTitleObject;
-import io.puharesource.mc.sponge.titlemanager.api.iface.AnimationIterable;
-import io.puharesource.mc.sponge.titlemanager.api.iface.IAnimation;
-import io.puharesource.mc.sponge.titlemanager.api.iface.ITabObject;
-import lombok.val;
+import io.puharesource.mc.sponge.titlemanager.api.Sendables;
+import io.puharesource.mc.sponge.titlemanager.api.iface.AnimationSendable;
+import io.puharesource.mc.sponge.titlemanager.api.iface.TabListSendable;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.Validate;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.World;
@@ -13,45 +14,27 @@ import org.spongepowered.api.world.World;
  * This is the actionbar title animation.
  * It can send a sequence of actionbar messages to the player, making it look like an animation.
  */
-public class TabTitleAnimation implements IAnimation, ITabObject {
-    private Object header;
-    private Object footer;
+public class TabTitleAnimation implements AnimationSendable, TabListSendable {
+    @Getter @Setter private AnimationToken header;
+    @Getter @Setter private AnimationToken footer;
 
-    public TabTitleAnimation(AnimationIterable header, AnimationIterable footer) {
-        this((Object) header, (Object) footer);
-    }
+    public TabTitleAnimation(final AnimationToken header, final AnimationToken footer) {
+        Validate.notNull(header);
+        Validate.notNull(footer);
 
-    public TabTitleAnimation(AnimationIterable header, String footer) {
-        this((Object) header, (Object) footer);
-    }
-
-    public TabTitleAnimation(String header, AnimationIterable footer) {
-        this((Object) header, (Object) footer);
-    }
-
-    public TabTitleAnimation(Object header, Object footer) {
-        if (header != null && !(header instanceof AnimationIterable) && !(header instanceof String)) throw new IllegalArgumentException("The header must be a String or implement AnimationIterable!");
-        if (footer != null && !(footer instanceof AnimationIterable) && !(footer instanceof String)) throw new IllegalArgumentException("The footer must be a String or implement AnimationIterable!");
         this.header = header;
         this.footer = footer;
-    }
-
-    public Object getHeader() {
-        return header;
-    }
-
-    public Object getFooter() {
-        return footer;
     }
 
     @Override
     public void broadcast() {
         Sponge.getServer().getOnlinePlayers().forEach(this::send);
-
     }
 
     @Override
     public void broadcast(final World world) {
+        Validate.notNull(world);
+
         Sponge.getServer().getOnlinePlayers()
                 .stream()
                 .filter(p -> p.getWorld().equals(world))
@@ -60,22 +43,24 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
 
     @Override
     public void send(final Player player) {
-        if (header instanceof AnimationIterable) {
-            val animation = new EasyAnimation((AnimationIterable) header, player, frame -> new TabTitleObject(frame.getText(), TabTitleObject.Position.HEADER).send(player));
+        Validate.notNull(player);
+
+        if (header.isIterable()) {
+            final EasyAnimation animation = new EasyAnimation(header.getIterable().get(), player, frame -> Sendables.tabList(frame.getText(), TabListPosition.HEADER).send(player));
 
             animation.setContinuous(true);
             animation.start();
         } else {
-            new TabTitleObject((String) header, TabTitleObject.Position.HEADER).send(player);
+            Sendables.tabList(header.getText().get(), TabListPosition.HEADER).send(player);
         }
 
-        if (footer instanceof AnimationIterable) {
-            val animation = new EasyAnimation((AnimationIterable) footer, player, frame -> new TabTitleObject(frame.getText(), TabTitleObject.Position.FOOTER).send(player));
+        if (footer.isIterable()) {
+            final EasyAnimation animation = new EasyAnimation(footer.getIterable().get(), player, frame -> Sendables.tabList(frame.getText(), TabListPosition.FOOTER).send(player));
 
             animation.setContinuous(true);
             animation.start();
         } else {
-            new TabTitleObject((String) footer, TabTitleObject.Position.HEADER).send(player);
+            Sendables.tabList(footer.getText().get(), TabListPosition.FOOTER).send(player);
         }
     }
 }

@@ -2,22 +2,23 @@ package io.puharesource.mc.sponge.titlemanager.api;
 
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
-import io.puharesource.mc.sponge.titlemanager.TitlePosition;
-import io.puharesource.mc.sponge.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.sponge.titlemanager.api.iface.TitleSendable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.title.Title;
 import org.spongepowered.api.world.World;
 
+import java.util.Optional;
+
 /**
  * The title object is an object used whenever a hovering message is sent to the player, whether it's an animation or not.
  */
-public class TitleObject implements ITitleObject {
+public class TitleObject implements TitleSendable {
     @Inject private TitleManager plugin;
 
-    private String title;
-    private String subtitle;
+    private Optional<Text> title;
+    private Optional<Text> subtitle;
 
     private int fadeIn = -1;
     private int stay = -1;
@@ -28,13 +29,12 @@ public class TitleObject implements ITitleObject {
      * @param title The text of the title/subtitle.
      * @param type The type of the title/subtitle.
      */
-    public TitleObject(final String title, final TitlePosition type) {
+    public TitleObject(final Text title, final TitlePosition type) {
         if (type == TitlePosition.TITLE)
             setTitle(title);
         else if (type == TitlePosition.SUBTITLE)
             setSubtitle(title);
-        else
-            setTitle(title);
+
         updateTimes();
     }
 
@@ -43,7 +43,7 @@ public class TitleObject implements ITitleObject {
      * @param title The text of the title.
      * @param subtitle The text of the subtitle.
      */
-    public TitleObject(String title, String subtitle) {
+    public TitleObject(final Text title, final Text subtitle) {
         setTitle(title);
         setSubtitle(subtitle);
         updateTimes();
@@ -78,8 +78,8 @@ public class TitleObject implements ITitleObject {
                 .stay(stay)
                 .fadeOut(fadeOut);
 
-        if (title != null) builder.title(Text.of(plugin.replacePlaceholders(player, title)));
-        if (subtitle != null) builder.subtitle(Text.of(plugin.replacePlaceholders(player, subtitle)));
+        title.ifPresent(text -> builder.title(plugin.replacePlaceholders(player, text)));
+        subtitle.ifPresent(text -> builder.title(plugin.replacePlaceholders(player, text)));
 
         player.sendTitle(builder.build());
     }
@@ -88,7 +88,7 @@ public class TitleObject implements ITitleObject {
      * Gets the raw text of the title.
      * @return The title text.
      */
-    public String getTitle() {
+    public Optional<Text> getTitle() {
         return title;
     }
 
@@ -97,8 +97,8 @@ public class TitleObject implements ITitleObject {
      * @param title The text shown as the title.
      * @return The root object.
      */
-    public TitleObject setTitle(String title) {
-        this.title = title;
+    public TitleObject setTitle(final Text title) {
+        this.title = Optional.ofNullable(title);
         return this;
     }
 
@@ -106,8 +106,8 @@ public class TitleObject implements ITitleObject {
      * Gets the raw text of the subtitle.
      * @return The subtitle text.
      */
-    public String getSubtitle() {
-        return subtitle;
+    public Optional<Text> getSubtitle() {
+        return title;
     }
 
     /**
@@ -115,8 +115,8 @@ public class TitleObject implements ITitleObject {
      * @param subtitle The text shown as the subtitle.
      * @return The root object.
      */
-    public TitleObject setSubtitle(String subtitle) {
-        this.subtitle = subtitle;
+    public TitleObject setSubtitle(final Text subtitle) {
+        this.subtitle = Optional.of(subtitle);
         return this;
     }
 
@@ -133,7 +133,7 @@ public class TitleObject implements ITitleObject {
      * @param ticks The amount of ticks.
      * @return The root object.
      */
-    public TitleObject setFadeIn(int ticks) {
+    public TitleObject setFadeIn(final int ticks) {
         fadeIn = ticks;
         return this;
     }
@@ -151,7 +151,7 @@ public class TitleObject implements ITitleObject {
      * @param ticks The amount of ticks.
      * @return The root object.
      */
-    public TitleObject setStay(int ticks) {
+    public TitleObject setStay(final int ticks) {
         stay = ticks;
         return this;
     }
@@ -169,7 +169,7 @@ public class TitleObject implements ITitleObject {
      * @param ticks The amount of ticks.
      * @return The root object.
      */
-    public TitleObject setFadeOut(int ticks) {
+    public TitleObject setFadeOut(final int ticks) {
         fadeOut = ticks;
         return this;
     }

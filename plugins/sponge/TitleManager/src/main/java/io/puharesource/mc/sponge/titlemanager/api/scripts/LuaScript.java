@@ -5,6 +5,7 @@ import io.puharesource.mc.sponge.titlemanager.api.iface.Script;
 import lombok.Data;
 import org.luaj.vm2.LuaValue;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
 
 import java.util.Iterator;
 
@@ -28,7 +29,7 @@ public class LuaScript implements Script {
     }
 
     @Override
-    public Iterator<AnimationFrame> getIterator(final String originalString, final Player player) {
-        return new LuaScriptIterator(value, originalString, player);
+    public Iterator<AnimationFrame> getIterator(final Text originalText, final Player player) {
+        return new LuaScriptIterator(value, originalText, player);
     }
 }

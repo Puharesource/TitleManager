@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.api.iface.AnimationIterable;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.Validate;
 import org.spongepowered.api.entity.living.player.Player;
 
 import java.util.Iterator;
@@ -22,6 +23,10 @@ public class EasyAnimation {
     private Runnable onStop;
 
     public EasyAnimation(final AnimationIterable animationIterable, final Player player, final Updatable onUpdate) {
+        Validate.notNull(animationIterable);
+        Validate.notNull(player);
+        Validate.notNull(onUpdate);
+
         this.animationIterable = animationIterable;
         this.player = player;
         this.onUpdate = onUpdate;
@@ -48,7 +53,9 @@ public class EasyAnimation {
     }
 
     public void update(final AnimationFrame frame) {
-        if (player == null || !player.isOnline()) stop();
+        Validate.notNull(frame);
+
+        if (!player.isOnline()) stop();
         if (!running) return;
 
         onUpdate.run(frame);
@@ -72,7 +79,7 @@ public class EasyAnimation {
         void run(final AnimationFrame frame);
     }
 
-    public void setContinuous(boolean continuous) {
+    public void setContinuous(final boolean continuous) {
         this.continuous = continuous;
     }
 

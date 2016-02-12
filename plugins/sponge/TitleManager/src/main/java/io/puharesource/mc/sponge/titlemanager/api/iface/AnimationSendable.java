@@ -3,4 +3,4 @@ package io.puharesource.mc.sponge.titlemanager.api.iface;
 /**
  * This interface is used for all types of animations.
  */
-public interface IAnimation extends ISendable {}
+public interface AnimationSendable extends Sendable {}

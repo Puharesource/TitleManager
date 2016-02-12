@@ -1,9 +1,8 @@
 package io.puharesource.mc.sponge.titlemanager.commands.sub;
 
-import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
 import io.puharesource.mc.sponge.titlemanager.api.ActionbarTitleObject;
-import io.puharesource.mc.sponge.titlemanager.api.iface.IActionbarObject;
-import io.puharesource.mc.sponge.titlemanager.api.iface.IAnimation;
+import io.puharesource.mc.sponge.titlemanager.api.iface.ActionbarSendable;
+import io.puharesource.mc.sponge.titlemanager.api.iface.AnimationSendable;
 import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
@@ -16,6 +15,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
+import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
 import static io.puharesource.mc.sponge.titlemanager.Messages.*;
 
 public final class SubAMessage extends TMSubCommand {
@@ -57,13 +57,13 @@ public final class SubAMessage extends TMSubCommand {
         final String message = oMessage.get();
 
         final boolean silent = params.getBoolean("SILENT");
-        final IActionbarObject actionbarObject = MiscellaneousUtils.generateActionbarObject(message);
+        final ActionbarSendable actionbarObject = generateActionbarObject(format(message));
 
         actionbarObject.send(player);
 
         if (silent) return;
 
-        if (actionbarObject instanceof IAnimation)
+        if (actionbarObject instanceof AnimationSendable)
             sendSuccess(source, COMMAND_AMESSAGE_BASIC_SUCCESS, player.getName());
         else sendSuccess(source, COMMAND_AMESSAGE_BASIC_SUCCESS_ANIMATION, player.getName(), ((ActionbarTitleObject) actionbarObject).getTitle());
     }

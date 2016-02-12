@@ -2,8 +2,6 @@ package io.puharesource.mc.sponge.titlemanager;
 
 import com.google.inject.Inject;
 
-import java.net.URL;
-
 public enum Messages {
     /**
      * General
@@ -120,8 +118,6 @@ public enum Messages {
     ;
 
     @Inject private TitleManager plugin;
-
-    private final
 
     public String getMessage() {
         return MiscellaneousUtils.format(plugin.getConfigHandler().getMessagesConfigFile().

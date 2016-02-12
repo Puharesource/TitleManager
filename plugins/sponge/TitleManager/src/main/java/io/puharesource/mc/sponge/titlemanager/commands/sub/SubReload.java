@@ -2,7 +2,8 @@ package io.puharesource.mc.sponge.titlemanager.commands.sub;
 
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
-import io.puharesource.mc.sponge.titlemanager.TitlePosition;
+import io.puharesource.mc.sponge.titlemanager.api.Sendables;
+import io.puharesource.mc.sponge.titlemanager.api.TitlePosition;
 import io.puharesource.mc.sponge.titlemanager.api.TitleObject;
 import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
@@ -24,8 +25,10 @@ public final class SubReload extends TMSubCommand {
     public void onCommand(final CommandSource source, final CommandContext args, final CommandParameters params) {
         plugin.getConfigHandler().reload();
         sendSuccess(source, COMMAND_RELOAD_SUCCESS);
-        if (source instanceof Player)
-            new TitleObject(TextColors.GREEN + COMMAND_RELOAD_SUCCESS_HOVERING.getMessage(), TitlePosition.TITLE).setFadeIn(10).setStay(15).setFadeOut(10).send((Player) source);
+
+        if (source instanceof Player) {
+            Sendables.title(TextColors.GREEN + COMMAND_RELOAD_SUCCESS_HOVERING.getMessage(), TitlePosition.TITLE).setFadeIn(10).setStay(15).setFadeOut(10).send((Player) source);
+        }
     }
 
     @Override

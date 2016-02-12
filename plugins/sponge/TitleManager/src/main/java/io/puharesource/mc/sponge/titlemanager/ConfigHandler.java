@@ -2,12 +2,16 @@ package io.puharesource.mc.sponge.titlemanager;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
+import io.puharesource.mc.sponge.titlemanager.api.Sendables;
+import io.puharesource.mc.sponge.titlemanager.api.TitleObject;
 import io.puharesource.mc.sponge.titlemanager.api.animations.AnimationFrame;
+import io.puharesource.mc.sponge.titlemanager.api.animations.AnimationToken;
 import io.puharesource.mc.sponge.titlemanager.api.animations.FrameSequence;
-import io.puharesource.mc.sponge.titlemanager.api.iface.IActionbarObject;
-import io.puharesource.mc.sponge.titlemanager.api.iface.ITabObject;
-import io.puharesource.mc.sponge.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.sponge.titlemanager.api.animations.TitleAnimation;
+import io.puharesource.mc.sponge.titlemanager.api.iface.ActionbarSendable;
 import io.puharesource.mc.sponge.titlemanager.api.iface.Script;
+import io.puharesource.mc.sponge.titlemanager.api.iface.TabListSendable;
+import io.puharesource.mc.sponge.titlemanager.api.iface.TitleSendable;
 import io.puharesource.mc.sponge.titlemanager.api.scripts.LuaScript;
 import lombok.Getter;
 import lombok.val;
@@ -28,6 +32,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
 
 public final class ConfigHandler {
     @Inject private TitleManager plugin;
@@ -48,7 +55,7 @@ public final class ConfigHandler {
     private Map<String, Script> scripts = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private File scriptDir;
 
-    @Getter private ITabObject tabTitleObject;
+    @Getter private TabListSendable tabTitleObject;
     private Object welcomeObject;
     private Object firstWelcomeObject;
     private Object actionbarWelcomeObject;
@@ -91,11 +98,11 @@ public final class ConfigHandler {
         animationConfigFile.reload();
         animations.clear();
 
-        for (String animationName : animationConfigFile.getConfig().getKeys(false)) {
+        for (final String animationName : animationConfigFile.getConfig().getKeys(false)) {
             ConfigurationSection section = animationConfigFile.getConfig().getConfigurationSection(animationName);
             List<AnimationFrame> frames = new ArrayList<>();
             for (String frame : section.getStringList("frames")) {
-                frames.add(MiscellaneousUtils.getFrameFromString(frame));
+                frames.add(getFrameFromString(frame));
             }
 
             animations.put(animationName, new FrameSequence(frames));
@@ -121,59 +128,59 @@ public final class ConfigHandler {
         if (!config.usingConfig) return;
 
         if (config.tabmenuEnabled) {
-            tabTitleObject = MiscellaneousUtils.generateTabObject(config.tabmenuHeader, config.tabmenuFooter);
+            tabTitleObject = generateTabObject(config.tabmenuHeader, config.tabmenuFooter);
             tabTitleObject.broadcast();
         }
 
         if (config.welcomeMessageEnabled) {
             if (config.welcomeMessageTitle instanceof String) {
-                welcomeObject = MiscellaneousUtils.generateTitleObject((String) config.welcomeMessageTitle, config.welcomeMessageSubtitle,
+                welcomeObject = generateTitleObject((String) config.welcomeMessageTitle, config.welcomeMessageSubtitle,
                         config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
             } else if (config.welcomeMessageTitle instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
                     final List<AnimationFrame> titleFrames = new ArrayList<>();
                     final List<AnimationFrame> subtitleFrames = new ArrayList<>();
 
-                    for (String title : (List<String>) config.welcomeMessageTitle) {
-                        val titles = MiscellaneousUtils.splitString(title);
+                    for (final String title : (List<String>) config.welcomeMessageTitle) {
+                        final String[] titles = splitString(title);
 
                         titleFrames.add(new AnimationFrame(titles[0], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
                         subtitleFrames.add(new AnimationFrame(titles[1], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
 
-                        welcomeObject = new TitleAnimation(new FrameSequence(titleFrames), new FrameSequence(subtitleFrames));
+                        welcomeObject = Sendables.title(AnimationToken.of(new FrameSequence(titleFrames)), AnimationToken.of(new FrameSequence(subtitleFrames)));
                     }
                 } else {
-                    welcomeObject = new ArrayList<ITitleObject>();
+                    welcomeObject = new ArrayList<TitleSendable>();
 
-                    for (String title : (List<String>) config.welcomeMessageTitle) {
-                        val titles = MiscellaneousUtils.splitString(title);
-                        ((List<ITitleObject>) welcomeObject).add(new TitleObject(titles[0], titles[1]).setFadeIn(config.welcomeMessageFadeIn).setStay(config.welcomeMessageStay).setFadeOut(config.welcomeMessageFadeOut));
+                    for (final String title : (List<String>) config.welcomeMessageTitle) {
+                        final String[] titles = splitString(title);
+                        ((List<TitleSendable>) welcomeObject).add(Sendables.title(format(titles[0]), format(titles[1])).setFadeIn(config.welcomeMessageFadeIn).setStay(config.welcomeMessageStay).setFadeOut(config.welcomeMessageFadeOut));
                     }
                 }
             }
 
             if (config.firstJoinTitle instanceof String) {
-                firstWelcomeObject = MiscellaneousUtils.generateTitleObject((String) config.firstJoinTitle, config.firstJoinSubtitle,
+                firstWelcomeObject = generateTitleObject((String) config.firstJoinTitle, config.firstJoinSubtitle,
                         config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
             } else if (config.firstJoinTitle instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
                     final List<AnimationFrame> titleFrames = new ArrayList<>();
                     final List<AnimationFrame> subtitleFrames = new ArrayList<>();
 
-                    for (String title : (List<String>) config.firstJoinTitle) {
-                        val titles = MiscellaneousUtils.splitString(title);
+                    for (final String title : (List<String>) config.firstJoinTitle) {
+                        final String[] titles = splitString(title);
 
                         titleFrames.add(new AnimationFrame(titles[0], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
                         subtitleFrames.add(new AnimationFrame(titles[1], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
 
-                        firstWelcomeObject = new TitleAnimation(new FrameSequence(titleFrames), new FrameSequence(subtitleFrames));
+                        firstWelcomeObject = Sendables.title(AnimationToken.of(new FrameSequence(titleFrames)), AnimationToken.of(new FrameSequence(subtitleFrames)));
                     }
                 } else {
-                    firstWelcomeObject = new ArrayList<ITitleObject>();
+                    firstWelcomeObject = new ArrayList<TitleSendable>();
 
-                    for (String title : (List<String>) config.firstJoinTitle) {
-                        val titles = MiscellaneousUtils.splitString(title);
-                        ((List<ITitleObject>) firstWelcomeObject).add(new TitleObject(titles[0], titles[1]).setFadeIn(config.welcomeMessageFadeIn).setStay(config.welcomeMessageStay).setFadeOut(config.welcomeMessageFadeOut));
+                    for (final String title : (List<String>) config.firstJoinTitle) {
+                        final String[] titles = splitString(title);
+                        ((List<TitleSendable>) firstWelcomeObject).add(Sendables.title(format(titles[0]), format(titles[1])).setFadeIn(config.welcomeMessageFadeIn).setStay(config.welcomeMessageStay).setFadeOut(config.welcomeMessageFadeOut));
                     }
                 }
             }
@@ -181,48 +188,48 @@ public final class ConfigHandler {
 
         if (config.actionbarWelcomeEnabled) {
             if (config.actionbarWelcomeMessage instanceof String) {
-                actionbarWelcomeObject = MiscellaneousUtils.generateActionbarObject((String) config.actionbarWelcomeMessage);
+                actionbarWelcomeObject = generateActionbarObject((String) config.actionbarWelcomeMessage);
             } else if (config.welcomeMessageTitle instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
                     final List<AnimationFrame> titleFrames = new ArrayList<>();
 
-                    for (String title : (List<String>) config.actionbarWelcomeMessage) {
+                    for (final String title : (List<String>) config.actionbarWelcomeMessage) {
                         titleFrames.add(new AnimationFrame(title, config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
 
                         actionbarWelcomeObject = new ActionbarTitleAnimation(new FrameSequence(titleFrames));
                     }
                 } else {
-                    actionbarWelcomeObject = new ArrayList<ITitleObject>();
+                    actionbarWelcomeObject = new ArrayList<TitleSendable>();
 
-                    for (String title : (List<String>) config.actionbarWelcomeMessage) {
-                        val titles = MiscellaneousUtils.splitString(title);
-                        ((List<ITitleObject>) welcomeObject).add(new TitleObject(titles[0], titles[1]).setFadeIn(config.welcomeMessageFadeIn).setStay(config.welcomeMessageStay).setFadeOut(config.welcomeMessageFadeOut));
+                    for (final String title : (List<String>) config.actionbarWelcomeMessage) {
+                        final String[] titles = splitString(title);
+                        ((List<TitleSendable>) welcomeObject).add(Sendables.title(format(titles[0]), format(titles[1])).setFadeIn(config.welcomeMessageFadeIn).setStay(config.welcomeMessageStay).setFadeOut(config.welcomeMessageFadeOut));
                     }
                 }
             }
 
             if (config.actionbarFirstWelcomeMessage instanceof String) {
-                firstWelcomeObject = MiscellaneousUtils.generateTitleObject((String) config.actionbarFirstWelcomeMessage, config.firstJoinSubtitle,
+                firstWelcomeObject = generateTitleObject((String) config.actionbarFirstWelcomeMessage, config.firstJoinSubtitle,
                         config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
             } else if (config.actionbarFirstWelcomeMessage instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
                     final List<AnimationFrame> titleFrames = new ArrayList<>();
                     final List<AnimationFrame> subtitleFrames = new ArrayList<>();
 
-                    for (String title : (List<String>) config.actionbarFirstWelcomeMessage) {
-                        val titles = MiscellaneousUtils.splitString(title);
+                    for (final String title : (List<String>) config.actionbarFirstWelcomeMessage) {
+                        final String[] titles = splitString(title);
 
                         titleFrames.add(new AnimationFrame(titles[0], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
                         subtitleFrames.add(new AnimationFrame(titles[1], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
 
-                        actionbarFirstWelcomeObject = new TitleAnimation(new FrameSequence(titleFrames), new FrameSequence(subtitleFrames));
+                        actionbarFirstWelcomeObject = new TitleAnimation(AnimationToken.of(new FrameSequence(titleFrames)), AnimationToken.of(new FrameSequence(subtitleFrames)));
                     }
                 } else {
-                    actionbarFirstWelcomeObject = new ArrayList<ITitleObject>();
+                    actionbarFirstWelcomeObject = new ArrayList<TitleSendable>();
 
                     for (String title : (List<String>) config.actionbarFirstWelcomeMessage) {
-                        val titles = MiscellaneousUtils.splitString(title);
-                        ((List<ITitleObject>) actionbarFirstWelcomeObject).add(new TitleObject(titles[0], titles[1]).setFadeIn(config.welcomeMessageFadeIn).setStay(config.welcomeMessageStay).setFadeOut(config.welcomeMessageFadeOut));
+                        final String[] titles = splitString(title);
+                        ((List<TitleSendable>) actionbarFirstWelcomeObject).add(Sendables.title(format(titles[0]), format(titles[1])).setFadeIn(config.welcomeMessageFadeIn).setStay(config.welcomeMessageStay).setFadeOut(config.welcomeMessageFadeOut));
                     }
                 }
             }
@@ -236,105 +243,105 @@ public final class ConfigHandler {
 
         if (config.worldMessageEnabled) {
             if (config.worldMessageTitle instanceof String) {
-                worldObject = MiscellaneousUtils.generateTitleObject((String) config.worldMessageTitle, config.worldMessageSubtitle,
+                worldObject = generateTitleObject((String) config.worldMessageTitle, config.worldMessageSubtitle,
                         config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut);
             } else if (config.welcomeMessageTitle instanceof List) {
                 if (config.worldMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
                     final List<AnimationFrame> titleFrames = new ArrayList<>();
                     final List<AnimationFrame> subtitleFrames = new ArrayList<>();
 
-                    for (String title : (List<String>) config.worldMessageTitle) {
-                        val titles = MiscellaneousUtils.splitString(title);
+                    for (final String title : (List<String>) config.worldMessageTitle) {
+                        final String[] titles = splitString(title);
 
                         titleFrames.add(new AnimationFrame(titles[0], config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut));
                         subtitleFrames.add(new AnimationFrame(titles[1], config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut));
 
-                        welcomeObject = new TitleAnimation(new FrameSequence(titleFrames), new FrameSequence(subtitleFrames));
+                        welcomeObject = Sendables.title(AnimationToken.of(new FrameSequence(titleFrames)), AnimationToken.of(new FrameSequence(subtitleFrames)));
                     }
                 } else {
-                    welcomeObject = new ArrayList<ITitleObject>();
+                    welcomeObject = new ArrayList<TitleSendable>();
 
-                    for (String title : (List<String>) config.worldMessageTitle) {
-                        val titles = MiscellaneousUtils.splitString(title);
-                        ((List<ITitleObject>) worldObject).add(new TitleObject(titles[0], titles[1]).setFadeIn(config.worldMessageFadeIn).setStay(config.worldMessageStay).setFadeOut(config.worldMessageFadeOut));
+                    for (final String title : (List<String>) config.worldMessageTitle) {
+                        final String[] titles = splitString(title);
+                        ((List<TitleSendable>) worldObject).add(Sendables.title(format(titles[0]), format(titles[1])).setFadeIn(config.worldMessageFadeIn).setStay(config.worldMessageStay).setFadeOut(config.worldMessageFadeOut));
                     }
                 }
             }
 
             if (config.worldMessageActionBar instanceof String) {
-                worldActionbarObject = MiscellaneousUtils.generateActionbarObject((String) config.worldMessageActionBar);
+                worldActionbarObject = generateActionbarObject((String) config.worldMessageActionBar);
             } else if (config.worldMessageActionBar instanceof List) {
                 if (config.worldMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
                     final List<AnimationFrame> titleFrames = new ArrayList<>();
 
-                    for (String title : (List<String>) config.worldMessageActionBar) {
+                    for (final String title : (List<String>) config.worldMessageActionBar) {
                         titleFrames.add(new AnimationFrame(title, config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut));
 
-                        welcomeObject = new ActionbarTitleAnimation(new FrameSequence(titleFrames));
+                        welcomeObject = Sendables.actionbar(new FrameSequence(titleFrames));
                     }
                 } else {
-                    welcomeObject = new ArrayList<ITitleObject>();
+                    welcomeObject = new ArrayList<TitleSendable>();
 
-                    for (String title : (List<String>) config.worldMessageActionBar) {
-                        val titles = MiscellaneousUtils.splitString(title);
-                        ((List<ITitleObject>) worldActionbarObject).add(new TitleObject(titles[0], titles[1]).setFadeIn(config.worldMessageFadeIn).setStay(config.welcomeMessageStay).setFadeOut(config.worldMessageFadeOut));
+                    for (final String title : (List<String>) config.worldMessageActionBar) {
+                        final String[] titles = splitString(title);
+                        ((List<TitleSendable>) worldActionbarObject).add(Sendables.title(format(titles[0]), format(titles[1])).setFadeIn(config.worldMessageFadeIn).setStay(config.welcomeMessageStay).setFadeOut(config.worldMessageFadeOut));
                     }
                 }
             }
         }
     }
 
-    public ITitleObject getTitleWelcomeMessage(final boolean isFirstLogin) {
+    public TitleSendable getTitleWelcomeMessage(final boolean isFirstLogin) {
         if (isFirstLogin) {
-            if (firstWelcomeObject instanceof ITitleObject) {
-                return (ITitleObject) firstWelcomeObject;
+            if (firstWelcomeObject instanceof TitleSendable) {
+                return (TitleSendable) firstWelcomeObject;
             } else {
-                final List<ITitleObject> titles = (List<ITitleObject>) firstWelcomeObject;
-                return titles.get(new Random().nextInt(titles.size()));
+                final List<TitleSendable> titles = (List<TitleSendable>) firstWelcomeObject;
+                return titles.get(ThreadLocalRandom.current().nextInt(titles.size()));
             }
         } else {
-            if (welcomeObject instanceof ITitleObject) {
-                return (ITitleObject) welcomeObject;
+            if (welcomeObject instanceof TitleSendable) {
+                return (TitleSendable) welcomeObject;
             } else {
-                final List<ITitleObject> titles = (List<ITitleObject>) welcomeObject;
-                return titles.get(new Random().nextInt(titles.size()));
+                final List<TitleSendable> titles = (List<TitleSendable>) welcomeObject;
+                return titles.get(ThreadLocalRandom.current().nextInt(titles.size()));
             }
         }
     }
 
-    public IActionbarObject getActionbarWelcomeMessage(final boolean isFirstLogin) {
+    public ActionbarSendable getActionbarWelcomeMessage(final boolean isFirstLogin) {
         if (isFirstLogin) {
-            if (actionbarFirstWelcomeObject instanceof IActionbarObject) {
-                return (IActionbarObject) actionbarFirstWelcomeObject;
+            if (actionbarFirstWelcomeObject instanceof ActionbarSendable) {
+                return (ActionbarSendable) actionbarFirstWelcomeObject;
             } else {
-                final List<IActionbarObject> titles = (List<IActionbarObject>) actionbarFirstWelcomeObject;
-                return titles.get(new Random().nextInt(titles.size()));
+                final List<ActionbarSendable> titles = (List<ActionbarSendable>) actionbarFirstWelcomeObject;
+                return titles.get(ThreadLocalRandom.current().nextInt(titles.size()));
             }
         } else {
-            if (actionbarWelcomeObject instanceof IActionbarObject) {
-                return (IActionbarObject) actionbarWelcomeObject;
+            if (actionbarWelcomeObject instanceof ActionbarSendable) {
+                return (ActionbarSendable) actionbarWelcomeObject;
             } else {
-                final List<IActionbarObject> titles = (List<IActionbarObject>) actionbarWelcomeObject;
-                return titles.get(new Random().nextInt(titles.size()));
+                final List<ActionbarSendable> titles = (List<ActionbarSendable>) actionbarWelcomeObject;
+                return titles.get(ThreadLocalRandom.current().nextInt(titles.size()));
             }
         }
     }
 
-    public ITitleObject getWorldTitleMessage() {
-        if (worldObject instanceof ITitleObject) {
-            return (ITitleObject) worldObject;
+    public TitleSendable getWorldTitleMessage() {
+        if (worldObject instanceof TitleSendable) {
+            return (TitleSendable) worldObject;
         } else {
-            final List<ITitleObject> titles = (List<ITitleObject>) worldObject;
-            return titles.get(new Random().nextInt(titles.size()));
+            final List<TitleSendable> titles = (List<TitleSendable>) worldObject;
+            return titles.get(ThreadLocalRandom.current().nextInt(titles.size()));
         }
     }
 
-    public IActionbarObject getWorldActionbarTitleMessage() {
-        if (worldActionbarObject instanceof IActionbarObject) {
-            return (IActionbarObject) worldActionbarObject;
+    public ActionbarSendable getWorldActionbarTitleMessage() {
+        if (worldActionbarObject instanceof ActionbarSendable) {
+            return (ActionbarSendable) worldActionbarObject;
         } else {
-            final List<IActionbarObject> titles = (List<IActionbarObject>) worldActionbarObject;
-            return titles.get(new Random().nextInt(titles.size()));
+            final List<ActionbarSendable> titles = (List<ActionbarSendable>) worldActionbarObject;
+            return titles.get(ThreadLocalRandom.current().nextInt(titles.size()));
         }
     }
 

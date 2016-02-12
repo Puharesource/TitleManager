@@ -1,15 +1,16 @@
 package io.puharesource.mc.sponge.titlemanager;
 
 import com.google.inject.Inject;
-import io.puharesource.mc.sponge.titlemanager.api.ActionbarTitleObject;
-import io.puharesource.mc.sponge.titlemanager.api.TitleObject;
+import io.puharesource.mc.sponge.titlemanager.api.Sendables;
 import io.puharesource.mc.sponge.titlemanager.api.animations.*;
-import io.puharesource.mc.sponge.titlemanager.api.iface.IActionbarObject;
-import io.puharesource.mc.sponge.titlemanager.api.iface.ITabObject;
-import io.puharesource.mc.sponge.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.sponge.titlemanager.api.iface.ActionbarSendable;
+import io.puharesource.mc.sponge.titlemanager.api.iface.TabListSendable;
+import io.puharesource.mc.sponge.titlemanager.api.iface.TitleSendable;
 import io.puharesource.mc.sponge.titlemanager.api.iface.Script;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -30,8 +31,8 @@ public final class MiscellaneousUtils {
     private static final Pattern ANIMATION_PATTERN = Pattern.compile("^((i?)animation:).*$");
     private static final Pattern SCRIPT_PATTERN = Pattern.compile("^((i?)script:).*(:).*$");
 
-    public static String format(final String text) {
-        return text.replaceAll("&(?=[\\dA-Fa-f])", "§");
+    public static Text format(final String text) {
+        return TextSerializers.TEXT_XML.deserialize(text);
     }
     
     public static Set<Player> getWithinRadius(final Location<World> location, final double radius) {
@@ -41,29 +42,23 @@ public final class MiscellaneousUtils {
                 .collect(Collectors.toSet());
     }
 
-    public static Optional<FrameSequence> isValidAnimationString(final String text) {
+    public static Optional<FrameSequence> loadAnimationFromString(final Text text) {
         if (text == null) return Optional.empty();
 
         return ANIMATION_PATTERN.matcher(text).matches() ? plugin.getConfigHandler().getAnimation(text.split(":", 2)[1]) : Optional.empty();
     }
 
-    public static Optional<FrameSequence> isValidScriptString(final String text) {
+    public static Optional<FrameSequence> loadScriptFromString(final Text text) {
         if (text == null) return Optional.empty();
 
         if (SCRIPT_PATTERN.matcher(text).matches()) {
             final String[] parts = text.split(":", 3);
             final Optional<Script> script = plugin.getConfigHandler().getScript(parts[1]);
 
-            return script.isPresent() ? Optional.of(new FrameSequence(script.get(), parts[2])) : Optional.empty();
+            return script.isPresent() ? Optional.of(new FrameSequence(script.get(), Text.of(parts[2]))) : Optional.empty();
         }
 
         return Optional.empty();
-    }
-
-    public static String combineArray(final int offset, final String[] array) {
-        final StringBuilder sb = new StringBuilder(array[offset]);
-        for (int i = offset + 1; array.length > i; i++) sb.append(" ").append(array[i]);
-        return format(sb.toString());
     }
 
     public static String formatNumber(final double number) {
@@ -81,71 +76,44 @@ public final class MiscellaneousUtils {
         return String.valueOf(number.doubleValue());
     }
 
-    public static AnimationFrame getFrameFromString(String frame) {
-        int fadeIn = -1;
-        int stay = -1;
-        int fadeOut = -1;
+    public static TabListSendable generateTabObject(final Text header, final Text footer) {
+        final FrameSequence headerObject = loadAnimationFromString(header)
+                .orElseGet(() -> loadScriptFromString(header)
+                        .orElse(new FrameSequence(Collections.singletonList(new AnimationFrame(header, 0, 5, 0)))));
 
-        frame = MiscellaneousUtils.format(frame);
-        if (frame.startsWith("[") && frame.length() > 1) {
-            char[] chars = frame.toCharArray();
-            String timesString = "";
-            for (int i = 1; frame.length() > i; i++) {
-                char c = chars[i];
-                if (c == ']') {
-                    frame = frame.substring(i + 1);
-                    break;
-                }
+        final FrameSequence footerObject = loadAnimationFromString(footer)
+                .orElseGet(() -> loadScriptFromString(footer)
+                        .orElse(new FrameSequence(Collections.singletonList(new AnimationFrame(footer, 0, 5, 0)))));
 
-                timesString += chars[i];
-            }
+        return Sendables.tabList(AnimationToken.of(headerObject), AnimationToken.of(footerObject));
+    }
 
-            try {
-                String[] times = timesString.split(";", 3);
-                fadeIn = Integer.valueOf(times[0]);
-                stay = Integer.valueOf(times[1]);
-                fadeOut = Integer.parseInt(times[2]);
-            } catch (NumberFormatException ignored) {
-            }
+    public static TitleSendable generateTitleObject(final Text title, final Text subtitle, final int fadeIn, final int stay, final int fadeOut) {
+        final Optional<FrameSequence> oTitle = Optional.ofNullable(loadAnimationFromString(title)
+                .orElseGet(() -> loadScriptFromString(title).get()));
+        final Optional<FrameSequence> oSubtitle = Optional.ofNullable(loadAnimationFromString(subtitle)
+                .orElseGet(() -> loadScriptFromString(subtitle).get()));
+
+        if (oTitle.isPresent() || oSubtitle.isPresent()) {
+
+            return Sendables.title(
+                    oTitle.isPresent() ? AnimationToken.of(oTitle.get()) : AnimationToken.of(title),
+                    oSubtitle.isPresent() ? AnimationToken.of(oSubtitle.get()) : AnimationToken.of(subtitle));
         }
 
-        return new AnimationFrame(frame, fadeIn, stay, fadeOut);
+        return Sendables.title(
+                title,
+                subtitle)
+                .setFadeIn(fadeIn)
+                .setStay(stay)
+                .setFadeOut(fadeOut);
     }
 
-    public static ITabObject generateTabObject(final String header, final String footer) {
-        final FrameSequence headerObject = isValidAnimationString(header)
-                .orElseGet(() -> isValidScriptString(header)
-                        .orElse(new FrameSequence(Collections.singletonList(new AnimationFrame(MiscellaneousUtils.format(header).replace("\\n", "\n"), 0, 5, 0)))));
+    public static ActionbarSendable generateActionbarObject(final Text message) {
+        final Optional<FrameSequence> oMessage = Optional.ofNullable(loadAnimationFromString(message)
+                .orElseGet(() -> loadScriptFromString(message).get()));
 
-        final FrameSequence footerObject = isValidAnimationString(footer)
-                .orElseGet(() -> isValidScriptString(footer)
-                        .orElse(new FrameSequence(Collections.singletonList(new AnimationFrame(MiscellaneousUtils.format(footer).replace("\\n", "\n"), 0, 5, 0)))));
-
-        return new TabTitleAnimation(headerObject, footerObject);
-    }
-
-    public static ITitleObject generateTitleObject(final String title, final String subtitle, final int fadeIn, final int stay, final int fadeOut) {
-        Object titleObject = isValidAnimationString(title);
-        Object subtitleObject = isValidAnimationString(subtitle);
-
-        titleObject = titleObject == null ? isValidScriptString(title) : titleObject;
-        subtitleObject = subtitleObject == null ? isValidScriptString(subtitle) : subtitleObject;
-
-        titleObject = titleObject == null ? MiscellaneousUtils.format(title) : titleObject;
-        subtitleObject = subtitleObject == null ? MiscellaneousUtils.format(subtitle) : subtitleObject;
-
-        if (titleObject instanceof FrameSequence || subtitleObject instanceof FrameSequence)
-            return new TitleAnimation(titleObject, subtitleObject);
-        return new TitleObject((String) titleObject, (String) subtitleObject).setFadeIn(fadeIn).setStay(stay).setFadeOut(fadeOut);
-    }
-
-    public static IActionbarObject generateActionbarObject(final String message) {
-        Object messageObject = isValidAnimationString(message);
-
-        messageObject = messageObject == null ? isValidScriptString(message) : messageObject;
-        messageObject = messageObject == null ? MiscellaneousUtils.format(message).replace("\\n", "\n") : messageObject;
-
-        return messageObject instanceof String ? new ActionbarTitleObject((String) messageObject) : new ActionbarTitleAnimation((FrameSequence) messageObject);
+        return oMessage.isPresent() ? Sendables.actionbar(oMessage.get()) : Sendables.actionbar(message);
     }
 
     public static String[] splitString(String str) {

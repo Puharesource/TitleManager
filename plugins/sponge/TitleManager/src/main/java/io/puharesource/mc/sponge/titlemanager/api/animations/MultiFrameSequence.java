@@ -1,64 +1,64 @@
 package io.puharesource.mc.sponge.titlemanager.api.animations;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.api.iface.AnimationIterable;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.Validate;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MultiFrameSequence implements AnimationIterable {
     @Inject private TitleManager plugin;
 
-    private final ImmutableList<Object> parts;
+    private final ImmutableList<AnimationToken> tokens;
 
-    public MultiFrameSequence(final List<Object> parts) {
-        this.parts = ImmutableList.copyOf(parts);
+    public MultiFrameSequence(final List<AnimationToken> parts) {
+        Validate.notEmpty(parts);
+
+        this.tokens = ImmutableList.copyOf(parts);
     }
 
     @Override
     public Iterator<AnimationFrame> iterator(final Player player) {
-        return new MultiAnimationFrameIterator(parts, player);
+        return new MultiAnimationFrameIterator(tokens, player);
     }
 
     @EqualsAndHashCode
-    private class FrameValue {
-        private AnimationIterable iterable;
-        private Object value;
+    private final class FrameValue {
+        private AnimationToken value;
+        private Optional<Iterator<AnimationFrame>> iterator = Optional.empty();
         private int timeLeft;
 
-        public FrameValue(final Player player, final Object value) {
-            if (value instanceof AnimationIterable) {
-                this.iterable = (AnimationIterable) value;
-                this.value = this.iterable.iterator(player);
+        public FrameValue(final Player player, final AnimationToken value) {
+            this.value = value;
+
+            if (value.isIterable()) {
+                this.iterator = Optional.of(value.getIterable().get().iterator(player));
                 timeLeft = 0;
-            } else if (value instanceof String) {
-                this.value = value;
+            } else {
                 this.timeLeft = -1;
-            } else throw new IllegalArgumentException("List must contain Strings and/or AnimationIterables!");
+            }
         }
 
         public void reset(final Player player) {
-            if (iterable != null) {
-                this.value = iterable.iterator(player);
+            if (value.isIterable()) {
+                this.iterator = Optional.of(value.getIterable().get().iterator(player));
             }
         }
     }
 
     private class MultiAnimationFrameIterator implements Iterator<AnimationFrame> {
         private final ImmutableMap<Integer, FrameValue> parts;
-        private final String[] renderedParts;
+        private final Text[] renderedParts;
         private final boolean[] doneParts;
         private final Player player;
 
-        public MultiAnimationFrameIterator(final List<Object> parts, final Player player) {
+        public MultiAnimationFrameIterator(final List<AnimationToken> parts, final Player player) {
             final Map<Integer, FrameValue> values = new HashMap<>();
 
             for (int i = 0; parts.size() > i; i++) {
@@ -66,8 +66,8 @@ public class MultiFrameSequence implements AnimationIterable {
             }
 
             this.parts = ImmutableMap.copyOf(values);
-            renderedParts = new String[parts.size()];
-            doneParts = new boolean[parts.size()];
+            this.renderedParts = new Text[parts.size()];
+            this.doneParts = new boolean[parts.size()];
             this.player = player;
         }
 
@@ -88,17 +88,18 @@ public class MultiFrameSequence implements AnimationIterable {
             for (int i = 0; parts.size() > i; i++) {
                 final FrameValue frameValue = parts.get(i);
 
-                if (renderedParts[i] == null || i == 0) {
-                    if (frameValue.value instanceof String) {
-                        renderedParts[i] = (String) frameValue.value;
+                if (i == 0 || renderedParts[i] == null) {
+                    if (frameValue.value.isText()) {
+                        renderedParts[i] = frameValue.value.getText().get();
                         doneParts[i] = true;
-                    } else if (frameValue.value instanceof Iterator) {
-                        final Iterator<AnimationFrame> iterator = (Iterator<AnimationFrame>) frameValue.value;
+                    } else  {
+                        final Iterator<AnimationFrame> iterator = frameValue.iterator.get();
+
                         if (!iterator.hasNext()) {
                             doneParts[i] = true;
 
                             if (renderedParts[i] == null) {
-                                renderedParts[i] = "";
+                                renderedParts[i] = Text.EMPTY;
                                 continue;
                             } else {
                                 frameValue.reset(player);
@@ -122,16 +123,17 @@ public class MultiFrameSequence implements AnimationIterable {
                 lowestTimings++;
             }
 
-            final String animationString = plugin.replacePlaceholders(player, Joiner.on("").skipNulls().join(renderedParts));
+            final Text animationText = Text.of(renderedParts);
 
             for (int i = 0; parts.size() > i; i++) {
                 final FrameValue frameValue = parts.get(i);
 
-                frameValue.timeLeft -= lowestTimings;
-                if (frameValue.timeLeft < 0) frameValue.timeLeft = 0;
+                if (frameValue.timeLeft > 0) {
+                    frameValue.timeLeft -= lowestTimings;
+                }
             }
 
-            return new AnimationFrame(animationString, 0, lowestTimings, 0);
+            return new AnimationFrame(animationText, 0, lowestTimings, 0);
         }
     }
 }

@@ -1,11 +1,10 @@
 package io.puharesource.mc.sponge.titlemanager.commands.sub;
 
 import com.google.inject.Inject;
-import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.api.ActionbarTitleObject;
-import io.puharesource.mc.sponge.titlemanager.api.iface.IActionbarObject;
-import io.puharesource.mc.sponge.titlemanager.api.iface.IAnimation;
+import io.puharesource.mc.sponge.titlemanager.api.iface.ActionbarSendable;
+import io.puharesource.mc.sponge.titlemanager.api.iface.AnimationSendable;
 import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
@@ -19,6 +18,7 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
+import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
 import static io.puharesource.mc.sponge.titlemanager.Messages.*;
 
 public final class SubABroadcast extends TMSubCommand {
@@ -56,40 +56,40 @@ public final class SubABroadcast extends TMSubCommand {
         final int fadeOut = params.getInt("FADEOUT", config.welcomeMessageFadeOut);
         final Optional<World> oWorld = params.getWorld("WORLD");
         final Optional<Double> oRadius = params.getDouble("radius");
-        final IActionbarObject object = MiscellaneousUtils.generateActionbarObject(message);
+        final ActionbarSendable sendable = generateActionbarObject(format(message));
 
         if (params.contains("WORLD")) {
             if (!oWorld.isPresent()) throw new TMCommandException(INVALID_WORLD, params.get("WORLD").getValue());
             final World world = oWorld.get();
 
             if(source instanceof Player && (((Player) source).getWorld().equals(world)) && params.contains("RADIUS") && oRadius.isPresent()) {
-                MiscellaneousUtils.getWithinRadius(((Player) source).getLocation(), oRadius.get()).forEach(object::send);
+                getWithinRadius(((Player) source).getLocation(), oRadius.get()).forEach(sendable::send);
             } else if (params.contains("RADIUS") && !oRadius.isPresent()) {
                 throw new TMCommandException(WRONG_WORLD);
             } else {
-                object.broadcast(world);
+                sendable.broadcast(world);
             }
 
             if (silent) return;
 
-            if (object instanceof IAnimation) {
+            if (sendable instanceof AnimationSendable) {
                 sendSuccess(source, COMMAND_ABROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
             } else {
-                sendSuccess(source, COMMAND_ABROADCAST_WORLD_SUCCESS, ((ActionbarTitleObject) object).getTitle(), world.getName());
+                sendSuccess(source, COMMAND_ABROADCAST_WORLD_SUCCESS, ((ActionbarTitleObject) sendable).getTitle(), world.getName());
             }
         } else {
             if(source instanceof Player && oRadius.isPresent()) {
-                MiscellaneousUtils.getWithinRadius(((Player)source).getLocation(), oRadius.get()).forEach(object::send);
+                getWithinRadius(((Player)source).getLocation(), oRadius.get()).forEach(sendable::send);
             } else {
-                object.broadcast();
+                sendable.broadcast();
             }
 
             if (silent) return;
 
-            if (object instanceof IAnimation) {
+            if (sendable instanceof AnimationSendable) {
                 sendSuccess(source, COMMAND_ABROADCAST_BASIC_SUCCESS_ANIMATION);
             } else {
-                sendSuccess(source, COMMAND_ABROADCAST_BASIC_SUCCESS, ((ActionbarTitleObject) object).getTitle());
+                sendSuccess(source, COMMAND_ABROADCAST_BASIC_SUCCESS, ((ActionbarTitleObject) sendable).getTitle());
             }
         }
     }

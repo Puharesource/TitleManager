@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.api.placeholder.hook.PluginHook;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -70,8 +71,8 @@ public final class PlaceholderManager {
         return Pattern.compile("[{](?i)" + var + "[:]\\d+[,]?(\\d+)?[}]");
     }
 
-    public String replaceText(final Player player, String text) {
-        for (RegisteredPlaceholder variable : variables) {
+    public Text replaceText(final Player player, final Text text) {
+        for (final RegisteredPlaceholder variable : variables) {
             String hookString = variable.getVariable().hook();
             if (!hookString.isEmpty()) {
                 PluginHook hook = hooks.get(hookString);

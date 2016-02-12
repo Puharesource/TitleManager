@@ -2,7 +2,7 @@ package io.puharesource.mc.sponge.titlemanager.api;
 
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
-import io.puharesource.mc.sponge.titlemanager.api.iface.IActionbarObject;
+import io.puharesource.mc.sponge.titlemanager.api.iface.ActionbarSendable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -13,12 +13,12 @@ import org.spongepowered.api.world.World;
  * This is the standard actionbar message object.
  * It is used whenever both in actionbar animations and simply for displaying a message above the actionbar.
  */
-public class ActionbarTitleObject implements IActionbarObject {
+public class ActionbarTitleObject implements ActionbarSendable {
     @Inject private TitleManager plugin;
 
-    private String title;
+    private Text title;
 
-    public ActionbarTitleObject(String title) {
+    public ActionbarTitleObject(final Text title) {
         setTitle(title);
     }
 
@@ -37,14 +37,14 @@ public class ActionbarTitleObject implements IActionbarObject {
 
     @Override
     public void send(final Player player) {
-        player.sendMessage(ChatTypes.ACTION_BAR, Text.of(plugin.replacePlaceholders(player, title)));
+        player.sendMessage(ChatTypes.ACTION_BAR, plugin.replacePlaceholders(player, title));
     }
 
-    public String getTitle() {
+    public Text getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final Text title) {
         this.title = title;
     }
 }

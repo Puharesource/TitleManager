@@ -6,7 +6,7 @@ import org.spongepowered.api.world.World;
 /**
  * This interface is used for all types of sendable objects.
  */
-public interface ISendable {
+public interface Sendable {
     /**
      * This broadcasts the object to all players on the server.
      */

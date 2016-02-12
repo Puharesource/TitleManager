@@ -1,11 +1,10 @@
 package io.puharesource.mc.sponge.titlemanager.commands.sub;
 
 import com.google.inject.Inject;
-import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.api.TitleObject;
-import io.puharesource.mc.sponge.titlemanager.api.iface.IAnimation;
-import io.puharesource.mc.sponge.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.sponge.titlemanager.api.iface.AnimationSendable;
+import io.puharesource.mc.sponge.titlemanager.api.iface.TitleSendable;
 import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
@@ -19,6 +18,7 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
+import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
 import static io.puharesource.mc.sponge.titlemanager.Messages.*;
 
 public final class SubBroadcast extends TMSubCommand {
@@ -45,15 +45,15 @@ public final class SubBroadcast extends TMSubCommand {
         final Optional<World> oWorld = params.getWorld("WORLD");
         final Optional<Double> oRadius = params.getDouble("radius");
 
-        final String[] lines = MiscellaneousUtils.splitString(message);
-        final ITitleObject object = MiscellaneousUtils.generateTitleObject(lines[0], lines[1], fadeIn, stay, fadeOut);
+        final String[] lines = splitString(message);
+        final TitleSendable object = generateTitleObject(format(lines[0]), format(lines[1]), fadeIn, stay, fadeOut);
 
         if (params.contains("WORLD")) {//No support for radius if world != own world
             if (!oWorld.isPresent()) throw new TMCommandException(INVALID_WORLD, params.get("WORLD").getValue());
             final World world = oWorld.get();
 
             if(source instanceof Player && (((Player) source).getWorld().equals(world)) && params.contains("RADIUS") && oRadius.isPresent()) {
-                MiscellaneousUtils.getWithinRadius(((Player) source).getLocation(), oRadius.get()).forEach(object::send);
+                getWithinRadius(((Player) source).getLocation(), oRadius.get()).forEach(object::send);
             } else if (params.contains("RADIUS") && !oRadius.isPresent()) {
                 throw new TMCommandException(WRONG_WORLD);
             } else {
@@ -62,12 +62,12 @@ public final class SubBroadcast extends TMSubCommand {
 
             if (silent) return;
 
-            if (object instanceof IAnimation) {
+            if (object instanceof AnimationSendable) {
                 sendSuccess(source, COMMAND_BROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
             } else {
                 final TitleObject title = (TitleObject) object;
 
-                if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
+                if (title.getSubtitle().isPresent() && !title.getSubtitle().get().isEmpty()) {
                     sendSuccess(source, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_SUBTITLE, ((TitleObject) object).getTitle(), world.getName());
                 } else {
                     sendSuccess(source, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_TITLE, ((TitleObject) object).getTitle(), world.getName());
@@ -75,19 +75,19 @@ public final class SubBroadcast extends TMSubCommand {
             }
         } else {
             if(source instanceof Player && oRadius.isPresent()) {
-                MiscellaneousUtils.getWithinRadius(((Player)source).getLocation(), oRadius.get()).forEach(object::send);
+                getWithinRadius(((Player)source).getLocation(), oRadius.get()).forEach(object::send);
             } else {
                 object.broadcast();
             }
 
             if (silent) return;
 
-            if (object instanceof IAnimation) {
+            if (object instanceof AnimationSendable) {
                 sendSuccess(source, COMMAND_BROADCAST_BASIC_SUCCESS_ANIMATION);
             } else {
                 final TitleObject title = (TitleObject) object;
 
-                if (title.getSubtitle() != null && !title.getSubtitle().isEmpty()) {
+                if (title.getSubtitle().isPresent() && !title.getSubtitle().get().isEmpty()) {
                     sendSuccess(source, COMMAND_BROADCAST_BASIC_SUCCESS_WITH_SUBTITLE, title.getTitle(), title.getSubtitle());
                 } else {
                     sendSuccess(source, COMMAND_BROADCAST_BASIC_SUCCESS_WITH_TITLE, title.getTitle());

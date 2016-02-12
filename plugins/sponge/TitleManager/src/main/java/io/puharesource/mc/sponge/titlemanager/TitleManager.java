@@ -1,6 +1,5 @@
 package io.puharesource.mc.sponge.titlemanager;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.api.placeholder.PlaceholderManager;
@@ -11,6 +10,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.text.Text;
 
 import java.util.Set;
 
@@ -29,17 +29,18 @@ public final class TitleManager {
         mainCommand = new TMCommand();
     }
 
-    public String replacePlaceholders(final Player player, final String text) {
+    public Text replacePlaceholders(final Player player, final Text text) {
         if (!containsVariable(text)) return text;
 
         return placeholderManager.replaceText(player, text);
     }
 
-    public boolean containsVariable(final String str, final String... strings) {
-        if (str != null && ((str.contains("{") && str.contains("}")) || str.contains("%"))) return true;
+    public boolean containsVariable(final Text... texts) {
+        for (final Text text : texts) {
+            final String str = text.toPlain();
 
-        for (final String str0 : strings)
-            if (str0 != null && ((str0.contains("{") && str0.contains("}")) || str0.contains("%"))) return true;
+            if ((str.contains("{") && str.contains("}")) || str.contains("%")) return true;
+        }
 
         return false;
     }
