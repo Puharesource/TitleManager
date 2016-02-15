@@ -15,7 +15,7 @@ public class AnimationFrame {
     @Getter @Setter private int stay = -1;
     @Getter @Setter private int fadeOut = -1;
 
-    public AnimationFrame(final Text text, int fadeIn, int stay, int fadeOut) {
+    public AnimationFrame(final Text text, final int fadeIn, final int stay, final int fadeOut) {
         setText(text);
         this.fadeIn = fadeIn;
         this.stay = stay;

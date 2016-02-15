@@ -2,6 +2,7 @@ package io.puharesource.mc.sponge.titlemanager.commands;
 
 import com.google.common.collect.ImmutableSet;
 import io.puharesource.mc.sponge.titlemanager.Messages;
+import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -55,15 +56,11 @@ public abstract class TMSubCommand implements CommandExecutor {
         return ImmutableSet.copyOf(supportedParameters);
     }
 
-    private void sendFormattedMessage(final CommandSource source, final TextColor color, final Messages message, final Object... args) {
-        source.sendMessage(Text.of(color + String.format(message.getMessage().replace("%s", TextColors.RESET + "%s" + color), args)));
+    protected void sendSuccess(final CommandSource source, final String message) {
+        source.sendMessage(Text.of(TextColors.GREEN, MiscellaneousUtils.format(message)));
     }
 
-    protected void sendSuccess(final CommandSource source, final Messages message, final Object... args) {
-        sendFormattedMessage(source, TextColors.GREEN, message, args);
-    }
-
-    protected void sendError(final CommandSource source, final Messages message, final Object... args) {
-        sendFormattedMessage(source, TextColors.RED, message, args);
+    protected void sendError(final CommandSource source, final String message) {
+        source.sendMessage(Text.of(TextColors.RED, MiscellaneousUtils.format(message)));
     }
 }

@@ -2,11 +2,14 @@ package io.puharesource.mc.sponge.titlemanager;
 
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.api.Sendables;
-import io.puharesource.mc.sponge.titlemanager.api.animations.*;
+import io.puharesource.mc.sponge.titlemanager.api.animations.AnimationFrame;
+import io.puharesource.mc.sponge.titlemanager.api.animations.AnimationToken;
+import io.puharesource.mc.sponge.titlemanager.api.animations.FrameSequence;
 import io.puharesource.mc.sponge.titlemanager.api.iface.ActionbarSendable;
+import io.puharesource.mc.sponge.titlemanager.api.iface.Script;
 import io.puharesource.mc.sponge.titlemanager.api.iface.TabListSendable;
 import io.puharesource.mc.sponge.titlemanager.api.iface.TitleSendable;
-import io.puharesource.mc.sponge.titlemanager.api.iface.Script;
+import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigMain;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -32,7 +35,7 @@ public final class MiscellaneousUtils {
     private static final Pattern SCRIPT_PATTERN = Pattern.compile("^((i?)script:).*(:).*$");
 
     public static Text format(final String text) {
-        return TextSerializers.TEXT_XML.deserialize(text);
+        return TextSerializers.formattingCode('&').deserialize(text);
     }
     
     public static Set<Player> getWithinRadius(final Location<World> location, final double radius) {
@@ -66,7 +69,7 @@ public final class MiscellaneousUtils {
     }
 
     public static String formatNumber(final BigDecimal number) {
-        ConfigMain config = plugin.getConfigHandler().getConfig();
+        ConfigMain config = plugin.getConfigHandler().getMainConfig().getConfig();
 
         if (config.numberFormatEnabled) {
             DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);

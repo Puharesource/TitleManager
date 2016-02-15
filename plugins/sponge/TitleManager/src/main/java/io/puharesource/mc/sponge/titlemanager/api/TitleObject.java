@@ -3,6 +3,7 @@ package io.puharesource.mc.sponge.titlemanager.api;
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.api.iface.TitleSendable;
+import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigMain;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -50,7 +51,7 @@ public class TitleObject implements TitleSendable {
     }
     
     private void updateTimes() {
-        ConfigMain config = plugin.getConfigHandler().getConfig();
+        final ConfigMain config = plugin.getConfigHandler().getMainConfig().getConfig();
         if (config.usingConfig) return;
 
         fadeIn = config.welcomeMessageFadeIn;

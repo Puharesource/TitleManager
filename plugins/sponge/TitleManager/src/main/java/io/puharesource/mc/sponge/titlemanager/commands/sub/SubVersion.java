@@ -14,8 +14,6 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
 
-import static io.puharesource.mc.sponge.titlemanager.Messages.COMMAND_VERSION_SUCCESS;
-
 public final class SubVersion extends TMSubCommand {
     @Inject private TitleManager plugin;
 
@@ -23,7 +21,8 @@ public final class SubVersion extends TMSubCommand {
     public CommandSpec createSpec() {
         return CommandSpec.builder()
                 .permission("titlemanager.command.version")
-                .description(Text.of("Tells you the version of the plugin."))
+                .description(Text.of(plugin.getConfigHandler().getMessage("command.version.description")))
+                .extendedDescription(Text.of(plugin.getConfigHandler().getMessage("command.version.description_extended")))
                 .executor(this)
                 .build();
     }
@@ -39,6 +38,6 @@ public final class SubVersion extends TMSubCommand {
 
         final PluginContainer container = oContainer.get();
 
-        sendSuccess(source, COMMAND_VERSION_SUCCESS, container.getName() + " version: " + container.getVersion());
+        sendSuccess(source, plugin.getConfigHandler().getMessage("command.version.success", container.getName() + " version: " + container.getVersion()));
     }
 }

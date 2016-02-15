@@ -1,5 +1,8 @@
 package io.puharesource.mc.sponge.titlemanager.commands.sub;
 
+import com.google.inject.Inject;
+import io.puharesource.mc.sponge.titlemanager.ConfigHandler;
+import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.api.ActionbarTitleObject;
 import io.puharesource.mc.sponge.titlemanager.api.iface.ActionbarSendable;
 import io.puharesource.mc.sponge.titlemanager.api.iface.AnimationSendable;
@@ -15,10 +18,12 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
-import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
-import static io.puharesource.mc.sponge.titlemanager.Messages.*;
+import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.format;
+import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.generateActionbarObject;
 
 public final class SubAMessage extends TMSubCommand {
+    @Inject private TitleManager plugin;
+
     public SubAMessage() {
         super("SILENT");
     }
@@ -27,8 +32,8 @@ public final class SubAMessage extends TMSubCommand {
     public CommandSpec createSpec() {
         return CommandSpec.builder()
                 .permission("titlemanager.command.amessage")
-                .description(Text.of("Messages the player an actionbar title."))
-                .extendedDescription(Text.of("Sends an actionbar title message to the specified player."))
+                .description(Text.of(plugin.getConfigHandler().getMessage("command.amessage.description")))
+                .extendedDescription(Text.of(plugin.getConfigHandler().getMessage("command.amessage.description_extended")))
                 .arguments(GenericArguments.player(Text.of("player")), GenericArguments.remainingJoinedStrings(Text.of("message")))
                 .inputTokenizer(createTokenizer())
                 .executor(this)
@@ -45,8 +50,10 @@ public final class SubAMessage extends TMSubCommand {
         final Optional<Player> oPlayer = args.<Player>getOne("player");
         final Optional<String> oMessage = args.<String>getOne("message");
 
+        final ConfigHandler configHandler = plugin.getConfigHandler();
+
         if (!oPlayer.isPresent()) {
-            sendError(source, INVALID_PLAYER);
+            sendError(source, configHandler.getMessage("general.invalid_player"));
             return;
         } else if (!oMessage.isPresent()) {
             syntaxError(source);
@@ -64,7 +71,7 @@ public final class SubAMessage extends TMSubCommand {
         if (silent) return;
 
         if (actionbarObject instanceof AnimationSendable)
-            sendSuccess(source, COMMAND_AMESSAGE_BASIC_SUCCESS, player.getName());
-        else sendSuccess(source, COMMAND_AMESSAGE_BASIC_SUCCESS_ANIMATION, player.getName(), ((ActionbarTitleObject) actionbarObject).getTitle());
+            sendSuccess(source, configHandler.getMessage("command.amessage.success", player.getName()));
+        else sendSuccess(source, configHandler.getMessage("command.amessage.success_animation", player.getName(), ((ActionbarTitleObject) actionbarObject).getTitle().toPlain()));
     }
 }

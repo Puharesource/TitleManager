@@ -14,8 +14,6 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Set;
 
-import static io.puharesource.mc.sponge.titlemanager.Messages.COMMAND_ANIMATIONS_SUCCESS;
-
 public final class SubAnimations extends TMSubCommand {
     @Inject private TitleManager plugin;
 
@@ -25,15 +23,15 @@ public final class SubAnimations extends TMSubCommand {
     public void onCommand(final CommandSource source, final CommandContext args, final CommandParameters params) {
         final Set<String> animations = plugin.getConfigHandler().getAnimations().keySet();
 
-        sendSuccess(source, COMMAND_ANIMATIONS_SUCCESS, animations.size(), TextColors.GREEN + joiner.join(animations));
+        sendSuccess(source, plugin.getConfigHandler().getMessage("command.animations.success", String.valueOf(animations.size()), TextColors.GREEN + joiner.join(animations)));
     }
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder()
                 .permission("titlemanager.command.animations")
-                .description(Text.of("Lists all animations."))
-                .extendedDescription(Text.of("Lists all currently loaded animations."))
+                .description(Text.of(plugin.getConfigHandler().getMessage("command.animations.description")))
+                .extendedDescription(Text.of(plugin.getConfigHandler().getMessage("command.animations.description_extended")))
                 .arguments(GenericArguments.none())
                 .executor(this)
                 .build();

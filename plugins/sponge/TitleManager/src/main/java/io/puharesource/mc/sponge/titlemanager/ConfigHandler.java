@@ -3,7 +3,6 @@ package io.puharesource.mc.sponge.titlemanager;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.api.Sendables;
-import io.puharesource.mc.sponge.titlemanager.api.TitleObject;
 import io.puharesource.mc.sponge.titlemanager.api.animations.AnimationFrame;
 import io.puharesource.mc.sponge.titlemanager.api.animations.AnimationToken;
 import io.puharesource.mc.sponge.titlemanager.api.animations.FrameSequence;
@@ -13,24 +12,17 @@ import io.puharesource.mc.sponge.titlemanager.api.iface.Script;
 import io.puharesource.mc.sponge.titlemanager.api.iface.TabListSendable;
 import io.puharesource.mc.sponge.titlemanager.api.iface.TitleSendable;
 import io.puharesource.mc.sponge.titlemanager.api.scripts.LuaScript;
+import io.puharesource.mc.sponge.titlemanager.config.ConfigFile;
+import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigAnimations;
+import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigMain;
+import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigMessages;
 import lombok.Getter;
-import lombok.val;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 import org.slf4j.Logger;
-import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.config.DefaultConfig;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -39,19 +31,11 @@ import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
 public final class ConfigHandler {
     @Inject private TitleManager plugin;
     @Inject private Logger logger;
-    @Inject @DefaultConfig(sharedRoot = false) private Path mainConfigPath;
-    @Inject @ConfigDir(sharedRoot = false) private Path configDir;
 
-    private final Path animationsConfigPath = new File(configDir.toFile(), "animations").toPath();
+    @Getter private final ConfigFile<ConfigMain> mainConfig;
+    @Getter private final ConfigFile<ConfigMessages> messagesConfig;
+    @Getter private final ConfigFile<ConfigAnimations> animationsConfig;
 
-
-    private final ConfigurationLoader<CommentedConfigurationNode> mainLoader = HoconConfigurationLoader.builder().setPath(mainConfigPath).build();
-    private final ConfigurationLoader<CommentedConfigurationNode> animationsLoader = HoconConfigurationLoader.builder().setPath(animationsConfigPath).build();
-
-    private final ConfigurationNode mainRootNode = mainLoader.createEmptyNode(ConfigurationOptions.defaults());
-    private final ConfigurationNode animationsConfig = animationsLoader.createEmptyNode(ConfigurationOptions.defaults());
-
-    private Map<String, FrameSequence> animations = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private Map<String, Script> scripts = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private File scriptDir;
 
@@ -63,51 +47,36 @@ public final class ConfigHandler {
     private Object worldObject;
     private Object worldActionbarObject;
 
+    public ConfigHandler() {
+        this.mainConfig = new ConfigFile<>(ConfigMain.class);
+        this.messagesConfig = new ConfigFile<>(ConfigMessages.class);
+        this.animationsConfig = new ConfigFile<>(ConfigAnimations.class);
+
+        reload();
+    }
+
     public void reload() {
+        // Stop all running animations.
         logger.debug("Clearing old config data.");
         plugin.getRunningAnimations().forEach(i -> plugin.removeRunningAnimationId(i));
         plugin.getEngine().cancelAll();
         logger.debug("Finished clearing of old config data.");
 
-        logger.debug("Loading main configuration file.");
-        try {
-            mainLoader.load();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load main config!", e);
-        }
-        logger.debug("Finished loading main configuration file.");
+        // Reload the configuration files.
+        logger.debug("Loading main config.");
+        mainConfig.reload();
+        logger.debug("Finished loading main config.");
 
-        logger.debug("Loading animations configuration file.");
-        try {
-            animationsLoader.load();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load animation config!", e);
-        }
-        logger.debug("Finished loading animations configuration file.");
+        logger.debug("Loading messages config.");
+        messagesConfig.reload();
+        logger.debug("Finished loading messages config.");
 
-        final File locale = new File(plugin.getDataFolder(), config.locale + ".yml");
-        final InputStream stream = plugin.getResource(config.locale + ".yml");
-        if (locale.exists()) {
-            messagesConfigFile = new ConfigFile(plugin, plugin.getDataFolder(), config.locale, true);
-        } else if (stream != null) {
-            messagesConfigFile = new ConfigFile(stream);
-        } else {
-            messagesConfigFile = new ConfigFile(plugin, plugin.getDataFolder(), "en_US", true);
-        }
+        logger.debug("Loading animations config.");
+        animationsConfig.reload();
+        logger.debug("Finished loading animations config.");
 
-        animationConfigFile.reload();
-        animations.clear();
-
-        for (final String animationName : animationConfigFile.getConfig().getKeys(false)) {
-            ConfigurationSection section = animationConfigFile.getConfig().getConfigurationSection(animationName);
-            List<AnimationFrame> frames = new ArrayList<>();
-            for (String frame : section.getStringList("frames")) {
-                frames.add(getFrameFromString(frame));
-            }
-
-            animations.put(animationName, new FrameSequence(frames));
-        }
-
+        // Load the scripts
+        logger.debug("Loading scripts");
         Arrays.stream(scriptDir.listFiles())
                 .filter(File::isFile)
                 .filter(file -> file.getName().matches("(.*)(?i).lua"))
@@ -124,17 +93,24 @@ public final class ConfigHandler {
                         throw new RuntimeException("Unable to load " + file, e);
                     }
                 });
+        logger.debug("Finished loading scripts.");
+
+        final ConfigMain config = mainConfig.getConfig();
+
+        // Don't load more values if the configuration file is not in use.
 
         if (!config.usingConfig) return;
 
-        if (config.tabmenuEnabled) {
-            tabTitleObject = generateTabObject(config.tabmenuHeader, config.tabmenuFooter);
+        // If the tab list is enabled, then generate the tab list sendable and broadcast it to all online players.
+        if (config.tablistEnabled) {
+            tabTitleObject = generateTabObject(format(config.tablistHeader), format(config.tablistFooter));
             tabTitleObject.broadcast();
         }
 
+        // If welcome messages is enabled, generate it.
         if (config.welcomeMessageEnabled) {
             if (config.welcomeMessageTitle instanceof String) {
-                welcomeObject = generateTitleObject((String) config.welcomeMessageTitle, config.welcomeMessageSubtitle,
+                welcomeObject = generateTitleObject(format((String) config.welcomeMessageTitle), format(config.welcomeMessageSubtitle),
                         config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
             } else if (config.welcomeMessageTitle instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
@@ -144,8 +120,8 @@ public final class ConfigHandler {
                     for (final String title : (List<String>) config.welcomeMessageTitle) {
                         final String[] titles = splitString(title);
 
-                        titleFrames.add(new AnimationFrame(titles[0], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
-                        subtitleFrames.add(new AnimationFrame(titles[1], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
+                        titleFrames.add(new AnimationFrame(format(titles[0]), config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
+                        subtitleFrames.add(new AnimationFrame(format(titles[1]), config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
 
                         welcomeObject = Sendables.title(AnimationToken.of(new FrameSequence(titleFrames)), AnimationToken.of(new FrameSequence(subtitleFrames)));
                     }
@@ -159,8 +135,9 @@ public final class ConfigHandler {
                 }
             }
 
+            // If the first join title is enabled, generate it.
             if (config.firstJoinTitle instanceof String) {
-                firstWelcomeObject = generateTitleObject((String) config.firstJoinTitle, config.firstJoinSubtitle,
+                firstWelcomeObject = generateTitleObject(format((String) config.firstJoinTitle), format(config.firstJoinSubtitle),
                         config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
             } else if (config.firstJoinTitle instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
@@ -170,8 +147,8 @@ public final class ConfigHandler {
                     for (final String title : (List<String>) config.firstJoinTitle) {
                         final String[] titles = splitString(title);
 
-                        titleFrames.add(new AnimationFrame(titles[0], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
-                        subtitleFrames.add(new AnimationFrame(titles[1], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
+                        titleFrames.add(new AnimationFrame(format(titles[0]), config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
+                        subtitleFrames.add(new AnimationFrame(format(titles[1]), config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
 
                         firstWelcomeObject = Sendables.title(AnimationToken.of(new FrameSequence(titleFrames)), AnimationToken.of(new FrameSequence(subtitleFrames)));
                     }
@@ -188,15 +165,15 @@ public final class ConfigHandler {
 
         if (config.actionbarWelcomeEnabled) {
             if (config.actionbarWelcomeMessage instanceof String) {
-                actionbarWelcomeObject = generateActionbarObject((String) config.actionbarWelcomeMessage);
+                actionbarWelcomeObject = generateActionbarObject(format((String) config.actionbarWelcomeMessage));
             } else if (config.welcomeMessageTitle instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
                     final List<AnimationFrame> titleFrames = new ArrayList<>();
 
                     for (final String title : (List<String>) config.actionbarWelcomeMessage) {
-                        titleFrames.add(new AnimationFrame(title, config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
+                        titleFrames.add(new AnimationFrame(format(title), config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
 
-                        actionbarWelcomeObject = new ActionbarTitleAnimation(new FrameSequence(titleFrames));
+                        actionbarWelcomeObject = Sendables.actionbar(new FrameSequence(titleFrames));
                     }
                 } else {
                     actionbarWelcomeObject = new ArrayList<TitleSendable>();
@@ -209,7 +186,7 @@ public final class ConfigHandler {
             }
 
             if (config.actionbarFirstWelcomeMessage instanceof String) {
-                firstWelcomeObject = generateTitleObject((String) config.actionbarFirstWelcomeMessage, config.firstJoinSubtitle,
+                firstWelcomeObject = generateTitleObject(format((String) config.actionbarFirstWelcomeMessage), format(config.firstJoinSubtitle),
                         config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
             } else if (config.actionbarFirstWelcomeMessage instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
@@ -219,8 +196,8 @@ public final class ConfigHandler {
                     for (final String title : (List<String>) config.actionbarFirstWelcomeMessage) {
                         final String[] titles = splitString(title);
 
-                        titleFrames.add(new AnimationFrame(titles[0], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
-                        subtitleFrames.add(new AnimationFrame(titles[1], config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
+                        titleFrames.add(new AnimationFrame(format(titles[0]), config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
+                        subtitleFrames.add(new AnimationFrame(format(titles[0]), config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut));
 
                         actionbarFirstWelcomeObject = new TitleAnimation(AnimationToken.of(new FrameSequence(titleFrames)), AnimationToken.of(new FrameSequence(subtitleFrames)));
                     }
@@ -235,15 +212,9 @@ public final class ConfigHandler {
             }
         }
 
-
-
-        for (int i = 0; config.disabledVariables.size() > i; i++) {
-            config.disabledVariables.set(i, config.disabledVariables.get(i).toLowerCase());
-        }
-
         if (config.worldMessageEnabled) {
             if (config.worldMessageTitle instanceof String) {
-                worldObject = generateTitleObject((String) config.worldMessageTitle, config.worldMessageSubtitle,
+                worldObject = generateTitleObject(format((String) config.worldMessageTitle), format(config.worldMessageSubtitle),
                         config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut);
             } else if (config.welcomeMessageTitle instanceof List) {
                 if (config.worldMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
@@ -253,8 +224,8 @@ public final class ConfigHandler {
                     for (final String title : (List<String>) config.worldMessageTitle) {
                         final String[] titles = splitString(title);
 
-                        titleFrames.add(new AnimationFrame(titles[0], config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut));
-                        subtitleFrames.add(new AnimationFrame(titles[1], config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut));
+                        titleFrames.add(new AnimationFrame(format(titles[0]), config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut));
+                        subtitleFrames.add(new AnimationFrame(format(titles[1]), config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut));
 
                         welcomeObject = Sendables.title(AnimationToken.of(new FrameSequence(titleFrames)), AnimationToken.of(new FrameSequence(subtitleFrames)));
                     }
@@ -269,13 +240,13 @@ public final class ConfigHandler {
             }
 
             if (config.worldMessageActionBar instanceof String) {
-                worldActionbarObject = generateActionbarObject((String) config.worldMessageActionBar);
+                worldActionbarObject = generateActionbarObject(format((String) config.worldMessageActionBar));
             } else if (config.worldMessageActionBar instanceof List) {
                 if (config.worldMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
                     final List<AnimationFrame> titleFrames = new ArrayList<>();
 
                     for (final String title : (List<String>) config.worldMessageActionBar) {
-                        titleFrames.add(new AnimationFrame(title, config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut));
+                        titleFrames.add(new AnimationFrame(format(title), config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut));
 
                         welcomeObject = Sendables.actionbar(new FrameSequence(titleFrames));
                     }
@@ -354,10 +325,15 @@ public final class ConfigHandler {
     }
 
     public Optional<FrameSequence> getAnimation(final String animationName) {
-        return Optional.ofNullable(animations.get(animationName));
+        return Optional.ofNullable(animationsConfig.getConfig().animations.get(animationName));
     }
 
     public Map<String, FrameSequence> getAnimations() {
-        return ImmutableMap.copyOf(animations);
+        return ImmutableMap.copyOf(animationsConfig.getConfig().animations);
+    }
+
+    public String getMessage(final String path, final String... args) {
+        final String message = messagesConfig.getRootNode().getNode(path.split("\\.")).getString();
+        return String.format(message, args);
     }
 }

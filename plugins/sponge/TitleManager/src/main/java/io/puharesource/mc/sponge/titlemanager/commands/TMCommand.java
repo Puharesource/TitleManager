@@ -1,5 +1,6 @@
 package io.puharesource.mc.sponge.titlemanager.commands;
 
+import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.commands.sub.*;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ import java.util.Set;
 
 public final class TMCommand implements CommandExecutor {
     @Getter private final CommandSpec commandSpec;
-    @Getter private Logger logger;
+    @Getter @Inject private Logger logger;
 
     private Set<CommandSpec> children = new HashSet<>();
 

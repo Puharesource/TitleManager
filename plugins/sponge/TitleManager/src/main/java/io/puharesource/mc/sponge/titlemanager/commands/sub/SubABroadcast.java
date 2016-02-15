@@ -1,6 +1,7 @@
 package io.puharesource.mc.sponge.titlemanager.commands.sub;
 
 import com.google.inject.Inject;
+import io.puharesource.mc.sponge.titlemanager.ConfigHandler;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.api.ActionbarTitleObject;
 import io.puharesource.mc.sponge.titlemanager.api.iface.ActionbarSendable;
@@ -19,7 +20,6 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 
 import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
-import static io.puharesource.mc.sponge.titlemanager.Messages.*;
 
 public final class SubABroadcast extends TMSubCommand {
     @Inject private TitleManager plugin;
@@ -32,8 +32,8 @@ public final class SubABroadcast extends TMSubCommand {
     public CommandSpec createSpec() {
         return CommandSpec.builder()
                 .permission("titlemanager.command.abroadcast")
-                .description(Text.of("Sends an actionbar broadcast."))
-                .extendedDescription(Text.of("Sends an actionbar title message to everyone on the server."))
+                .description(Text.of(plugin.getConfigHandler().getMessage("command.abroadcast.description")))
+                .extendedDescription(Text.of(plugin.getConfigHandler().getMessage("command.abroadcast.extended_description")))
                 .arguments(GenericArguments.remainingJoinedStrings(Text.of("message")))
                 .inputTokenizer(createTokenizer())
                 .executor(this)
@@ -49,23 +49,20 @@ public final class SubABroadcast extends TMSubCommand {
 
         final String message = args.<String>getOne("message").get();
         final boolean silent = params.getBoolean("SILENT");
-        final ConfigMain config = plugin.getConfigHandler().getConfig();
+        final ConfigHandler configHandler = plugin.getConfigHandler();
 
-        final int fadeIn = params.getInt("FADEIN", config.welcomeMessageFadeIn);
-        final int stay = params.getInt("STAY", config.welcomeMessageStay);
-        final int fadeOut = params.getInt("FADEOUT", config.welcomeMessageFadeOut);
         final Optional<World> oWorld = params.getWorld("WORLD");
-        final Optional<Double> oRadius = params.getDouble("radius");
+        final Optional<Double> oRadius = params.getDouble("RADIUS");
         final ActionbarSendable sendable = generateActionbarObject(format(message));
 
         if (params.contains("WORLD")) {
-            if (!oWorld.isPresent()) throw new TMCommandException(INVALID_WORLD, params.get("WORLD").getValue());
+            if (!oWorld.isPresent()) throw new TMCommandException(configHandler.getMessage("general.invalid_world"));
             final World world = oWorld.get();
 
             if(source instanceof Player && (((Player) source).getWorld().equals(world)) && params.contains("RADIUS") && oRadius.isPresent()) {
                 getWithinRadius(((Player) source).getLocation(), oRadius.get()).forEach(sendable::send);
             } else if (params.contains("RADIUS") && !oRadius.isPresent()) {
-                throw new TMCommandException(WRONG_WORLD);
+                throw new TMCommandException(configHandler.getMessage("general.wrong_world"));
             } else {
                 sendable.broadcast(world);
             }
@@ -73,9 +70,9 @@ public final class SubABroadcast extends TMSubCommand {
             if (silent) return;
 
             if (sendable instanceof AnimationSendable) {
-                sendSuccess(source, COMMAND_ABROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
+                sendSuccess(source, configHandler.getMessage("command.abroadcast.success_world_animation", world.getName()));
             } else {
-                sendSuccess(source, COMMAND_ABROADCAST_WORLD_SUCCESS, ((ActionbarTitleObject) sendable).getTitle(), world.getName());
+                sendSuccess(source, configHandler.getMessage("command.abroadcast.success_world", ((ActionbarTitleObject) sendable).getTitle().toPlain(), world.getName()));
             }
         } else {
             if(source instanceof Player && oRadius.isPresent()) {
@@ -87,9 +84,9 @@ public final class SubABroadcast extends TMSubCommand {
             if (silent) return;
 
             if (sendable instanceof AnimationSendable) {
-                sendSuccess(source, COMMAND_ABROADCAST_BASIC_SUCCESS_ANIMATION);
+                sendSuccess(source, configHandler.getMessage("command.abroadcast.success_animation"));
             } else {
-                sendSuccess(source, COMMAND_ABROADCAST_BASIC_SUCCESS, ((ActionbarTitleObject) sendable).getTitle());
+                sendSuccess(source, configHandler.getMessage("command.abroadcast.success", ((ActionbarTitleObject) sendable).getTitle().toPlain()));
             }
         }
     }

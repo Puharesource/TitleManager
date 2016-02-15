@@ -8,6 +8,7 @@ import io.puharesource.mc.sponge.titlemanager.api.iface.TitleSendable;
 import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
+import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigMain;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
@@ -19,7 +20,6 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 
 import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
-import static io.puharesource.mc.sponge.titlemanager.Messages.*;
 
 public final class SubBroadcast extends TMSubCommand {
     @Inject private TitleManager plugin;
@@ -37,7 +37,7 @@ public final class SubBroadcast extends TMSubCommand {
 
         final String message = args.<String>getOne("message").get();
         final boolean silent = params.getBoolean("SILENT");
-        final ConfigMain config = plugin.getConfigHandler().getConfig();
+        final ConfigMain config = plugin.getConfigHandler().getMainConfig().getConfig();
 
         final int fadeIn = params.getInt("FADEIN", config.welcomeMessageFadeIn);
         final int stay = params.getInt("STAY", config.welcomeMessageStay);
@@ -48,14 +48,14 @@ public final class SubBroadcast extends TMSubCommand {
         final String[] lines = splitString(message);
         final TitleSendable object = generateTitleObject(format(lines[0]), format(lines[1]), fadeIn, stay, fadeOut);
 
-        if (params.contains("WORLD")) {//No support for radius if world != own world
-            if (!oWorld.isPresent()) throw new TMCommandException(INVALID_WORLD, params.get("WORLD").getValue());
+        if (params.contains("WORLD")) {
+            if (!oWorld.isPresent()) throw new TMCommandException(plugin.getConfigHandler().getMessage("general.invalid_world"));
             final World world = oWorld.get();
 
             if(source instanceof Player && (((Player) source).getWorld().equals(world)) && params.contains("RADIUS") && oRadius.isPresent()) {
                 getWithinRadius(((Player) source).getLocation(), oRadius.get()).forEach(object::send);
             } else if (params.contains("RADIUS") && !oRadius.isPresent()) {
-                throw new TMCommandException(WRONG_WORLD);
+                throw new TMCommandException(plugin.getConfigHandler().getMessage("general.wrong_world"));
             } else {
                 object.broadcast(world);
             }
@@ -63,14 +63,14 @@ public final class SubBroadcast extends TMSubCommand {
             if (silent) return;
 
             if (object instanceof AnimationSendable) {
-                sendSuccess(source, COMMAND_BROADCAST_WORLD_SUCCESS_ANIMATION, world.getName());
+                sendSuccess(source, plugin.getConfigHandler().getMessage("command.broadcast.success_world_animations", world.getName()));
             } else {
                 final TitleObject title = (TitleObject) object;
 
                 if (title.getSubtitle().isPresent() && !title.getSubtitle().get().isEmpty()) {
-                    sendSuccess(source, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_SUBTITLE, ((TitleObject) object).getTitle(), world.getName());
+                    sendSuccess(source, plugin.getConfigHandler().getMessage("command.broadcast.success_world_with_subtitle", ((TitleObject) object).getTitle().get().toPlain(), ((TitleObject) object).getSubtitle().get().toPlain(), world.getName()));
                 } else {
-                    sendSuccess(source, COMMAND_BROADCAST_WORLD_SUCCESS_WITH_TITLE, ((TitleObject) object).getTitle(), world.getName());
+                    sendSuccess(source, plugin.getConfigHandler().getMessage("command.broadcast.success_world_without_subtitle", ((TitleObject) object).getTitle().get().toPlain(), world.getName()));
                 }
             }
         } else {
@@ -83,14 +83,14 @@ public final class SubBroadcast extends TMSubCommand {
             if (silent) return;
 
             if (object instanceof AnimationSendable) {
-                sendSuccess(source, COMMAND_BROADCAST_BASIC_SUCCESS_ANIMATION);
+                sendSuccess(source, plugin.getConfigHandler().getMessage("command.broadcast.success_animation"));
             } else {
                 final TitleObject title = (TitleObject) object;
 
                 if (title.getSubtitle().isPresent() && !title.getSubtitle().get().isEmpty()) {
-                    sendSuccess(source, COMMAND_BROADCAST_BASIC_SUCCESS_WITH_SUBTITLE, title.getTitle(), title.getSubtitle());
+                    sendSuccess(source, plugin.getConfigHandler().getMessage("command.broadcast.success_world_with_subtitle", title.getTitle().get().toPlain(), title.getSubtitle().get().toPlain()));
                 } else {
-                    sendSuccess(source, COMMAND_BROADCAST_BASIC_SUCCESS_WITH_TITLE, title.getTitle());
+                    sendSuccess(source, plugin.getConfigHandler().getMessage("command.broadcast.success_world_without_subtitle", title.getTitle().get().toPlain()));
                 }
             }
         }
@@ -100,8 +100,8 @@ public final class SubBroadcast extends TMSubCommand {
     public CommandSpec createSpec() {
         return CommandSpec.builder()
                 .permission("titlemanager.command.broadcast")
-                .description(Text.of("Sends a title broadcast."))
-                .extendedDescription(Text.of("Sends a title message to everyone on the server, put <nl> or {nl} or %nl% inside the message, to add a subtitle."))
+                .description(Text.of(plugin.getConfigHandler().getMessage("command.broadcast.description")))
+                .extendedDescription(Text.of(plugin.getConfigHandler().getMessage("command.broadcast.description_extended")))
                 .arguments(GenericArguments.remainingJoinedStrings(Text.of("message")))
                 .inputTokenizer(createTokenizer())
                 .executor(this)

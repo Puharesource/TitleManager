@@ -8,6 +8,7 @@ import io.puharesource.mc.sponge.titlemanager.api.iface.TitleSendable;
 import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
+import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigMain;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
@@ -18,7 +19,6 @@ import org.spongepowered.api.text.Text;
 import java.util.Optional;
 
 import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
-import static io.puharesource.mc.sponge.titlemanager.Messages.*;
 
 public final class SubMessage extends TMSubCommand {
     @Inject private TitleManager plugin;
@@ -38,7 +38,7 @@ public final class SubMessage extends TMSubCommand {
         final Optional<String> oMessage = args.<String>getOne("message");
 
         if (!oPlayer.isPresent()) {
-            sendError(source, INVALID_PLAYER);
+            sendError(source, plugin.getConfigHandler().getMessage("general.invalid_player"));
             return;
         } else if (!oMessage.isPresent()) {
             syntaxError(source);
@@ -46,7 +46,7 @@ public final class SubMessage extends TMSubCommand {
         }
 
         final boolean silent = params.getBoolean("SILENT");
-        final ConfigMain config = plugin.getConfigHandler().getConfig();
+        final ConfigMain config = plugin.getConfigHandler().getMainConfig().getConfig();
         final int fadeIn = params.getInt("FADEIN", config.welcomeMessageFadeIn);
         final int stay = params.getInt("STAY", config.welcomeMessageStay);
         final int fadeOut = params.getInt("FADEOUT", config.welcomeMessageFadeOut);
@@ -60,14 +60,14 @@ public final class SubMessage extends TMSubCommand {
         if (silent) return;
 
         if (titleObject instanceof AnimationSendable) {
-            sendSuccess(source, COMMAND_MESSAGE_BASIC_SUCCESS_ANIMATION, player.getName());
+            sendSuccess(source, plugin.getConfigHandler().getMessage("command.message.success_animation", player.getName()));
         } else {
             final TitleObject title = (TitleObject) titleObject;
 
             if (title.getSubtitle().isPresent() && !title.getSubtitle().get().isEmpty()) {
-                sendSuccess(source, COMMAND_MESSAGE_BASIC_SUCCESS_WITH_SUBTITLE, title.getTitle(), title.getSubtitle(), player.getName());
+                sendSuccess(source, plugin.getConfigHandler().getMessage("command.message.success_with_subtitle", title.getTitle().get().toPlain(), title.getSubtitle().get().toPlain(), player.getName()));
             } else {
-                sendSuccess(source, COMMAND_MESSAGE_BASIC_SUCCESS_WITH_TITLE, title.getTitle(), player.getName());
+                sendSuccess(source, plugin.getConfigHandler().getMessage("command.message.success_without_subtitle", title.getTitle().get().toPlain(), player.getName()));
             }
         }
     }
@@ -76,8 +76,8 @@ public final class SubMessage extends TMSubCommand {
     public CommandSpec createSpec() {
         return CommandSpec.builder()
                 .permission("titlemanager.command.message")
-                .description(Text.of("Messages the player a title."))
-                .extendedDescription(Text.of("Sends a title message to the specified player, put <nl> or {nl} or %nl% inside of the message, to add a subtitle."))
+                .description(Text.of(plugin.getConfigHandler().getMessage("command.message.description")))
+                .extendedDescription(Text.of(plugin.getConfigHandler().getMessage("command.message.description_extended")))
                 .arguments(GenericArguments.player(Text.of("player")), GenericArguments.remainingJoinedStrings(Text.of("message")))
                 .inputTokenizer(createTokenizer())
                 .executor(this)

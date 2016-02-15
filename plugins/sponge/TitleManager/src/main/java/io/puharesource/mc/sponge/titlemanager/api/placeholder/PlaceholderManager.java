@@ -86,7 +86,7 @@ public final class PlaceholderManager {
             }
 
             for (String var : variable.getVariable().vars()) {
-                if (plugin.getConfigHandler().getConfig().disabledVariables.contains(var)) continue;
+                if (plugin.getConfigHandler().getMainConfig().getConfig().disabledVariables.contains(var)) continue;
                 Matcher matcher = getVariablePattern(var).matcher(text);
 
                 int[] dimensions = new int[]{-1, -1};

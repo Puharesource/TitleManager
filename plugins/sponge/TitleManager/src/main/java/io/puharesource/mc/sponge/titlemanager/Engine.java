@@ -1,5 +1,7 @@
 package io.puharesource.mc.sponge.titlemanager;
 
+import org.apache.commons.lang3.Validate;
+
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -9,7 +11,9 @@ public final class Engine {
     private final Map<Integer, ScheduledFuture<?>> scheduled = new ConcurrentHashMap<>();
     private final AtomicInteger ids = new AtomicInteger(0);
 
-    public int schedule(final Runnable runnable, int delay) {
+    public int schedule(final Runnable runnable, final int delay) {
+        Validate.notNull(runnable);
+
         final int id = ids.incrementAndGet();
 
         scheduled.put(id, scheduler.schedule(() -> {
@@ -20,7 +24,9 @@ public final class Engine {
         return id;
     }
 
-    public int schedule(final Runnable runnable, int delay, int period) {
+    public int schedule(final Runnable runnable, final int delay, final int period) {
+        Validate.notNull(runnable);
+
         final int id = ids.incrementAndGet();
 
         scheduled.put(id, scheduler.scheduleAtFixedRate(runnable, delay * 50, period * 50, TimeUnit.MILLISECONDS));
