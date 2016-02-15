@@ -17,10 +17,12 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class ConfigFile<T extends Config> {
     @Inject @ConfigDir(sharedRoot = false) private Path path;
     @Inject private TitleManager plugin;
+    @Inject private Logger logger;
 
     private ConfigurationLoader<CommentedConfigurationNode> loader;
     private Optional<String> embeddedResourceName;
@@ -62,6 +64,9 @@ public class ConfigFile<T extends Config> {
 
         if (!path.toFile().exists()) {
             this.rootNode = loader.createEmptyNode(ConfigurationOptions.defaults());
+        } else {
+            this.rootNode = loader.load();
+            applyDefaults(true);
         }
     }
 

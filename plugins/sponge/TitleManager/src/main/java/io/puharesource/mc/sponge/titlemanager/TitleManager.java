@@ -5,6 +5,7 @@ import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import io.puharesource.mc.sponge.titlemanager.api.Sendables;
 import io.puharesource.mc.sponge.titlemanager.api.placeholder.PlaceholderManager;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommand;
 import io.puharesource.mc.sponge.titlemanager.listeners.ListenerConnection;
@@ -39,6 +40,11 @@ public final class TitleManager {
     public void onStart(final GameStartedServerEvent event) {
         logger.info("Starting TitleManager!");
 
+        injector.getInstance(Sendables.class);
+        final Injector staticInjector = injector.createChildInjector(new MiscellaneousUtils.StaticModule());
+        staticInjector.getInstance(MiscellaneousUtils.class);
+
+
         logger.info("Starting engine.");
         engine = new Engine();
 
@@ -54,6 +60,7 @@ public final class TitleManager {
         logger.info("Registering commands.");
         mainCommand = new TMCommand();
         injector.injectMembers(mainCommand);
+        mainCommand.load();
 
         logger.info("Registering listeners.");
         Sponge.getEventManager().registerListeners(this, new ListenerConnection());

@@ -79,7 +79,7 @@ public final class SubMessage extends TMSubCommand {
                 .description(Text.of(plugin.getConfigHandler().getMessage("command.message.description")))
                 .extendedDescription(Text.of(plugin.getConfigHandler().getMessage("command.message.description_extended")))
                 .arguments(GenericArguments.player(Text.of("player")), GenericArguments.remainingJoinedStrings(Text.of("message")))
-                .inputTokenizer(createTokenizer())
+                //TODO:.inputTokenizer(createTokenizer())
                 .executor(this)
                 .build();
     }

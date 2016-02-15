@@ -35,7 +35,7 @@ public final class SubABroadcast extends TMSubCommand {
                 .description(Text.of(plugin.getConfigHandler().getMessage("command.abroadcast.description")))
                 .extendedDescription(Text.of(plugin.getConfigHandler().getMessage("command.abroadcast.extended_description")))
                 .arguments(GenericArguments.remainingJoinedStrings(Text.of("message")))
-                .inputTokenizer(createTokenizer())
+                //TODO: .inputTokenizer(createTokenizer())
                 .executor(this)
                 .build();
     }

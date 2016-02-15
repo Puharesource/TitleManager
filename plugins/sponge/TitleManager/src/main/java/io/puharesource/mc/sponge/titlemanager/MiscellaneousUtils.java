@@ -1,5 +1,6 @@
 package io.puharesource.mc.sponge.titlemanager;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.api.Sendables;
 import io.puharesource.mc.sponge.titlemanager.api.animations.AnimationFrame;
@@ -34,6 +35,8 @@ public final class MiscellaneousUtils {
     private static final Pattern ANIMATION_PATTERN = Pattern.compile("^((i?)animation:).*$");
     private static final Pattern SCRIPT_PATTERN = Pattern.compile("^((i?)script:).*(:).*$");
 
+    MiscellaneousUtils() {}
+
     public static Text format(final String text) {
         return TextSerializers.formattingCode('&').deserialize(text);
     }
@@ -45,13 +48,13 @@ public final class MiscellaneousUtils {
                 .collect(Collectors.toSet());
     }
 
-    public static Optional<FrameSequence> loadAnimationFromString(final Text text) {
+    public static Optional<FrameSequence> loadAnimationFromText(final Text text) {
         if (text == null) return Optional.empty();
 
         return ANIMATION_PATTERN.matcher(text.toPlain()).matches() ? plugin.getConfigHandler().getAnimation(text.toPlain().split(":", 2)[1]) : Optional.empty();
     }
 
-    public static Optional<FrameSequence> loadScriptFromString(final Text text) {
+    public static Optional<FrameSequence> loadScriptFromText(final Text text) {
         if (text == null) return Optional.empty();
 
         if (SCRIPT_PATTERN.matcher(text.toPlain()).matches()) {
@@ -79,23 +82,28 @@ public final class MiscellaneousUtils {
         return String.valueOf(number.doubleValue());
     }
 
-    public static TabListSendable generateTabObject(final Text header, final Text footer) {
-        final FrameSequence headerObject = loadAnimationFromString(header)
-                .orElseGet(() -> loadScriptFromString(header)
-                        .orElse(new FrameSequence(Collections.singletonList(new AnimationFrame(header, 0, 5, 0)))));
+    public static Optional<FrameSequence> getFrameSequenceFromText(final Text text) {
+        final Optional<FrameSequence> animation = loadAnimationFromText(text);
+        if (animation.isPresent()) return animation;
 
-        final FrameSequence footerObject = loadAnimationFromString(footer)
-                .orElseGet(() -> loadScriptFromString(footer)
-                        .orElse(new FrameSequence(Collections.singletonList(new AnimationFrame(footer, 0, 5, 0)))));
+        final Optional<FrameSequence> script = loadScriptFromText(text);
+        if (script.isPresent()) return script;
+
+        return Optional.empty();
+    }
+
+    public static TabListSendable generateTabObject(final Text header, final Text footer) {
+        final FrameSequence headerObject = getFrameSequenceFromText(header)
+                .orElseGet(() -> new FrameSequence(Collections.singletonList(new AnimationFrame(header, 0, 5, 0))));
+        final FrameSequence footerObject = getFrameSequenceFromText(footer)
+                .orElseGet(() -> new FrameSequence(Collections.singletonList(new AnimationFrame(footer, 0, 5, 0))));
 
         return Sendables.tabList(AnimationToken.of(headerObject), AnimationToken.of(footerObject));
     }
 
     public static TitleSendable generateTitleObject(final Text title, final Text subtitle, final int fadeIn, final int stay, final int fadeOut) {
-        final Optional<FrameSequence> oTitle = Optional.ofNullable(loadAnimationFromString(title)
-                .orElseGet(() -> loadScriptFromString(title).get()));
-        final Optional<FrameSequence> oSubtitle = Optional.ofNullable(loadAnimationFromString(subtitle)
-                .orElseGet(() -> loadScriptFromString(subtitle).get()));
+        final Optional<FrameSequence> oTitle = getFrameSequenceFromText(title);
+        final Optional<FrameSequence> oSubtitle = getFrameSequenceFromText(subtitle);
 
         if (oTitle.isPresent() || oSubtitle.isPresent()) {
 
@@ -113,8 +121,7 @@ public final class MiscellaneousUtils {
     }
 
     public static ActionbarSendable generateActionbarObject(final Text message) {
-        final Optional<FrameSequence> oMessage = Optional.ofNullable(loadAnimationFromString(message)
-                .orElseGet(() -> loadScriptFromString(message).get()));
+        final Optional<FrameSequence> oMessage = getFrameSequenceFromText(message);
 
         return oMessage.isPresent() ? Sendables.actionbar(oMessage.get()) : Sendables.actionbar(message);
     }
@@ -126,5 +133,13 @@ public final class MiscellaneousUtils {
             return str.split(SPLIT_PATTERN.pattern(), 2);
         }
         return new String[]{str, ""};
+    }
+
+    static class StaticModule extends AbstractModule {
+        @Override
+        protected void configure() {
+            requestStaticInjection(MiscellaneousUtils.class);
+            requestStaticInjection(Sendables.class);
+        }
     }
 }

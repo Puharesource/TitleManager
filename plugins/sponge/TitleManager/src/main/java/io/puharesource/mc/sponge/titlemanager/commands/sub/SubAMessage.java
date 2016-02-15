@@ -35,7 +35,7 @@ public final class SubAMessage extends TMSubCommand {
                 .description(Text.of(plugin.getConfigHandler().getMessage("command.amessage.description")))
                 .extendedDescription(Text.of(plugin.getConfigHandler().getMessage("command.amessage.description_extended")))
                 .arguments(GenericArguments.player(Text.of("player")), GenericArguments.remainingJoinedStrings(Text.of("message")))
-                .inputTokenizer(createTokenizer())
+                //TODO:.inputTokenizer(createTokenizer())
                 .executor(this)
                 .build();
     }

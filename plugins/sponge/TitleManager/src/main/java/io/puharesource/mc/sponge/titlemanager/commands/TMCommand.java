@@ -1,6 +1,7 @@
 package io.puharesource.mc.sponge.titlemanager.commands;
 
 import com.google.inject.Inject;
+import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.commands.sub.*;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -22,12 +23,13 @@ import java.util.Optional;
 import java.util.Set;
 
 public final class TMCommand implements CommandExecutor {
-    @Getter private final CommandSpec commandSpec;
+    @Getter private CommandSpec commandSpec;
     @Getter @Inject private Logger logger;
+    @Inject private TitleManager plugin;
 
     private Set<CommandSpec> children = new HashSet<>();
 
-    public TMCommand() {
+    public void load() {
         logger.debug("Registering commands.");
 
         // /tm
@@ -48,12 +50,14 @@ public final class TMCommand implements CommandExecutor {
 
         logger.debug("Registering command /tm.");
         this.commandSpec = mainCommandBuilder.build();
-        Sponge.getCommandManager().register(this, this.commandSpec, "tm", "titlemanager");
+        Sponge.getCommandManager().register(plugin, this.commandSpec, "tm", "titlemanager");
 
         logger.debug("Finished registering commands.");
     }
 
     private void registerChild(final CommandSpec.Builder rootBuilder, final TMSubCommand sub, final String cmd) {
+        plugin.getInjector().injectMembers(sub);
+
         logger.debug("Constructing sub command: " + cmd);
         final CommandSpec spec = sub.createSpec();
         logger.debug("Finished construction of sub command: " + cmd);

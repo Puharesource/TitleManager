@@ -18,12 +18,15 @@ import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigAnimations;
 import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigMain;
 import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigMessages;
 import lombok.Getter;
+import ninja.leaping.configurate.ConfigurationNode;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 import org.slf4j.Logger;
+import org.spongepowered.api.config.ConfigDir;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -32,6 +35,7 @@ import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
 public final class ConfigHandler {
     @Inject private TitleManager plugin;
     @Inject private Logger logger;
+    @Inject @ConfigDir(sharedRoot = false) private Path configDir;
 
     @Getter private ConfigFile<ConfigMain> mainConfig;
     @Getter private ConfigFile<ConfigMessages> messagesConfig;
@@ -69,6 +73,10 @@ public final class ConfigHandler {
         mainConfig.load();
         messagesConfig.load();
         animationsConfig.load();
+
+        // Create scripts dir
+        scriptDir = new File(configDir.toFile(), "scripts");
+        if (!scriptDir.exists()) scriptDir.mkdirs();
 
         // Load the scripts
         logger.debug("Loading scripts");
@@ -355,7 +363,9 @@ public final class ConfigHandler {
     }
 
     public String getMessage(final String path, final String... args) {
-        final String message = messagesConfig.getRootNode().getNode(path.split("\\.")).getString();
-        return String.format(message, args);
+        final ConfigurationNode node = messagesConfig
+                .getRootNode()
+                .getNode(path.split("\\."));
+        return node.isVirtual() ? "" : String.format(node.getString(), args);
     }
 }
