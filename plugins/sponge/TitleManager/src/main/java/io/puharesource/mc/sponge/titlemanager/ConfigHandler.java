@@ -12,6 +12,7 @@ import io.puharesource.mc.sponge.titlemanager.api.iface.Script;
 import io.puharesource.mc.sponge.titlemanager.api.iface.TabListSendable;
 import io.puharesource.mc.sponge.titlemanager.api.iface.TitleSendable;
 import io.puharesource.mc.sponge.titlemanager.api.scripts.LuaScript;
+import io.puharesource.mc.sponge.titlemanager.config.Config;
 import io.puharesource.mc.sponge.titlemanager.config.ConfigFile;
 import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigAnimations;
 import io.puharesource.mc.sponge.titlemanager.config.configs.ConfigMain;
@@ -32,9 +33,9 @@ public final class ConfigHandler {
     @Inject private TitleManager plugin;
     @Inject private Logger logger;
 
-    @Getter private final ConfigFile<ConfigMain> mainConfig;
-    @Getter private final ConfigFile<ConfigMessages> messagesConfig;
-    @Getter private final ConfigFile<ConfigAnimations> animationsConfig;
+    @Getter private ConfigFile<ConfigMain> mainConfig;
+    @Getter private ConfigFile<ConfigMessages> messagesConfig;
+    @Getter private ConfigFile<ConfigAnimations> animationsConfig;
 
     private Map<String, Script> scripts = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private File scriptDir;
@@ -47,33 +48,27 @@ public final class ConfigHandler {
     private Object worldObject;
     private Object worldActionbarObject;
 
-    public ConfigHandler() {
-        this.mainConfig = new ConfigFile<>(ConfigMain.class);
-        this.messagesConfig = new ConfigFile<>(ConfigMessages.class);
-        this.animationsConfig = new ConfigFile<>(ConfigAnimations.class);
-
-        reload();
+    public <T extends Config> ConfigFile<T> createConfig(final Class<T> clazz) {
+        return createConfig(clazz, null);
     }
 
-    public void reload() {
-        // Stop all running animations.
-        logger.debug("Clearing old config data.");
-        plugin.getRunningAnimations().forEach(i -> plugin.removeRunningAnimationId(i));
-        plugin.getEngine().cancelAll();
-        logger.debug("Finished clearing of old config data.");
+    public <T extends Config> ConfigFile<T> createConfig(final Class<T> clazz, final String embeddedResourceName) {
+        final ConfigFile<T> config = new ConfigFile<>(clazz, embeddedResourceName);
+        plugin.getInjector().injectMembers(config);
 
-        // Reload the configuration files.
-        logger.debug("Loading main config.");
-        mainConfig.reload();
-        logger.debug("Finished loading main config.");
+        return config;
+    }
 
-        logger.debug("Loading messages config.");
-        messagesConfig.reload();
-        logger.debug("Finished loading messages config.");
+    public void load() {
+        // Construct configs
+        this.mainConfig = createConfig(ConfigMain.class);
+        this.messagesConfig = createConfig(ConfigMessages.class);
+        this.animationsConfig = createConfig(ConfigAnimations.class);
 
-        logger.debug("Loading animations config.");
-        animationsConfig.reload();
-        logger.debug("Finished loading animations config.");
+        // Loading configs
+        mainConfig.load();
+        messagesConfig.load();
+        animationsConfig.load();
 
         // Load the scripts
         logger.debug("Loading scripts");
@@ -260,6 +255,33 @@ public final class ConfigHandler {
                 }
             }
         }
+    }
+
+    public void unload() {
+        // Stop all running animations.
+        logger.debug("Clearing old config data.");
+        plugin.getRunningAnimations().forEach(i -> plugin.removeRunningAnimationId(i));
+        plugin.getEngine().cancelAll();
+        logger.debug("Finished clearing of old config data.");
+    }
+
+    public void reload() {
+        unload();
+
+        // Reload the configuration files.
+        logger.debug("Loading main config.");
+        mainConfig.reload();
+        logger.debug("Finished loading main config.");
+
+        logger.debug("Loading messages config.");
+        messagesConfig.reload();
+        logger.debug("Finished loading messages config.");
+
+        logger.debug("Loading animations config.");
+        animationsConfig.reload();
+        logger.debug("Finished loading animations config.");
+
+        load();
     }
 
     public TitleSendable getTitleWelcomeMessage(final boolean isFirstLogin) {

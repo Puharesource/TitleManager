@@ -22,34 +22,37 @@ public class ConfigFile<T extends Config> {
     @Inject @ConfigDir(sharedRoot = false) private Path path;
     @Inject private TitleManager plugin;
 
-    private final ConfigurationLoader<CommentedConfigurationNode> loader;
-    private final Optional<String> embeddedResourceName;
+    private ConfigurationLoader<CommentedConfigurationNode> loader;
+    private Optional<String> embeddedResourceName;
 
-    @Getter private final File file;
-    @Getter private final Class<T> clazz;
+    @Getter private File file;
+    @Getter private Class<T> clazz;
     @Getter private T config;
     @Getter private ConfigurationNode rootNode;
 
-    @SneakyThrows
     public ConfigFile(final Class<T> clazz) {
         this(clazz, null);
     }
 
-    @SneakyThrows
     public ConfigFile(final Class<T> clazz, final String embeddedResourceName) {
         Validate.notNull(clazz);
 
         this.clazz = clazz;
         this.embeddedResourceName = Optional.ofNullable(embeddedResourceName);
-        this.file = config.getConfigPath().toFile();
-        this.config = clazz.newInstance();
+    }
 
-        if (!path.toFile().exists() && this.embeddedResourceName.isPresent()) {
+    @SneakyThrows
+    public void load() {
+        this.config = clazz.newInstance();
+        plugin.getInjector().injectMembers(config);
+        this.file = config.getConfigPath().toFile();
+
+        if (!path.toFile().exists() && embeddedResourceName.isPresent()) {
             final OutputStream outputStream = new FileOutputStream(config.getConfigPath().toFile());
 
             final byte[] buffer = new byte[1024];
             int read;
-            final InputStream resourceStream = plugin.getResourceStream(embeddedResourceName);
+            final InputStream resourceStream = plugin.getResourceStream(embeddedResourceName.get());
             while ((read = resourceStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, read);
             }
@@ -60,8 +63,6 @@ public class ConfigFile<T extends Config> {
         if (!path.toFile().exists()) {
             this.rootNode = loader.createEmptyNode(ConfigurationOptions.defaults());
         }
-
-        reload();
     }
 
     @SneakyThrows(IOException.class)
@@ -106,6 +107,7 @@ public class ConfigFile<T extends Config> {
             rootNode.mergeValuesFrom(embeddedNode);
         } else {
             final T configObject = (T) clazz.getConstructors()[0].newInstance();
+            plugin.getInjector().injectMembers(configObject);
 
             for (final Field field : clazz.getDeclaredFields()) {
                 final Optional<ConfigField> configField = findConfigField(field);

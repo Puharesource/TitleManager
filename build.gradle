@@ -20,7 +20,7 @@ subprojects {
 
     task copyToJars(dependsOn: 'build', type: Copy) {
         from 'build/libs/'
-        into "../../jars/"
+        into "$rootProject.rootDir/jars/"
     }
 
     configurations {

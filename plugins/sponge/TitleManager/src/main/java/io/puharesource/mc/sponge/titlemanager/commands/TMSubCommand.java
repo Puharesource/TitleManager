@@ -1,9 +1,7 @@
 package io.puharesource.mc.sponge.titlemanager.commands;
 
 import com.google.common.collect.ImmutableSet;
-import io.puharesource.mc.sponge.titlemanager.Messages;
 import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
-import jdk.nashorn.internal.objects.annotations.Getter;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -12,7 +10,6 @@ import org.spongepowered.api.command.args.parsing.InputTokenizer;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
@@ -49,7 +46,7 @@ public abstract class TMSubCommand implements CommandExecutor {
 
     public void syntaxError(final CommandSource source) {
         source.sendMessage(Text.of(TextColors.RED + "Wrong usage! Correct usage:"));
-        source.sendMessage(Text.of(TextColors.RED + "   /" + getAlias() + " " + getUsage()));
+        source.sendMessage(Text.of(TextColors.RED + "   /" + "" + " " + ""));
     }
 
     public Set<String> getSupportedParameters() {

@@ -48,14 +48,14 @@ public final class MiscellaneousUtils {
     public static Optional<FrameSequence> loadAnimationFromString(final Text text) {
         if (text == null) return Optional.empty();
 
-        return ANIMATION_PATTERN.matcher(text).matches() ? plugin.getConfigHandler().getAnimation(text.split(":", 2)[1]) : Optional.empty();
+        return ANIMATION_PATTERN.matcher(text.toPlain()).matches() ? plugin.getConfigHandler().getAnimation(text.toPlain().split(":", 2)[1]) : Optional.empty();
     }
 
     public static Optional<FrameSequence> loadScriptFromString(final Text text) {
         if (text == null) return Optional.empty();
 
-        if (SCRIPT_PATTERN.matcher(text).matches()) {
-            final String[] parts = text.split(":", 3);
+        if (SCRIPT_PATTERN.matcher(text.toPlain()).matches()) {
+            final String[] parts = text.toPlain().split(":", 3);
             final Optional<Script> script = plugin.getConfigHandler().getScript(parts[1]);
 
             return script.isPresent() ? Optional.of(new FrameSequence(script.get(), Text.of(parts[2]))) : Optional.empty();

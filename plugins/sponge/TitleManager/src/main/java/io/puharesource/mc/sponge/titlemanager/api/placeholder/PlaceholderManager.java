@@ -3,12 +3,12 @@ package io.puharesource.mc.sponge.titlemanager.api.placeholder;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
+import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.api.placeholder.hook.PluginHook;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -34,19 +34,18 @@ public final class PlaceholderManager {
 
         for (Method method : replacer.getClass().getDeclaredMethods()) {
             if (!method.isAnnotationPresent(Placeholder.class)) continue;
-            Placeholder variable = null;
-            for (Annotation annotation : method.getDeclaredAnnotations()) {
-                if (annotation instanceof Placeholder) {
-                    variable = (Placeholder) annotation;
-                    break;
-                }
-            }
 
-            if (variable == null) continue;
+            final Optional<Placeholder> placeholder = Arrays.stream(method.getDeclaredAnnotations())
+                    .filter(annotation -> annotation instanceof Placeholder)
+                    .limit(1)
+                    .map(annotation -> (Placeholder) annotation)
+                    .findAny();
 
-            Class<?>[] params = method.getParameterTypes();
+            if (!placeholder.isPresent()) continue;
+
+            final Class<?>[] params = method.getParameterTypes();
             if (params.length == 1 || params[0].equals(Player.class)) {
-                registerMethod(method, rReplacer, variable);
+                registerMethod(method, rReplacer, placeholder.get());
             }
         }
     }
@@ -71,34 +70,34 @@ public final class PlaceholderManager {
         return Pattern.compile("[{](?i)" + var + "[:]\\d+[,]?(\\d+)?[}]");
     }
 
-    public Text replaceText(final Player player, final Text text) {
+    public Text replaceText(final Player player, Text text) {
         for (final RegisteredPlaceholder variable : variables) {
-            String hookString = variable.getVariable().hook();
+            final String hookString = variable.getVariable().hook();
             if (!hookString.isEmpty()) {
-                PluginHook hook = hooks.get(hookString);
+                final PluginHook hook = hooks.get(hookString);
                 if (hook != null && !hook.getPlugin().isPresent()) continue;
             }
 
-            String ruleString = variable.getVariable().rule();
+            final String ruleString = variable.getVariable().rule();
             if (!ruleString.isEmpty()) {
-                PlaceholderRule rule = rules.get(ruleString);
+                final PlaceholderRule rule = rules.get(ruleString);
                 if (rule != null && !rule.rule(player)) continue;
             }
 
-            for (String var : variable.getVariable().vars()) {
+            for (final String var : variable.getVariable().vars()) {
                 if (plugin.getConfigHandler().getMainConfig().getConfig().disabledVariables.contains(var)) continue;
-                Matcher matcher = getVariablePattern(var).matcher(text);
+                final Matcher matcher = getVariablePattern(var).matcher(text.toPlain());
 
                 int[] dimensions = new int[]{-1, -1};
                 boolean found = false;
 
                 if(matcher.find()) {
                     found = true;
-                    String varText = text.substring(matcher.start(), matcher.end());
-                    String[] parts = varText.split(":");
+                    final String varText = text.toPlain().substring(matcher.start(), matcher.end());
+                    final String[] parts = varText.split(":");
 
                     if(parts[1].contains(",")) {
-                        String[] strDims = parts[1].split(",", 2);
+                        final String[] strDims = parts[1].split(",", 2);
 
                         try {
                             dimensions[0] = Integer.parseInt(strDims[0]);
@@ -112,7 +111,7 @@ public final class PlaceholderManager {
                             dimensions[1] = Integer.parseInt(parts[1].substring(0, parts[1].length() - 1));
                         } catch (NumberFormatException ignored) {}
                     }
-                } else if (!text.toLowerCase().contains("{" + var.toLowerCase() + "}")) continue;
+                } else if (!text.toPlain().contains("{" + var.toLowerCase() + "}")) continue;
 
                 String invoked;
                 try {
@@ -120,6 +119,7 @@ public final class PlaceholderManager {
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     invoked = "UNSUPPORTED";
                 }
+
                 if(!invoked.equals("UNSUPPORTED")) {
                     if (dimensions[0] <= -1) {
                         dimensions[0] = 0;
@@ -134,7 +134,7 @@ public final class PlaceholderManager {
                     }
                 }
 
-                text = text.replaceAll(found ? matcher.pattern().pattern() : "(?i)\\{" + var + "\\}", invoked);
+                text = MiscellaneousUtils.format(text.toPlain().replaceAll(found ? matcher.pattern().pattern() : "(?i)\\{" + var + "\\}", invoked));
             }
         }
 

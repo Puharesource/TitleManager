@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import io.puharesource.mc.sponge.titlemanager.api.placeholder.PlaceholderManager;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommand;
 import io.puharesource.mc.sponge.titlemanager.listeners.ListenerConnection;
@@ -21,13 +22,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Set;
 
-@Plugin(id = "titlemanager", name = "Title Manager", version = "1.0.0-Sponge")
+@Plugin(id = "TitleManager", name = "TitleManager", version = "1.0.0-Sponge")
 public final class TitleManager {
-    @Inject private Logger logger;
+    @Getter @Inject private Logger logger;
+    @Getter @Inject private Injector injector;
 
-    @Getter private Engine engine = new Engine();
-    @Getter private ConfigHandler configHandler = new ConfigHandler();
-    @Getter private PlaceholderManager placeholderManager = new PlaceholderManager();
+    @Getter private Engine engine;
+    @Getter private ConfigHandler configHandler;
+    @Getter private PlaceholderManager placeholderManager;
 
     private TMCommand mainCommand;
 
@@ -35,12 +37,28 @@ public final class TitleManager {
 
     @Listener
     public void onStart(final GameStartedServerEvent event) {
-        mainCommand = new TMCommand();
+        logger.info("Starting TitleManager!");
 
-        logger.debug("Registering listeners.");
+        logger.info("Starting engine.");
+        engine = new Engine();
+
+        logger.info("Starting config handler.");
+        configHandler = new ConfigHandler();
+        injector.injectMembers(configHandler);
+        configHandler.load();
+
+        logger.info("Starting placeholder manager.");
+        placeholderManager = new PlaceholderManager();
+        injector.injectMembers(placeholderManager);
+
+        logger.info("Registering commands.");
+        mainCommand = new TMCommand();
+        injector.injectMembers(mainCommand);
+
+        logger.info("Registering listeners.");
         Sponge.getEventManager().registerListeners(this, new ListenerConnection());
         Sponge.getEventManager().registerListeners(this, new ListenerWorldChange());
-        logger.debug("Done registering listeners.");
+        logger.info("TitleManager has successfully been started!");
     }
 
     public Text replacePlaceholders(final Player player, final Text text) {
