@@ -3,7 +3,7 @@ package io.puharesource.mc.sponge.titlemanager.api.placeholder;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
+import io.puharesource.mc.sponge.titlemanager.utils.MiscellaneousUtils;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.api.placeholder.hook.PluginHook;
 import org.spongepowered.api.entity.living.player.Player;
@@ -12,7 +12,6 @@ import org.spongepowered.api.text.Text;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class PlaceholderManager {
@@ -29,6 +28,8 @@ public final class PlaceholderManager {
     }
 
     public void registerVariableReplacer(final PlaceholderReplacer replacer) {
+        plugin.getInjector().injectMembers(replacer);
+
         int rReplacer = replacers.size();
         replacers.put(rReplacer, replacer);
 
@@ -67,7 +68,7 @@ public final class PlaceholderManager {
     }
 
     private Pattern getVariablePattern(final String var) {
-        return Pattern.compile("[{](?i)" + var + "[:]\\d+[,]?(\\d+)?[}]");
+        return Pattern.compile("[$][{](?i)" + var + "[}]");
     }
 
     public Text replaceText(final Player player, Text text) {
@@ -84,34 +85,10 @@ public final class PlaceholderManager {
                 if (rule != null && !rule.rule(player)) continue;
             }
 
-            for (final String var : variable.getVariable().vars()) {
+            for (final String var : variable.getVariable().placeholders()) {
                 if (plugin.getConfigHandler().getMainConfig().getConfig().disabledVariables.contains(var)) continue;
-                final Matcher matcher = getVariablePattern(var).matcher(text.toPlain());
 
-                int[] dimensions = new int[]{-1, -1};
-                boolean found = false;
-
-                if(matcher.find()) {
-                    found = true;
-                    final String varText = text.toPlain().substring(matcher.start(), matcher.end());
-                    final String[] parts = varText.split(":");
-
-                    if(parts[1].contains(",")) {
-                        final String[] strDims = parts[1].split(",", 2);
-
-                        try {
-                            dimensions[0] = Integer.parseInt(strDims[0]);
-                        } catch (NumberFormatException ignored) {}
-
-                        try {
-                            dimensions[1] = Integer.parseInt(strDims[1].substring(0, strDims[1].length() - 1));
-                        } catch (NumberFormatException ignored) {}
-                    } else {
-                        try {
-                            dimensions[1] = Integer.parseInt(parts[1].substring(0, parts[1].length() - 1));
-                        } catch (NumberFormatException ignored) {}
-                    }
-                } else if (!text.toPlain().contains("{" + var.toLowerCase() + "}")) continue;
+                if (!text.toPlain().toLowerCase().contains("${" + var.toLowerCase() + "}")) continue;
 
                 String invoked;
                 try {
@@ -120,21 +97,10 @@ public final class PlaceholderManager {
                     invoked = "UNSUPPORTED";
                 }
 
-                if(!invoked.equals("UNSUPPORTED")) {
-                    if (dimensions[0] <= -1) {
-                        dimensions[0] = 0;
-                    }
+                final String invokedString = invoked;
 
-                    if (dimensions[1] > invoked.length() || dimensions[1] <= -1) {
-                        dimensions[1] = invoked.length();
-                    }
-
-                    if (dimensions[0] != 0 || dimensions[1] != invoked.length()) {
-                        invoked = invoked.substring(dimensions[0], dimensions[1]);
-                    }
-                }
-
-                text = MiscellaneousUtils.format(text.toPlain().replaceAll(found ? matcher.pattern().pattern() : "(?i)\\{" + var + "\\}", invoked));
+                text = MiscellaneousUtils.transformText(text,
+                        str -> str.replaceAll(getVariablePattern(var).pattern(), invokedString));
             }
         }
 

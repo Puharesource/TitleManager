@@ -10,20 +10,19 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Set;
 
 public final class SubAnimations extends TMSubCommand {
     @Inject private TitleManager plugin;
 
-    private final Joiner joiner = Joiner.on(TextColors.WHITE + ", " + TextColors.GREEN);
+    private final Joiner joiner = Joiner.on("&f, &a");
 
     @Override
     public void onCommand(final CommandSource source, final CommandContext args, final CommandParameters params) {
         final Set<String> animations = plugin.getConfigHandler().getAnimations().keySet();
 
-        sendSuccess(source, plugin.getConfigHandler().getMessage("command.animations.success", String.valueOf(animations.size()), TextColors.GREEN + joiner.join(animations)));
+        sendSuccess(source, plugin.getConfigHandler().getMessage("command.animations.success", String.valueOf(animations.size()), "&a" + joiner.join(animations)));
     }
 
     @Override

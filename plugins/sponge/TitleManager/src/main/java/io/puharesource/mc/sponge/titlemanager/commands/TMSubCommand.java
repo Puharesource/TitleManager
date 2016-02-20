@@ -1,7 +1,7 @@
 package io.puharesource.mc.sponge.titlemanager.commands;
 
 import com.google.common.collect.ImmutableSet;
-import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
+import io.puharesource.mc.sponge.titlemanager.utils.MiscellaneousUtils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -13,9 +13,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class TMSubCommand implements CommandExecutor {
@@ -35,7 +33,11 @@ public abstract class TMSubCommand implements CommandExecutor {
     @NonnullByDefault
     public CommandResult execute(final CommandSource source, final CommandContext args) throws CommandException {
         try {
-            onCommand(source, args, null);
+            final Map<String, CommandParameter> params = new HashMap<>();
+
+            supportedParameters.stream().forEach(param -> params.put(param, new CommandParameter(param, null)));
+
+            onCommand(source, args, new CommandParameters(params));
         } catch (TMCommandException e) {
             source.sendMessage(Text.of(e.getMessage()));
         }
@@ -45,8 +47,8 @@ public abstract class TMSubCommand implements CommandExecutor {
     public abstract void onCommand(final CommandSource source, final CommandContext args, final CommandParameters params) throws TMCommandException;
 
     public void syntaxError(final CommandSource source) {
-        source.sendMessage(Text.of(TextColors.RED + "Wrong usage! Correct usage:"));
-        source.sendMessage(Text.of(TextColors.RED + "   /" + "" + " " + ""));
+        source.sendMessage(Text.of(TextColors.RED, "Wrong usage! Correct usage:"));
+        source.sendMessage(Text.of(TextColors.RED, "   /" + "" + " " + ""));
     }
 
     public Set<String> getSupportedParameters() {

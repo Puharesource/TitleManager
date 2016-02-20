@@ -47,7 +47,7 @@ public final class ConfigMain implements Config {
     public String tablistHeader = "&3MyServer\\n&bSecond line!\\n&fThird line!";
 
     @ConfigField(path = "tablist.footer")
-    public String tablistFooter = "animation:left-to-right";
+    public String tablistFooter = "&bThis is a footer!";
 
     /*
      * welcome-message section
@@ -57,7 +57,7 @@ public final class ConfigMain implements Config {
     public boolean welcomeMessageEnabled = true;
 
     @ConfigField(path = "welcome-title.title")
-    public Object welcomeMessageTitle = "&7Welcome back &a{PLAYER}&7!";
+    public Object welcomeMessageTitle = "&7Welcome back &a${PLAYER}&7!";
 
     @ConfigField(path = "welcome-title.subtitle")
     public String welcomeMessageSubtitle = "&7To my server";
@@ -79,7 +79,7 @@ public final class ConfigMain implements Config {
      * ----------------------------------
      */
     @ConfigField(path = "welcome-title.first-join.title")
-    public Object firstJoinTitle = "&7Welcome to MyServer &a{PLAYER}";
+    public Object firstJoinTitle = "&7Welcome to MyServer &a${PLAYER}";
 
     @ConfigField(path = "welcome-title.first-join.subtitle")
     public String firstJoinSubtitle = "&7Hope you enjoy your stay!";
@@ -132,7 +132,7 @@ public final class ConfigMain implements Config {
     public Object worldMessageTitle = "&7You have joined";
 
     @ConfigField(path = "world-message.subtitle")
-    public String worldMessageSubtitle = "&7the {WORLD} world!";
+    public String worldMessageSubtitle = "&7the ${WORLD} world!";
 
     @ConfigField(path = "world-message.mode")
     public String worldMessageMode = "NONE";

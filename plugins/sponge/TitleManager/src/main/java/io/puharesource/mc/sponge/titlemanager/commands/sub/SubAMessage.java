@@ -18,8 +18,8 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
-import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.format;
-import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.generateActionbarObject;
+import static io.puharesource.mc.sponge.titlemanager.utils.MiscellaneousUtils.format;
+import static io.puharesource.mc.sponge.titlemanager.utils.MiscellaneousUtils.createActionbarSendable;
 
 public final class SubAMessage extends TMSubCommand {
     @Inject private TitleManager plugin;
@@ -53,18 +53,16 @@ public final class SubAMessage extends TMSubCommand {
         final ConfigHandler configHandler = plugin.getConfigHandler();
 
         if (!oPlayer.isPresent()) {
-            sendError(source, configHandler.getMessage("general.invalid_player"));
-            return;
+            throw new TMCommandException(configHandler.getMessage("general.invalid_player"));
         } else if (!oMessage.isPresent()) {
-            syntaxError(source);
-            return;
+            throw new TMCommandException(configHandler.getMessage("general.invalid_message"));
         }
 
         final Player player = oPlayer.get();
         final String message = oMessage.get();
 
         final boolean silent = params.getBoolean("SILENT");
-        final ActionbarSendable actionbarObject = generateActionbarObject(format(message));
+        final ActionbarSendable actionbarObject = createActionbarSendable(format(message));
 
         actionbarObject.send(player);
 

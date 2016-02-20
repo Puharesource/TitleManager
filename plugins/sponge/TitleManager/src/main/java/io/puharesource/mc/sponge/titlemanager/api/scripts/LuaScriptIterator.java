@@ -1,7 +1,7 @@
 package io.puharesource.mc.sponge.titlemanager.api.scripts;
 
 import com.google.inject.Inject;
-import io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils;
+import io.puharesource.mc.sponge.titlemanager.utils.MiscellaneousUtils;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.api.animations.AnimationFrame;
 import lombok.Data;

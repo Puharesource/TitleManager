@@ -19,7 +19,7 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
-import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
+import static io.puharesource.mc.sponge.titlemanager.utils.MiscellaneousUtils.*;
 
 public final class SubBroadcast extends TMSubCommand {
     @Inject private TitleManager plugin;
@@ -30,7 +30,7 @@ public final class SubBroadcast extends TMSubCommand {
 
     @Override
     public void onCommand(final CommandSource source, final CommandContext args, final CommandParameters params) throws TMCommandException {
-        if (args.hasAny("message")) {
+        if (!args.hasAny("message")) {
             syntaxError(source);
             return;
         }
@@ -46,7 +46,7 @@ public final class SubBroadcast extends TMSubCommand {
         final Optional<Double> oRadius = params.getDouble("radius");
 
         final String[] lines = splitString(message);
-        final TitleSendable object = generateTitleObject(format(lines[0]), format(lines[1]), fadeIn, stay, fadeOut);
+        final TitleSendable object = createTitleSendable(format(lines[0]), format(lines[1]), fadeIn, stay, fadeOut);
 
         if (params.contains("WORLD")) {
             if (!oWorld.isPresent()) throw new TMCommandException(plugin.getConfigHandler().getMessage("general.invalid_world"));
@@ -87,10 +87,10 @@ public final class SubBroadcast extends TMSubCommand {
             } else {
                 final TitleObject title = (TitleObject) object;
 
-                if (title.getSubtitle().isPresent() && !title.getSubtitle().get().isEmpty()) {
-                    sendSuccess(source, plugin.getConfigHandler().getMessage("command.broadcast.success_world_with_subtitle", title.getTitle().get().toPlain(), title.getSubtitle().get().toPlain()));
+                if (title.hasSubtitle()) {
+                    sendSuccess(source, plugin.getConfigHandler().getMessage("command.broadcast.success_with_subtitle", title.getTitle().get().toPlain(), title.getSubtitle().get().toPlain()));
                 } else {
-                    sendSuccess(source, plugin.getConfigHandler().getMessage("command.broadcast.success_world_without_subtitle", title.getTitle().get().toPlain()));
+                    sendSuccess(source, plugin.getConfigHandler().getMessage("command.broadcast.success_without_subtitle", title.getTitle().get().toPlain()));
                 }
             }
         }

@@ -8,8 +8,11 @@ import com.google.inject.Injector;
 import io.puharesource.mc.sponge.titlemanager.api.Sendables;
 import io.puharesource.mc.sponge.titlemanager.api.placeholder.PlaceholderManager;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommand;
+import io.puharesource.mc.sponge.titlemanager.guicemodules.StaticModule;
 import io.puharesource.mc.sponge.titlemanager.listeners.ListenerConnection;
 import io.puharesource.mc.sponge.titlemanager.listeners.ListenerWorldChange;
+import io.puharesource.mc.sponge.titlemanager.placeholders.StandardPlaceholders;
+import io.puharesource.mc.sponge.titlemanager.utils.MiscellaneousUtils;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -41,7 +44,7 @@ public final class TitleManager {
         logger.info("Starting TitleManager!");
 
         injector.getInstance(Sendables.class);
-        final Injector staticInjector = injector.createChildInjector(new MiscellaneousUtils.StaticModule());
+        final Injector staticInjector = injector.createChildInjector(new StaticModule());
         staticInjector.getInstance(MiscellaneousUtils.class);
 
 
@@ -57,14 +60,22 @@ public final class TitleManager {
         placeholderManager = new PlaceholderManager();
         injector.injectMembers(placeholderManager);
 
+        placeholderManager.registerVariableReplacer(new StandardPlaceholders());
+
         logger.info("Registering commands.");
         mainCommand = new TMCommand();
         injector.injectMembers(mainCommand);
         mainCommand.load();
 
         logger.info("Registering listeners.");
-        Sponge.getEventManager().registerListeners(this, new ListenerConnection());
-        Sponge.getEventManager().registerListeners(this, new ListenerWorldChange());
+        final ListenerConnection listenerConnection = new ListenerConnection();
+        final ListenerWorldChange listenerWorldChange = new ListenerWorldChange();
+
+        injector.injectMembers(listenerConnection);
+        injector.injectMembers(listenerWorldChange);
+
+        Sponge.getEventManager().registerListeners(this, listenerConnection);
+        Sponge.getEventManager().registerListeners(this, listenerWorldChange);
         logger.info("TitleManager has successfully been started!");
     }
 
@@ -97,10 +108,10 @@ public final class TitleManager {
     }
 
     public InputStream getResourceStream(final String fileName) {
-        return this.getClass().getResourceAsStream(fileName);
+        return this.getClass().getResourceAsStream("/" + fileName);
     }
 
     public URL getResourceURL(final String fileName) {
-        return this.getClass().getResource(fileName);
+        return this.getClass().getResource("/" + fileName);
     }
 }

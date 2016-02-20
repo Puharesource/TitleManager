@@ -67,7 +67,7 @@ public class TitleObject implements TitleSendable {
                 .fadeOut(fadeOut);
 
         title.ifPresent(text -> builder.title(plugin.replacePlaceholders(player, text)));
-        subtitle.ifPresent(text -> builder.title(plugin.replacePlaceholders(player, text)));
+        subtitle.ifPresent(text -> builder.subtitle(plugin.replacePlaceholders(player, text)));
 
         player.sendTitle(builder.build());
     }
@@ -91,6 +91,13 @@ public class TitleObject implements TitleSendable {
     }
 
     /**
+     * @return Whether this title object has a title.
+     */
+    public boolean hasTitle() {
+        return title.isPresent() && !title.get().isEmpty() && !title.get().toPlain().trim().isEmpty();
+    }
+
+    /**
      * Gets the raw text of the subtitle.
      * @return The subtitle text.
      */
@@ -106,6 +113,13 @@ public class TitleObject implements TitleSendable {
     public TitleObject setSubtitle(final Text subtitle) {
         this.subtitle = Optional.of(subtitle);
         return this;
+    }
+
+    /**
+     * @return Whether this title object has a subtitle.
+     */
+    public boolean hasSubtitle() {
+        return subtitle.isPresent() && !subtitle.get().isEmpty() && !title.get().toPlain().trim().isEmpty();
     }
 
     /**

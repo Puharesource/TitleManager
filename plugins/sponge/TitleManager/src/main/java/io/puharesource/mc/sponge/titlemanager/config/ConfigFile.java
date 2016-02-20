@@ -1,5 +1,6 @@
 package io.puharesource.mc.sponge.titlemanager.config;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import lombok.Getter;
@@ -12,8 +13,10 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.apache.commons.lang3.Validate;
 import org.spongepowered.api.config.ConfigDir;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -48,26 +51,20 @@ public class ConfigFile<T extends Config> {
         this.config = clazz.newInstance();
         plugin.getInjector().injectMembers(config);
         this.file = config.getConfigPath().toFile();
-
-        if (!path.toFile().exists() && embeddedResourceName.isPresent()) {
-            final OutputStream outputStream = new FileOutputStream(config.getConfigPath().toFile());
-
-            final byte[] buffer = new byte[1024];
-            int read;
-            final InputStream resourceStream = plugin.getResourceStream(embeddedResourceName.get());
-            while ((read = resourceStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, read);
-            }
-        }
-
         this.loader = HoconConfigurationLoader.builder().setPath(config.getConfigPath()).build();
 
-        if (!path.toFile().exists()) {
-            this.rootNode = loader.createEmptyNode(ConfigurationOptions.defaults());
-        } else {
-            this.rootNode = loader.load();
-            applyDefaults(true);
+        if (!path.toFile().exists() && embeddedResourceName.isPresent()) {
+            final URL embeddedResource = plugin.getResourceURL("messages.conf");
+            final ConfigurationLoader<CommentedConfigurationNode> embeddedLoader = HoconConfigurationLoader.builder().setURL(embeddedResource).build();
+
+            this.loader.save(embeddedLoader.load());
         }
+
+        createFileIfNotExists();
+        this.rootNode = loader.load();
+        applyDefaults(true);
+
+        System.out.println(rootNode);
     }
 
     @SneakyThrows(IOException.class)
@@ -114,18 +111,14 @@ public class ConfigFile<T extends Config> {
             final T configObject = (T) clazz.getConstructors()[0].newInstance();
             plugin.getInjector().injectMembers(configObject);
 
-            for (final Field field : clazz.getDeclaredFields()) {
-                final Optional<ConfigField> configField = findConfigField(field);
+            findFields().entrySet().forEach(e -> {
+                final String[] nodePath = e.getValue().path().split("\\.");
+                final ConfigurationNode fieldPath = rootNode.getNode(nodePath);
 
-                if (configField.isPresent()) {
-                    final String[] nodePath = configField.get().path().split("\\.");
-                    final ConfigurationNode fieldPath = rootNode.getNode(nodePath);
-
-                    if (override || !fieldPath.isVirtual()) {
-                        fieldPath.setValue(field.get(configObject));
-                    }
+                if (override || fieldPath.getValue() != null) {
+                    setValueInFile(e.getKey(), e.getValue());
                 }
-            }
+            });
         }
 
         save();
@@ -138,13 +131,14 @@ public class ConfigFile<T extends Config> {
 
         final T configObject = (T) clazz.getConstructors()[0].newInstance();
 
-        for (final Field field : clazz.getDeclaredFields()) {
-            final Optional<ConfigField> configField = findConfigField(field);
+        findFields().entrySet().forEach(e -> {
+            final Field field = e.getKey();
+            final ConfigField configField = e.getValue();
 
-            if (configField.isPresent()) {
-                final String[] nodePath = configField.get().path().split("\\.");
-                final ConfigurationNode node = rootNode.getNode(nodePath);
+            final String[] nodePath = configField.path().split("\\.");
+            final ConfigurationNode node = rootNode.getNode(nodePath);
 
+            try {
                 if (field.get(configObject) instanceof Collection && node.getValue() instanceof Collection) {
                     final Collection collection = (Collection) field.get(configObject);
                     collection.clear();
@@ -155,11 +149,13 @@ public class ConfigFile<T extends Config> {
                     map.clear();
 
                     map.putAll((Map) node.getValue());
+                } else {
+                    setValueInObject(field, configField);
                 }
-
-                field.set(configObject, node.getValue());
+            } catch (IllegalAccessException e1) {
+                e1.printStackTrace();
             }
-        }
+        });
 
         return configObject;
     }
@@ -172,20 +168,29 @@ public class ConfigFile<T extends Config> {
         final ConfigurationLoader<CommentedConfigurationNode> newLoader = HoconConfigurationLoader.builder().setPath(newPath).build();
         final ConfigurationNode newRootNode = newLoader.createEmptyNode();
 
-        for (final Field field : config.getClass().getDeclaredFields()) {
-            final Optional<ConfigField> configField = findConfigField(field);
+        findFields().entrySet().forEach(e -> {
+            final String[] nodePath = e.getValue().path().split("\\.");
 
-            if (configField.isPresent()) {
-                final String[] nodePath = configField.get().path().split("\\.");
-                final ConfigurationNode fieldPath = rootNode.getNode(nodePath);
-
-                if (!fieldPath.isVirtual()) {
-                    newRootNode.getNode(nodePath).setValue(field.get(config));
-                }
+            try {
+                newRootNode.getNode(nodePath).setValue(e.getKey().get(config));
+            } catch (IllegalAccessException e1) {
+                e1.printStackTrace();
             }
-        }
+        });
 
         newLoader.save(newRootNode);
+    }
+
+    private Map<Field, ConfigField> findFields() {
+        final Map<Field, ConfigField> map = new HashMap<>();
+
+        for (final Field field : clazz.getDeclaredFields()) {
+            final Optional<ConfigField> oConfigField = findConfigField(field);
+
+            oConfigField.ifPresent(configField -> map.put(field, configField));
+        }
+
+        return ImmutableMap.copyOf(map);
     }
 
     private Optional<ConfigField> findConfigField(final Field field) {
@@ -196,5 +201,15 @@ public class ConfigFile<T extends Config> {
                 .limit(1)
                 .map(annotation -> (ConfigField) annotation)
                 .findAny();
+    }
+
+    @SneakyThrows(IllegalAccessException.class)
+    private void setValueInObject(final Field field, ConfigField configField) {
+        field.set(config, rootNode.getNode(configField.path().split("\\.")).getValue());
+    }
+
+    @SneakyThrows(IllegalAccessException.class)
+    private void setValueInFile(final Field field, ConfigField configField) {
+        rootNode.getNode(configField.path().split("\\.")).setValue(field.get(config));
     }
 }

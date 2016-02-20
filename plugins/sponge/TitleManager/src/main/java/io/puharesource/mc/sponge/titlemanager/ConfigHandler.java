@@ -7,10 +7,7 @@ import io.puharesource.mc.sponge.titlemanager.api.animations.AnimationFrame;
 import io.puharesource.mc.sponge.titlemanager.api.animations.AnimationToken;
 import io.puharesource.mc.sponge.titlemanager.api.animations.FrameSequence;
 import io.puharesource.mc.sponge.titlemanager.api.animations.TitleAnimation;
-import io.puharesource.mc.sponge.titlemanager.api.iface.ActionbarSendable;
-import io.puharesource.mc.sponge.titlemanager.api.iface.Script;
-import io.puharesource.mc.sponge.titlemanager.api.iface.TabListSendable;
-import io.puharesource.mc.sponge.titlemanager.api.iface.TitleSendable;
+import io.puharesource.mc.sponge.titlemanager.api.iface.*;
 import io.puharesource.mc.sponge.titlemanager.api.scripts.LuaScript;
 import io.puharesource.mc.sponge.titlemanager.config.Config;
 import io.puharesource.mc.sponge.titlemanager.config.ConfigFile;
@@ -30,7 +27,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
+import static io.puharesource.mc.sponge.titlemanager.utils.MiscellaneousUtils.*;
 
 public final class ConfigHandler {
     @Inject private TitleManager plugin;
@@ -106,14 +103,14 @@ public final class ConfigHandler {
 
         // If the tab list is enabled, then generate the tab list sendable and broadcast it to all online players.
         if (config.tablistEnabled) {
-            tabTitleObject = generateTabObject(format(config.tablistHeader), format(config.tablistFooter));
+            tabTitleObject = createTabListSendable(format(config.tablistHeader), format(config.tablistFooter));
             tabTitleObject.broadcast();
         }
 
         // If welcome messages is enabled, generate it.
         if (config.welcomeMessageEnabled) {
             if (config.welcomeMessageTitle instanceof String) {
-                welcomeObject = generateTitleObject(format((String) config.welcomeMessageTitle), format(config.welcomeMessageSubtitle),
+                welcomeObject = createTitleSendable(format((String) config.welcomeMessageTitle), format(config.welcomeMessageSubtitle),
                         config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
             } else if (config.welcomeMessageTitle instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
@@ -140,7 +137,7 @@ public final class ConfigHandler {
 
             // If the first join title is enabled, generate it.
             if (config.firstJoinTitle instanceof String) {
-                firstWelcomeObject = generateTitleObject(format((String) config.firstJoinTitle), format(config.firstJoinSubtitle),
+                firstWelcomeObject = createTitleSendable(format((String) config.firstJoinTitle), format(config.firstJoinSubtitle),
                         config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
             } else if (config.firstJoinTitle instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
@@ -168,7 +165,7 @@ public final class ConfigHandler {
 
         if (config.actionbarWelcomeEnabled) {
             if (config.actionbarWelcomeMessage instanceof String) {
-                actionbarWelcomeObject = generateActionbarObject(format((String) config.actionbarWelcomeMessage));
+                actionbarWelcomeObject = createActionbarSendable(format((String) config.actionbarWelcomeMessage));
             } else if (config.welcomeMessageTitle instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
                     final List<AnimationFrame> titleFrames = new ArrayList<>();
@@ -189,7 +186,7 @@ public final class ConfigHandler {
             }
 
             if (config.actionbarFirstWelcomeMessage instanceof String) {
-                firstWelcomeObject = generateTitleObject(format((String) config.actionbarFirstWelcomeMessage), format(config.firstJoinSubtitle),
+                firstWelcomeObject = createTitleSendable(format((String) config.actionbarFirstWelcomeMessage), format(config.firstJoinSubtitle),
                         config.welcomeMessageFadeIn, config.welcomeMessageStay, config.welcomeMessageFadeOut);
             } else if (config.actionbarFirstWelcomeMessage instanceof List) {
                 if (config.welcomeMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
@@ -217,7 +214,7 @@ public final class ConfigHandler {
 
         if (config.worldMessageEnabled) {
             if (config.worldMessageTitle instanceof String) {
-                worldObject = generateTitleObject(format((String) config.worldMessageTitle), format(config.worldMessageSubtitle),
+                worldObject = createTitleSendable(format((String) config.worldMessageTitle), format(config.worldMessageSubtitle),
                         config.worldMessageFadeIn, config.worldMessageStay, config.worldMessageFadeOut);
             } else if (config.welcomeMessageTitle instanceof List) {
                 if (config.worldMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
@@ -243,7 +240,7 @@ public final class ConfigHandler {
             }
 
             if (config.worldMessageActionBar instanceof String) {
-                worldActionbarObject = generateActionbarObject(format((String) config.worldMessageActionBar));
+                worldActionbarObject = createActionbarSendable(format((String) config.worldMessageActionBar));
             } else if (config.worldMessageActionBar instanceof List) {
                 if (config.worldMessageMode.equalsIgnoreCase("SEQUENTIAL")) {
                     final List<AnimationFrame> titleFrames = new ArrayList<>();
@@ -354,11 +351,11 @@ public final class ConfigHandler {
         return ImmutableMap.copyOf(scripts);
     }
 
-    public Optional<FrameSequence> getAnimation(final String animationName) {
+    public Optional<AnimationIterable> getAnimation(final String animationName) {
         return Optional.ofNullable(animationsConfig.getConfig().animations.get(animationName));
     }
 
-    public Map<String, FrameSequence> getAnimations() {
+    public Map<String, AnimationIterable> getAnimations() {
         return ImmutableMap.copyOf(animationsConfig.getConfig().animations);
     }
 

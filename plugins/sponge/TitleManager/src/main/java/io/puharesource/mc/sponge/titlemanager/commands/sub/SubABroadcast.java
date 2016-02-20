@@ -19,7 +19,7 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
-import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
+import static io.puharesource.mc.sponge.titlemanager.utils.MiscellaneousUtils.*;
 
 public final class SubABroadcast extends TMSubCommand {
     @Inject private TitleManager plugin;
@@ -42,7 +42,7 @@ public final class SubABroadcast extends TMSubCommand {
 
     @Override
     public void onCommand(final CommandSource source, final CommandContext args, final CommandParameters params) throws TMCommandException {
-        if (args.hasAny("message")) {
+        if (!args.hasAny("message")) {
             syntaxError(source);
             return;
         }
@@ -53,7 +53,7 @@ public final class SubABroadcast extends TMSubCommand {
 
         final Optional<World> oWorld = params.getWorld("WORLD");
         final Optional<Double> oRadius = params.getDouble("RADIUS");
-        final ActionbarSendable sendable = generateActionbarObject(format(message));
+        final ActionbarSendable sendable = createActionbarSendable(format(message));
 
         if (params.contains("WORLD")) {
             if (!oWorld.isPresent()) throw new TMCommandException(configHandler.getMessage("general.invalid_world"));

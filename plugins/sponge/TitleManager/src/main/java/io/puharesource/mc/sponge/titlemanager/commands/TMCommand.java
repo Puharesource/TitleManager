@@ -39,13 +39,13 @@ public final class TMCommand implements CommandExecutor {
                 .arguments(GenericArguments.none())
                 .executor(new TMCommand());
 
-        registerChild(mainCommandBuilder, new SubABroadcast(), "abc");
-        registerChild(mainCommandBuilder, new SubAMessage(), "amsg");
-        registerChild(mainCommandBuilder, new SubAnimations(), "animations");
-        registerChild(mainCommandBuilder, new SubBroadcast(), "bc");
-        registerChild(mainCommandBuilder, new SubMessage(), "msg");
+        registerChild(mainCommandBuilder, new SubABroadcast(), "abc", "abroadcast");
+        registerChild(mainCommandBuilder, new SubAMessage(), "amsg", "amessage");
+        registerChild(mainCommandBuilder, new SubAnimations(), "animations", "animationlist", "animationslist");
+        registerChild(mainCommandBuilder, new SubBroadcast(), "bc", "broadcast");
+        registerChild(mainCommandBuilder, new SubMessage(), "msg", "message");
         registerChild(mainCommandBuilder, new SubReload(), "reload");
-        registerChild(mainCommandBuilder, new SubScripts(), "scripts");
+        registerChild(mainCommandBuilder, new SubScripts(), "scripts", "scriptlist", "scriptslist");
         registerChild(mainCommandBuilder, new SubVersion(), "version");
 
         logger.debug("Registering command /tm.");
@@ -55,17 +55,17 @@ public final class TMCommand implements CommandExecutor {
         logger.debug("Finished registering commands.");
     }
 
-    private void registerChild(final CommandSpec.Builder rootBuilder, final TMSubCommand sub, final String cmd) {
+    private void registerChild(final CommandSpec.Builder rootBuilder, final TMSubCommand sub, final String... aliases) {
         plugin.getInjector().injectMembers(sub);
 
-        logger.debug("Constructing sub command: " + cmd);
+        logger.debug("Constructing sub command: " + aliases[0]);
         final CommandSpec spec = sub.createSpec();
-        logger.debug("Finished construction of sub command: " + cmd);
+        logger.debug("Finished construction of sub command: " + aliases[0]);
 
-        logger.debug("Registering sub command: " + cmd);
-        rootBuilder.child(spec);
+        logger.debug("Registering sub command: " + aliases[0]);
+        rootBuilder.child(spec, aliases);
         children.add(spec);
-        logger.debug("Finished registering sub command: " + cmd);
+        logger.debug("Finished registering sub command: " + aliases[0]);
     }
 
     private void syntaxError(final CommandSource source) {

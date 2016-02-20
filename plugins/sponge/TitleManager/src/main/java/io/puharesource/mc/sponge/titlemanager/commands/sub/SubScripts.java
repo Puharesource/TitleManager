@@ -5,12 +5,13 @@ import com.google.inject.Inject;
 import io.puharesource.mc.sponge.titlemanager.TitleManager;
 import io.puharesource.mc.sponge.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.sponge.titlemanager.commands.TMSubCommand;
-import lombok.val;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
+
+import java.util.Set;
 
 public final class SubScripts extends TMSubCommand {
     @Inject private TitleManager plugin;
@@ -19,7 +20,7 @@ public final class SubScripts extends TMSubCommand {
 
     @Override
     public void onCommand(final CommandSource source, final CommandContext args, final CommandParameters params) {
-        val scripts = plugin.getConfigHandler().getScripts().keySet();
+        final Set<String> scripts = plugin.getConfigHandler().getScripts().keySet();
 
         sendSuccess(source, plugin.getConfigHandler().getMessage("command.scripts.success", String.valueOf(scripts.size()), "&a" + joiner.join(scripts)));
     }

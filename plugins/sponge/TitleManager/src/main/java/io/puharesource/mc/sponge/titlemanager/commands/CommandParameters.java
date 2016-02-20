@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 public final class CommandParameters {
-    private @Getter final Map<String, CommandParameter> params = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    @Getter private final Map<String, CommandParameter> params = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public CommandParameters(final Map<String, CommandParameter> params) {
         this.params.putAll(params);

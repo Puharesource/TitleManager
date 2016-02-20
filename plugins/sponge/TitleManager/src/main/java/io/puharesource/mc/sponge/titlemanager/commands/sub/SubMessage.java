@@ -18,7 +18,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
-import static io.puharesource.mc.sponge.titlemanager.MiscellaneousUtils.*;
+import static io.puharesource.mc.sponge.titlemanager.utils.MiscellaneousUtils.*;
 
 public final class SubMessage extends TMSubCommand {
     @Inject private TitleManager plugin;
@@ -38,11 +38,9 @@ public final class SubMessage extends TMSubCommand {
         final Optional<String> oMessage = args.<String>getOne("message");
 
         if (!oPlayer.isPresent()) {
-            sendError(source, plugin.getConfigHandler().getMessage("general.invalid_player"));
-            return;
+            throw new TMCommandException(plugin.getConfigHandler().getMessage("general.invalid_player"));
         } else if (!oMessage.isPresent()) {
-            syntaxError(source);
-            return;
+            throw new TMCommandException(plugin.getConfigHandler().getMessage("general.invalid_message"));
         }
 
         final boolean silent = params.getBoolean("SILENT");
@@ -52,7 +50,7 @@ public final class SubMessage extends TMSubCommand {
         final int fadeOut = params.getInt("FADEOUT", config.welcomeMessageFadeOut);
 
         final String[] lines = splitString(oMessage.get());
-        final TitleSendable titleObject = generateTitleObject(format(lines[0]), format(lines[1]), fadeIn, stay, fadeOut);
+        final TitleSendable titleObject = createTitleSendable(format(lines[0]), format(lines[1]), fadeIn, stay, fadeOut);
         final Player player = oPlayer.get();
 
         titleObject.send(player);
@@ -64,7 +62,7 @@ public final class SubMessage extends TMSubCommand {
         } else {
             final TitleObject title = (TitleObject) titleObject;
 
-            if (title.getSubtitle().isPresent() && !title.getSubtitle().get().isEmpty()) {
+            if (title.hasSubtitle()) {
                 sendSuccess(source, plugin.getConfigHandler().getMessage("command.message.success_with_subtitle", title.getTitle().get().toPlain(), title.getSubtitle().get().toPlain(), player.getName()));
             } else {
                 sendSuccess(source, plugin.getConfigHandler().getMessage("command.message.success_without_subtitle", title.getTitle().get().toPlain(), player.getName()));

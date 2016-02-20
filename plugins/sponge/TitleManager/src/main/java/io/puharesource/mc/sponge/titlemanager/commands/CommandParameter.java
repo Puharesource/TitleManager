@@ -28,6 +28,8 @@ public final class CommandParameter {
     }
 
     public Optional<Integer> getInt() {
+        if (value == null) return Optional.empty();
+
         try {
             return Optional.ofNullable(Integer.parseInt(value));
         } catch (NumberFormatException e) {
@@ -40,6 +42,8 @@ public final class CommandParameter {
     }
 
     public Optional<Double> getDouble() {
+        if (value == null) return Optional.empty();
+
         try {
             return Optional.ofNullable(Double.parseDouble(value));
         } catch (NumberFormatException e) {
