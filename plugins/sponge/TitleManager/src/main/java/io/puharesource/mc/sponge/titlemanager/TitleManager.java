@@ -3,9 +3,12 @@ package io.puharesource.mc.sponge.titlemanager;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
+import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import io.puharesource.mc.sponge.titlemanager.api.Sendables;
+import io.puharesource.mc.sponge.titlemanager.api.animations.AnimationFrame;
+import io.puharesource.mc.sponge.titlemanager.api.animations.FrameSequence;
 import io.puharesource.mc.sponge.titlemanager.api.placeholder.PlaceholderManager;
 import io.puharesource.mc.sponge.titlemanager.commands.TMCommand;
 import io.puharesource.mc.sponge.titlemanager.guicemodules.StaticModule;
@@ -14,6 +17,8 @@ import io.puharesource.mc.sponge.titlemanager.listeners.ListenerWorldChange;
 import io.puharesource.mc.sponge.titlemanager.placeholders.StandardPlaceholders;
 import io.puharesource.mc.sponge.titlemanager.utils.MiscellaneousUtils;
 import lombok.Getter;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -51,6 +56,10 @@ public final class TitleManager {
         logger.info("Starting engine.");
         engine = new Engine();
 
+        logger.info("Adding config serializers");
+        addSerializer(AnimationFrame.class, new AnimationFrame.Serializer());
+        addSerializer(FrameSequence.class, new FrameSequence.Serializer());
+
         logger.info("Starting config handler.");
         configHandler = new ConfigHandler();
         injector.injectMembers(configHandler);
@@ -77,6 +86,11 @@ public final class TitleManager {
         Sponge.getEventManager().registerListeners(this, listenerConnection);
         Sponge.getEventManager().registerListeners(this, listenerWorldChange);
         logger.info("TitleManager has successfully been started!");
+    }
+
+    private <T> void addSerializer(final Class<T> clazz, final TypeSerializer<? super T> typeSerializer) {
+        injector.injectMembers(typeSerializer);
+        TypeSerializers.getDefaultSerializers().registerType(TypeToken.of(clazz), typeSerializer);
     }
 
     public Text replacePlaceholders(final Player player, final Text text) {

@@ -34,7 +34,7 @@ public final class Engine {
         return id;
     }
 
-    public void cancel(int taskId) {
+    public void cancel(final int taskId) {
         if (scheduled.containsKey(taskId)) {
             scheduled.get(taskId).cancel(false);
             scheduled.remove(taskId);

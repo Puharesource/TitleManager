@@ -51,7 +51,7 @@ public final class MiscellaneousUtils {
     /**
      * Loads a script Animation.
      * @param text The text that will be analyzed for animations.
-     * @return An optional of the animation found the text.
+     * @return An optional of the animation found in the text.
      */
     public static Optional<AnimationIterable> loadScriptFromText(final Text text) {
         if (text == null) return Optional.empty();
@@ -68,8 +68,8 @@ public final class MiscellaneousUtils {
 
     /**
      * Loads an animation.
-     * @param text
-     * @return
+     * @param text The text that will be analyzed.
+     * @return An optional of the animation found in the text.
      */
     public static Optional<AnimationIterable> loadAnimationIterable(final Text text) {
         if (SCRIPT_PATTERN.matcher(text.toPlain()).matches() || ANIMATION_PATTERN.matcher(text.toPlain()).matches())
