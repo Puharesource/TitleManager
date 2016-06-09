@@ -1,5 +1,11 @@
 package io.puharesource.mc.titlemanager.backend.packet.v1_7;
 
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.Map;
+
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.backend.packet.Packet;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionClass;
@@ -8,18 +14,13 @@ import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionMa
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Map;
 
 public final class ItemMessagePacket extends Packet {
-    private @Getter Object handle;
+    @Getter private Object handle;
 
     @SneakyThrows
     public ItemMessagePacket(final String text, final Player player, final int slot) {
-        ReflectionManager manager = TitleManager.getInstance().getReflectionManager();
+        final ReflectionManager manager = TitleManager.getInstance().getReflectionManager();
 
         if (manager instanceof ReflectionManagerProtocolHack1718) {
             val item = player.getInventory().getItem(slot);

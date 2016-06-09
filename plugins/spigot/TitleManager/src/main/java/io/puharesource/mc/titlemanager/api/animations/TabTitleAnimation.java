@@ -1,18 +1,14 @@
 package io.puharesource.mc.titlemanager.api.animations;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
 import io.puharesource.mc.titlemanager.api.TabTitleObject;
 import io.puharesource.mc.titlemanager.api.iface.AnimationIterable;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
 import lombok.val;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This is the actionbar title animation.
@@ -52,16 +48,12 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
 
     @Override
     public void broadcast() {
-        for (val player : Bukkit.getOnlinePlayers()) {
-            send(player);
-        }
+        Bukkit.getOnlinePlayers().forEach(this::send);
     }
 
     @Override
     public void broadcast(World world) {
-        for (val player : world.getPlayers()) {
-            send(player);
-        }
+        world.getPlayers().forEach(this::send);
     }
 
 
@@ -69,12 +61,7 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
     @Override
     public void send(final Player player) {
         if (header instanceof AnimationIterable) {
-            val animation = new EasyAnimation((AnimationIterable) header, player, new EasyAnimation.Updatable() {
-                @Override
-                public void run(final AnimationFrame frame) {
-                    new TabTitleObject(frame.getText(), TabTitleObject.Position.HEADER).send(player);
-                }
-            });
+            val animation = new EasyAnimation((AnimationIterable) header, player, frame -> new TabTitleObject(frame.getText(), TabTitleObject.Position.HEADER).send(player));
 
             animation.setContinuous(true);
             animation.start();
@@ -83,12 +70,7 @@ public class TabTitleAnimation implements IAnimation, ITabObject {
         }
 
         if (footer instanceof AnimationIterable) {
-            val animation = new EasyAnimation((AnimationIterable) footer, player, new EasyAnimation.Updatable() {
-                @Override
-                public void run(final AnimationFrame frame) {
-                    new TabTitleObject(frame.getText(), TabTitleObject.Position.FOOTER).send(player);
-                }
-            });
+            val animation = new EasyAnimation((AnimationIterable) footer, player, frame -> new TabTitleObject(frame.getText(), TabTitleObject.Position.FOOTER).send(player));
 
             animation.setContinuous(true);
             animation.start();

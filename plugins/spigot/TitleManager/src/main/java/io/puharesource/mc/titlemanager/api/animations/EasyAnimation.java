@@ -1,11 +1,12 @@
 package io.puharesource.mc.titlemanager.api.animations;
 
-import io.puharesource.mc.titlemanager.TitleManager;
-import io.puharesource.mc.titlemanager.api.iface.AnimationIterable;
-import lombok.EqualsAndHashCode;
 import org.bukkit.entity.Player;
 
 import java.util.Iterator;
+
+import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.api.iface.AnimationIterable;
+import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
 public class EasyAnimation {
@@ -55,12 +56,7 @@ public class EasyAnimation {
         }
 
         if (iterator.hasNext()) {
-            TitleManager.getInstance().getEngine().schedule(new Runnable() {
-                @Override
-                public void run() {
-                    update(iterator.next());
-                }
-            }, frame.getTotalTime());
+            TitleManager.getInstance().getEngine().schedule(() -> update(iterator.next()), frame.getTotalTime());
         } else {
             stop();
         }

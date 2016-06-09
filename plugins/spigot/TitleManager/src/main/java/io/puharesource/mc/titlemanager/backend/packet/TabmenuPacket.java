@@ -1,5 +1,8 @@
 package io.puharesource.mc.titlemanager.backend.packet;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionClass;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
@@ -7,16 +10,13 @@ import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionMa
 import lombok.Getter;
 import lombok.SneakyThrows;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-
 public final class TabmenuPacket extends Packet {
-    private @Getter Object handle;
+    @Getter private Object handle;
 
     @SneakyThrows
-    public TabmenuPacket(String header, String footer) {
-        ReflectionManager manager = TitleManager.getInstance().getReflectionManager();
-        Map<String, ReflectionClass> classes = manager.getClasses();
+    public TabmenuPacket(final String header, final String footer) {
+        final ReflectionManager manager = TitleManager.getInstance().getReflectionManager();
+        final Map<String, ReflectionClass> classes = manager.getClasses();
 
         if (manager instanceof ReflectionManagerProtocolHack1718) {
             handle = classes.get("PacketTabHeader").

@@ -1,5 +1,7 @@
 package io.puharesource.mc.titlemanager.backend.packet;
 
+import java.util.Map;
+
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionClass;
@@ -8,10 +10,8 @@ import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionMa
 import lombok.Getter;
 import lombok.SneakyThrows;
 
-import java.util.Map;
-
 public final class TitlePacket extends Packet {
-    private @Getter Object handle;
+    @Getter private Object handle;
     public TitlePacket(TitleObject.TitleType action, String text) {
         this(action, text, -1, -1, -1);
     }
@@ -22,8 +22,8 @@ public final class TitlePacket extends Packet {
 
     @SneakyThrows
     public TitlePacket(TitleObject.TitleType action, String text, int fadeIn, int stay, int fadeOut) {
-        ReflectionManager manager = TitleManager.getInstance().getReflectionManager();
-        Map<String, ReflectionClass> classes = manager.getClasses();
+        final ReflectionManager manager = TitleManager.getInstance().getReflectionManager();
+        final Map<String, ReflectionClass> classes = manager.getClasses();
 
         if (manager instanceof ReflectionManagerProtocolHack1718) {
             ReflectionClass packetTitle = classes.get("PacketTitle");

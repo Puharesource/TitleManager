@@ -12,12 +12,9 @@ public final class Engine {
     public int schedule(final Runnable runnable, int delay) {
         final int id = ids.incrementAndGet();
 
-        scheduled.put(id, scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                runnable.run();
-                scheduled.remove(id);
-            }
+        scheduled.put(id, scheduler.schedule(() -> {
+            runnable.run();
+            scheduled.remove(id);
         }, delay * 50, TimeUnit.MILLISECONDS));
 
         return id;

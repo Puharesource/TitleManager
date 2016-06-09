@@ -1,22 +1,24 @@
 package io.puharesource.mc.titlemanager.backend.hooks.vault;
 
-import io.puharesource.mc.titlemanager.TitleManager;
-import io.puharesource.mc.titlemanager.backend.hooks.PluginHook;
-import lombok.Getter;
-import lombok.Setter;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.logging.Logger;
 
+import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.backend.hooks.PluginHook;
+import lombok.Getter;
+import lombok.Setter;
+
 public final class VaultHook extends PluginHook {
 
-    private @Getter @Setter static Economy economy;
-    private @Getter @Setter static Permission permissions;
-    private @Getter @Setter static boolean economySupported;
-    private @Getter @Setter static boolean permissionsSupported;
+    @Getter @Setter private static Economy economy;
+    @Getter @Setter private static Permission permissions;
+    @Getter @Setter private static boolean economySupported;
+    @Getter @Setter private static boolean permissionsSupported;
 
     public VaultHook() {
         super("Vault");

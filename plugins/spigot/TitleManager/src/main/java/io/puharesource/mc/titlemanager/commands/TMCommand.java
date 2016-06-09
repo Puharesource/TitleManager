@@ -1,12 +1,25 @@
 package io.puharesource.mc.titlemanager.commands;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.backend.language.Messages;
 import lombok.val;
-import org.bukkit.ChatColor;
-import org.bukkit.command.*;
-
-import java.util.*;
 
 public final class TMCommand implements CommandExecutor, TabCompleter {
     private final Map<String, TMSubCommand> commands = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -59,9 +72,9 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
         List<String> possibilities = new ArrayList<>();
 
         if (args.length == 1)
-            for (String sub : commands.keySet())
-                if (sub.toLowerCase().startsWith(args[0].toLowerCase()))
-                    possibilities.add(sub.toLowerCase());
+            possibilities.addAll(commands.keySet().stream()
+                    .filter(sub -> sub.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .map(String::toLowerCase).collect(Collectors.toList()));
 
         return possibilities.size() <= 0 ? null : possibilities;
     }

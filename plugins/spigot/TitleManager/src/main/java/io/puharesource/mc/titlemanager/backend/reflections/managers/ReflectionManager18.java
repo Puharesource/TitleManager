@@ -1,16 +1,16 @@
 package io.puharesource.mc.titlemanager.backend.reflections.managers;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionClass;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public final class ReflectionManager18 extends ReflectionManager {
 
-    private @Getter final Map<String, ReflectionClass> classes;
+    @Getter private final Map<String, ReflectionClass> classes;
 
     public ReflectionManager18() {
         classes = new LinkedHashMap<>();

@@ -1,20 +1,34 @@
 package io.puharesource.mc.titlemanager.commands.sub;
 
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
-import io.puharesource.mc.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.titlemanager.commands.CommandParameters;
 import io.puharesource.mc.titlemanager.commands.ParameterSupport;
+import io.puharesource.mc.titlemanager.commands.TMCommandException;
 import io.puharesource.mc.titlemanager.commands.TMSubCommand;
 import lombok.val;
-import org.bukkit.World;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-import static io.puharesource.mc.titlemanager.backend.language.Messages.*;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ABROADCAST_BASIC_SUCCESS;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ABROADCAST_BASIC_SUCCESS_ANIMATION;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ABROADCAST_BUNGEECORD_SUCCESS;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ABROADCAST_BUNGEECORD_SUCCESS_ANIMATION;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ABROADCAST_BUNGEECORD_SUCCESS_ANIMATION_TO_SERVER;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ABROADCAST_BUNGEECORD_SUCCESS_TO_SERVER;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ABROADCAST_DESCRIPTION;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ABROADCAST_USAGE;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ABROADCAST_WORLD_SUCCESS;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ABROADCAST_WORLD_SUCCESS_ANIMATION;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.INVALID_RADIUS;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.INVALID_SERVER;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.INVALID_WORLD;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.WRONG_WORLD;
 
 @ParameterSupport(supportedParams = {"SILENT", "WORLD", "BUNGEE", "RADIUS"})
 public final class SubABroadcast extends TMSubCommand {
@@ -47,9 +61,9 @@ public final class SubABroadcast extends TMSubCommand {
 
             if(sender instanceof Player && (((Player) sender).getWorld().equals(world)) && params.contains("RADIUS")) {
                 try {
-                    for(final Player player : MiscellaneousUtils.getWithinRadius(((Player)sender).getLocation(), params.getDouble("RADIUS"))) {
-                        object.send(player);
-                    }
+                    MiscellaneousUtils
+                            .getWithinRadius(((Player) sender).getLocation(), params.getDouble("RADIUS"))
+                            .forEach(object::send);
                 } catch(NumberFormatException e) {
                     throw new TMCommandException(INVALID_RADIUS, params.get("RADIUS").getValue());
                 }
@@ -98,9 +112,9 @@ public final class SubABroadcast extends TMSubCommand {
         } else {
             if(sender instanceof Player && params.contains("RADIUS")) {
                 try {
-                    for(final Player player : MiscellaneousUtils.getWithinRadius(((Player) sender).getLocation(), params.getDouble("RADIUS"))) {
-                        object.send(player);
-                    }
+                    MiscellaneousUtils
+                            .getWithinRadius(((Player) sender).getLocation(), params.getDouble("RADIUS"))
+                            .forEach(object::send);
                 } catch(NumberFormatException e) {
                     throw new TMCommandException(INVALID_RADIUS, params.get("RADIUS").getValue());
                 }

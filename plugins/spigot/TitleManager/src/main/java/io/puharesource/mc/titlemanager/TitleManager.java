@@ -1,11 +1,19 @@
 package io.puharesource.mc.titlemanager;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
+
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import io.puharesource.mc.titlemanager.api.variables.VariableManager;
 import io.puharesource.mc.titlemanager.backend.bungee.BungeeManager;
 import io.puharesource.mc.titlemanager.backend.engine.Engine;
 import io.puharesource.mc.titlemanager.backend.hooks.essentials.EssentialsHook;
-import io.puharesource.mc.titlemanager.backend.hooks.ezrankslite.EZRanksLiteHook;
 import io.puharesource.mc.titlemanager.backend.hooks.placeholderapi.PlaceholderAPIHook;
 import io.puharesource.mc.titlemanager.backend.hooks.specialrules.BungeeRule;
 import io.puharesource.mc.titlemanager.backend.hooks.specialrules.VanishRule;
@@ -19,31 +27,32 @@ import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
 import io.puharesource.mc.titlemanager.backend.updatechecker.UpdateManager;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesBungee;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesDefault;
-import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesEZRanksLite;
 import io.puharesource.mc.titlemanager.backend.variables.replacers.VariablesVault;
 import io.puharesource.mc.titlemanager.commands.TMCommand;
-import io.puharesource.mc.titlemanager.commands.sub.*;
+import io.puharesource.mc.titlemanager.commands.sub.SubABroadcast;
+import io.puharesource.mc.titlemanager.commands.sub.SubAMessage;
+import io.puharesource.mc.titlemanager.commands.sub.SubAnimations;
+import io.puharesource.mc.titlemanager.commands.sub.SubBroadcast;
+import io.puharesource.mc.titlemanager.commands.sub.SubDebug;
+import io.puharesource.mc.titlemanager.commands.sub.SubMessage;
+import io.puharesource.mc.titlemanager.commands.sub.SubReload;
+import io.puharesource.mc.titlemanager.commands.sub.SubScripts;
+import io.puharesource.mc.titlemanager.commands.sub.SubVersion;
 import io.puharesource.mc.titlemanager.listeners.ListenerConnection;
 import io.puharesource.mc.titlemanager.listeners.ListenerItemSlot;
 import io.puharesource.mc.titlemanager.listeners.ListenerWorldChange;
 import lombok.Getter;
-import lombok.val;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public final class TitleManager extends JavaPlugin {
-    private @Getter static TitleManager instance;
-    private @Getter Config configManager;
-    private @Getter ReflectionManager reflectionManager;
-    private @Getter VariableManager variableManager;
-    private @Getter BungeeManager bungeeManager;
-    private @Getter UpdateManager updateManager;
-    private @Getter Engine engine;
+    @Getter private static TitleManager instance;
+    @Getter private Config configManager;
+    @Getter private ReflectionManager reflectionManager;
+    @Getter private VariableManager variableManager;
+    @Getter private BungeeManager bungeeManager;
+    @Getter private UpdateManager updateManager;
+    @Getter private Engine engine;
 
-    private static List<Integer> runningAnimations = Collections.synchronizedList(new ArrayList<Integer>());
+    private static Set<Integer> runningAnimations = Sets.newSetFromMap(new ConcurrentHashMap<>());
 
     @Override
     public void onEnable() {
@@ -56,7 +65,7 @@ public final class TitleManager extends JavaPlugin {
         configManager = new Config();
         configManager.load();
 
-        val pluginManager = getServer().getPluginManager();
+        final PluginManager pluginManager = getServer().getPluginManager();
 
         pluginManager.registerEvents(new ListenerConnection(), this);
         pluginManager.registerEvents(new ListenerItemSlot(), this);
@@ -65,7 +74,7 @@ public final class TitleManager extends JavaPlugin {
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", bungeeManager = new BungeeManager());
 
-        val cmd = new TMCommand();
+        final TMCommand cmd = new TMCommand();
         cmd.addSubCommand(new SubBroadcast());
         cmd.addSubCommand(new SubMessage());
         cmd.addSubCommand(new SubReload());
@@ -81,7 +90,6 @@ public final class TitleManager extends JavaPlugin {
         variableManager.registerHook("VANISHNOPACKET", new VanishNoPacketHook());
         variableManager.registerHook("SUPERVANISH", new SuperVanishHook());
         variableManager.registerHook("PREMIUMVANISH", new PremiumVanishHook());
-        variableManager.registerHook("EZRANKSLITE", new EZRanksLiteHook());
         variableManager.registerHook("PLACEHOLDERAPI", new PlaceholderAPIHook());
 
         variableManager.registerRule("VANISH", new VanishRule());
@@ -91,7 +99,6 @@ public final class TitleManager extends JavaPlugin {
 
         variableManager.registerVariableReplacer(new VariablesDefault());
         variableManager.registerVariableReplacer(new VariablesVault());
-        variableManager.registerVariableReplacer(new VariablesEZRanksLite());
         variableManager.registerVariableReplacer(new VariablesBungee());
     }
 
@@ -105,11 +112,11 @@ public final class TitleManager extends JavaPlugin {
         return ImmutableList.copyOf(runningAnimations);
     }
 
-    public static void addRunningAnimationId(int id) {
+    public static void addRunningAnimationId(final int id) {
         runningAnimations.add(id);
     }
 
-    public static void removeRunningAnimationId(int id) {
-        runningAnimations.remove((Integer) id);
+    public static void removeRunningAnimationId(final int id) {
+        runningAnimations.remove(id);
     }
 }

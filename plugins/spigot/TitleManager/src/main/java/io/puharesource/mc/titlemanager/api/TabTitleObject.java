@@ -1,12 +1,13 @@
 package io.puharesource.mc.titlemanager.api;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
 import io.puharesource.mc.titlemanager.api.events.TabTitleChangeEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
 import io.puharesource.mc.titlemanager.backend.packet.TabmenuPacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 /**
  * This object is being used in both tabmenu animations and simply when changing the header and/or footer of the tabmenu.
@@ -29,15 +30,12 @@ public class TabTitleObject implements ITabObject {
 
     @Override
     public void broadcast() {
-        for (Player player : Bukkit.getOnlinePlayers())
-            send(player);
+        Bukkit.getOnlinePlayers().forEach(this::send);
     }
 
     @Override
     public void broadcast(final World world) {
-        for (final Player player : world.getPlayers()) {
-            send(player);
-        }
+        world.getPlayers().forEach(this::send);
     }
 
     public void send(Player player) {

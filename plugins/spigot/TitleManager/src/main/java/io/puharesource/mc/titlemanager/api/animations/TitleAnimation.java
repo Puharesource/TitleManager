@@ -1,15 +1,15 @@
 package io.puharesource.mc.titlemanager.api.animations;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.iface.AnimationIterable;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.backend.packet.TitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
-import lombok.val;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 /**
  * This is the title animation.
@@ -49,27 +49,18 @@ public class TitleAnimation implements IAnimation, ITitleObject {
 
     @Override
     public void broadcast() {
-        for (val player : Bukkit.getOnlinePlayers()) {
-            send(player);
-        }
+        Bukkit.getOnlinePlayers().forEach(this::send);
     }
 
     @Override
     public void broadcast(World world) {
-        for (val player : world.getPlayers()) {
-            send(player);
-        }
+        world.getPlayers().forEach(this::send);
     }
 
     @Override
     public void send(final Player player) {
         if (title instanceof AnimationIterable) {
-            final EasyAnimation animation = new EasyAnimation((AnimationIterable) title, player, new EasyAnimation.Updatable() {
-                @Override
-                public void run(final AnimationFrame frame) {
-                    new TitleObject(frame.getText(), TitleObject.TitleType.TITLE).setFadeIn(frame.getFadeIn()).setStay(frame.getStay() + 1).setFadeOut(frame.getFadeOut()).send(player);
-                }
-            });
+            final EasyAnimation animation = new EasyAnimation((AnimationIterable) title, player, frame -> new TitleObject(frame.getText(), TitleObject.TitleType.TITLE).setFadeIn(frame.getFadeIn()).setStay(frame.getStay() + 1).setFadeOut(frame.getFadeOut()).send(player));
 
             if (!(subtitle instanceof AnimationIterable)) {
                 animation.onStop(new Runnable() {
@@ -86,20 +77,10 @@ public class TitleAnimation implements IAnimation, ITitleObject {
         }
 
         if (subtitle instanceof AnimationIterable) {
-            final EasyAnimation animation = new EasyAnimation((AnimationIterable) subtitle, player, new EasyAnimation.Updatable() {
-                @Override
-                public void run(final AnimationFrame frame) {
-                    new TitleObject(frame.getText(), TitleObject.TitleType.SUBTITLE).setFadeIn(frame.getFadeIn()).setStay(frame.getStay() + 1).setFadeOut(frame.getFadeOut()).send(player);
-                }
-            });
+            final EasyAnimation animation = new EasyAnimation((AnimationIterable) subtitle, player, frame -> new TitleObject(frame.getText(), TitleObject.TitleType.SUBTITLE).setFadeIn(frame.getFadeIn()).setStay(frame.getStay() + 1).setFadeOut(frame.getFadeOut()).send(player));
 
             if (!(title instanceof AnimationIterable)) {
-                animation.onStop(new Runnable() {
-                    @Override
-                    public void run() {
-                        new TitleObject(" ", TitleObject.TitleType.TITLE).setFadeIn(20).setStay(40).setFadeOut(20).send(player);
-                    }
-                });
+                animation.onStop(() -> new TitleObject(" ", TitleObject.TitleType.TITLE).setFadeIn(20).setStay(40).setFadeOut(20).send(player));
             }
 
             animation.start();

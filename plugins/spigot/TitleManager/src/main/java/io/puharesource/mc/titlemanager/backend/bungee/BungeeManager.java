@@ -5,25 +5,42 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListMap;
+
 import io.puharesource.mc.titlemanager.TitleManager;
 import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
 import io.puharesource.mc.titlemanager.api.TabTitleObject;
 import io.puharesource.mc.titlemanager.api.TitleObject;
-import io.puharesource.mc.titlemanager.api.animations.*;
-import io.puharesource.mc.titlemanager.api.gson.adapters.*;
-import io.puharesource.mc.titlemanager.api.gson.adapters.animations.*;
+import io.puharesource.mc.titlemanager.api.animations.ActionbarTitleAnimation;
+import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
+import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
+import io.puharesource.mc.titlemanager.api.animations.TabTitleAnimation;
+import io.puharesource.mc.titlemanager.api.animations.TitleAnimation;
+import io.puharesource.mc.titlemanager.api.gson.adapters.ActionbarTitleAdapter;
+import io.puharesource.mc.titlemanager.api.gson.adapters.IActionbarObjectDeserializer;
+import io.puharesource.mc.titlemanager.api.gson.adapters.ITabTitleObjectDeserializer;
+import io.puharesource.mc.titlemanager.api.gson.adapters.ITitleObjectDeserializer;
+import io.puharesource.mc.titlemanager.api.gson.adapters.TabTitleObjectAdapter;
+import io.puharesource.mc.titlemanager.api.gson.adapters.TitleObjectAdapter;
+import io.puharesource.mc.titlemanager.api.gson.adapters.animations.ActionbarTitleAnimationAdapter;
+import io.puharesource.mc.titlemanager.api.gson.adapters.animations.AnimationFrameAdapter;
+import io.puharesource.mc.titlemanager.api.gson.adapters.animations.FrameSequenceAdapter;
+import io.puharesource.mc.titlemanager.api.gson.adapters.animations.TabTitleAnimationAdapter;
+import io.puharesource.mc.titlemanager.api.gson.adapters.animations.TitleAnimationAdapter;
 import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import lombok.val;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 public final class BungeeManager implements PluginMessageListener {
     private final Map<String, BungeeServerInfo> servers = new ConcurrentSkipListMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -123,11 +140,9 @@ public final class BungeeManager implements PluginMessageListener {
                 final Set<String> newServers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
                 Collections.addAll(newServers, in.readUTF().split(", "));
 
-                for (final String server : servers.keySet()) {
-                    if (!newServers.contains(server)) {
-                        servers.remove(server);
-                    }
-                }
+                servers.keySet().stream()
+                        .filter(server -> !newServers.contains(server))
+                        .forEach(servers::remove);
 
                 for (final String server : newServers) {
                     if (!servers.containsKey(server)) {

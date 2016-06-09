@@ -1,12 +1,13 @@
 package io.puharesource.mc.titlemanager.api;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
 import io.puharesource.mc.titlemanager.api.events.ActionbarEvent;
 import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.backend.packet.ActionbarTitlePacket;
 import io.puharesource.mc.titlemanager.backend.player.TMPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
 
 /**
  * This is the standard actionbar message object.
@@ -15,21 +16,18 @@ import org.bukkit.entity.Player;
 public class ActionbarTitleObject implements IActionbarObject {
     private String title;
 
-    public ActionbarTitleObject(String title) {
+    public ActionbarTitleObject(final String title) {
         setTitle(title);
     }
 
     @Override
     public void broadcast() {
-        for (Player player : Bukkit.getOnlinePlayers())
-            send(player);
+        Bukkit.getOnlinePlayers().forEach(this::send);
     }
 
     @Override
-    public void broadcast(World world) {
-        for (final Player player : world.getPlayers()) {
-            send(player);
-        }
+    public void broadcast(final World world) {
+        world.getPlayers().forEach(this::send);
     }
 
     @Override

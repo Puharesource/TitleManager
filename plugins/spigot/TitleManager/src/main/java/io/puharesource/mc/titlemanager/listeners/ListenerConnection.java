@@ -1,11 +1,5 @@
 package io.puharesource.mc.titlemanager.listeners;
 
-import io.puharesource.mc.titlemanager.Config;
-import io.puharesource.mc.titlemanager.TitleManager;
-import io.puharesource.mc.titlemanager.api.TabTitleCache;
-import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
-import io.puharesource.mc.titlemanager.backend.language.Messages;
-import io.puharesource.mc.titlemanager.backend.updatechecker.UpdateManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,6 +9,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitScheduler;
+
+import io.puharesource.mc.titlemanager.Config;
+import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.api.TabTitleCache;
+import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
+import io.puharesource.mc.titlemanager.backend.language.Messages;
+import io.puharesource.mc.titlemanager.backend.updatechecker.UpdateManager;
 
 public final class ListenerConnection implements Listener {
     @EventHandler
@@ -28,44 +29,24 @@ public final class ListenerConnection implements Listener {
         final Player player = event.getPlayer();
 
         if (updateManager.isUpdateAvailable() && player.hasPermission("titlemanager.update.notify")) {
-            scheduler.runTaskLater(manager, new Runnable() {
-                @Override
-                public void run() {
-                    player.sendMessage(String.format(Messages.UPDATE_MESSAGE.getMessage(),
-                            updateManager.getCurrentVersion(),
-                            updateManager.getLatestVersion(),
-                            "http://www.spigotmc.org/resources/titlemanager.1049"));
-                }
-            }, 30L);
+            scheduler.runTaskLater(manager, () -> player.sendMessage(String.format(Messages.UPDATE_MESSAGE.getMessage(),
+                    updateManager.getCurrentVersion(),
+                    updateManager.getLatestVersion(),
+                    "http://www.spigotmc.org/resources/titlemanager.1049")), 30L);
         }
 
         if (!config.usingConfig) return;
 
         if (config.welcomeMessageEnabled) {
-            Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
-                @Override
-                public void run() {
-                    configManager.getTitleWelcomeMessage(!player.hasPlayedBefore()).send(player);
-                }
-            }, 10);
+            Bukkit.getScheduler().runTaskLater(manager, () -> configManager.getTitleWelcomeMessage(!player.hasPlayedBefore()).send(player), 10);
         }
 
         if (config.tabmenuEnabled) {
-            Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
-                @Override
-                public void run() {
-                    configManager.getTabTitleObject().send(player);
-                }
-            }, 10L);
+            Bukkit.getScheduler().runTaskLater(manager, () -> configManager.getTabTitleObject().send(player), 10L);
         }
 
         if (config.actionbarWelcomeEnabled) {
-            Bukkit.getScheduler().runTaskLater(manager, new Runnable() {
-                @Override
-                public void run() {
-                    configManager.getActionbarWelcomeMessage(!player.hasPlayedBefore()).send(player);
-                }
-            }, 10L);
+            Bukkit.getScheduler().runTaskLater(manager, () -> configManager.getActionbarWelcomeMessage(!player.hasPlayedBefore()).send(player), 10L);
         }
     }
 

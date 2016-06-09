@@ -1,6 +1,22 @@
 package io.puharesource.mc.titlemanager;
 
 import com.google.common.collect.ImmutableMap;
+
+import org.bukkit.configuration.ConfigurationSection;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.JsePlatform;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
 import io.puharesource.mc.titlemanager.api.TitleObject;
 import io.puharesource.mc.titlemanager.api.animations.ActionbarTitleAnimation;
 import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
@@ -17,15 +33,6 @@ import io.puharesource.mc.titlemanager.backend.config.ConfigSerializer;
 import io.puharesource.mc.titlemanager.backend.utils.MiscellaneousUtils;
 import lombok.Getter;
 import lombok.val;
-import org.bukkit.configuration.ConfigurationSection;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.JsePlatform;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
 
 public final class Config {
 
@@ -100,15 +107,14 @@ public final class Config {
 
         for (String animationName : animationConfigFile.getConfig().getKeys(false)) {
             ConfigurationSection section = animationConfigFile.getConfig().getConfigurationSection(animationName);
-            List<AnimationFrame> frames = new ArrayList<>();
-            for (String frame : section.getStringList("frames")) {
-                frames.add(MiscellaneousUtils.getFrameFromString(frame));
-            }
+            List<AnimationFrame> frames = section.getStringList("frames").stream()
+                    .map(MiscellaneousUtils::getFrameFromString)
+                    .collect(Collectors.toList());
 
             animations.put(animationName, new FrameSequence(frames));
         }
 
-        for (val file : scriptDir.listFiles()) {
+        for (final File file : scriptDir.listFiles()) {
             if (!file.isDirectory() && file.getName().matches("(.*)(?i).lua")) {
                 try {
                     val globals = JsePlatform.standardGlobals();

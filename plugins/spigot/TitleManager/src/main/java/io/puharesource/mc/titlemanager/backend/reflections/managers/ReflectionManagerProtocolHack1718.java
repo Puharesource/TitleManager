@@ -1,19 +1,18 @@
 package io.puharesource.mc.titlemanager.backend.reflections.managers;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionClass;
 import io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * This is for the ProtocolHack version, to the massive difference in how Titles are handled in the ProtocolHack version
  */
 public final class ReflectionManagerProtocolHack1718 extends ReflectionManager {
-
-    private @Getter final Map<String, ReflectionClass> classes;
+    @Getter private final Map<String, ReflectionClass> classes;
 
     public ReflectionManagerProtocolHack1718() {
         classes = new LinkedHashMap<>();
