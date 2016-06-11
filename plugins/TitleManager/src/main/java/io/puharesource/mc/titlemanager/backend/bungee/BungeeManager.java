@@ -3,13 +3,18 @@ package io.puharesource.mc.titlemanager.backend.bungee;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import io.puharesource.mc.titlemanager.TitleManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import java.util.*;
+import java.io.EOFException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import io.puharesource.mc.titlemanager.TitleManager;
 
 public final class BungeeManager implements PluginMessageListener {
 
@@ -27,85 +32,87 @@ public final class BungeeManager implements PluginMessageListener {
                     sendMessage("GetServer");
                 }
             }
-        }, 0l, 200l);
+        }, 0L, 200L);
     }
 
     @Override
     public void onPluginMessageReceived(final String channel, final Player player, final byte[] message) {
-        if (!TitleManager.getInstance().getConfigManager().getConfig().usingBungeecord) return;
-        if (!channel.equals("BungeeCord")) return;
+        try {
+            if (!TitleManager.getInstance().getConfigManager().getConfig().usingBungeecord) return;
+            if (!channel.equals("BungeeCord")) return;
 
-        final ByteArrayDataInput in = ByteStreams.newDataInput(message);
-        final String subChannel = in.readUTF();
+            final ByteArrayDataInput in = ByteStreams.newDataInput(message);
+            final String subChannel = in.readUTF();
 
-        switch (subChannel) {
-            case "GetServers": {
-                final Map<String, String> newServers = new HashMap<>();
-                for (String newServer : in.readUTF().split(", ")) {
-                    newServers.put(newServer.toUpperCase().trim(), newServer);
-                }
-
-                for (final String server : servers.keySet()) {
-                    if (!newServers.containsKey(server.toUpperCase().trim())) {
-                        servers.remove(server.toUpperCase().trim());
-                    }
-                }
-
-                for (final Map.Entry<String, String> server : newServers.entrySet()) {
-                    if (!servers.containsKey(server.getKey())) {
-                        servers.put(server.getKey(), new BungeeServerInfo(server.getValue()));
+            switch (subChannel) {
+                case "GetServers": {
+                    final Map<String, String> newServers = new HashMap<>();
+                    for (String newServer : in.readUTF().split(", ")) {
+                        newServers.put(newServer.toUpperCase().trim(), newServer);
                     }
 
-                    servers.get(server.getKey()).update();
+                    for (final String server : servers.keySet()) {
+                        if (!newServers.containsKey(server.toUpperCase().trim())) {
+                            servers.remove(server.toUpperCase().trim());
+                        }
+                    }
+
+                    for (final Map.Entry<String, String> server : newServers.entrySet()) {
+                        if (!servers.containsKey(server.getKey())) {
+                            servers.put(server.getKey(), new BungeeServerInfo(server.getValue()));
+                        }
+
+                        servers.get(server.getKey()).update();
+                    }
+                    break;
                 }
-                break;
+                case "GetServer": {
+                    final String server = in.readUTF();
+                    currentServer = server;
+                    if (!servers.containsKey(server.toUpperCase().trim())) {
+                        servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
+                    }
+
+                    final BungeeServerInfo info = servers.get(server.toUpperCase().trim());
+                    info.setMaxPlayers(Bukkit.getMaxPlayers());
+                    info.setPlayerCount(Bukkit.getOnlinePlayers().size());
+
+                    int onlinePlayers = 0;
+                    if (servers.containsKey("ALL")) {
+                        onlinePlayers = servers.get("ALL").getPlayerCount();
+                    } else {
+                        for (final BungeeServerInfo serverInfo : servers.values()) {
+                            onlinePlayers += serverInfo.getPlayerCount();
+                        }
+                    }
+                    this.onlinePlayers = onlinePlayers;
+
+                    break;
+                }
+                case "PlayerCount": {
+                    final String server = in.readUTF();
+                    final int playerCount = in.readInt();
+
+                    if (!servers.containsKey(server.toUpperCase().trim())) {
+                        servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
+                    }
+
+                    servers.get(server.toUpperCase().trim()).setPlayerCount(playerCount);
+
+                    int onlinePlayers = 0;
+                    if (servers.containsKey("ALL")) {
+                        onlinePlayers = servers.get("ALL").getPlayerCount();
+                    } else {
+                        for (final BungeeServerInfo serverInfo : servers.values()) {
+                            onlinePlayers += serverInfo.getPlayerCount();
+                        }
+                    }
+                    this.onlinePlayers = onlinePlayers;
+
+                    break;
+                }
             }
-            case "GetServer": {
-                final String server = in.readUTF();
-                currentServer = server;
-                if (!servers.containsKey(server.toUpperCase().trim())) {
-                    servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
-                }
-
-                final BungeeServerInfo info = servers.get(server.toUpperCase().trim());
-                info.setMaxPlayers(Bukkit.getMaxPlayers());
-                info.setPlayerCount(Bukkit.getOnlinePlayers().size());
-
-                int onlinePlayers = 0;
-                if (servers.containsKey("ALL")) {
-                    onlinePlayers = servers.get("ALL").getPlayerCount();
-                } else {
-                    for (final BungeeServerInfo serverInfo : servers.values()) {
-                        onlinePlayers += serverInfo.getPlayerCount();
-                    }
-                }
-                this.onlinePlayers = onlinePlayers;
-
-                break;
-            }
-            case "PlayerCount": {
-                final String server = in.readUTF();
-                final int playerCount = in.readInt();
-
-                if (!servers.containsKey(server.toUpperCase().trim())) {
-                    servers.put(server.toUpperCase().trim(), new BungeeServerInfo(server));
-                }
-
-                servers.get(server.toUpperCase().trim()).setPlayerCount(playerCount);
-
-                int onlinePlayers = 0;
-                if (servers.containsKey("ALL")) {
-                    onlinePlayers = servers.get("ALL").getPlayerCount();
-                } else {
-                    for (final BungeeServerInfo serverInfo : servers.values()) {
-                        onlinePlayers += serverInfo.getPlayerCount();
-                    }
-                }
-                this.onlinePlayers = onlinePlayers;
-
-                break;
-            }
-        }
+        } catch (Exception ignored) {}
     }
 
     private ByteArrayDataOutput createOutput() {
