@@ -1,4 +1,4 @@
-version = '1.5.11'
+version = '1.5.12'
 
 javadoc {
     exclude '**/io/puharesource/mc/titlemanager/backend/**'
@@ -13,7 +13,7 @@ dependencies {
     provided group: 'net.ess3', name: 'Essentials', version: 'Pre2.14.1.3'
     provided group: 'org.kitteh', name: 'VanishNoPacket', version: '3.19.2-SNAPSHOT'
 
-    provided files('../../libs/EZRanksLite.jar')
-    provided files('../../libs/PlaceholderAPI.jar')
-    provided files('../../libs/SuperVanish.jar')
+    provided name: 'EZRanksLite'
+    provided name: 'PlaceholderAPI'
+    provided name: 'SuperVanish'
 }

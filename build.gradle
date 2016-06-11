@@ -1,14 +1,16 @@
 subprojects {
+    // ========================= The basics ========================= //
+
+    group = 'io.puharesource.mc'
+    version = '1.5.12'
+
     apply plugin: 'java'
     apply plugin: 'maven'
 
-    group = 'io.puharesource.mc'
-    version = ''
-
-    compileJava.options.encoding = 'UTF-8'
-
     sourceCompatibility = 1.7
     targetCompatibility = 1.7
+
+    compileJava.options.encoding = 'UTF-8'
 
     sourceSets {
         main {
@@ -18,30 +20,60 @@ subprojects {
         }
     }
 
-    task copyToJars(dependsOn: 'build', type: Copy) {
-        from 'build/libs/'
-        into "../../jars/"
+    // ========================= Resource Filtering ========================= //
+
+    processResources {
+        from(sourceSets.main.resources.srcDirs) {
+            include '**/*.yml'
+            filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [VERSION: project.version])
+        }
     }
 
-    task createPom << {
-        pom {
-            project {
-                inceptionYear '2007'
-                licenses {
-                    license {
-                        name 'GNU GENERAL PUBLIC LICENSE, Version 3'
-                        url 'http://www.gnu.org/licenses/gpl.txt'
-                        distribution 'repo'
-                    }
-                }
-            }
-        }.writeTo("${project.name}-${version}.pom")
+    // ========================= Clean extension ========================= //
+    // Removes the folder out/ which is would have otherwise been left in
+    // the root directory, if it wasn't for this method.
+
+    clean.doFirst {
+        delete "$rootDir/out/"
     }
+
+    // ========================= Custom compilation task ========================= //
+    // Bundles all of the compiled jars into a nice and sane directory. (/out/)
+
+    tasks.withType(Jar) {
+        destinationDir = file("$rootDir/out/")
+    }
+
+    // ========================= Provided scope ========================= //
+    // The provided scope, allows the developer to choose which dependencies
+    // will be shaded into the jar file. Provided tells the compiler that the
+    // dependency is provided at runtime and should therefor not be compiled
+    // while compile tells the compiler that it is needed right here and now
+    // and should therefor be compiled into the jar.
 
     configurations {
         provided
         compile.extendsFrom provided
     }
+
+    artifacts {
+        archives jar
+    }
+
+    jar {
+        dependsOn configurations.runtime
+        from {
+            (configurations.runtime - configurations.provided).collect {
+                it.isDirectory() ? it : zipTree(it)
+            }
+        } {
+            exclude "META-INF/*.SF"
+            exclude "META-INF/*.DSA"
+            exclude "META-INF/*.RSA"
+        }
+    }
+
+    // ========================= Repositories ========================= //
 
     repositories {
         mavenCentral()
@@ -65,31 +97,16 @@ subprojects {
             name 'kitteh-repo'
             url 'http://repo.kitteh.org/content/groups/public'
         }
-    }
 
-    dependencies {
-        provided group: 'org.projectlombok', name: 'lombok', version: '1.16.2'
-        provided group: 'org.bukkit', name: 'bukkit', version: '1.8.7-R0.1-SNAPSHOT'
-    }
-
-    artifacts {
-        archives jar
-    }
-
-    jar {
-        dependsOn configurations.runtime
-        from {
-            (configurations.runtime - configurations.provided).collect {
-                it.isDirectory() ? it : zipTree(it)
-            }
-        } {
-            exclude "META-INF/*.SF"
-            exclude "META-INF/*.DSA"
-            exclude "META-INF/*.RSA"
+        flatDir {
+            dirs "$rootDir/libs/"
         }
     }
 
-    if (!JavaVersion.current().isJava7Compatible()) {
-        logger.lifecycle("WARNING! You're trying to compile using an unsupported Java version! Please use JDK 1.7 or above!")
+    // ========================= Dependencies ========================= //
+
+    dependencies {
+        provided group: 'org.projectlombok', name: 'lombok', version: '1.16.2'
+        provided group: 'org.bukkit', name: 'bukkit', version: '1.10-R0.1-SNAPSHOT'
     }
 }
