@@ -1,15 +1,5 @@
 package io.puharesource.mc.titlemanager.backend.utils;
 
-import io.puharesource.mc.titlemanager.Config;
-import io.puharesource.mc.titlemanager.TitleManager;
-import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
-import io.puharesource.mc.titlemanager.api.TitleObject;
-import io.puharesource.mc.titlemanager.api.animations.*;
-import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
-import io.puharesource.mc.titlemanager.api.iface.ITabObject;
-import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
-import io.puharesource.mc.titlemanager.api.iface.Script;
-import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,8 +10,26 @@ import org.bukkit.entity.Player;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.*;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import io.puharesource.mc.titlemanager.Config;
+import io.puharesource.mc.titlemanager.TitleManager;
+import io.puharesource.mc.titlemanager.api.ActionbarTitleObject;
+import io.puharesource.mc.titlemanager.api.TitleObject;
+import io.puharesource.mc.titlemanager.api.animations.ActionbarTitleAnimation;
+import io.puharesource.mc.titlemanager.api.animations.AnimationFrame;
+import io.puharesource.mc.titlemanager.api.animations.FrameSequence;
+import io.puharesource.mc.titlemanager.api.animations.TabTitleAnimation;
+import io.puharesource.mc.titlemanager.api.animations.TitleAnimation;
+import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
+import io.puharesource.mc.titlemanager.api.iface.ITabObject;
+import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.api.iface.Script;
+import io.puharesource.mc.titlemanager.backend.config.ConfigMain;
 
 public final class MiscellaneousUtils {
     private static final Pattern SPLIT_PATTERN = Pattern.compile("(([<{%]((?i)nl)[>}%])|\\n)");
@@ -33,19 +41,12 @@ public final class MiscellaneousUtils {
     }
     
     public static Set<Player> getWithinRadius(final Location location, final double radius) {
-        final Set<Player> players = new HashSet<>();
         final World world = location.getWorld();
 
-        for(final Player player : Bukkit.getOnlinePlayers()) {
-            if(player.getWorld().equals(world)) {
-                final double dist = location.distance(player.getLocation());
-
-                if(dist <= radius) {
-                    players.add(player);
-                }
-            }
-        }
-        return players;
+        return world.getNearbyEntities(location, radius, radius, radius).stream()
+                .filter(entity -> entity instanceof Player)
+                .map(entity -> (Player) entity)
+                .collect(Collectors.toSet());
     }
 
     public static FrameSequence isValidAnimationString(final String text) {

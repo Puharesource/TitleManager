@@ -1,61 +1,62 @@
 package io.puharesource.mc.titlemanager.commands;
 
-import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
-import lombok.Data;
-import lombok.Getter;
 import org.bukkit.World;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Optional;
+
+import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
+import lombok.Getter;
 
 public final class CommandParameters {
-    private @Getter final Map<String, CommandParameter> params = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    @Getter private final Map<CommandParameterIdentifier, CommandParameter> params = new HashMap<>();
 
-    public CommandParameters(final Map<String, CommandParameter> params) {
+    public CommandParameters(final Map<CommandParameterIdentifier, CommandParameter> params) {
         this.params.putAll(params);
     }
 
-    public boolean contains(final String parameter) {
-        return params.containsKey(parameter) && get(parameter).getValue() != null && !get(parameter).getValue().isEmpty();
+    public boolean contains(final CommandParameterIdentifier parameter) {
+        return params.containsKey(parameter);
     }
 
-    public CommandParameter get(final String parameter) {
+    public boolean containsValue(final CommandParameterIdentifier parameter) {
+        return params.containsKey(parameter) && get(parameter).getValue().isPresent();
+    }
+
+    public CommandParameter get(final CommandParameterIdentifier parameter) {
         return params.get(parameter);
     }
 
-    public int getInt(final String parameter) throws NumberFormatException {
+    public Optional<Integer> getInt(final CommandParameterIdentifier parameter) {
         return get(parameter).getInt();
     }
 
-    public int getInt(final String parameter, final int defaultValue) {
-        return contains(parameter) ? get(parameter).getInt(defaultValue) : defaultValue;
+    public int getInt(final CommandParameterIdentifier parameter, final int defaultValue) {
+        return get(parameter).getInt(defaultValue);
     }
 
-    public double getDouble(final String parameter) throws NumberFormatException {
+    public Optional<Double> getDouble(final CommandParameterIdentifier parameter) {
         return get(parameter).getDouble();
     }
 
-    public double getDouble(final String parameter, final double defaultValue) {
-        return contains(parameter) ? get(parameter).getDouble(defaultValue) : defaultValue;
+    public double getDouble(final CommandParameterIdentifier parameter, final double defaultValue) {
+        return get(parameter).getDouble(defaultValue);
     }
 
-    public boolean getBoolean(final String parameter) {
-        return contains(parameter);
+    public Optional<World> getWorld(final CommandParameterIdentifier parameter) {
+        return get(parameter).getWorld();
     }
 
-    public World getWorld(final String parameter) {
-        return contains(parameter) ? get(parameter).getWorld() : null;
+    public World getWorld(final CommandParameterIdentifier parameter, final World defaultValue) {
+        return get(parameter).getWorld(defaultValue);
     }
 
-    public World getWorld(final String parameter, final World defaultValue) {
-        return contains(parameter) ? get(parameter).getWorld(defaultValue) : defaultValue;
+    public Optional<BungeeServerInfo> getServer(final CommandParameterIdentifier parameter) {
+        return get(parameter).getServer();
     }
 
-    public BungeeServerInfo getServer(final String parameter) {
-        return contains(parameter) ? get(parameter).getServer() : null;
-    }
-
-    public BungeeServerInfo getServer(final String parameter, final BungeeServerInfo defaultValue) {
-        return contains(parameter) ? get(parameter).getServer(defaultValue) : defaultValue;
+    public BungeeServerInfo getServer(final CommandParameterIdentifier parameter, final BungeeServerInfo defaultValue) {
+        return get(parameter).getServer(defaultValue);
     }
 }

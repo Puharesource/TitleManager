@@ -29,24 +29,36 @@ public final class ListenerConnection implements Listener {
         final Player player = event.getPlayer();
 
         if (updateManager.isUpdateAvailable() && player.hasPermission("titlemanager.update.notify")) {
-            scheduler.runTaskLater(manager, () -> player.sendMessage(String.format(Messages.UPDATE_MESSAGE.getMessage(),
-                    updateManager.getCurrentVersion(),
-                    updateManager.getLatestVersion(),
-                    "http://www.spigotmc.org/resources/titlemanager.1049")), 30L);
+            scheduler.runTaskLater(manager, () -> {
+                player.sendMessage(
+                        String.format(
+                                Messages.UPDATE_MESSAGE.getMessage(),
+                                updateManager.getCurrentVersion(),
+                                updateManager.getLatestVersion(),
+                                "http://www.spigotmc.org/resources/titlemanager.1049"
+                        )
+                );
+            }, 30L);
         }
 
         if (!config.usingConfig) return;
 
         if (config.welcomeMessageEnabled) {
-            Bukkit.getScheduler().runTaskLater(manager, () -> configManager.getTitleWelcomeMessage(!player.hasPlayedBefore()).send(player), 10);
+            Bukkit.getScheduler().runTaskLater(manager, () -> {
+                configManager.getTitleWelcomeMessage(!player.hasPlayedBefore()).send(player);
+            }, 10);
         }
 
         if (config.tabmenuEnabled) {
-            Bukkit.getScheduler().runTaskLater(manager, () -> configManager.getTabTitleObject().send(player), 10L);
+            Bukkit.getScheduler().runTaskLater(manager, () -> {
+                configManager.getTabTitleObject().send(player);
+            }, 10L);
         }
 
         if (config.actionbarWelcomeEnabled) {
-            Bukkit.getScheduler().runTaskLater(manager, () -> configManager.getActionbarWelcomeMessage(!player.hasPlayedBefore()).send(player), 10L);
+            Bukkit.getScheduler().runTaskLater(manager, () -> {
+                configManager.getActionbarWelcomeMessage(!player.hasPlayedBefore()).send(player);
+            }, 10L);
         }
     }
 

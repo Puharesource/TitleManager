@@ -95,7 +95,7 @@ public final class TitleManager extends JavaPlugin {
         variableManager.registerRule("VANISH", new VanishRule());
         variableManager.registerRule("VAULT-ECONOMY", new VaultRuleEconomy());
         variableManager.registerRule("VAULT-GROUPS", new VaultRuleGroups());
-        variableManager.registerRule("BUNGEECORD", new BungeeRule());
+        variableManager.registerRule("BUNGEE", new BungeeRule());
 
         variableManager.registerVariableReplacer(new VariablesDefault());
         variableManager.registerVariableReplacer(new VariablesVault());

@@ -1,14 +1,19 @@
 package io.puharesource.mc.titlemanager.commands.sub;
 
 import com.google.common.base.Joiner;
-import io.puharesource.mc.titlemanager.Config;
-import io.puharesource.mc.titlemanager.commands.CommandParameters;
-import io.puharesource.mc.titlemanager.commands.TMSubCommand;
-import lombok.val;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import static io.puharesource.mc.titlemanager.backend.language.Messages.*;
+import java.util.Set;
+
+import io.puharesource.mc.titlemanager.Config;
+import io.puharesource.mc.titlemanager.commands.CommandParameters;
+import io.puharesource.mc.titlemanager.commands.TMSubCommand;
+
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ANIMATIONS_DESCRIPTION;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ANIMATIONS_SUCCESS;
+import static io.puharesource.mc.titlemanager.backend.language.Messages.COMMAND_ANIMATIONS_USAGE;
 
 public final class SubAnimations extends TMSubCommand {
     private final Joiner joiner = Joiner.on(ChatColor.WHITE + ", " + ChatColor.GREEN);
@@ -19,8 +24,8 @@ public final class SubAnimations extends TMSubCommand {
 
     @Override
     public void onCommand(final CommandSender sender, final String[] args, final CommandParameters params) {
-        val animations = Config.getAnimations().keySet();
+        final Set<String> animations = Config.getAnimations().keySet();
 
-        sendSuccess(sender, COMMAND_ANIMATIONS_SUCCESS, animations.size(), ChatColor.GREEN + joiner.join(animations));
+        sendSuccess(false, sender, COMMAND_ANIMATIONS_SUCCESS, animations.size(), ChatColor.GREEN + joiner.join(animations));
     }
 }

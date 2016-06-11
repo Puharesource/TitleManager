@@ -7,10 +7,10 @@ import io.puharesource.mc.titlemanager.backend.bungee.BungeeServerInfo;
 import org.bukkit.entity.Player;
 
 public final class VariablesBungee implements VariableReplacer {
-    @Variable(rule = "BUNGEECORD", vars = {"BUNGEECORD-ONLINE", "BUNGEECORD-ONLINE-PLAYERS"})
+    @Variable(rule = "BUNGEE", vars = {"BUNGEE-ONLINE", "BUNGEE-ONLINE-PLAYERS"})
     public String onlinePlayers(Player player) { return String.valueOf(TitleManager.getInstance().getBungeeManager().getOnlinePlayers()); }
 
-    @Variable(rule = "BUNGEECORD", vars = {"SERVER", "SERVER-NAME"})
+    @Variable(rule = "BUNGEE", vars = {"SERVER", "SERVER-NAME"})
     public String serverName(Player player) {
         final BungeeServerInfo info = TitleManager.getInstance().getBungeeManager().getCurrentServer();
         return info == null ? "(STILL FETCHING DATA)" : info.getName();

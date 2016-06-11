@@ -1,11 +1,12 @@
 package io.puharesource.mc.sponge.titlemanager.commands;
 
-import lombok.Getter;
 import org.spongepowered.api.world.World;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+
+import lombok.Getter;
 
 public final class CommandParameters {
     @Getter private final Map<String, CommandParameter> params = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -23,11 +24,7 @@ public final class CommandParameters {
     }
 
     public Optional<Integer> getInt(final String parameter) {
-        try {
-            return get(parameter).getInt();
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
+        return get(parameter).getInt();
     }
 
     public int getInt(final String parameter, final int defaultValue) {

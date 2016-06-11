@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -80,8 +81,8 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
     }
 
     private CommandParameters getParameters(final TMSubCommand cmd, final String[] args) {
-        final Collection<String> supportedParameters = cmd.getSupportedParameters();
-        final Map<String, CommandParameter> parameters = new HashMap<>();
+        final Collection<CommandParameterIdentifier> supportedParameters = cmd.getSupportedParameters();
+        final Map<CommandParameterIdentifier, CommandParameter> parameters = new HashMap<>();
 
         for (String arg : args) {
             if (!arg.startsWith("-")) break;
@@ -93,15 +94,16 @@ public final class TMCommand implements CommandExecutor, TabCompleter {
             }
 
             if (fullParameter.contains("=")) {
-                String[] paramValues = fullParameter.split("=", 2);
-                String param = paramValues[0];
+                final String[] paramValues = fullParameter.split("=", 2);
+                final Optional<CommandParameterIdentifier> optionalId = CommandParameterIdentifier.getByName(paramValues[0]);
 
-                if (supportedParameters.contains(param)) {
-                    parameters.put(param, new CommandParameter(param, paramValues[1]));
+                if (optionalId.isPresent() && supportedParameters.contains(optionalId.get())) {
+                    parameters.put(optionalId.get(), new CommandParameter(optionalId.get(), paramValues[1]));
                 } else break;
             } else {
-                if (supportedParameters.contains(fullParameter)) {
-                    parameters.put(fullParameter, new CommandParameter(fullParameter, null));
+                final Optional<CommandParameterIdentifier> optionalId = CommandParameterIdentifier.getByName(fullParameter);
+                if (optionalId.isPresent() && supportedParameters.contains(optionalId.get())) {
+                    parameters.put(optionalId.get(), new CommandParameter(optionalId.get(), null));
                 } else break;
             }
         }
