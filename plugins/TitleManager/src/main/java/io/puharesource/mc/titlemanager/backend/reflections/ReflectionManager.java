@@ -1,38 +1,50 @@
 package io.puharesource.mc.titlemanager.backend.reflections;
 
+import io.puharesource.mc.titlemanager.backend.reflections.managers.*;
+import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
-
-import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManager110;
-import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManager18;
-import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManager183;
-import io.puharesource.mc.titlemanager.backend.reflections.managers.ReflectionManagerProtocolHack1718;
-import lombok.SneakyThrows;
 
 public abstract class ReflectionManager {
     private static final Pattern VERSION_PATTERN = Pattern.compile("(v|)[0-9][_.][0-9]+[_.][R0-9]*");
     private static String version;
 
+    private static List<Class<? extends ReflectionManager>> managers = new ArrayList<Class<? extends ReflectionManager>>() {{
+        add(ReflectionManagerProtocolHack1718.class);
+        add(ReflectionManager18.class);
+        add(ReflectionManager183.class);
+        add(ReflectionManager110.class);
+        add(ReflectionManager111.class);
+    }};
+
+    private static Map<String, Integer> versionIndex = new TreeMap<String, Integer>(String.CASE_INSENSITIVE_ORDER) {{
+        put("v1_7_R4", 0);
+        put("v1_8_R1", 1);
+        put("v1_8_R2", 2);
+        put("v1_8_R3", 2);
+        put("v1_9_R1", 2);
+        put("v1_9_R2", 2);
+        put("v1_10_R1", 3);
+        put("v1_11_R1", 4);
+    }};
+
     /**
      * This will create a ReflectionManager for the current version of Spigot / CraftBukkit.
      * @return Returns the reflection manager suited for the server's version.
      */
+    @SneakyThrows
     public static ReflectionManager createManager() {
-        final String version = getServerVersion();
-
-        if (version.equalsIgnoreCase("v1_10_R1")) return new ReflectionManager110();
-        else if (version.equalsIgnoreCase("v1_9_R2")) return new ReflectionManager183();
-        else if (version.equalsIgnoreCase("v1_9_R1")) return new ReflectionManager183();
-        else if (version.equalsIgnoreCase("v1_8_R3")) return new ReflectionManager183();
-        else if (version.equalsIgnoreCase("v1_8_R2.")) return new ReflectionManager183();
-        else if (version.equalsIgnoreCase("v1_8_R1.")) return new ReflectionManager18();
-        else if (version.equalsIgnoreCase("v1_7_R4.")) return new ReflectionManagerProtocolHack1718();
-        return new ReflectionManager110();
+        return managers.get(getServerVersionIndex()).newInstance();
     }
 
     /**
+     * v1_11_R1 = 1.11
+     * v1_10_R1 = 1.10
      * v1_9_R2 = 1.9.4
      * v1_9_R1 = 1.9
      * v1_8_R3 = 1.8.8
@@ -50,6 +62,22 @@ public abstract class ReflectionManager {
         if (!VERSION_PATTERN.matcher(version0).matches()) version0 = "";
         version = version0;
         return ReflectionManager.version = (!version.isEmpty() ? version + "." : "");
+    }
+
+    public static int getServerVersionIndex() {
+        return getVersionIndex(getServerVersion());
+    }
+
+    public static int getVersionIndex(String version) {
+        if (version.endsWith(".")) {
+            version = version.substring(0, version.length() - 1);
+        }
+
+        if (versionIndex.containsKey(version)) {
+            return versionIndex.get(version);
+        }
+
+        return managers.size() - 1;
     }
 
     public abstract Map<String, ReflectionClass> getClasses();

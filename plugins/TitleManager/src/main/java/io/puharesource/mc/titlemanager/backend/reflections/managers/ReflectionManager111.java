@@ -11,11 +11,11 @@ import java.util.Map;
 import static io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager.ReflectionType.NET_MINECRAFT_SERVER;
 import static io.puharesource.mc.titlemanager.backend.reflections.ReflectionManager.ReflectionType.ORG_BUKKIT_CRAFTBUKKIT;
 
-public final class ReflectionManager110 extends ReflectionManager {
+public final class ReflectionManager111 extends ReflectionManager {
 
     @Getter private final Map<String, ReflectionClass> classes;
 
-    public ReflectionManager110() {
+    public ReflectionManager111() {
         classes = new LinkedHashMap<>();
 
         classes.put("ChatComponentText", NET_MINECRAFT_SERVER.getReflectionClass("ChatComponentText"));

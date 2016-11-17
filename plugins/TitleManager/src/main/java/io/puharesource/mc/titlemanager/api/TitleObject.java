@@ -169,23 +169,40 @@ public class TitleObject implements ITitleObject {
     }
 
     public enum TitleType {
-        TITLE(0),
-        SUBTITLE(1),
-        TIMES(2),
-        CLEAR(3),
-        RESET(4);
+        TITLE       (0, 0),
+        SUBTITLE    (1, 1),
+        ACTIONBAR   (   2),
+        TIMES       (2, 3),
+        CLEAR       (3, 4),
+        RESET       (4, 5);
 
-        private final int i;
+        private final int oldIndex;
+        private final int newIndex;
 
-        TitleType(final int i) {
-            this.i = i;
+        TitleType(final int newIndex) {
+            this(-1, newIndex);
+        }
+
+        TitleType(final int oldIndex, final int newIndex) {
+            this.oldIndex = oldIndex;
+            this.newIndex = newIndex;
         }
 
         public Object getHandle() {
-            ReflectionManager manager = TitleManager.getInstance().getReflectionManager();
-            return manager instanceof ReflectionManagerProtocolHack1718 ?
-                    manager.getClasses().get("Action").getHandle().getEnumConstants()[i] :
-                    manager.getClasses().get("EnumTitleAction").getHandle().getEnumConstants()[i];
+            final ReflectionManager manager = TitleManager.getInstance().getReflectionManager();
+
+            if (manager instanceof ReflectionManagerProtocolHack1718) {
+                return manager.getClasses().get("Action").getHandle().getEnumConstants()[oldIndex];
+            }
+
+            final Object[] actions = manager.getClasses().get("EnumTitleAction").getHandle().getEnumConstants();
+
+            // Anything below 1.11
+            if (ReflectionManager.getServerVersionIndex() < 4) {
+                return actions[oldIndex];
+            }
+
+            return actions[newIndex];
         }
     }
 }

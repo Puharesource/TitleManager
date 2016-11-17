@@ -2,7 +2,7 @@ subprojects {
     // ========================= The basics ========================= //
 
     group = 'io.puharesource.mc'
-    version = '1.5.12'
+    version = '1.5.13'
 
     apply plugin: 'java'
     apply plugin: 'maven'
@@ -107,6 +107,6 @@ subprojects {
 
     dependencies {
         provided group: 'org.projectlombok', name: 'lombok', version: '1.16.2'
-        provided group: 'org.bukkit', name: 'bukkit', version: '1.10-R0.1-SNAPSHOT'
+        provided group: 'org.bukkit', name: 'bukkit', version: '1.11-R0.1-SNAPSHOT'
     }
 }
