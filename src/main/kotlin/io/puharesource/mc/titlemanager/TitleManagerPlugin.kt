@@ -17,6 +17,7 @@ import io.puharesource.mc.titlemanager.extensions.clearSubtitle
 import io.puharesource.mc.titlemanager.extensions.clearTitle
 import io.puharesource.mc.titlemanager.extensions.color
 import io.puharesource.mc.titlemanager.extensions.format
+import io.puharesource.mc.titlemanager.extensions.getFormattedTime
 import io.puharesource.mc.titlemanager.extensions.getStringWithMultilines
 import io.puharesource.mc.titlemanager.extensions.sendActionbar
 import io.puharesource.mc.titlemanager.extensions.sendSubtitle
@@ -311,6 +312,8 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         addPlaceholderReplacer("strippeddisplayname", { it.displayName.stripColor() }, "strippeddisplayname", "stripped-displayname", "stripped-nickname", "stripped-nick")
         addPlaceholderReplacer("world", { it.world.name }, "world-name")
         addPlaceholderReplacer("world-time", { it.world.time.toString() })
+        addPlaceholderReplacer("24h-world-time", { it.world.getFormattedTime(true) })
+        addPlaceholderReplacer("12h-world-time", { it.world.getFormattedTime(false) })
         addPlaceholderReplacer("online", { server.onlinePlayers.size.toString() }, "online-players")
         addPlaceholderReplacer("max", { server.maxPlayers.toString() }, "max-players")
         addPlaceholderReplacer("world-players", { it.world.players.size.toString() }, "world-online")
