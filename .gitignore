@@ -36,11 +36,8 @@ Icon
 .Spotlight-V100
 .Trashes
 
-plugins/*/plugins/*
-plugins/*/build/*
 .gradle/
 .idea/
 *.iml
-jars/
-out/
 build/
+out/

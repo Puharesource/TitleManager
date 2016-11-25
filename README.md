@@ -1,17 +1,49 @@
 TitleManager
 ============
-__TitleManager__ adds floating messages and a header/footer for your tabmenu. _TitleManager_ also provides you with a rich API, that you can use in your plugins.
+__TitleManager__ adds floating titles and a header/footer for your player list. _TitleManager_ also provides you with a rich API, that can be used in other plugins.
 #### [Wiki](https://github.com/Puharesource/TitleManager/wiki)
 * [Commands](https://github.com/Puharesource/TitleManager/wiki/commands)
 * [Permissions](https://github.com/Puharesource/TitleManager/wiki/permissions)
 * [Download / Forums](http://www.spigotmc.org/resources/titlemanager.1049/)
 
-The API
----------
+For Developers
+--------------
+**JavaDocs**
+https://jd.puharesource.io/titlemanager/
 
-## Using TitleManager
-_To use TitleManager within your plugin, make sure to have done the following._
-First add TitleManager-X.X.X.jar to your build path. Then, add TitleManager as a dependency to your plugin.yml file:
+**Gradle repository**
+````groovy
+maven {
+    name 'puharesource-repo'
+    url 'http://repo.puha.io/nexus/content/repositories/releases/'
+}
+````
+
+**Gradle dependency**
+````groovy
+compile group: 'io.puharesource.mc', name: 'TitleManager', version: '2.0.0'
+````
+
+**Maven repository**
+````xml
+<repository>
+  <id>puha-repo</id>
+  <url>http://repo.puha.io/nexus/content/repositories/releases/</url>
+</repository>
+````
+
+**Maven dependency**
+````xml
+<dependency>
+  <groupId>io.puharesource.mc</groupId>
+  <artifactId>TitleManager</artifactId>
+  <version>2.0.0</version>
+</dependency>
+````
+
+---
+
+**Adding TitleManager as a plugin dependency**
 ````yml
 depend: [TitleManager]
 ````
@@ -28,11 +60,3 @@ public void onEnable() {
   }
 }
 ````
-Now you should be good to go and ready to use the API inside of your plugins!
-
-### The Objects
-__TitleManager__ provides you with three objects, one being `TitleObject.java` which controls everything to do with the floating messages on your screen, and the second being `TabTitleObject.java` which controls everything to do with the header and footer on the Tabmenu (aka the playerlist) and last but not least `ActionbarTitleObject.java` which controls everything to do with Actionbar titles, like sending an actionbar title.
-
-* [Title Object](https://github.com/Puharesource/TitleManager/wiki/api-title)
-* [Tabmenu Object](https://github.com/Puharesource/TitleManager/wiki/api-tab)
-* [Actionbar Title Object](https://github.com/Puharesource/TitleManager/wiki/api-actionbar)

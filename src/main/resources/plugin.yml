@@ -1,0 +1,12 @@
+name: TitleManager
+version: @VERSION@
+author: Puharesource
+
+main: io.puharesource.mc.titlemanager.TitleManagerPlugin
+softdepend: [Vault, Essentials, VanishNoPacket, PlaceholderAPI, SuperVanish, PremiumVanish]
+
+commands:
+  tm:
+    description: TitleManager commands.
+    usage: /tm
+    aliases: [titlemanager]

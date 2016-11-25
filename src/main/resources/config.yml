@@ -1,0 +1,75 @@
+config-version: 1
+
+debug: false
+using-config: true
+using-bungeecord: false
+legacy-client-support: false
+check-for-updates: true
+
+player-list:
+  enabled: true
+  header:
+  - ''
+  - 'My Server'
+  - ''
+  footer: '${right-to-left} &b%{online}&7/&b%{max} &7Online Players ${left-to-right}'
+
+welcome-title:
+  enabled: true
+  title: 'Welcome to My Server'
+  subtitle: 'Hope you enjoy your stay'
+  fade-in: 20
+  stay: 40
+  fade-out: 20
+  first-join:
+    title: 'Welcome to My Server'
+    subtitle: 'This is your first time!'
+
+welcome-actionbar:
+  enabled: true
+  title: 'Welcome to My Server'
+  first-join: 'Welcome to My Server, this is your first time!'
+
+placeholders:
+  number-format:
+    enabled: true
+    format: '#,###.##'
+  date-format: 'EEE, dd MMM yyyy HH:mm:ss z'
+
+messages:
+  command-version:
+    description: 'Gives you the current running version of TitleManager'
+    version: '&aThe server is running %version'
+  command-reload:
+    description: 'Reloads TitleManager'
+    reloaded: '&aTitleManager reloaded'
+  command-animations:
+    description: 'Displays all loaded animations'
+    format: '&aLoaded animations (&f%count&a): %animations'
+    separator: '&f, &a'
+  command-scripts:
+    description: 'Displays all loaded scripts'
+    format: '&aLoaded scripts (&f%count&a): %scripts'
+    separator: '&f, &a'
+  command-broadcast:
+    description: 'Broadcasts a title to the server'
+    usage: '<title>|<title\nsubtitle>'
+    title-sent: '&aYou have broadcasted the title "&r%title&a".'
+    subtitle-sent: '&aYou have broadcasted the subtitle "&r%subtitle&a".'
+    both-sent: '&aYou have broadcasted the titles "&r%title&a" "&r%subtitle&a".'
+  command-abroadcast:
+    description: 'Broadcasts an actionbar title to the server'
+    usage: '<title>'
+    sent: '&aYou have broadcasted the actionbar title "&r%title&a".'
+  command-message:
+    description: 'Sends a title to the specified player'
+    usage: '<player> <title>|<title\nsubtitle>'
+    title-sent: '&aYou have sent %player the title "&r%title&a".'
+    subtitle-sent: '&aYou have sent %player the subtitle "&r%subtitle&a".'
+    both-sent: '&aYou have sent %player the titles "&r%title&a" "&r%subtitle&a".'
+    invalid-player: '&c%player is not a valid player.'
+  command-amessage:
+    description: 'Sends an actionbar title to the specified player'
+    usage: '<player> <title>'
+    sent: '&aYou have sent %player the actionbar title "&r%title&a".'
+    invalid-player: '&c%player is not a valid player.'

@@ -1,8 +1,0 @@
-subprojects {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    dependencies {
-        provided group: 'org.spongepowered', name: 'spongeapi', version: '3.0.0'
-    }
-}
