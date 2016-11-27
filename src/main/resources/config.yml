@@ -10,9 +10,14 @@ player-list:
   enabled: true
   header:
   - ''
-  - '${shine:[0;3;0][0;25;0][0;25;0][&3;&b]My Server}'
+  - '${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}'
   - ''
-  footer: '${right-to-left} &b%{online}&7/&b%{max} &7Online Players ${left-to-right}'
+  footer:
+  - ''
+  - '&7World time: &b%{12h-world-time}'
+  - '&7Server time: &b%{server-time}'
+  - ''
+  - '${right-to-left} &b%{online}&7/&b%{max} &7Online Players ${left-to-right}'
 
 welcome-title:
   enabled: true
