@@ -26,29 +26,11 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
-import java.lang.reflect.Method
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentSkipListMap
-import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.TimeUnit
 
 class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
-    private val playerListCache = ConcurrentHashMap<Player, Pair<String?, String?>>()
-
-    private val registeredAnimations : MutableMap<String, Animation> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
-    private val registeredScripts : MutableSet<String> = ConcurrentSkipListSet(String.CASE_INSENSITIVE_ORDER)
-
-    private val textAnimationFramePattern = "^\\[([-]?\\d+);([-]?\\d+);([-]?\\d+)\\](.+)$".toRegex()
-    private val variablePattern = """[%][{]([^}]+\b)[}]""".toRegex()
-    private val animationPattern = """[$][{]([^}]+\b)[}]""".toRegex()
-    private val variablePatternWithParameter = """[%][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
-    private val animationPatternWithParameter = """[$][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
-
-    private val placeholderReplacers : MutableMap<String, (Player) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
-    private val placeholderReplacersWithValues : MutableMap<String, (Player, String) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
-
     private val animationsFolder = File(dataFolder, "animations")
 
     override fun onEnable() {
@@ -277,8 +259,8 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         // Delete players from tab list cache when they quit the server
         observeEvent(events = PlayerJoinEvent::class.java)
                 .map { it.player }
-                .filter { playerListCache.contains(it) }
-                .subscribe { playerListCache.remove(it) }
+                .filter { APIProvider.playerListCache.contains(it) }
+                .subscribe { APIProvider.playerListCache.remove(it) }
     }
 
     private fun registerCommands() {
@@ -289,53 +271,39 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     }
 
     private fun registerPlaceholders() {
-        addPlaceholderReplacer("player", { it.name }, "username", "name")
-        addPlaceholderReplacer("displayname", { it.displayName }, "display-name", "nickname", "nick")
-        addPlaceholderReplacer("strippeddisplayname", { it.displayName.stripColor() }, "strippeddisplayname", "stripped-displayname", "stripped-nickname", "stripped-nick")
-        addPlaceholderReplacer("world", { it.world.name }, "world-name")
-        addPlaceholderReplacer("world-time", { it.world.time.toString() })
-        addPlaceholderReplacer("24h-world-time", { it.world.getFormattedTime(true) })
-        addPlaceholderReplacer("12h-world-time", { it.world.getFormattedTime(false) })
-        addPlaceholderReplacer("online", { server.onlinePlayers.size.toString() }, "online-players")
-        addPlaceholderReplacer("max", { server.maxPlayers.toString() }, "max-players")
-        addPlaceholderReplacer("world-players", { it.world.players.size.toString() }, "world-online")
-        addPlaceholderReplacer("server-time", { SimpleDateFormat(config.getString("placeholders.date-format")).format(Date(System.currentTimeMillis())) })
-        addPlaceholderReplacer("ping", { it.getPing().toString() })
+        APIProvider.addPlaceholderReplacer("player", { it.name }, "username", "name")
+        APIProvider.addPlaceholderReplacer("displayname", { it.displayName }, "display-name", "nickname", "nick")
+        APIProvider.addPlaceholderReplacer("strippeddisplayname", { it.displayName.stripColor() }, "strippeddisplayname", "stripped-displayname", "stripped-nickname", "stripped-nick")
+        APIProvider.addPlaceholderReplacer("world", { it.world.name }, "world-name")
+        APIProvider.addPlaceholderReplacer("world-time", { it.world.time.toString() })
+        APIProvider.addPlaceholderReplacer("24h-world-time", { it.world.getFormattedTime(true) })
+        APIProvider.addPlaceholderReplacer("12h-world-time", { it.world.getFormattedTime(false) })
+        APIProvider.addPlaceholderReplacer("online", { server.onlinePlayers.size.toString() }, "online-players")
+        APIProvider.addPlaceholderReplacer("max", { server.maxPlayers.toString() }, "max-players")
+        APIProvider.addPlaceholderReplacer("world-players", { it.world.players.size.toString() }, "world-online")
+        APIProvider.addPlaceholderReplacer("server-time", { SimpleDateFormat(config.getString("placeholders.date-format")).format(Date(System.currentTimeMillis())) })
+        APIProvider.addPlaceholderReplacer("ping", { it.getPing().toString() })
 
         if (config.getBoolean("using-bungeecord")) {
-            addPlaceholderReplacer("bungeecord-online", { BungeeCordManager.onlinePlayers.toString() }, "bungeecord-online-players")
-            addPlaceholderReplacer("server", { BungeeCordManager.getCurrentServer().orEmpty() }, "server-name")
+            APIProvider.addPlaceholderReplacer("bungeecord-online", { BungeeCordManager.onlinePlayers.toString() }, "bungeecord-online-players")
+            APIProvider.addPlaceholderReplacer("server", { BungeeCordManager.getCurrentServer().orEmpty() }, "server-name")
 
-            addPlaceholderReplacerWithValue("online", { player, value -> BungeeCordManager.getServers()[value]?.playerCount?.toString() ?: "" }, "online-players")
+            APIProvider.addPlaceholderReplacerWithValue("online", { player, value -> BungeeCordManager.getServers()[value]?.playerCount?.toString() ?: "" }, "online-players")
         }
 
         if (VanishHookReplacer.isValid()) {
-            addPlaceholderReplacer("safe-online", { VanishHookReplacer.value(it) }, "safe-online-players")
+            APIProvider.addPlaceholderReplacer("safe-online", { VanishHookReplacer.value(it) }, "safe-online-players")
         }
 
         if (VaultHook.isEnabled()) {
             if (VaultHook.economySupported) {
-                addPlaceholderReplacer("balance", { VaultHook.economy!!.getBalance(it).format() }, "money")
+                APIProvider.addPlaceholderReplacer("balance", { VaultHook.economy!!.getBalance(it).format() }, "money")
             }
 
             if (VaultHook.hasGroupSupport()) {
-                addPlaceholderReplacer("group", { VaultHook.permissions!!.getPrimaryGroup(it) }, "group-name")
+                APIProvider.addPlaceholderReplacer("group", { VaultHook.permissions!!.getPrimaryGroup(it) }, "group-name")
             }
         }
-    }
-
-    fun addPlaceholderReplacer(name: String, body: (Player) -> String, vararg aliases: String) {
-        placeholderReplacers.put(name, body)
-        aliases.forEach { placeholderReplacers.put(it, body) }
-    }
-
-    fun addPlaceholderReplacer(name: String, instance: Any, method: Method, vararg aliases: String) {
-        addPlaceholderReplacer(name, { method.invoke(instance, it) as String }, *aliases)
-    }
-
-    fun addPlaceholderReplacerWithValue(name: String, body: (Player, String) -> String, vararg aliases: String) {
-        placeholderReplacersWithValues.put(name, body)
-        aliases.forEach { placeholderReplacersWithValues.put(it, body) }
     }
 
     override fun replaceText(player: Player, text: String) = APIProvider.replaceText(player, text)

@@ -28,6 +28,7 @@ import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.entity.Player
 import java.io.File
 import java.lang.reflect.Constructor
+import java.lang.reflect.Method
 import java.util.TreeMap
 import java.util.TreeSet
 import java.util.concurrent.ConcurrentHashMap
@@ -35,10 +36,13 @@ import java.util.concurrent.ConcurrentSkipListMap
 import java.util.concurrent.ConcurrentSkipListSet
 
 object APIProvider : TitleManagerAPI {
-    private val playerListCache = ConcurrentHashMap<Player, Pair<String?, String?>>()
+    internal val playerListCache = ConcurrentHashMap<Player, Pair<String?, String?>>()
 
-    private val registeredAnimations : MutableMap<String, Animation> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
-    private val registeredScripts : MutableSet<String> = ConcurrentSkipListSet(String.CASE_INSENSITIVE_ORDER)
+    internal val registeredAnimations : MutableMap<String, Animation> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
+    internal val registeredScripts : MutableSet<String> = ConcurrentSkipListSet(String.CASE_INSENSITIVE_ORDER)
+
+    internal val placeholderReplacers : MutableMap<String, (Player) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
+    internal val placeholderReplacersWithValues : MutableMap<String, (Player, String) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
 
     private val textAnimationFramePattern = "^\\[([-]?\\d+);([-]?\\d+);([-]?\\d+)\\](.+)$".toRegex()
     private val variablePattern = """[%][{]([^}]+\b)[}]""".toRegex()
@@ -46,8 +50,19 @@ object APIProvider : TitleManagerAPI {
     private val variablePatternWithParameter = """[%][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
     private val animationPatternWithParameter = """[$][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
 
-    private val placeholderReplacers : MutableMap<String, (Player) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
-    private val placeholderReplacersWithValues : MutableMap<String, (Player, String) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
+    fun addPlaceholderReplacer(name: String, body: (Player) -> String, vararg aliases: String) {
+        placeholderReplacers.put(name, body)
+        aliases.forEach { placeholderReplacers.put(it, body) }
+    }
+
+    fun addPlaceholderReplacer(name: String, instance: Any, method: Method, vararg aliases: String) {
+        addPlaceholderReplacer(name, { method.invoke(instance, it) as String }, *aliases)
+    }
+
+    fun addPlaceholderReplacerWithValue(name: String, body: (Player, String) -> String, vararg aliases: String) {
+        placeholderReplacersWithValues.put(name, body)
+        aliases.forEach { placeholderReplacersWithValues.put(it, body) }
+    }
 
     override fun replaceText(player: Player, text: String): String {
         var replacedText : String
