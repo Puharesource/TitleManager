@@ -258,6 +258,14 @@ object APIProvider : TitleManagerAPI {
                 lastEnd = end
             }
 
+            if (lastEnd != text.length) {
+                val part : String = text.substring(lastEnd, text.length)
+
+                if (part.isNotEmpty()) {
+                    list.add(AnimationPart { part })
+                }
+            }
+
             return list
         } else if (text.contains(animationPattern)) {
             val list : MutableList<AnimationPart<*>> = mutableListOf()
@@ -282,6 +290,14 @@ object APIProvider : TitleManagerAPI {
                 }
 
                 lastEnd = end
+            }
+
+            if (lastEnd != text.length) {
+                val part : String = text.substring(lastEnd, text.length)
+
+                if (part.isNotEmpty()) {
+                    list.add(AnimationPart { part })
+                }
             }
 
             return list

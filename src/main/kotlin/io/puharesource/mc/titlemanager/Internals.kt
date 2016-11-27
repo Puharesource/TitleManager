@@ -9,7 +9,7 @@ import rx.schedulers.Schedulers
 import java.util.concurrent.Executor
 
 private var instance : TitleManagerPlugin? = null
-val pluginInstance : TitleManagerPlugin
+internal val pluginInstance : TitleManagerPlugin
     get() {
         if (instance == null) {
             instance = Bukkit.getPluginManager().getPlugin("TitleManager") as TitleManagerPlugin
@@ -17,6 +17,9 @@ val pluginInstance : TitleManagerPlugin
 
         return instance!!
     }
+
+internal val isTesting : Boolean
+    get() = Bukkit.getServer() == null
 
 internal val asyncExecutor = Executor { Bukkit.getScheduler().runTaskAsynchronously(pluginInstance, it) }
 internal val syncExecutor = Executor { Bukkit.getScheduler().runTask(pluginInstance, it) }
@@ -40,7 +43,7 @@ internal fun onPluginDisable(body: () -> Unit) {
     pluginManager.registerEvent(PluginDisableEvent::class.java, listener, EventPriority.MONITOR, { listener, event ->
         val disableEvent = event as PluginDisableEvent
 
-        if (disableEvent.plugin.equals(pluginInstance)) {
+        if (disableEvent.plugin == pluginInstance) {
             body()
         }
     }, pluginInstance, false)

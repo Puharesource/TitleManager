@@ -1,20 +1,17 @@
 
 import com.google.common.io.Resources.getResource
+import io.puharesource.mc.titlemanager.APIProvider
+import io.puharesource.mc.titlemanager.script.ScriptManager
 import org.junit.Test
-import javax.script.Invocable
-import javax.script.ScriptEngine
-import javax.script.ScriptEngineManager
 import kotlin.test.assertTrue
 
 class JSAnimationTest {
-    val engine : ScriptEngine = ScriptEngineManager().getEngineByName("nashorn")
-    val invocable = engine as Invocable
-
     init {
-        engine.eval(getResource("titlemanager_engine.js").readText())
-
         fun registerAnimation(name: String) {
-            engine.eval(getResource("animations/$name.js").readText())
+            val js = getResource("animations/$name.js").readText()
+
+            APIProvider.registeredScripts.add(name)
+            ScriptManager.addJavaScript(js)
         }
 
         registerAnimation("count_down")
@@ -25,7 +22,7 @@ class JSAnimationTest {
     }
 
     fun toResult(animation: String, text: String, index: Int) : Pair<String, Boolean> {
-        val result = invocable.invokeFunction(animation, text, index) as Array<*>
+        val result = ScriptManager.getFrameFromScript(animation, text, index)
         val prefix = "(Animation: $animation | Index: $index)"
 
         assertTrue(result.size == 5, "$prefix Must return 5 elements.")
@@ -191,5 +188,26 @@ class JSAnimationTest {
         """)
 
         checkList("text_delete", results, expectedResults)
+    }
+
+    @Test
+    fun toAnimationTest() {
+        fun test(text: String, expectedAmount: Int) {
+            val parts = APIProvider.toAnimationParts(text)
+
+            assertTrue(expectedAmount == parts.size, "Expected $expectedAmount animation parts, got ${parts.size} instead.")
+        }
+
+        test("\${count_up;3}", 1)
+        test("\${count_up;3} test", 2)
+        test("test \${count_up;3}", 2)
+        test("test \${count_up;3} test", 3)
+        test("\${count_up;3}\${count_up;3}", 2)
+        test("\${count_up;3} \${count_up;3}", 3)
+        test("\${count_up;3} test \${count_up;3}", 3)
+        test("\${count_up;3}\${count_up;3} test", 3)
+        test("test \${count_up;3}\${count_up;3}", 3)
+        test("test \${count_up;3}\${count_up;3} test", 4)
+        test("test \${count_up;3} test \${count_up;3} test", 5)
     }
 }
