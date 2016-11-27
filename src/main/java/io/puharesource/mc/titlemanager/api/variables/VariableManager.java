@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.api.variables;
 
+import io.puharesource.mc.titlemanager.APIProvider;
 import io.puharesource.mc.titlemanager.InternalsKt;
 import org.bukkit.entity.Player;
 
@@ -17,7 +18,7 @@ public final class VariableManager {
     @Deprecated
     private void registerMethod(final Method method, int replacer, final Variable variable) {
         for (String var : variable.vars()) {
-            InternalsKt.getPluginInstance().addPlaceholderReplacer(var, replacers.get(replacer), method);
+            APIProvider.INSTANCE.addPlaceholderReplacer(var, replacers.get(replacer), method);
         }
     }
 
