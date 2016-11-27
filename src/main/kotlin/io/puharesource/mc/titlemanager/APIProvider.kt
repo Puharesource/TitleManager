@@ -26,6 +26,7 @@ import me.clip.placeholderapi.PlaceholderAPI
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.entity.Player
+import org.bukkit.metadata.FixedMetadataValue
 import java.io.File
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
@@ -49,6 +50,49 @@ object APIProvider : TitleManagerAPI {
     private val animationPattern = """[$][{]([^}]+\b)[}]""".toRegex()
     private val variablePatternWithParameter = """[%][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
     private val animationPatternWithParameter = """[$][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
+
+    // Running animations
+
+    private fun setRunningAnimation(player: Player, path: String, animation: SendableAnimation) {
+        player.setMetadata("running-$path-animation", FixedMetadataValue(pluginInstance, animation))
+    }
+
+    private fun removeRunningAnimation(player: Player, path: String) {
+        val fullPath = "running-$path-animation"
+
+        if (player.hasMetadata(fullPath)) {
+            val animation = player.getMetadata(fullPath).first().value() as SendableAnimation
+
+            animation.stop()
+
+            player.removeMetadata(fullPath, pluginInstance)
+        }
+    }
+
+    fun removeAllRunningAnimations(player: Player) {
+        removeRunningTitleAnimation(player)
+        removeRunningSubtitleAnimation(player)
+        removeRunningActionbarAnimation(player)
+        removeRunningHeaderAnimation(player)
+        removeRunningFooterAnimation(player)
+    }
+
+    fun setRunningHeaderAnimation(player: Player, animation: SendableAnimation) = setRunningAnimation(player, "header", animation)
+    fun removeRunningHeaderAnimation(player: Player) = removeRunningAnimation(player, "header")
+
+    fun setRunningFooterAnimation(player: Player, animation: SendableAnimation) = setRunningAnimation(player, "footer", animation)
+    fun removeRunningFooterAnimation(player: Player) = removeRunningAnimation(player, "footer")
+
+    fun setRunningTitleAnimation(player: Player, animation: SendableAnimation) = setRunningAnimation(player, "title", animation)
+    fun removeRunningTitleAnimation(player: Player) = removeRunningAnimation(player, "title")
+
+    fun setRunningSubtitleAnimation(player: Player, animation: SendableAnimation) = setRunningAnimation(player, "subtitle", animation)
+    fun removeRunningSubtitleAnimation(player: Player) = removeRunningAnimation(player, "subtitle")
+
+    fun setRunningActionbarAnimation(player: Player, animation: SendableAnimation) = setRunningAnimation(player, "actionbar", animation)
+    fun removeRunningActionbarAnimation(player: Player) = removeRunningAnimation(player, "actionbar")
+
+    // Placeholder
 
     fun addPlaceholderReplacer(name: String, body: (Player) -> String, vararg aliases: String) {
         placeholderReplacers.put(name, body)
@@ -111,6 +155,8 @@ object APIProvider : TitleManagerAPI {
 
     override fun containsAnimation(text: String, animation: String) = text.contains("\${$animation}", ignoreCase = true)
 
+    // Animations and scripts
+
     override fun getRegisteredAnimations(): Map<String, Animation> = registeredAnimations
 
     override fun getRegisteredScripts(): Set<String> = registeredScripts
@@ -128,7 +174,7 @@ object APIProvider : TitleManagerAPI {
             player.sendTitle(it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearTitle()
-        })
+        }, fixedOnStop = { removeRunningTitleAnimation(it) }, fixedOnStart = { player, animation -> setRunningTitleAnimation(player, animation) })
     }
 
     override fun toSubtitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
@@ -136,7 +182,7 @@ object APIProvider : TitleManagerAPI {
             player.sendTitle(it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearSubtitle()
-        })
+        }, fixedOnStop = { removeRunningSubtitleAnimation(it) }, fixedOnStart = { player, animation -> setRunningSubtitleAnimation(player, animation) })
     }
 
     override fun toActionbarAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
@@ -144,19 +190,19 @@ object APIProvider : TitleManagerAPI {
             player.sendActionbar(it.text, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearActionbar()
-        })
+        }, fixedOnStop = { removeRunningActionbarAnimation(it) }, fixedOnStart = { player, animation -> setRunningActionbarAnimation(player, animation) })
     }
 
     override fun toHeaderAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(animation, player, {
             player.setPlayerListHeader(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true)
+        }, continuous = true, fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { player, animation -> setRunningHeaderAnimation(player, animation) })
     }
 
     override fun toFooterAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(animation, player, {
             player.setPlayerListFooter(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true)
+        }, continuous = true, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { player, animation -> setRunningFooterAnimation(player, animation) })
     }
 
     override fun toAnimationPart(text: String): AnimationPart<String> {
@@ -253,7 +299,7 @@ object APIProvider : TitleManagerAPI {
             player.sendTitle(it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearTitle()
-        })
+        }, fixedOnStop = { removeRunningTitleAnimation(it) }, fixedOnStart = { player, animation -> setRunningTitleAnimation(player, animation) })
     }
 
     override fun toSubtitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
@@ -261,7 +307,7 @@ object APIProvider : TitleManagerAPI {
             player.sendSubtitle(it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearSubtitle()
-        })
+        }, fixedOnStop = { removeRunningSubtitleAnimation(it) }, fixedOnStart = { player, animation -> setRunningSubtitleAnimation(player, animation) })
     }
 
     override fun toActionbarAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
@@ -269,19 +315,19 @@ object APIProvider : TitleManagerAPI {
             player.sendActionbar(it.text, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearActionbar()
-        })
+        }, fixedOnStop = { removeRunningActionbarAnimation(it) }, fixedOnStart = { player, animation -> setRunningActionbarAnimation(player, animation) })
     }
 
     override fun toHeaderAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(parts, player, {
             player.setPlayerListHeader(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true)
+        }, continuous = true, fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { player, animation -> setRunningHeaderAnimation(player, animation) })
     }
 
     override fun toFooterAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(parts, player, {
             player.setPlayerListFooter(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true)
+        }, continuous = true, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { player, animation -> setRunningFooterAnimation(player, animation) })
     }
 
     override fun fromText(vararg frames: String): Animation {
@@ -311,6 +357,8 @@ object APIProvider : TitleManagerAPI {
     override fun fromJavaScript(name: String, input: String): Animation {
         return ScriptManager.getJavaScriptAnimation(name, input)
     }
+
+    // Titles
 
     override fun sendTitle(player: Player, title: String) {
         sendTitle(player, title, -1, -1, -1)
@@ -447,6 +495,8 @@ object APIProvider : TitleManagerAPI {
         sendSubtitle(player, " ", fadeIn, stay, fadeOut)
     }
 
+    // Actionbar
+
     override fun sendActionbar(player: Player, text: String) {
         val provider = NMSManager.getClassProvider()
 
@@ -478,6 +528,8 @@ object APIProvider : TitleManagerAPI {
     override fun clearActionbar(player: Player) {
         sendActionbar(player, " ")
     }
+
+    // Player list
 
     override fun getHeader(player: Player) = playerListCache[player]?.first.orEmpty()
 

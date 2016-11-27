@@ -24,6 +24,7 @@ import io.puharesource.mc.titlemanager.web.UpdateChecker
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.text.SimpleDateFormat
@@ -55,8 +56,13 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         debug("Using MC version: ${NMSManager.serverVersion} | NMS Index: ${NMSManager.versionIndex}")
     }
 
+    override fun onDisable() {
+        server.onlinePlayers.forEach { APIProvider.removeAllRunningAnimations(it) }
+    }
+
     fun reloadPlugin() {
         UpdateChecker.stop()
+        server.onlinePlayers.forEach { APIProvider.removeAllRunningAnimations(it) }
 
         reloadConfig()
         saveDefaultConfig()
@@ -68,6 +74,15 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
         if (config.getBoolean("check-for-updates")) {
             UpdateChecker.start()
+        }
+
+        val section = config.getConfigurationSection("player-list")
+        val header = toAnimationParts(section.getStringWithMultilines("header").color())
+        val footer = toAnimationParts(section.getStringWithMultilines("footer").color())
+
+        server.onlinePlayers.forEach {
+            toHeaderAnimation(header, it, withPlaceholders = true).start()
+            toFooterAnimation(footer, it, withPlaceholders = true).start()
         }
     }
 
@@ -257,10 +272,15 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 }
 
         // Delete players from tab list cache when they quit the server
-        observeEvent(events = PlayerJoinEvent::class.java)
+        observeEvent(events = PlayerQuitEvent::class.java)
                 .map { it.player }
                 .filter { APIProvider.playerListCache.contains(it) }
                 .subscribe { APIProvider.playerListCache.remove(it) }
+
+        // End all running animations when they quit the server
+        observeEvent(events = PlayerQuitEvent::class.java)
+                .map { it.player }
+                .subscribe { APIProvider.removeAllRunningAnimations(it) }
     }
 
     private fun registerCommands() {

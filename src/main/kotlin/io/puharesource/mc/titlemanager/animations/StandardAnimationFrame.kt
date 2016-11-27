@@ -2,7 +2,10 @@ package io.puharesource.mc.titlemanager.animations
 
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationFrame
 
-data class StandardAnimationFrame(private var text: String, private var fadeIn: Int = -1, private var stay: Int = -1, private var fadeOut: Int = -1) : AnimationFrame {
+data class StandardAnimationFrame(private var text: String,
+                                  private var fadeIn: Int = -1,
+                                  private var stay: Int = -1,
+                                  private var fadeOut: Int = -1) : AnimationFrame {
     override fun getText() = text
 
     override fun setText(text: String) {

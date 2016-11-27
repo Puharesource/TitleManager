@@ -8,28 +8,22 @@ import io.puharesource.mc.titlemanager.api.v2.animation.SendableAnimation
 import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler
 import org.bukkit.entity.Player
 
-class PartBasedSendableAnimation : SendableAnimation {
-    private val parts: List<AnimationPart<*>>
-    private val player: Player
-    private val onUpdate: (AnimationFrame) -> Unit
+class PartBasedSendableAnimation(parts: List<AnimationPart<*>>,
+                                 private val player: Player,
+                                 private val onUpdate: (AnimationFrame) -> Unit,
+                                 private var continuous: Boolean = false,
+                                 private var onStop: Runnable? = null,
+                                 private val fixedOnStop: ((Player) -> Unit)? = null,
+                                 private val fixedOnStart: ((Player, SendableAnimation) -> Unit)? = null) : SendableAnimation {
 
     private var sendableParts: List<SendablePart>
-    private var continuous: Boolean
-    private var onStop: Runnable?
 
     private var running: Boolean = false
     private var ticksRun: Int = 0
 
     private val joiner = Joiner.on("")
 
-    constructor(parts: List<AnimationPart<*>>, player: Player, onUpdate: (AnimationFrame) -> Unit, continuous: Boolean = false, onStop: Runnable? = null) {
-        this.parts = parts
-        this.player = player
-        this.onUpdate = onUpdate
-
-        this.continuous = continuous
-        this.onStop = onStop
-
+    init {
         this.sendableParts = parts.mapNotNull {
             if (it.part is Animation) {
                 AnimationSendablePart(player = player, part = it as AnimationPart<Animation>, isContinuous = isContinuous)
@@ -38,7 +32,7 @@ class PartBasedSendableAnimation : SendableAnimation {
             } else {
                 null
             }
-        }.toList()
+        }
     }
 
     private fun getCurrentFrameText() : AnimationFrame {
@@ -56,8 +50,10 @@ class PartBasedSendableAnimation : SendableAnimation {
     }
 
     override fun start() {
-        if (!running) {
+        if (!running && player.isOnline) {
             running = true
+
+            fixedOnStart?.invoke(player, this)
 
             update(getCurrentFrameText())
         }
@@ -67,8 +63,9 @@ class PartBasedSendableAnimation : SendableAnimation {
         if (running) {
             running = false
 
-            if (onStop != null && player.isOnline) {
-                onStop!!.run()
+            if (player.isOnline) {
+                onStop?.run()
+                fixedOnStop?.invoke(player)
             }
         }
     }

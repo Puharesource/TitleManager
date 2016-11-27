@@ -6,30 +6,22 @@ import io.puharesource.mc.titlemanager.api.v2.animation.SendableAnimation
 import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler
 import org.bukkit.entity.Player
 
-class EasySendableAnimation : SendableAnimation {
-    private val animation: Animation
-    private val player: Player
-    private val onUpdate: (AnimationFrame) -> Unit
+class EasySendableAnimation(private val animation: Animation,
+                            private val player: Player,
+                            private val onUpdate: (AnimationFrame) -> Unit,
+                            private var continuous: Boolean = false,
+                            private var onStop: Runnable? = null,
+                            private val fixedOnStop: ((Player) -> Unit)? = null,
+                            private val fixedOnStart: ((Player, SendableAnimation) -> Unit)? = null) : SendableAnimation {
 
-    private var iterator: Iterator<AnimationFrame>
-    private var continuous: Boolean
-    private var onStop: Runnable?
-
+    private var iterator = animation.iterator(player)
     private var running: Boolean = false
 
-    constructor(animation: Animation, player: Player, onUpdate: (AnimationFrame) -> Unit, continuous: Boolean = false, onStop: Runnable? = null) {
-        this.animation = animation
-        this.player = player
-        this.onUpdate = onUpdate
-
-        this.iterator = animation.iterator(player)
-        this.continuous = continuous
-        this.onStop = onStop
-    }
-
     override fun start() {
-        if (!running) {
+        if (!running && player.isOnline) {
             running = true
+
+            fixedOnStart?.invoke(player, this)
 
             update(iterator.next())
         }
@@ -39,8 +31,9 @@ class EasySendableAnimation : SendableAnimation {
         if (running) {
             running = false
 
-            if (onStop != null && player.isOnline) {
-                onStop!!.run()
+            if (player.isOnline) {
+                onStop?.run()
+                fixedOnStop?.invoke(player)
             }
         }
     }
