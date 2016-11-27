@@ -12,7 +12,7 @@ var text_delete = function(text, index) {
         fadeOut = timings[3];
     }
 
-    var manipulated = text.substring(0, index);
+    var manipulated = text.substring(index, text.length);
 
-    return tmResult(manipulated, text.length == index, fadeIn, stay, fadeOut)
+    return tmResult(manipulated, text.length <= index, fadeIn, stay, fadeOut)
 };

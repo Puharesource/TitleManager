@@ -1,4 +1,6 @@
 var count_up = function(text, index) {
+    index++;
+
     var fadeIn = 0;
     var stay = 20;
     var fadeOut = 0;
@@ -14,5 +16,5 @@ var count_up = function(text, index) {
 
     var limit = parseInt(text);
 
-    return tmResult(index.toString(), (index >= limit), fadeIn, stay, fadeOut)
+    return tmResult(index.toString(), index >= limit, fadeIn, stay, fadeOut)
 };

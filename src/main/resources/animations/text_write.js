@@ -12,7 +12,7 @@ var text_write = function(text, index) {
         fadeOut = timings[3];
     }
 
-    var manipulated = text.substring(index, text.length);
+    var manipulated = text.substring(0, index);
 
-    return tmResult(manipulated, text.length == index, fadeIn, stay, fadeOut)
+    return tmResult(manipulated, text.length <= index, fadeIn, stay, fadeOut)
 };

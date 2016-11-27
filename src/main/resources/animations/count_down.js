@@ -14,5 +14,5 @@ var count_down = function(text, index) {
 
     var countdown = parseInt(text) - index;
 
-    return tmResult(countdown.toString(), (countdown > 0), fadeIn, stay, fadeOut)
+    return tmResult(countdown.toString(), countdown <= 1, fadeIn, stay, fadeOut)
 };

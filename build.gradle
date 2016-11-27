@@ -130,7 +130,7 @@ repositories {
 // ========================= Dependencies ========================= //
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
     compile group: 'io.reactivex', name: 'rxjava', version: '1.2.1'
 
     provided group: 'org.spigotmc', name: 'spigot-api', version: '1.11-R0.1-SNAPSHOT'
@@ -141,4 +141,7 @@ dependencies {
     provided group: 'org.kitteh', name: 'VanishNoPacket', version: '3.19.2-SNAPSHOT'
 
     provided name: 'SuperVanish'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: kotlin_version
 }
