@@ -51,17 +51,11 @@ abstract class TMSubCommand constructor(val name: String,
         get() = pluginInstance.config.getString("messages.command-$name.description").orEmpty().color().stripColor()
 }
 
-enum class AllowedCommandSender {
+enum class AllowedCommandSender(val disallowMessage: String) {
     ALL(""),
     PLAYER("This command can only be run as a player."),
     CONSOLE("This command can only be run from the console."),
     COMMAND_BLOCK("This command can only be run from a command block.");
-
-    val disallowMessage : String
-
-    constructor(disallowMessage: String) {
-        this.disallowMessage = disallowMessage
-    }
 
     fun isAllowed(sender: CommandSender) : Boolean {
         if (this == ALL) return true

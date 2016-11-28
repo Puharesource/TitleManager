@@ -158,7 +158,7 @@ object TMCommand : CommandExecutor, TabCompleter {
     }
 
     override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): MutableList<String>? {
-        if (args.size > 0) {
+        if (args.isNotEmpty()) {
             return subCommands.keys
                     .filter { it.startsWith(args[args.size - 1], ignoreCase = true) }
                     .toMutableList()

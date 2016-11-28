@@ -1,16 +1,10 @@
 package io.puharesource.mc.titlemanager.reflections
 
-class ReflectionClass {
+class ReflectionClass(val path: String) {
     val handle : Class<*>
-    val path : String
-
-    constructor(path: String) {
-        this.path = path
-        this.handle = Class.forName(path)
-    }
 
     fun getMethod(methodName: String, vararg params: Class<*>) = handle.declaredMethods
-            .filter { it.name.equals(methodName) }
+            .filter { it.name == methodName }
             .filter { it.parameterTypes.size == params.size }
             .filter { it.parameterTypes.filterIndexed { i, clazz -> clazz == params[i] }.size == params.size }
             .firstOrNull() ?: throw NoSuchMethodException("Couldn't find constructor for ${handle.name}.")
@@ -31,4 +25,8 @@ class ReflectionClass {
     fun getInnerClass(className: String) = Class.forName("$path$$className")
 
     fun getInnerReflectionClass(className: String) = ReflectionClass("$path$$className")
+
+    init {
+        this.handle = Class.forName(path)
+    }
 }
