@@ -34,22 +34,20 @@ import java.util.TreeMap
 import java.util.TreeSet
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListMap
-import java.util.concurrent.ConcurrentSkipListSet
 
 object APIProvider : TitleManagerAPI {
     internal val playerListCache = ConcurrentHashMap<Player, Pair<String?, String?>>()
 
     internal val registeredAnimations : MutableMap<String, Animation> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
-    internal val registeredScripts : MutableSet<String> = ConcurrentSkipListSet(String.CASE_INSENSITIVE_ORDER)
 
     internal val placeholderReplacers : MutableMap<String, (Player) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
     internal val placeholderReplacersWithValues : MutableMap<String, (Player, String) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
 
-    private val textAnimationFramePattern = "^\\[([-]?\\d+);([-]?\\d+);([-]?\\d+)\\](.+)$".toRegex()
-    private val variablePattern = """[%][{]([^}]+\b)[}]""".toRegex()
-    private val animationPattern = """[$][{]([^}]+\b)[}]""".toRegex()
-    private val variablePatternWithParameter = """[%][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
-    private val animationPatternWithParameter = """[$][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
+    internal val textAnimationFramePattern = "^\\[([-]?\\d+);([-]?\\d+);([-]?\\d+)\\](.+)$".toRegex()
+    internal val variablePattern = """[%][{]([^}]+\b)[}]""".toRegex()
+    internal val animationPattern = """[$][{]([^}]+\b)[}]""".toRegex()
+    internal val variablePatternWithParameter = """[%][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
+    internal val animationPatternWithParameter = """[$][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
 
     // Running animations
 
@@ -111,7 +109,7 @@ object APIProvider : TitleManagerAPI {
     override fun replaceText(player: Player, text: String): String {
         var replacedText : String
 
-        if (PlaceholderAPIHook.isEnabled()) {
+        if (!isTesting && PlaceholderAPIHook.isEnabled()) {
             replacedText = PlaceholderAPI.setPlaceholders(player, text)
         } else {
             replacedText = text
@@ -159,7 +157,7 @@ object APIProvider : TitleManagerAPI {
 
     override fun getRegisteredAnimations(): Map<String, Animation> = registeredAnimations
 
-    override fun getRegisteredScripts(): Set<String> = registeredScripts
+    override fun getRegisteredScripts(): Set<String> = ScriptManager.registeredScripts
 
     override fun addAnimation(id: String, animation: Animation) {
         registeredAnimations.put(id, animation)
@@ -219,7 +217,7 @@ object APIProvider : TitleManagerAPI {
             val animationName = result.groups[2]!!.value
             val animationValue = result.groups[3]!!.value.replace("\\}", "}")
 
-            if (registeredScripts.contains(animationName)) {
+            if (ScriptManager.registeredScripts.contains(animationName)) {
                 return listOf(AnimationPart { ScriptManager.getJavaScriptAnimation(animationName, animationValue, withPlaceholders = true) })
             }
         } else if (text.matches(animationPattern)) {
@@ -249,7 +247,7 @@ object APIProvider : TitleManagerAPI {
                     list.add(AnimationPart { part })
                 }
 
-                if (registeredScripts.contains(animation)) {
+                if (ScriptManager.registeredScripts.contains(animation)) {
                     list.add(AnimationPart { ScriptManager.getJavaScriptAnimation(animation, animationValue, withPlaceholders = true) })
                 } else {
                     list.add(AnimationPart { fullAnimation })

@@ -15,7 +15,6 @@ class PartBasedSendableAnimation(parts: List<AnimationPart<*>>,
                                  private var onStop: Runnable? = null,
                                  private val fixedOnStop: ((Player) -> Unit)? = null,
                                  private val fixedOnStart: ((Player, SendableAnimation) -> Unit)? = null) : SendableAnimation {
-
     private var sendableParts: List<SendablePart>
 
     private var running: Boolean = false
@@ -71,10 +70,15 @@ class PartBasedSendableAnimation(parts: List<AnimationPart<*>>,
     }
 
     override fun update(frame: AnimationFrame) {
-        if (!player.isOnline) stop()
+        if (!player.isOnline) {
+            stop()
+            return
+        }
+
         if (!running) return
 
         ticksRun++
+
         onUpdate(frame)
 
         val isDone = !isContinuous && sendableParts.filter { it.isDone() }.size == sendableParts.size
@@ -94,9 +98,9 @@ class PartBasedSendableAnimation(parts: List<AnimationPart<*>>,
         this.continuous = continuous
     }
 
-    override fun isContinuous(): Boolean {
-        return continuous
-    }
+    override fun isContinuous() = continuous
+
+    override fun isRunning() = running
 }
 
 interface SendablePart {

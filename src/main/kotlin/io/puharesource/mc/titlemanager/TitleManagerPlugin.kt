@@ -68,7 +68,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         saveDefaultConfig()
 
         registeredAnimations.clear()
-        registeredScripts.clear()
+        ScriptManager.registeredScripts.clear()
 
         addFiles()
 
@@ -124,7 +124,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                     val name = it.nameWithoutExtension
                     ScriptManager.addJavaScript(it)
 
-                    registeredScripts.add(name)
+                    ScriptManager.registeredScripts.add(name)
                 }
     }
 

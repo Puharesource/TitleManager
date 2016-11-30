@@ -36,8 +36,8 @@ object AsyncScheduler {
     }
 
     fun cancel(taskId: Int) {
-        if (scheduled.containsKey(taskId)) {
-            scheduled[taskId]!!.cancel(false)
+        scheduled[taskId]?.let {
+            it.cancel(false)
             scheduled.remove(taskId)
         }
     }

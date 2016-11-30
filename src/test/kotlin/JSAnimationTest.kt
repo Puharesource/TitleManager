@@ -1,26 +1,10 @@
 
-import com.google.common.io.Resources.getResource
 import io.puharesource.mc.titlemanager.APIProvider
 import io.puharesource.mc.titlemanager.script.ScriptManager
 import org.junit.Test
 import kotlin.test.assertTrue
 
 class JSAnimationTest {
-    init {
-        fun registerAnimation(name: String) {
-            val js = getResource("animations/$name.js").readText()
-
-            APIProvider.registeredScripts.add(name)
-            ScriptManager.addJavaScript(js)
-        }
-
-        registerAnimation("count_down")
-        registerAnimation("count_up")
-        registerAnimation("text_delete")
-        registerAnimation("text_write")
-        registerAnimation("shine")
-    }
-
     fun toResult(animation: String, text: String, index: Int) : Pair<String, Boolean> {
         val result = ScriptManager.getFrameFromScript(animation, text, index)
         val prefix = "(Animation: $animation | Index: $index)"
@@ -195,19 +179,21 @@ class JSAnimationTest {
         fun test(text: String, expectedAmount: Int) {
             val parts = APIProvider.toAnimationParts(text)
 
+            parts.forEach { println(text) }
+
             assertTrue(expectedAmount == parts.size, "Expected $expectedAmount animation parts, got ${parts.size} instead.")
         }
 
-        test("\${count_up;3}", 1)
-        test("\${count_up;3} test", 2)
-        test("test \${count_up;3}", 2)
-        test("test \${count_up;3} test", 3)
-        test("\${count_up;3}\${count_up;3}", 2)
-        test("\${count_up;3} \${count_up;3}", 3)
-        test("\${count_up;3} test \${count_up;3}", 3)
-        test("\${count_up;3}\${count_up;3} test", 3)
-        test("test \${count_up;3}\${count_up;3}", 3)
-        test("test \${count_up;3}\${count_up;3} test", 4)
-        test("test \${count_up;3} test \${count_up;3} test", 5)
+        test("\${count_up:3}", 1)
+        test("\${count_up:3} test", 2)
+        test("test \${count_up:3}", 2)
+        test("test \${count_up:3} test", 3)
+        test("\${count_up:3}\${count_up:3}", 2)
+        test("\${count_up:3} \${count_up:3}", 3)
+        test("\${count_up:3} test \${count_up:3}", 3)
+        test("\${count_up:3}\${count_up:3} test", 3)
+        test("test \${count_up:3}\${count_up:3}", 3)
+        test("test \${count_up:3}\${count_up:3} test", 4)
+        test("test \${count_up:3} test \${count_up:3} test", 5)
     }
 }

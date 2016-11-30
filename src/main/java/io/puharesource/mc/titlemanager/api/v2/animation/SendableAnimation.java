@@ -7,4 +7,5 @@ public interface SendableAnimation {
     void onStop(Runnable runnable);
     void setContinuous(boolean continuous);
     boolean isContinuous();
+    boolean isRunning();
 }

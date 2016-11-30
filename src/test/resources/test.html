@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>TitleManager Test Display</title>
+
+    <link rel="stylesheet" href="mc-colors.css">
+
+    <style>
+        html, body, .container {
+            height: 100%;
+        }
+
+        body {
+            color: #fff;
+            background-color: #262626;
+            font-size: 24px;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+        }
+
+        .container > p {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            margin-top: -9px;
+        }
+    </style>
+
+    <script src="mc-colors.js"></script>
+
+    <script>
+        var onFinishedLoading = function () {  };
+
+        var setText = function(html) {
+            document.getElementById("text").innerHTML = html
+        };
+    </script>
+</head>
+<body>
+
+<div class="container mc-colors mc-font">
+    <p id="text"></p>
+</div>
+
+</body>
+</html>

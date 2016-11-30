@@ -13,7 +13,6 @@ class EasySendableAnimation(private val animation: Animation,
                             private var onStop: Runnable? = null,
                             private val fixedOnStop: ((Player) -> Unit)? = null,
                             private val fixedOnStart: ((Player, SendableAnimation) -> Unit)? = null) : SendableAnimation {
-
     private var iterator = animation.iterator(player)
     private var running: Boolean = false
 
@@ -63,7 +62,7 @@ class EasySendableAnimation(private val animation: Animation,
         this.continuous = continuous
     }
 
-    override fun isContinuous(): Boolean {
-        return continuous
-    }
+    override fun isContinuous() = continuous
+
+    override fun isRunning() = running
 }
