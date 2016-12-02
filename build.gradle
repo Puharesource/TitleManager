@@ -28,6 +28,7 @@ targetCompatibility = 1.8
 // Manifest
 jar {
     manifest.attributes provider: 'gradle'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 // Force UTF-8
