@@ -497,16 +497,16 @@ object APIProvider : TitleManagerAPI {
         player.sendNMSPacket(packet)
     }
 
-    override fun clearTitles(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) {
+    override fun clearTitles(player: Player) {
         sendTitles(player, " ", " ") // TODO: Make this actually use the "Clear" enum.
     }
 
-    override fun clearTitle(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) {
-        sendTitle(player, " ", fadeIn, stay, fadeOut)
+    override fun clearTitle(player: Player) {
+        sendTitle(player, " ")
     }
 
-    override fun clearSubtitle(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) {
-        sendSubtitle(player, " ", fadeIn, stay, fadeOut)
+    override fun clearSubtitle(player: Player) {
+        sendSubtitle(player, " ")
     }
 
     // Actionbar

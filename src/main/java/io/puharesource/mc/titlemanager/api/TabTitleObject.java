@@ -9,6 +9,18 @@ import org.bukkit.entity.Player;
 
 /**
  * This object is being used in both tabmenu animations and simply when changing the header and/or footer of the tabmenu.
+ *
+ * @deprecated In favor of the methods seen under the "see also" section.
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#setHeader(Player, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#setFooter(Player, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#setHeaderAndFooter(Player, String, String)
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#setHeaderWithPlaceholders(Player, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#setFooterWithPlaceholders(Player, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#setHeaderAndFooterWithPlaceholders(Player, String, String)
+ *
+ * @since 1.0.1
  */
 @Deprecated
 public class TabTitleObject implements ITabObject {

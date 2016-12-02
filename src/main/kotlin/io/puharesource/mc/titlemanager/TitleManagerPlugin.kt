@@ -19,9 +19,11 @@ import io.puharesource.mc.titlemanager.placeholder.VanishHookReplacer
 import io.puharesource.mc.titlemanager.placeholder.VaultHook
 import io.puharesource.mc.titlemanager.reflections.NMSManager
 import io.puharesource.mc.titlemanager.reflections.getPing
+import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler
 import io.puharesource.mc.titlemanager.script.ScriptManager
 import io.puharesource.mc.titlemanager.web.UpdateChecker
 import org.bukkit.ChatColor
+import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -30,6 +32,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 
 class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     private val animationsFolder = File(dataFolder, "animations")
@@ -53,6 +56,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         debug("Registering BungeeCord messengers")
         registerBungeeCord()
 
+        debug("Registering Announcers")
+        registerAnnouncers()
+
         debug("Using MC version: ${NMSManager.serverVersion} | NMS Index: ${NMSManager.versionIndex}")
     }
 
@@ -62,7 +68,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
     fun reloadPlugin() {
         UpdateChecker.stop()
+
         server.onlinePlayers.forEach { APIProvider.removeAllRunningAnimations(it) }
+        AsyncScheduler.cancelAll()
 
         reloadConfig()
         saveDefaultConfig()
@@ -86,6 +94,53 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         }
     }
 
+    private fun registerAnnouncers() {
+        var section : ConfigurationSection = config.getConfigurationSection("announcer")
+
+        if (!section.getBoolean("enabled")) return
+
+        section = section.getConfigurationSection("announcements")
+
+        section.getKeys(false)
+                .forEach {
+                    val interval = section.getInt("interval", 60)
+
+                    val fadeIn = section.getInt("timings.fade-in", 20)
+                    val stay = section.getInt("timings.stay", 40)
+                    val fadeOut = section.getInt("timings.fade-out", 20)
+
+                    val titles : List<String> = section.getStringList("titles") ?: listOf()
+                    val actionbarTitles : List<String> = section.getStringList("actionbar") ?: listOf()
+
+                    val size = if (titles.size > actionbarTitles.size) titles.size else actionbarTitles.size
+                    val index = AtomicInteger(0)
+
+                    if (size != 0) {
+                        AsyncScheduler.scheduleRaw({
+                            val i = index.andIncrement % size
+
+                            server.onlinePlayers.forEach {
+                                if (i < titles.size) {
+                                    val title = titles[i].color().split("\\n", limit = 2)
+
+                                    if (title.first().isNotEmpty() && title[1].isEmpty()) {
+                                        sendTitleWithPlaceholders(it, title.first(), fadeIn, stay, fadeOut)
+                                    } else if (title.first().isEmpty() && title[1].isNotEmpty()) {
+                                        sendSubtitleWithPlaceholders(it, title[1], fadeIn, stay, fadeOut)
+                                    } else {
+                                        sendTitlesWithPlaceholders(it, title[0], title[1], fadeIn, stay, fadeOut)
+                                    }
+                                }
+
+                                if (i < actionbarTitles.size) {
+                                    sendActionbarWithPlaceholders(it, actionbarTitles[i].color())
+                                }
+                            }
+                        }, interval, interval, TimeUnit.SECONDS)
+                    }
+                }
+    }
+
     private fun registerBungeeCord() {
         server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
     }
@@ -101,13 +156,6 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             // Text based animations
             saveAnimationFiles("left-to-right.txt")
             saveAnimationFiles("right-to-left.txt")
-
-            // JavaScript based animations
-            saveAnimationFiles("text_delete.js")
-            saveAnimationFiles("text_write.js")
-            saveAnimationFiles("count_down.js")
-            saveAnimationFiles("count_up.js")
-            saveAnimationFiles("shine.js")
         }
 
         // Load text based animations
@@ -404,11 +452,11 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
     override fun sendTimings(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.sendTimings(player, fadeIn, stay, fadeOut)
 
-    override fun clearTitles(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.clearTitles(player, fadeIn, stay, fadeOut)
+    override fun clearTitles(player: Player) = APIProvider.clearTitles(player)
 
-    override fun clearTitle(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.clearTitle(player, fadeIn, stay, fadeOut)
+    override fun clearTitle(player: Player) = APIProvider.clearTitle(player)
 
-    override fun clearSubtitle(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.clearSubtitle(player, fadeIn, stay, fadeOut)
+    override fun clearSubtitle(player: Player) = APIProvider.clearSubtitle(player)
 
     override fun sendActionbar(player: Player, text: String) = APIProvider.sendActionbar(player, text)
 

@@ -1,5 +1,7 @@
 package io.puharesource.mc.titlemanager.reflections
 
+import java.lang.reflect.Field
+
 class ReflectionClass(val path: String) {
     val handle : Class<*>
 
@@ -20,9 +22,9 @@ class ReflectionClass(val path: String) {
         return getConstructor(*classes).newInstance(objects)
     }
 
-    fun getField(fieldName: String) = handle.getField(fieldName)
+    fun getField(fieldName: String) : Field = handle.getField(fieldName)
 
-    fun getInnerClass(className: String) = Class.forName("$path$$className")
+    fun getInnerClass(className: String) : Class<*> = Class.forName("$path$$className")
 
     fun getInnerReflectionClass(className: String) = ReflectionClass("$path$$className")
 

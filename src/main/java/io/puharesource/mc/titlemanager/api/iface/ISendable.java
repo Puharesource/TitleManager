@@ -4,6 +4,8 @@ import org.bukkit.entity.Player;
 
 /**
  * This interface is used for all types of sendable objects.
+ *
+ * @since 1.3.8
  */
 @Deprecated
 public interface ISendable {

@@ -8,6 +8,8 @@ import org.bukkit.event.HandlerList;
 
 /**
  * This event fires whenever a player is sent an actionbar message.
+ *
+ * @since 1.1.0
  */
 @Deprecated
 public class ActionbarEvent extends Event implements Cancellable {

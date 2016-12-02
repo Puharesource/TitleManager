@@ -6,6 +6,9 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * @since 1.0.1
+ */
 @Deprecated
 public class TabTitleChangeEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();

@@ -1,17 +1,91 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                       Notes                          | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Config comment style borrowed from the Essentials config.
+#
+# If you want to use special characters (ASCII, UTF-8 characters) in the config, you need to save the file as UTF-8.
+#   - If you don't know how this is done, you can see the guide on the wiki: https://github.com/Puharesource/TitleManager/wiki/Unicode---UTF-8-characters-for-TitleManager
+#
+# Config errors, such as the plugin not loading or the config resetting can be fixed by ensuring that:
+#   - No tabs are present: YAML only allows spaces.
+#   - You have escaped all apostrophes or quotes in your text:
+#      - If you surround your text with apostrophes like this 'don't', double all of your apostrophes like this: 'don''t'
+#      - If you surround your text with quotes like this "Quote: "hello"", switch to apostrophes instead like this 'Quite: "hello"'.
+#
+# If you've got problems:
+#   - Join the Discord server here: https://discord.gg/NwdtW2d
+#   - Write a ticket on the Issue Tracker here: https://github.com/Puharesource/TitleManager/issues
+#
+# 1 second = 20 ticks
+#
+# For more information check: https://github.com/Puharesource/TitleManager/wiki
+
+############################################################
+# +------------------------------------------------------+ #
+# |                       General                        | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Never change this value
 config-version: 1
 
+# Toggles debug mode, which prints additional information when the plugin does something.
 debug: false
+
+# Toggles whether or not all of the features of TitleManager will be toggled.
 using-config: true
+
+# Toggles whether or not all of the BungeeCord functionality will be toggled.
 using-bungeecord: false
+
+# (Feature only works on 1.7-1.8 Protocol Hack)
+# Toggles whether or not 1.7 players will see actionbar messages when they're holding an item.
 legacy-client-support: false
+
+# Toggles whether or not the plugin should warn administrators if there's a new version out.
 check-for-updates: true
 
+############################################################
+# +------------------------------------------------------+ #
+# |                     Player List                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Sets the header and footer of the player list. (Shown when you hold the TAB key.)
+
 player-list:
+
+  # Toggles this feature.
   enabled: true
+
+  # Sets the header of the player list.
+  #
+  # Single line format.
+  # header: 'My header text'
+  #
+  # Multiple line format.
+  # header:
+  # - 'My first line'
+  # - 'My second line'
+  # - 'My third line'
   header:
   - ''
   - '${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}'
   - ''
+
+  # Sets the footer of the player list.
+  #
+  # Single line format.
+  # footer: 'My footer text'
+  #
+  # Multiple line format.
+  # footer:
+  # - 'My first line'
+  # - 'My second line'
+  # - 'My third line'
   footer:
   - ''
   - '&7World time: &b%{12h-world-time}'
@@ -19,53 +93,175 @@ player-list:
   - ''
   - '${right-to-left} &b%{online}&7/&b%{max} &7Online Players ${left-to-right}'
 
+############################################################
+# +------------------------------------------------------+ #
+# |                    Welcome Title                     | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Sets the title that is sent to the player when they join the server.
+
 welcome-title:
+
+  # Toggles this feature.
   enabled: true
+
+  # The title shown.
   title: 'Welcome to My Server'
+
+  # The subtitle shown.
   subtitle: 'Hope you enjoy your stay'
+
+  # The time it takes for the title to fade into the screen. (In ticks)
   fade-in: 20
+
+  # The time it takes for the title to stay on the screen. (In ticks)
   stay: 40
+
+  # The time it takes for the title to fade out of the screen. (In ticks)
   fade-out: 20
+
+  # The title shown when the player joins the server for the first time.
   first-join:
+
+    # The title shown.
     title: 'Welcome to My Server'
+
+    # The subtitle shown.
     subtitle: 'This is your first time!'
 
+############################################################
+# +------------------------------------------------------+ #
+# |                  Welcome Actionbar                   | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Sets the actionbar that is sent to the palyer when they join the server.
+
 welcome-actionbar:
+
+  # Toggles this feature.
   enabled: true
+
+  # The message shown.
   title: 'Welcome to My Server'
+
+  # The message shown when the player joins the server for the first time.
   first-join: 'Welcome to My Server, this is your first time!'
 
+############################################################
+# +------------------------------------------------------+ #
+# |                     Placeholders                     | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Configures different things placeholders.
+
 placeholders:
+
+  # The format used by the balance placeholder.
   number-format:
+
+    # Toggles this feature.
     enabled: true
+
+    # The format used.
     format: '#,###.##'
+
+  # The format used by the server-time placeholder.
+  # The format used can be found here: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
   date-format: 'EEE, dd MMM yyyy HH:mm:ss z'
 
+############################################################
+# +------------------------------------------------------+ #
+# |                      Announcer                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Automatically send titles and/or actionbar messages to the players on the server.
+
+announcer:
+
+  # Toggles this feature.
+  enabled: true
+
+  # The announcements
+  #
+  # The format:
+  #
+  # announcement-name:
+  #   interval: 60                        (Seconds, Default: 60)
+  #   timings:
+  #     fade-in: 20                       (Ticks, Default: 20)
+  #     stay: 40                          (Ticks, Default: 40)
+  #     fade-out: 20                      (Ticks, Default: 20)
+  #   titles:
+  #   - 'First title'                     (The title sent)
+  #   - 'Second title\nSecond subtitle'   (The next title sent, this time using \n to split the title and subtitle from each other)
+  #   actionbar:
+  #   - 'First actionbar'                 (The actionbar message sent)
+  #   - 'The next actionbar sent'         (The next actionbar message sent)
+  announcements:
+    my-announcement:
+      interval: 60
+      timings:
+        fade-in: 20
+        stay: 40
+        fade-out: 20
+      titles:
+      - '&aThis is the 1st title announcement\n&aThis is the subtitle'
+      - '&bThis is the 2nd title announcement\n&bThis is the subtitle'
+      actionbar:
+      - '&aThis is the 1st actionbar announcement'
+      - '&bThis is the 2nd actionbar announcement'
+
+############################################################
+# +------------------------------------------------------+ #
+# |                       Messages                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Configures all of the messages sent to the users.
+
 messages:
+
+  # The messages from the command /version
   command-version:
     description: 'Gives you the current running version of TitleManager'
     version: '&aThe server is running %version'
+
+  # The messages from the command /reload
   command-reload:
     description: 'Reloads TitleManager'
     reloaded: '&aTitleManager reloaded'
+
+  # The messages from the command /animations
   command-animations:
     description: 'Displays all loaded animations'
     format: '&aLoaded animations (&f%count&a): %animations'
     separator: '&f, &a'
+
+  # The messages from the command /scripts
   command-scripts:
     description: 'Displays all loaded scripts'
     format: '&aLoaded scripts (&f%count&a): %scripts'
     separator: '&f, &a'
+
+  # The messages from the command /broadcast
   command-broadcast:
     description: 'Broadcasts a title to the server'
     usage: '<title>|<title\nsubtitle>'
     title-sent: '&aYou have broadcasted the title "&r%title&a".'
     subtitle-sent: '&aYou have broadcasted the subtitle "&r%subtitle&a".'
     both-sent: '&aYou have broadcasted the titles "&r%title&a" "&r%subtitle&a".'
+
+  # The messages from the command /abroadcast
   command-abroadcast:
     description: 'Broadcasts an actionbar title to the server'
     usage: '<title>'
     sent: '&aYou have broadcasted the actionbar title "&r%title&a".'
+
+  # The messages from the command /message
   command-message:
     description: 'Sends a title to the specified player'
     usage: '<player> <title>|<title\nsubtitle>'
@@ -73,6 +269,8 @@ messages:
     subtitle-sent: '&aYou have sent %player the subtitle "&r%subtitle&a".'
     both-sent: '&aYou have sent %player the titles "&r%title&a" "&r%subtitle&a".'
     invalid-player: '&c%player is not a valid player.'
+
+  # The messages from the command /amessage
   command-amessage:
     description: 'Sends an actionbar title to the specified player'
     usage: '<player> <title>'

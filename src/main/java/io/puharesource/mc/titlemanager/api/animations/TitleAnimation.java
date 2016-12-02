@@ -4,13 +4,30 @@ import io.puharesource.mc.titlemanager.InternalsKt;
 import io.puharesource.mc.titlemanager.TitleManagerPlugin;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
+import io.puharesource.mc.titlemanager.api.v2.animation.Animation;
 import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  * This is the title animation.
  * It can send a sequence of actionbar messages to the player, making it look like an animation.
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#toAnimationPart(String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#addAnimation(String, Animation)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#removeAnimation(String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#containsAnimation(String, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#createAnimationFrame(String, int, int, int)
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#toTitleAnimation(Animation, Player, boolean)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#toTitleAnimation(List, Player, boolean)
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#toSubtitleAnimation(Animation, Player, boolean)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#toSubtitleAnimation(List, Player, boolean)
+ *
+ * @since 1.3.0
  */
 @Deprecated
 public class TitleAnimation implements IAnimation, ITitleObject {

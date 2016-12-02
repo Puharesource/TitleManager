@@ -2,6 +2,12 @@ package io.puharesource.mc.titlemanager.api.animations;
 
 /**
  * This is a frame used in every type of animation.
+ *
+ * @deprecated In favor of the methods seen under the "see also" section.
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#createAnimationFrame(String, int, int, int)
+ *
+ * @since 1.3.0
  */
 @Deprecated
 public class AnimationFrame {

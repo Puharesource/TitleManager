@@ -3,15 +3,33 @@ package io.puharesource.mc.titlemanager.api.animations;
 import io.puharesource.mc.titlemanager.api.TabTitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
+import io.puharesource.mc.titlemanager.api.v2.animation.Animation;
 import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
  * This is the actionbar title animation.
  * It can send a sequence of actionbar messages to the player, making it look like an animation.
+ *
+ * @deprecated In favor of the methods seen under the "see also" section.
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#toAnimationPart(String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#addAnimation(String, Animation)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#removeAnimation(String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#containsAnimation(String, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#createAnimationFrame(String, int, int, int)
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#toHeaderAnimation(Animation, Player, boolean)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#toHeaderAnimation(List, Player, boolean)
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#toFooterAnimation(Animation, Player, boolean)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#toFooterAnimation(List, Player, boolean)
+ *
+ * @since 1.3.0
  */
 @Deprecated
 public class TabTitleAnimation implements IAnimation, ITabObject {

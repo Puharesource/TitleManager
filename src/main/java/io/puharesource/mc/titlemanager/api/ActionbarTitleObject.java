@@ -9,6 +9,14 @@ import org.bukkit.entity.Player;
 /**
  * This is the standard actionbar message object.
  * It is used whenever both in actionbar animations and simply for displaying a message above the actionbar.
+ *
+ * @deprecated In favor of the methods seen under the "see also" section.
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendActionbar(Player, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendActionbarWithPlaceholders(Player, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#clearActionbar(Player)
+ *
+ * @since 1.1.0
  */
 @Deprecated
 public class ActionbarTitleObject implements IActionbarObject {

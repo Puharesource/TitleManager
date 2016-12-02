@@ -5,6 +5,8 @@ import java.util.List;
 /**
  * This class is similar to a list, in which it stores a sequence of AnimationFrame's.
  * This class is used in all types of animations.
+ *
+ * @since 1.3.0
  */
 @Deprecated
 public class FrameSequence {

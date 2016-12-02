@@ -10,6 +10,30 @@ import org.bukkit.entity.Player;
 
 /**
  * The title object is an object used whenever a hovering message is sent to the player, whether it's an animation or not.
+ *
+ * @deprecated In favor of the methods seen under the "see also" section.
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendTitle(Player, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendSubtitle(Player, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendTitles(Player, String, String)
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendTitle(Player, String, int, int, int)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendSubtitle(Player, String, int, int, int)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendTitles(Player, String, String, int, int, int)
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendTitleWithPlaceholders(Player, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendSubtitleWithPlaceholders(Player, String)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendTitlesWithPlaceholders(Player, String, String)
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendTitleWithPlaceholders(Player, String, int, int, int)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendSubtitleWithPlaceholders(Player, String, int, int, int)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#clearTitle(Player)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#clearSubtitle(Player)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#clearTitles(Player)
+ *
+ * @since 1.0.1
  */
 @Deprecated
 public class TitleObject implements ITitleObject {

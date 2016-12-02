@@ -9,7 +9,14 @@ import java.util.UUID;
 
 /**
  * Due to the fact that you can't simply change the header or footer by themselves, this class acts as a cache for and easy way to do so.
- * Whenever a player's tabmenu has been changed using the TabTitleObject.java the header and footer will be stored in this cache.
+ * Whenever a player's tabmenu has been changed using the {@link TabTitleObject} the header and footer will be stored in this cache.
+ *
+ * @deprecated In favor of the methods seen under the "see also" section.
+ *
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#getHeader(Player)
+ * @see io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI#getFooter(Player)
+ *
+ * @since 1.0.1
  */
 @Deprecated
 public class TabTitleCache {

@@ -1,4 +1,5 @@
 import com.sun.org.apache.xalan.internal.xsltc.cmdline.Compile
+import org.apache.tools.ant.filters.ReplaceTokens
 
 buildscript {
     ext.kotlin_version = '1.0.3'
@@ -33,13 +34,44 @@ jar {
 tasks.withType(Compile) {
     options.encoding = 'UTF-8'
 }
+// Javadoc
+javadoc {
+    include '**/io/puharesource/mc/titlemanager/api/v2/**'
+
+    options.links 'http://download.oracle.com/javase/8/docs/api/'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task jitpackJavadocJar(type: Jar, dependsOn: javadoc) {
+    archiveName 'javadoc.jar'
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    from sourceSets.main.kotlin.srcDirs
+
+    classifier = 'sources'
+}
+
+task apiJar(type: Jar) {
+    from(sourceSets.main.java.srcDirs) {
+        include 'io/puharesource/mc/titlemanager/api/v2/**'
+    }
+
+    classifier = 'api'
+}
 
 // ========================= Resource Filtering ========================= //
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.yml'
-        filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [VERSION: project.version])
+        filter(ReplaceTokens, tokens: [VERSION: project.version])
     }
 }
 
@@ -72,6 +104,10 @@ configurations {
 
 artifacts {
     archives jar
+    archives javadocJar
+    archives sourcesJar
+    archives apiJar
+    archives jitpackJavadocJar
 }
 
 jar {

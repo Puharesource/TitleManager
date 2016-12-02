@@ -139,10 +139,10 @@ fun Player.setPlayerListFooter(animation: Animation, withPlaceholders: Boolean =
 
 fun Player.getPlayerListFooter() = pluginInstance.getFooter(this)
 
-fun Player.clearTitles(fadeIn: Int = -1, stay: Int = -1, fadeOut: Int = -1) = pluginInstance.clearTitles(this, fadeIn, stay, fadeOut)
+fun Player.clearTitles() = pluginInstance.clearTitles(this)
 
-fun Player.clearTitle(fadeIn: Int = -1, stay: Int = -1, fadeOut: Int = -1) = pluginInstance.clearTitle(this, fadeIn, stay, fadeOut)
+fun Player.clearTitle() = pluginInstance.clearTitle(this)
 
-fun Player.clearSubtitle(fadeIn: Int = -1, stay: Int = -1, fadeOut: Int = -1) = pluginInstance.clearSubtitle(this, fadeIn, stay, fadeOut)
+fun Player.clearSubtitle() = pluginInstance.clearSubtitle(this)
 
 fun Player.clearActionbar() = pluginInstance.clearActionbar(this)

@@ -35,6 +35,16 @@ object AsyncScheduler {
         return id
     }
 
+    fun scheduleRaw(runnable: Runnable, delay: Int, period: Int) : Int = scheduleRaw({ runnable.run() }, delay, period)
+
+    fun scheduleRaw(body: () -> Unit, delay: Int, period: Int, unit: TimeUnit = TimeUnit.MILLISECONDS) : Int {
+        val id = ids.incrementAndGet()
+
+        scheduled.put(id, scheduler.scheduleAtFixedRate({ body() }, delay * 50L, period * 50L, unit))
+
+        return id
+    }
+
     fun cancel(taskId: Int) {
         scheduled[taskId]?.let {
             it.cancel(false)
@@ -42,7 +52,7 @@ object AsyncScheduler {
         }
     }
 
-    fun cancelAll(taskId: Int) {
+    fun cancelAll() {
         scheduled.values.forEach { it.cancel(false) }
         scheduled.clear()
     }
