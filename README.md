@@ -1,6 +1,6 @@
 TitleManager
 ============
-[![](https://jitpack.io/v/Puharesource/TitleManager.svg)](https://jitpack.io/#Puharesource/TitleManager) [![Build Status](https://travis-ci.org/Puharesource/TitleManager.svg?branch=master)](https://travis-ci.org/Puharesource/TitleManager)  
+[![Build Status](https://travis-ci.org/Puharesource/TitleManager.svg?branch=master)](https://travis-ci.org/Puharesource/TitleManager) [![](https://jitpack.io/v/Puharesource/TitleManager.svg)](https://jitpack.io/#Puharesource/TitleManager) [![](https://img.shields.io/badge/JitPack-javadoc--2.0.0-blue.svg)](https://jitpack.io/com/github/Puharesource/TitleManager/2.0.0-4/javadoc/)  
 __TitleManager__ adds floating titles and a header/footer for your player list. _TitleManager_ also provides you with a rich API, that can be used in other plugins.
 #### [Wiki](https://github.com/Puharesource/TitleManager/wiki)
 * [Commands](https://github.com/Puharesource/TitleManager/wiki/commands)
