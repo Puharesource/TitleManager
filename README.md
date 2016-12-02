@@ -21,7 +21,7 @@
 
 ---
 
-* **[WIKI](https://github.com/Puharesource/TitleManager/wiki)** – Plugin guidelines.
+* **[WIKI](https://github.com/Puharesource/TitleManager/wiki)** – plugin guidelines.
 * **[COMMANDS](https://github.com/Puharesource/TitleManager/wiki/commands)** – command guidelines.
 * **[PERMISSIONS](https://github.com/Puharesource/TitleManager/wiki/permissions)** – command and feature permissions.
 
