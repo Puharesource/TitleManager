@@ -1,16 +1,32 @@
-TitleManager
-============
-[![Build Status](https://travis-ci.org/Puharesource/TitleManager.svg?branch=master)](https://travis-ci.org/Puharesource/TitleManager) [![](https://jitpack.io/v/Puharesource/TitleManager.svg)](https://jitpack.io/#Puharesource/TitleManager) [![](https://img.shields.io/badge/JitPack-javadoc--2.0.0-blue.svg)](https://jitpack.io/com/github/Puharesource/TitleManager/2.0.0-4/javadoc/)  
-__TitleManager__ adds floating titles and a header/footer for your player list. _TitleManager_ also provides you with a rich API, that can be used in other plugins.
-#### [Wiki](https://github.com/Puharesource/TitleManager/wiki)
-* [Commands](https://github.com/Puharesource/TitleManager/wiki/commands)
-* [Permissions](https://github.com/Puharesource/TitleManager/wiki/permissions)
-* [Download / Forums](http://www.spigotmc.org/resources/titlemanager.1049/)
+<h1 align="center">
+    TitleManager
+</h1>
+
+<p align="center">
+    <a href="(https://travis-ci.org/Puharesource/TitleManager">
+        <img src="https://travis-ci.org/Puharesource/TitleManager.svg?branch=master"
+             alt="Build status">
+    </a>
+    <a href="https://jitpack.io/#Puharesource/TitleManager">
+        <img src="https://jitpack.io/v/Puharesource/TitleManager.svg"
+             alt="Maven repository">
+    </a>
+    <a href="https://jitpack.io/com/github/Puharesource/TitleManager/2.0.0-4/javadoc/">
+        <img src="https://img.shields.io/badge/JitPack-javadoc--2.0.0-blue.svg"
+             alt="Javadoc">
+    </a>
+</p>
+
+<p align="center"><sup><strong>A Bukkit plugin for sending titles and setting the header and footer of the player list. <a href="https://www.spigotmc.org/resources/titlemanager.1049/">Spigot Project Page</a></strong></sup></p>
+
+---
+
+* **[WIKI](https://github.com/Puharesource/TitleManager/wiki)** – Plugin guidelines.
+* **[COMMANDS](https://github.com/Puharesource/TitleManager/wiki/commands)** – command guidelines.
+* **[PERMISSIONS](https://github.com/Puharesource/TitleManager/wiki/permissions)** – command and feature permissions.
 
 For Developers
 --------------
-**JavaDocs**
-https://jd.puharesource.io/titlemanager/
 
 **Gradle repository**
 ````groovy
