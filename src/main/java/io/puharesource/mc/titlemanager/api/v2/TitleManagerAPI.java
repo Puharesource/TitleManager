@@ -11,6 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * The API for TitleManager<p>
+ *
+ * Here you'll find all methods available in the API.
+ *
+ * @since 2.0.0
+ */
 public interface TitleManagerAPI {
 
     // Placeholder
@@ -544,7 +551,7 @@ public interface TitleManagerAPI {
      *
      * @param file The file that will be read and converted to an {@link Animation}.
      *
-     * @return The {@link Animation} generated from the frames.
+     * @return     The {@link Animation} generated from the frames.
      *
      * @see #fromText(String...)
      * @see #fromJavaScript(String, String)
@@ -557,7 +564,7 @@ public interface TitleManagerAPI {
      * Creates an {@link Animation} from the name of a loaded JavaScript animation,
      * with the given input text.
      *
-     * @param name The name of the JavaScript animation.
+     * @param name  The name of the JavaScript animation.
      * @param input The input text to be converted to an {@link Animation}
      *
      * @return The {@link Animation} generated from the JavaScript.
@@ -571,44 +578,569 @@ public interface TitleManagerAPI {
 
     // Title
 
+    /**
+     * Sends a title message to the given {@link Player} with the given title.
+     * This will also use the last sent timings.
+     *
+     * @param player The player the title should be sent to.
+     * @param title  The title to be displayed.
+     *
+     * @see #sendTitle(Player, String, int, int, int)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String)
+     * @see #sendSubtitle(Player, String, int, int, int)
+     * @see #sendSubtitleWithPlaceholders(Player, String)
+     * @see #sendSubtitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendTitles(Player, String, String)
+     * @see #sendTitles(Player, String, String, int, int, int)
+     * @see #sendTitlesWithPlaceholders(Player, String, String)
+     * @see #sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+     *
+     * @since 2.0.0
+     */
     void sendTitle(Player player, String title);
+
+    /**
+     * Sends a title message to the given {@link Player} with the given timings.
+     *
+     * @param player  The player the title should be sent to.
+     * @param title   The title to be sent to the {@link Player}.
+     * @param fadeIn  The time it takes for the title to fade onto the screen.
+     * @param stay    The time it takes for the title to stay on the screen.
+     * @param fadeOut The time it takes for the title to fade off of the screen.
+     *
+     * @see #sendTitle(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String)
+     * @see #sendSubtitle(Player, String, int, int, int)
+     * @see #sendSubtitleWithPlaceholders(Player, String)
+     * @see #sendSubtitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendTitles(Player, String, String)
+     * @see #sendTitles(Player, String, String, int, int, int)
+     * @see #sendTitlesWithPlaceholders(Player, String, String)
+     * @see #sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+     *
+     * @since 2.0.0
+     */
     void sendTitle(Player player, String title, int fadeIn, int stay, int fadeOut);
+
+    /**
+     * Sends a title message to the given {@link Player} where all placeholders have been replaced.
+     * This will also use the last sent timings.
+     *
+     * @param player The player the title should be sent to.
+     * @param title  The title to be sent to the {@link Player}.
+     *
+     * @see #sendTitle(Player, String)
+     * @see #sendTitle(Player, String, int, int, int)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String)
+     * @see #sendSubtitle(Player, String, int, int, int)
+     * @see #sendSubtitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendTitles(Player, String, String)
+     * @see #sendTitles(Player, String, String, int, int, int)
+     * @see #sendTitlesWithPlaceholders(Player, String, String)
+     * @see #sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+     *
+     * @since 2.0.0
+     */
     void sendTitleWithPlaceholders(Player player, String title);
+
+    /**
+     * Sends a title message to the given {@link Player} with the given timings where all placeholders have been replaced
+     * and with the given timings.
+     *
+     * @param player  The player the title should be sent to.
+     * @param title   The title to be sent to the {@link Player}.
+     * @param fadeIn  The time it takes for the title to fade onto the screen.
+     * @param stay    The time it takes for the title to stay on the screen.
+     * @param fadeOut The time it takes for the title to fade off of the screen.
+     *
+     * @see #sendTitle(Player, String)
+     * @see #sendTitle(Player, String, int, int, int)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String)
+     * @see #sendSubtitle(Player, String, int, int, int)
+     * @see #sendSubtitleWithPlaceholders(Player, String)
+     *
+     * @see #sendTitles(Player, String, String)
+     * @see #sendTitles(Player, String, String, int, int, int)
+     * @see #sendTitlesWithPlaceholders(Player, String, String)
+     * @see #sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+     *
+     * @since 2.0.0
+     */
     void sendTitleWithPlaceholders(Player player, String title, int fadeIn, int stay, int fadeOut);
 
+    /**
+     * Sends a subtitle message to the given {@link Player}.
+     * This will also use the last sent timings.
+     *
+     * @param player    The player the subtitle should be sent to.
+     * @param subtitle  The subtitle to be displayed.
+     *
+     * @see #sendTitle(Player, String)
+     * @see #sendTitle(Player, String, int, int, int)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String, int, int, int)
+     * @see #sendSubtitleWithPlaceholders(Player, String)
+     * @see #sendSubtitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendTitles(Player, String, String)
+     * @see #sendTitles(Player, String, String, int, int, int)
+     * @see #sendTitlesWithPlaceholders(Player, String, String)
+     * @see #sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+     *
+     * @since 2.0.0
+     */
     void sendSubtitle(Player player, String subtitle);
+
+    /**
+     * Sends a subtitle message to the given {@link Player} with the given timings as well as the given subtitles.
+     *
+     * @param player    The player the subtitle should be sent to.
+     * @param subtitle  The subtitle to be displayed.
+     * @param fadeIn    The time it takes for the subtitle to fade onto the screen.
+     * @param stay      The time it takes for the subtitle to stay on the screen.
+     * @param fadeOut   The time it takes for the subtitle to fade off of the screen.
+     *
+     * @see #sendTitle(Player, String)
+     * @see #sendTitle(Player, String, int, int, int)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String)
+     * @see #sendSubtitleWithPlaceholders(Player, String)
+     * @see #sendSubtitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendTitles(Player, String, String)
+     * @see #sendTitles(Player, String, String, int, int, int)
+     * @see #sendTitlesWithPlaceholders(Player, String, String)
+     * @see #sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+     *
+     * @since 2.0.0
+     */
     void sendSubtitle(Player player, String subtitle, int fadeIn, int stay, int fadeOut);
+
+    /**
+     * Sends a subtitle message to the given {@link Player} where all placeholders have been replaced.
+     * This will also use the last sent timings.
+     *
+     * @param player    The player the subtitle should be sent to.
+     * @param subtitle  The subtitle to be displayed.
+     *
+     * @see #sendTitle(Player, String)
+     * @see #sendTitle(Player, String, int, int, int)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String)
+     * @see #sendSubtitle(Player, String, int, int, int)
+     * @see #sendSubtitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendTitles(Player, String, String)
+     * @see #sendTitles(Player, String, String, int, int, int)
+     * @see #sendTitlesWithPlaceholders(Player, String, String)
+     * @see #sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+     *
+     * @since 2.0.0
+     */
     void sendSubtitleWithPlaceholders(Player player, String subtitle);
+
+    /**
+     * Sends a subtitle message to the given {@link Player} where all placeholders have been replaced
+     * and with the given timings.
+     *
+     * @param player    The player the subtitle should be sent to.
+     * @param subtitle  The subtitle to be displayed.
+     * @param fadeIn    The time it takes for the subtitle to fade onto the screen.
+     * @param stay      The time it takes for the subtitle to stay on the screen.
+     * @param fadeOut   The time it takes for the subtitle to fade off of the screen.
+     *
+     * @see #sendTitle(Player, String)
+     * @see #sendTitle(Player, String, int, int, int)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String)
+     * @see #sendSubtitleWithPlaceholders(Player, String)
+     * @see #sendSubtitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendTitles(Player, String, String)
+     * @see #sendTitles(Player, String, String, int, int, int)
+     * @see #sendTitlesWithPlaceholders(Player, String, String)
+     * @see #sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+     *
+     * @since 2.0.0
+     */
     void sendSubtitleWithPlaceholders(Player player, String subtitle, int fadeIn, int stay, int fadeOut);
 
+    /**
+     * Sends a title and a subtitle message to the given {@link Player}.
+     *
+     * @param player    The player the titles should be sent to.
+     * @param title     The title to be displayed.
+     * @param subtitle  The subtitle to be displayed.
+     *
+     * @see #sendTitle(Player, String)
+     * @see #sendTitle(Player, String, int, int, int)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String)
+     * @see #sendSubtitle(Player, String, int, int, int)
+     * @see #sendSubtitleWithPlaceholders(Player, String)
+     * @see #sendSubtitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendTitles(Player, String, String, int, int, int)
+     * @see #sendTitlesWithPlaceholders(Player, String, String)
+     * @see #sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+     *
+     * @since 2.0.0
+     */
     void sendTitles(Player player, String title, String subtitle);
+
+    /**
+     * Sends a title and a subtitle message to the given {@link Player} with the given timings.
+     *
+     * @param player    The player the titles should be sent to.
+     * @param title     The title to be displayed.
+     * @param subtitle  The subtitle to be displayed.
+     * @param fadeIn    The time it takes for the titles to fade onto the screen.
+     * @param stay      The time it takes for the titles to stay on the screen.
+     * @param fadeOut   The time it takes for the titles to fade off of the screen.
+     *
+     * @see #sendTitle(Player, String)
+     * @see #sendTitle(Player, String, int, int, int)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String)
+     * @see #sendSubtitle(Player, String, int, int, int)
+     * @see #sendSubtitleWithPlaceholders(Player, String)
+     * @see #sendSubtitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendTitles(Player, String, String)
+     * @see #sendTitlesWithPlaceholders(Player, String, String)
+     * @see #sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+     *
+     * @since 2.0.0
+     */
     void sendTitles(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut);
+
+    /**
+     * Sends a title and a subtitle message to the given {@link Player} where all placeholders are replaced.
+     *
+     * @param player    The player the titles should be sent to.
+     * @param title     The title to be displayed.
+     * @param subtitle  The subtitle to be displayed.
+     *
+     * @see #sendTitle(Player, String)
+     * @see #sendTitle(Player, String, int, int, int)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String)
+     * @see #sendSubtitle(Player, String, int, int, int)
+     * @see #sendSubtitleWithPlaceholders(Player, String)
+     * @see #sendSubtitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendTitles(Player, String, String)
+     * @see #sendTitles(Player, String, String, int, int, int)
+     * @see #sendTitlesWithPlaceholders(Player, String, String, int, int, int)
+     *
+     * @since 2.0.0
+     */
     void sendTitlesWithPlaceholders(Player player, String title, String subtitle);
+
+    /**
+     * Sends a title and a subtitle message to the given {@link Player} where all placeholders are replaced
+     * and with the given timings.
+     *
+     * @param player    The player the titles should be sent to.
+     * @param title     The title to be displayed.
+     * @param subtitle  The subtitle to be displayed.
+     * @param fadeIn    The time it takes for the titles to fade onto the screen.
+     * @param stay      The time it takes for the titles to stay on the screen.
+     * @param fadeOut   The time it takes for the titles to fade off of the screen.
+     *
+     * @see #sendTitle(Player, String)
+     * @see #sendTitle(Player, String, int, int, int)
+     * @see #sendTitleWithPlaceholders(Player, String)
+     * @see #sendTitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendSubtitle(Player, String)
+     * @see #sendSubtitle(Player, String, int, int, int)
+     * @see #sendSubtitleWithPlaceholders(Player, String)
+     * @see #sendSubtitleWithPlaceholders(Player, String, int, int, int)
+     *
+     * @see #sendTitles(Player, String, String)
+     * @see #sendTitles(Player, String, String, int, int, int)
+     * @see #sendTitlesWithPlaceholders(Player, String, String)
+     *
+     * @since 2.0.0
+     */
     void sendTitlesWithPlaceholders(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut);
 
+    /**
+     * Sets the timings for all of the next titles and subtitles sent to the {@link Player}.
+     *
+     * @param player The player the timings should be set for.
+     * @param fadeIn  The time it takes for all titles sent afterwards to fade onto the screen.
+     * @param stay    The time it takes for all titles sent afterwards to stay on the screen.
+     * @param fadeOut The time it takes for all titles sent afterwards to to fade off of the screen.
+     *
+     * @since 2.0.0
+     */
     void sendTimings(Player player, int fadeIn, int stay, int fadeOut);
 
+    /**
+     * Removes a title that might be on the player's screen.
+     *
+     * @param player The player to clear.
+     *
+     * @see #clearSubtitle(Player)
+     * @see #clearTitles(Player)
+     *
+     * @since 2.0.0
+     */
     void clearTitle(Player player);
+
+    /**
+     * Removes a subtitle that might be on the player's screen.
+     *
+     * @param player The player to clear.
+     *
+     * @see #clearTitle(Player)
+     * @see #clearTitles(Player)
+     *
+     * @since 2.0.0
+     */
     void clearSubtitle(Player player);
+
+    /**
+     * Removes a title and a subtitle that might be on the player's screen.
+     *
+     * @param player The player to clear.
+     *
+     * @see #clearTitle(Player)
+     * @see #clearSubtitle(Player)
+     *
+     * @since 2.0.0
+     */
     void clearTitles(Player player);
 
     // Actionbar
 
+    /**
+     * Sends an actionbar message to the {@link Player}.
+     *
+     * @param player The player to send the actionbar message.
+     * @param text   The text to be sent.
+     *
+     * @see #sendActionbarWithPlaceholders(Player, String)
+     *
+     * @since 2.0.0
+     */
     void sendActionbar(Player player, String text);
+
+    /**
+     * Sends an actionbar message to the {@link Player} where all placeholders are replaced.
+     *
+     * @param player The player to send the actionbar message.
+     * @param text   The text to be sent.
+     *
+     * @see #sendActionbar(Player, String)
+     *
+     * @since 2.0.0
+     */
     void sendActionbarWithPlaceholders(Player player, String text);
 
+    /**
+     * Removes an actionbar message that might be on the player's screen.
+     *
+     * @param player The player to clear.
+     *
+     * @since 2.0.0
+     */
     void clearActionbar(Player player);
 
     // Player list
 
+    /**
+     * Set the player list header for the given {@link Player}.
+     *
+     * @param player The player to set the header for.
+     * @param header The header to be displayed.
+     *
+     * @see #getHeader(Player)
+     * @see #setHeaderWithPlaceholders(Player, String)
+     *
+     * @see #getFooter(Player)
+     * @see #setFooter(Player, String)
+     * @see #setFooterWithPlaceholders(Player, String)
+     *
+     * @see #setHeaderAndFooter(Player, String, String)
+     * @see #setHeaderAndFooterWithPlaceholders(Player, String, String)
+     *
+     * @since 2.0.0
+     */
     void setHeader(Player player, String header);
+
+    /**
+     * Sets the player list header for the given {@link Player} where all placeholders are replaced.
+     *
+     * @param player The player to set the header for.
+     * @param header The header to be displayed.
+     *
+     * @see #getHeader(Player)
+     * @see #setHeader(Player, String)
+     *
+     * @see #getFooter(Player)
+     * @see #setFooter(Player, String)
+     * @see #setFooterWithPlaceholders(Player, String)
+     *
+     * @see #setHeaderAndFooter(Player, String, String)
+     * @see #setHeaderAndFooterWithPlaceholders(Player, String, String)
+     *
+     * @since 2.0.0
+     */
     void setHeaderWithPlaceholders(Player player, String header);
+
+    /**
+     * Gets the player list header that is currently being displayed for the given {@link Player}.
+     *
+     * @param player The player to get the header from.
+     *
+     * @return       The header that is being displayed.
+     *
+     * @see #setHeader(Player, String)
+     * @see #setHeaderWithPlaceholders(Player, String)
+     *
+     * @see #getFooter(Player)
+     * @see #setFooter(Player, String)
+     * @see #setFooterWithPlaceholders(Player, String)
+     *
+     * @see #setHeaderAndFooter(Player, String, String)
+     * @see #setHeaderAndFooterWithPlaceholders(Player, String, String)
+     *
+     * @since 2.0.0
+     */
     String getHeader(Player player);
 
+    /**
+     * Sets the player list footer for the given {@link Player}.
+     *
+     * @param player The player to set the footer for.
+     * @param footer The footer to be displayed.
+     *
+     * @see #getHeader(Player)
+     * @see #setHeader(Player, String)
+     * @see #setHeaderWithPlaceholders(Player, String)
+     *
+     * @see #getFooter(Player)
+     * @see #setFooterWithPlaceholders(Player, String)
+     *
+     * @see #setHeaderAndFooter(Player, String, String)
+     * @see #setHeaderAndFooterWithPlaceholders(Player, String, String)
+     *
+     * @since 2.0.0
+     */
     void setFooter(Player player, String footer);
+
+    /**
+     * Sets the player list footer for the given {@link Player} where all placeholders are replaced.
+     *
+     * @param player The player to set the footer for.
+     * @param footer The footer to be displayed.
+     *
+     * @see #getHeader(Player)
+     * @see #setHeader(Player, String)
+     * @see #setHeaderWithPlaceholders(Player, String)
+     *
+     * @see #getFooter(Player)
+     * @see #setFooter(Player, String)
+     *
+     * @see #setHeaderAndFooter(Player, String, String)
+     * @see #setHeaderAndFooterWithPlaceholders(Player, String, String)
+     *
+     * @since 2.0.0
+     */
     void setFooterWithPlaceholders(Player player, String footer);
+
+    /**
+     * Gets the player list footer that is currently being displayed for the given {@link Player}.
+     *
+     * @param player The player to get the header from.
+     *
+     * @return       The footer that is being displayed.
+     *
+     * @see #getHeader(Player)
+     * @see #setHeader(Player, String)
+     * @see #setHeaderWithPlaceholders(Player, String)
+     *
+     * @see #setFooter(Player, String)
+     * @see #setFooterWithPlaceholders(Player, String)
+     *
+     * @see #setHeaderAndFooter(Player, String, String)
+     * @see #setHeaderAndFooterWithPlaceholders(Player, String, String)
+     *
+     * @since 2.0.0
+     */
     String getFooter(Player player);
 
+    /**
+     * Sets the player list header and footer for the given {@link Player}.
+     *
+     * @param player The player to get and set the footer for.
+     * @param header The header to be displayed.
+     * @param footer The footer to be displayed.
+     *
+     * @see #getHeader(Player)
+     * @see #setHeader(Player, String)
+     * @see #setHeaderWithPlaceholders(Player, String)
+     *
+     * @see #getFooter(Player)
+     * @see #setFooter(Player, String)
+     * @see #setFooterWithPlaceholders(Player, String)
+     *
+     * @see #setHeaderAndFooterWithPlaceholders(Player, String, String)
+     *
+     * @since 2.0.0
+     */
     void setHeaderAndFooter(Player player, String header, String footer);
+
+    /**
+     * Sets the player list header and footer for the given {@link Player} where all placeholders are replaced.
+     *
+     * @param player The player to get and set the footer for.
+     * @param header The header to be displayed.
+     * @param footer The footer to be displayed.
+     *
+     * @see #getHeader(Player)
+     * @see #setHeader(Player, String)
+     * @see #setHeaderWithPlaceholders(Player, String)
+     *
+     * @see #getFooter(Player)
+     * @see #setFooter(Player, String)
+     * @see #setFooterWithPlaceholders(Player, String)
+     *
+     * @see #setHeaderAndFooter(Player, String, String)
+     *
+     * @since 2.0.0
+     */
     void setHeaderAndFooterWithPlaceholders(Player player, String header, String footer);
 }

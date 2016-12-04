@@ -8,11 +8,8 @@ package io.puharesource.mc.titlemanager.api.v2.animation;
  * @since 2.0.0
  */
 public interface AnimationPart<T> {
-
     /**
-     *
-     *
-     * @return The part
+     * @return The part that should be displayed.
      */
     T getPart();
 }
