@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-    <a href="(https://travis-ci.org/Puharesource/TitleManager">
+    <a href="https://travis-ci.org/Puharesource/TitleManager">
         <img src="https://travis-ci.org/Puharesource/TitleManager.svg?branch=master"
              alt="Build status">
     </a>
