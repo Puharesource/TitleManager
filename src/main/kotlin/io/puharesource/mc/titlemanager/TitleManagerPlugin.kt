@@ -1,5 +1,7 @@
 package io.puharesource.mc.titlemanager
 
+import com.google.common.base.Joiner
+import de.bananaco.bpermissions.imp.YamlConfiguration
 import io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
@@ -43,6 +45,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
         debug("Adding script files")
         addFiles()
+
+        debug("Updating config from 1.5.13 to 2.0.0")
+        updateConfig()
 
         debug("Registering listeners")
         registerListeners()
@@ -91,6 +96,123 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         server.onlinePlayers.forEach {
             toHeaderAnimation(header, it, withPlaceholders = true).start()
             toFooterAnimation(footer, it, withPlaceholders = true).start()
+        }
+    }
+
+    private fun updateConfig() {
+        val version = config.getInt("config-version")
+
+        if (version <= 3) {
+            val oldConfig = config.defaultSection
+            val oldFile = File(dataFolder, "config-old-3.yml")
+            val configFile = File(dataFolder, "config.yml")
+            val oldAnimationFile = File(dataFolder, "animations.yml")
+
+            if (oldFile.exists()) {
+                oldFile.delete()
+            }
+
+            oldFile.createNewFile()
+            oldFile.writeBytes(configFile.readBytes())
+
+            configFile.delete()
+            saveDefaultConfig()
+
+            val newConfig = config
+
+            val oldAnimationPattern = "(?i)^animation[:](.+)$".toRegex()
+            val oldPlaceholderPattern = "\\{(.+)\\}".toRegex()
+
+            fun move(path: String, newPath: String? = null, transformer: ((Any) -> Any)? = null) {
+                val correctNewPath : String
+
+                if (newPath == null) {
+                    correctNewPath = path
+                } else {
+                    correctNewPath = newPath
+                }
+
+                if (oldConfig.contains(path)) {
+                    var oldValue = oldConfig.get(correctNewPath)
+
+                    if (oldValue is String) {
+                        if (oldValue.matches(oldAnimationPattern)) {
+                            oldValue = "\${${oldValue.substring(10)}}"
+                        } else if (oldValue.contains(oldPlaceholderPattern)) {
+                            oldValue.replace(oldPlaceholderPattern, transform = { "%{${it.groups[1]!!.value}}" })
+                        }
+                    }
+
+                    if (transformer != null) {
+                        newConfig.set(newPath, transformer(oldValue))
+                    } else {
+                        newConfig.set(newPath, oldValue)
+                    }
+                }
+            }
+
+            move("usingConfig", "using-config")
+            move("using-bungeecord")
+            move("legacy-client-support")
+            move("updater.check-automatically", "check-for-updates")
+
+            move("tabmenu.enabled", "player-list.enabled")
+            move("tabmenu.header", "player-list.header", transformer = {
+                val header = it as String
+
+                if (header.contains("\\n")) {
+                    header.split("\\n")
+                } else {
+                    header
+                }
+            })
+            move("tabmenu.footer", "player-list.footer", transformer = {
+                val footer = it as String
+
+                if (footer.contains("\\n")) {
+                    footer.split("\\n")
+                } else {
+                    footer
+                }
+            })
+
+            move("welcome_message.enabled", "welcome-title.enabled")
+            move("welcome_message.title", "welcome-title.title")
+            move("welcome_message.subtitle", "welcome-title.subtitle")
+            move("welcome_message.fadeIn", "welcome-title.fade-in")
+            move("welcome_message.stay", "welcome-title.stay")
+            move("welcome_message.fadeOut", "welcome-title.fade-out")
+            move("welcome_message.first-join.title", "welcome-title.first-join.title")
+            move("welcome_message.first-join.subtitle", "welcome-title.first-join.subtitle")
+
+            move("actionbar-welcome.enabled", "welcome-actionbar-enabled")
+            move("actionbar-welcome.message", "welcome-actionbar.title")
+            move("actionbar-welcome.first-join.message", "welcome-actionbar.first-join")
+
+            move("number-format.enabled", "placeholders.number-format.enabled")
+            move("number-format.format", "placeholders.number-format.format")
+            move("date-format.format", "placeholders.date-format")
+
+            if (oldAnimationFile.exists()) {
+                val oldAnimationsConfig = YamlConfiguration.loadConfiguration(oldAnimationFile)
+
+                oldAnimationsConfig.getKeys(false)
+                        .map { it.to(oldAnimationsConfig.getStringList(it)) }
+                        .forEach {
+                            val name = it.first
+                            val frames = Joiner.on('\n')
+                                    .join(it.second)
+                                    .replace(oldPlaceholderPattern, transform = { "%{${it.groups[1]!!.value}}" })
+
+                            val file = File(animationsFolder, "$name.txt")
+
+                            if (!file.exists()) {
+                                file.createNewFile()
+
+                                file.writeText(frames)
+                            }
+                        }
+            }
         }
     }
 

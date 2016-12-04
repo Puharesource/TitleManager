@@ -30,7 +30,7 @@
 ############################################################
 
 # Never change this value
-config-version: 1
+config-version: 4
 
 # Toggles debug mode, which prints additional information when the plugin does something.
 debug: false
