@@ -1,3 +1,4 @@
+package tests
 
 import io.puharesource.mc.titlemanager.APIProvider
 import org.junit.Test

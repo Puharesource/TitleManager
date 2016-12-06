@@ -190,4 +190,5 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: kotlin_version
+    testCompile group: 'com.madgag', name: 'animated-gif-lib', version: '1.2'
 }

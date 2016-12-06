@@ -1,3 +1,4 @@
+package tests
 
 import io.puharesource.mc.titlemanager.APIProvider
 import io.puharesource.mc.titlemanager.script.ScriptManager
