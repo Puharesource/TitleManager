@@ -107,15 +107,15 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun replaceText(player: Player, text: String): String {
-        var replacedText : String
+        val placeholderAPIEnabled = !isTesting && PlaceholderAPIHook.isEnabled()
 
-        if (!isTesting && PlaceholderAPIHook.isEnabled()) {
-            replacedText = PlaceholderAPI.setPlaceholders(player, text)
-        } else {
-            replacedText = text
+        if (!containsPlaceholders(text)) {
+            if (placeholderAPIEnabled) {
+                return PlaceholderAPI.setPlaceholders(player, text)
+            }
+
+            return text
         }
-
-        if (!containsPlaceholders(text)) return replacedText
 
         val placeholdersInText = TreeSet(String.CASE_INSENSITIVE_ORDER)
         val parameterPlaceholdersInText = TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
@@ -133,6 +133,8 @@ object APIProvider : TitleManagerAPI {
             placeholdersInText.add(regularMatcher.group(1))
         }
 
+        var replacedText = text
+
         parameterPlaceholdersInText
                 .filter { placeholderReplacersWithValues.containsKey(it.key) }
                 .forEach { replacedText = replacedText.replace("%{${it.key}:${it.value}}", placeholderReplacersWithValues[it.key]!!.invoke(player, it.value), ignoreCase = true) }
@@ -141,6 +143,10 @@ object APIProvider : TitleManagerAPI {
                 .filter { placeholderReplacers.containsKey(it) }
                 .map { Pair(it, placeholderReplacers[it]!!) }
                 .forEach { replacedText = replacedText.replace("%{${it.first}}", it.second(player), ignoreCase = true) }
+
+        if (placeholderAPIEnabled) {
+            return PlaceholderAPI.setPlaceholders(player, replacedText)
+        }
 
         return replacedText
     }
