@@ -1,7 +1,6 @@
 package io.puharesource.mc.titlemanager
 
 import com.google.common.base.Joiner
-import de.bananaco.bpermissions.imp.YamlConfiguration
 import io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
@@ -26,6 +25,7 @@ import io.puharesource.mc.titlemanager.script.ScriptManager
 import io.puharesource.mc.titlemanager.web.UpdateChecker
 import org.bukkit.ChatColor
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -103,7 +103,6 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         val version = config.getInt("config-version")
 
         if (version <= 3) {
-            val oldConfig = config.defaultSection
             val oldFile = File(dataFolder, "config-old-3.yml")
             val configFile = File(dataFolder, "config.yml")
             val oldAnimationFile = File(dataFolder, "animations.yml")
@@ -118,6 +117,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             configFile.delete()
             saveDefaultConfig()
 
+            val oldConfig = YamlConfiguration.loadConfiguration(oldFile.reader())
             val newConfig = config
 
             val oldAnimationPattern = "(?i)^animation[:](.+)$".toRegex()
@@ -133,7 +133,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 }
 
                 if (oldConfig.contains(path)) {
-                    var oldValue = oldConfig.get(correctNewPath)
+                    var oldValue = oldConfig.get(path)
 
                     if (oldValue is String) {
                         if (oldValue.matches(oldAnimationPattern)) {
@@ -144,9 +144,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                     }
 
                     if (transformer != null) {
-                        newConfig.set(newPath, transformer(oldValue))
+                        newConfig.set(correctNewPath, transformer(oldValue))
                     } else {
-                        newConfig.set(newPath, oldValue)
+                        newConfig.set(correctNewPath, oldValue)
                     }
                 }
             }
@@ -193,6 +193,8 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             move("number-format.format", "placeholders.number-format.format")
             move("date-format.format", "placeholders.date-format")
 
+            saveConfig()
+
             if (oldAnimationFile.exists()) {
                 val oldAnimationsConfig = YamlConfiguration.loadConfiguration(oldAnimationFile)
 
@@ -212,6 +214,8 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                                 file.writeText(frames)
                             }
                         }
+
+                oldAnimationFile.renameTo(File("animations-old.yml"))
             }
         }
     }

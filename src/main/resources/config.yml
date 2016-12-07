@@ -225,29 +225,29 @@ announcer:
 
 messages:
 
-  # The messages from the command /version
+  # The messages from the command /tm version
   command-version:
     description: 'Gives you the current running version of TitleManager'
     version: '&aThe server is running %version'
 
-  # The messages from the command /reload
+  # The messages from the command /tm reload
   command-reload:
     description: 'Reloads TitleManager'
     reloaded: '&aTitleManager reloaded'
 
-  # The messages from the command /animations
+  # The messages from the command /tm animations
   command-animations:
     description: 'Displays all loaded animations'
     format: '&aLoaded animations (&f%count&a): %animations'
     separator: '&f, &a'
 
-  # The messages from the command /scripts
+  # The messages from the command /tm scripts
   command-scripts:
     description: 'Displays all loaded scripts'
     format: '&aLoaded scripts (&f%count&a): %scripts'
     separator: '&f, &a'
 
-  # The messages from the command /broadcast
+  # The messages from the command /tm broadcast
   command-broadcast:
     description: 'Broadcasts a title to the server'
     usage: '<title>|<title\nsubtitle>'
@@ -255,13 +255,13 @@ messages:
     subtitle-sent: '&aYou have broadcasted the subtitle "&r%subtitle&a".'
     both-sent: '&aYou have broadcasted the titles "&r%title&a" "&r%subtitle&a".'
 
-  # The messages from the command /abroadcast
+  # The messages from the command /tm abroadcast
   command-abroadcast:
     description: 'Broadcasts an actionbar title to the server'
     usage: '<title>'
     sent: '&aYou have broadcasted the actionbar title "&r%title&a".'
 
-  # The messages from the command /message
+  # The messages from the command /tm message
   command-message:
     description: 'Sends a title to the specified player'
     usage: '<player> <title>|<title\nsubtitle>'
@@ -270,7 +270,7 @@ messages:
     both-sent: '&aYou have sent %player the titles "&r%title&a" "&r%subtitle&a".'
     invalid-player: '&c%player is not a valid player.'
 
-  # The messages from the command /amessage
+  # The messages from the command /tm amessage
   command-amessage:
     description: 'Sends an actionbar title to the specified player'
     usage: '<player> <title>'
