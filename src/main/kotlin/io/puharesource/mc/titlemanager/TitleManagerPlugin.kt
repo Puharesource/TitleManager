@@ -220,7 +220,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                             }
                         }
 
-                oldAnimationFile.renameTo(File("animations-old.yml"))
+                oldAnimationFile.renameTo(File(dataFolder, "animations-old.yml"))
             }
         }
     }
