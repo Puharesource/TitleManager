@@ -6,6 +6,7 @@ import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
 import io.puharesource.mc.titlemanager.bungeecord.BungeeCordManager
 import io.puharesource.mc.titlemanager.commands.TMCommand
+import io.puharesource.mc.titlemanager.config.PrettyConfig
 import io.puharesource.mc.titlemanager.event.observeEvent
 import io.puharesource.mc.titlemanager.event.observeEventRaw
 import io.puharesource.mc.titlemanager.extensions.color
@@ -25,6 +26,7 @@ import io.puharesource.mc.titlemanager.script.ScriptManager
 import io.puharesource.mc.titlemanager.web.UpdateChecker
 import org.bukkit.ChatColor
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
@@ -38,9 +40,10 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     private val animationsFolder = File(dataFolder, "animations")
+    private var conf : PrettyConfig? = null
 
     override fun onEnable() {
-        debug("Saving default config")
+        debug("Save default config")
         saveDefaultConfig()
 
         debug("Adding script files")
@@ -71,13 +74,23 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         server.onlinePlayers.forEach { APIProvider.removeAllRunningAnimations(it) }
     }
 
+    // Override default config methods.
+    override fun getConfig() : FileConfiguration {
+        if (conf == null) {
+            conf = PrettyConfig(File(dataFolder, "config.yml"))
+        }
+
+        return conf!!
+    }
+    override fun saveConfig() = config.save(File(dataFolder, "config.yml"))
+    override fun reloadConfig() = config.load(File(dataFolder, "config.yml"))
+
     fun reloadPlugin() {
         UpdateChecker.stop()
 
         server.onlinePlayers.forEach { APIProvider.removeAllRunningAnimations(it) }
         AsyncScheduler.cancelAll()
 
-        reloadConfig()
         saveDefaultConfig()
 
         registeredAnimations.clear()
@@ -103,22 +116,15 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         val version = config.getInt("config-version")
 
         if (version <= 3) {
-            val oldFile = File(dataFolder, "config-old-3.yml")
             val configFile = File(dataFolder, "config.yml")
+            val oldFile = File(dataFolder, "config-old-3.yml")
             val oldAnimationFile = File(dataFolder, "animations.yml")
 
-            if (oldFile.exists()) {
-                oldFile.delete()
-            }
-
-            oldFile.createNewFile()
-            oldFile.writeBytes(configFile.readBytes())
-
-            configFile.delete()
+            configFile.renameTo(oldFile)
             saveDefaultConfig()
 
+            conf = PrettyConfig(configFile)
             val oldConfig = YamlConfiguration.loadConfiguration(oldFile.reader())
-            val newConfig = config
 
             val oldAnimationPattern = "(?i)^animation[:](.+)$".toRegex()
             val oldPlaceholderPattern = "\\{(.+)\\}".toRegex()
@@ -144,9 +150,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                     }
 
                     if (transformer != null) {
-                        newConfig.set(correctNewPath, transformer(oldValue))
+                        config.set(correctNewPath, transformer(oldValue))
                     } else {
-                        newConfig.set(correctNewPath, oldValue)
+                        config.set(correctNewPath, oldValue)
                     }
                 }
             }
@@ -185,7 +191,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             move("welcome_message.first-join.title", "welcome-title.first-join.title")
             move("welcome_message.first-join.subtitle", "welcome-title.first-join.subtitle")
 
-            move("actionbar-welcome.enabled", "welcome-actionbar-enabled")
+            move("actionbar-welcome.enabled", "welcome-actionbar.enabled")
             move("actionbar-welcome.message", "welcome-actionbar.title")
             move("actionbar-welcome.first-join.message", "welcome-actionbar.first-join")
 
@@ -193,16 +199,16 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             move("number-format.format", "placeholders.number-format.format")
             move("date-format.format", "placeholders.date-format")
 
-            saveConfig()
+            config.save(configFile)
 
             if (oldAnimationFile.exists()) {
                 val oldAnimationsConfig = YamlConfiguration.loadConfiguration(oldAnimationFile)
 
                 oldAnimationsConfig.getKeys(false)
-                        .map { it.to(oldAnimationsConfig.getStringList(it)) }
+                        .map { it.to(oldAnimationsConfig.getStringList("$it.frames")) }
                         .forEach {
                             val name = it.first
-                            val frames = Joiner.on('\n')
+                            val frames = Joiner.on("\n")
                                     .join(it.second)
                                     .replace(oldPlaceholderPattern, transform = { "%{${it.groups[1]!!.value}}" })
 
@@ -210,7 +216,6 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
                             if (!file.exists()) {
                                 file.createNewFile()
-
                                 file.writeText(frames)
                             }
                         }
@@ -427,9 +432,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                     val section = config.getConfigurationSection("welcome-actionbar")
 
                     if (it.hasPlayedBefore()) {
-                        it.sendActionbarFromText(section.getString("title"))
+                        it.sendActionbarFromText(section.getString("title").color())
                     } else {
-                        it.sendActionbarFromText(section.getString("first-join"))
+                        it.sendActionbarFromText(section.getString("first-join").color())
                     }
                 }
 

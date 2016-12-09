@@ -4,7 +4,7 @@ import io.puharesource.mc.titlemanager.pluginInstance
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.*
+import java.util.Locale
 
 internal fun Double.format() : String {
     val section = pluginInstance.config.getConfigurationSection("placeholders.number-format")
