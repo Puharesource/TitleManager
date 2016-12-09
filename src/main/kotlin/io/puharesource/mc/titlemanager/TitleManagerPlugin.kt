@@ -46,11 +46,11 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         debug("Save default config")
         saveDefaultConfig()
 
-        debug("Adding script files")
-        addFiles()
-
         debug("Updating config from 1.5.13 to 2.0.0")
         updateConfig()
+
+        debug("Adding script files")
+        addFiles()
 
         debug("Registering listeners")
         registerListeners()
@@ -212,6 +212,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                                     .join(it.second)
                                     .replace(oldPlaceholderPattern, transform = { "%{${it.groups[1]!!.value}}" })
 
+                            animationsFolder.mkdirs()
                             val file = File(animationsFolder, "$name.txt")
 
                             if (!file.exists()) {
