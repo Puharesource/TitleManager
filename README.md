@@ -24,6 +24,7 @@
 * **[WIKI](https://github.com/Puharesource/TitleManager/wiki)** – plugin guidelines.
 * **[COMMANDS](https://github.com/Puharesource/TitleManager/wiki/commands)** – command guidelines.
 * **[PERMISSIONS](https://github.com/Puharesource/TitleManager/wiki/permissions)** – command and feature permissions.
+* **[SUPPORT CHAT](https://discord.gg/NwdtW2d)** - discord support chat and help.
 
 For Developers
 --------------
