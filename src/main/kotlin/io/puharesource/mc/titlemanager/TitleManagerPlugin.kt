@@ -46,11 +46,14 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         debug("Save default config")
         saveDefaultConfig()
 
+        debug("Adding script files")
+        addFiles()
+
         debug("Updating config from 1.5.13 to 2.0.0")
         updateConfig()
 
-        debug("Adding script files")
-        addFiles()
+        debug("Loading animations & scripts")
+        loadAnimations()
 
         debug("Registering listeners")
         registerListeners()
@@ -83,7 +86,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         return conf!!
     }
     override fun saveConfig() = config.save(File(dataFolder, "config.yml"))
-    override fun reloadConfig() = config.load(File(dataFolder, "config.yml"))
+    override fun reloadConfig() {
+        conf = PrettyConfig(File(dataFolder, "config.yml"))
+    }
 
     fun reloadPlugin() {
         UpdateChecker.stop()
@@ -97,6 +102,8 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         ScriptManager.registeredScripts.clear()
 
         addFiles()
+        loadAnimations()
+        registerAnnouncers()
 
         if (config.getBoolean("check-for-updates")) {
             UpdateChecker.start()
@@ -235,20 +242,34 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
         section.getKeys(false)
                 .forEach {
-                    val interval = section.getInt("interval", 60)
+                    val announcement = section.getConfigurationSection(it)
 
-                    val fadeIn = section.getInt("timings.fade-in", 20)
-                    val stay = section.getInt("timings.stay", 40)
-                    val fadeOut = section.getInt("timings.fade-out", 20)
+                    val interval = announcement.getInt("interval", 60)
 
-                    val titles : List<String> = section.getStringList("titles") ?: listOf()
-                    val actionbarTitles : List<String> = section.getStringList("actionbar") ?: listOf()
+                    val fadeIn = announcement.getInt("timings.fade-in", 20)
+                    val stay = announcement.getInt("timings.stay", 40)
+                    val fadeOut = announcement.getInt("timings.fade-out", 20)
+
+                    val titles : List<String> = announcement.getStringList("titles") ?: listOf()
+                    val actionbarTitles : List<String> = announcement.getStringList("actionbar") ?: listOf()
 
                     val size = if (titles.size > actionbarTitles.size) titles.size else actionbarTitles.size
                     val index = AtomicInteger(0)
 
+                    debug("Registering announcement: $it")
+                    debug("Announcement Info:")
+                    debug("Interval: $interval")
+                    debug("Fade in: $fadeIn")
+                    debug("Stay: $stay")
+                    debug("Fade out: $fadeOut")
+                    debug("Titles: ${titles.size}")
+                    debug("Actionbar Titles: ${actionbarTitles.size}")
+                    debug("Size: $size")
+
                     if (size != 0) {
                         AsyncScheduler.scheduleRaw({
+                            debug("Sending announcement: $it")
+
                             val i = index.andIncrement % size
 
                             server.onlinePlayers.forEach {
@@ -289,7 +310,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             saveAnimationFiles("left-to-right.txt")
             saveAnimationFiles("right-to-left.txt")
         }
+    }
 
+    private fun loadAnimations() {
         // Load text based animations
         animationsFolder.listFiles()
                 .filter { it.isFile }
