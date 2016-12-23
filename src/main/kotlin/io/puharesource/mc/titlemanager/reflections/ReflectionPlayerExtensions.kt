@@ -22,12 +22,12 @@ internal fun Player.isUsing17() : Boolean {
 }
 
 internal fun Player.sendNMSPacket(packet: Any) {
-    val playerConnection = getNMSPlayerConnection()
+    val networkManager = getNMSNetworkManager()
     val provider = NMSManager.getClassProvider()
 
-    provider.get("PlayerConnection")
+    provider.get("NetworkManager")
             .getMethod("sendPacket", provider.get("Packet").handle)
-            .invoke(playerConnection, packet)
+            .invoke(networkManager, packet)
 }
 
 internal fun Player.getEntityPlayer() : Any {
@@ -41,4 +41,10 @@ internal fun Player.getNMSPlayerConnection() : Any {
     val entityPlayer = getEntityPlayer()
 
     return entityPlayer.javaClass.getField("playerConnection").get(entityPlayer)
+}
+
+internal fun Player.getNMSNetworkManager() : Any {
+    val playerConnection = getNMSPlayerConnection()
+
+    return playerConnection.javaClass.getField("networkManager").get(playerConnection)
 }

@@ -316,6 +316,12 @@ public interface TitleManagerAPI {
      */
     SendableAnimation toFooterAnimation(Animation animation, Player player, boolean withPlaceholders);
 
+    // TODO: Write documentation
+    SendableAnimation toScoreboardTitleAnimation(Animation animation, Player player, boolean withPlaceholders);
+
+    // TODO: Write documentation
+    SendableAnimation toScoreboardValueAnimation(Animation animation, Player player, int index, boolean withPlaceholders);
+
     /**
      * Creates a {@link SendableAnimation} that sends Titles to the player.
      * <p>
@@ -445,6 +451,12 @@ public interface TitleManagerAPI {
      * @since 2.0.0
      */
     SendableAnimation toFooterAnimation(List<AnimationPart> parts, Player player, boolean withPlaceholders);
+
+    // TODO: Write documentation
+    SendableAnimation toScoreboardTitleAnimation(List<AnimationPart> parts, Player player, boolean withPlaceholders);
+
+    // TODO: Write documentation
+    SendableAnimation toScoreboardValueAnimation(List<AnimationPart> parts, Player player, int index, boolean withPlaceholders);
 
     /**
      * Creates an {@link AnimationPart} from a {@link String}
@@ -1143,4 +1155,36 @@ public interface TitleManagerAPI {
      * @since 2.0.0
      */
     void setHeaderAndFooterWithPlaceholders(Player player, String header, String footer);
+
+    // Sidebar
+
+    // TODO: Write documentation
+    void giveScoreboard(Player player);
+
+    // TODO: Write documentation
+    void removeScoreboard(Player player);
+
+    // TODO: Write documentation
+    boolean hasScoreboard(Player player);
+
+    // TODO: Write documentation
+    void setScoreboardTitle(Player player, String title);
+
+    // TODO: Write documentation
+    void setScoreboardTitleWithPlaceholders(Player player, String title);
+
+    // TODO: Write documentation
+    String getScoreboardTitle(Player player);
+
+    // TODO: Write documentation
+    void setScoreboardValue(Player player, int index, String value);
+
+    // TODO: Write documentation
+    void setScoreboardValueWithPlaceholders(Player player, int index, String value);
+
+    // TODO: Write documentation
+    String getScoreboardValue(Player player, int index);
+
+    // TODO: Write documentation
+    void removeScoreboardValue(Player player, int index);
 }

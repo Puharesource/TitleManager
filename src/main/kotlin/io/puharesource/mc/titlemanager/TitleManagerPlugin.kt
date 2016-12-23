@@ -13,6 +13,8 @@ import io.puharesource.mc.titlemanager.extensions.color
 import io.puharesource.mc.titlemanager.extensions.format
 import io.puharesource.mc.titlemanager.extensions.getFormattedTime
 import io.puharesource.mc.titlemanager.extensions.getStringWithMultilines
+import io.puharesource.mc.titlemanager.extensions.giveScoreboard
+import io.puharesource.mc.titlemanager.extensions.removeScoreboard
 import io.puharesource.mc.titlemanager.extensions.sendActionbar
 import io.puharesource.mc.titlemanager.extensions.sendSubtitle
 import io.puharesource.mc.titlemanager.extensions.sendTitle
@@ -74,7 +76,10 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     }
 
     override fun onDisable() {
-        server.onlinePlayers.forEach { APIProvider.removeAllRunningAnimations(it) }
+        server.onlinePlayers.forEach {
+            APIProvider.removeAllRunningAnimations(it)
+            AsyncScheduler.cancelAll()
+        }
     }
 
     // Override default config methods.
@@ -93,7 +98,11 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     fun reloadPlugin() {
         UpdateChecker.stop()
 
-        server.onlinePlayers.forEach { APIProvider.removeAllRunningAnimations(it) }
+        server.onlinePlayers.forEach {
+            APIProvider.removeAllRunningAnimations(it)
+            it.removeScoreboard()
+        }
+
         AsyncScheduler.cancelAll()
 
         saveDefaultConfig()
@@ -109,13 +118,29 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             UpdateChecker.start()
         }
 
-        val section = config.getConfigurationSection("player-list")
-        val header = toAnimationParts(section.getStringWithMultilines("header").color())
-        val footer = toAnimationParts(section.getStringWithMultilines("footer").color())
+        val playerListSection = config.getConfigurationSection("player-list")
+        val header = toAnimationParts(playerListSection.getStringWithMultilines("header").color())
+        val footer = toAnimationParts(playerListSection.getStringWithMultilines("footer").color())
+
+        val scoreboardSection = config.getConfigurationSection("scoreboard")
+        val title = toAnimationParts(scoreboardSection.getString("title").color())
+        val lines = scoreboardSection.getStringList("lines").take(15).map { toAnimationParts(it.color()) }
 
         server.onlinePlayers.forEach {
-            toHeaderAnimation(header, it, withPlaceholders = true).start()
-            toFooterAnimation(footer, it, withPlaceholders = true).start()
+            if (playerListSection.getBoolean("enabled")) {
+                toHeaderAnimation(header, it, withPlaceholders = true).start()
+                toFooterAnimation(footer, it, withPlaceholders = true).start()
+            }
+
+            if (scoreboardSection.getBoolean("enabled")) {
+                it.giveScoreboard()
+
+                toScoreboardTitleAnimation(title, it, true).start()
+
+                lines.forEachIndexed { index, parts ->
+                    toScoreboardValueAnimation(parts, it, index + 1, true).start()
+                }
+            }
         }
     }
 
@@ -392,6 +417,18 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             toFooterAnimation(parts, this, withPlaceholders = true).start()
         }
 
+        fun Player.setScoreboardTitleFromText(text: String) {
+            val parts = toAnimationParts(text)
+
+            // TODO: toScoreboardTitleAnimation
+        }
+
+        fun Player.setScoreboardValueFromText(index: Int, text: String) {
+            val parts = toAnimationParts(text)
+
+            // TODO: toScoreboardValueAnimation
+        }
+
         // Notify administrators joining the server of the update.
         observeEvent(events = PlayerJoinEvent::class.java)
                 .filter { config.getBoolean("check-for-updates") }
@@ -474,11 +511,36 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                     it.setFooterFromText(section.getStringWithMultilines("footer").color())
                 }
 
-        // Delete players from tab list cache when they quit the server
+        // Set scoreboard
+        observeEvent(events = PlayerJoinEvent::class.java)
+                .filter { config.getBoolean("using-config") }
+                .filter { config.getBoolean("scoreboard.enabled") }
+                .map { it.player }
+                .subscribe {
+                    val section = config.getConfigurationSection("scoreboard")
+
+                    val title = toAnimationParts(section.getString("title").color())
+                    val lines = section.getStringList("lines").take(15).map { toAnimationParts(it.color()) }
+
+                    it.giveScoreboard()
+                    toScoreboardTitleAnimation(title, it, true).start()
+
+                    lines.forEachIndexed { index, parts ->
+                        toScoreboardValueAnimation(parts, it, index + 1, true).start()
+                    }
+                }
+
+        // Delete players from the tab list cache when they quit the server
         observeEvent(events = PlayerQuitEvent::class.java)
                 .map { it.player }
                 .filter { APIProvider.playerListCache.contains(it) }
                 .subscribe { APIProvider.playerListCache.remove(it) }
+
+        // Delete players from the scoreboard cache when they quit the server
+        observeEvent(events = PlayerQuitEvent::class.java)
+                .map { it.player }
+                .filter { APIProvider.hasScoreboard(it) }
+                .subscribe { APIProvider.scoreboards.remove(it) }
 
         // End all running animations when they quit the server
         observeEvent(events = PlayerQuitEvent::class.java)
@@ -575,6 +637,14 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
     override fun toFooterAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = APIProvider.toFooterAnimation(parts, player, withPlaceholders)
 
+    override fun toScoreboardTitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = APIProvider.toScoreboardTitleAnimation(animation, player, withPlaceholders)
+
+    override fun toScoreboardTitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = APIProvider.toScoreboardTitleAnimation(parts, player, withPlaceholders)
+
+    override fun toScoreboardValueAnimation(animation: Animation, player: Player, index: Int, withPlaceholders: Boolean) = APIProvider.toScoreboardValueAnimation(animation, player, index, withPlaceholders)
+
+    override fun toScoreboardValueAnimation(parts: List<AnimationPart<*>>, player: Player, index: Int, withPlaceholders: Boolean) = APIProvider.toScoreboardValueAnimation(parts, player, index, withPlaceholders)
+
     override fun fromText(vararg frames: String) = APIProvider.fromText(*frames)
 
     override fun fromTextFile(file: File) = APIProvider.fromTextFile(file)
@@ -634,4 +704,24 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     override fun setHeaderAndFooter(player: Player, header: String, footer: String) = APIProvider.setHeaderAndFooter(player, header, footer)
 
     override fun setHeaderAndFooterWithPlaceholders(player: Player, header: String, footer: String) = APIProvider.setHeaderAndFooterWithPlaceholders(player, header, footer)
+
+    override fun giveScoreboard(player: Player) = APIProvider.giveScoreboard(player)
+
+    override fun removeScoreboard(player: Player) = APIProvider.removeScoreboard(player)
+
+    override fun hasScoreboard(player: Player) = APIProvider.hasScoreboard(player)
+
+    override fun setScoreboardTitle(player: Player, title: String) = APIProvider.setScoreboardTitle(player, title)
+
+    override fun setScoreboardTitleWithPlaceholders(player: Player, title: String) = APIProvider.setScoreboardTitleWithPlaceholders(player, title)
+
+    override fun getScoreboardTitle(player: Player) = APIProvider.getScoreboardTitle(player)
+
+    override fun setScoreboardValue(player: Player, index: Int, value: String) = APIProvider.setScoreboardValue(player, index, value)
+
+    override fun setScoreboardValueWithPlaceholders(player: Player, index: Int, value: String) = APIProvider.setScoreboardValueWithPlaceholders(player, index, value)
+
+    override fun getScoreboardValue(player: Player, index: Int) = APIProvider.getScoreboardValue(player, index)
+
+    override fun removeScoreboardValue(player: Player, index: Int) = APIProvider.removeScoreboardValue(player, index)
 }

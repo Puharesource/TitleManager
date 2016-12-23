@@ -12,15 +12,19 @@ import io.puharesource.mc.titlemanager.extensions.clearActionbar
 import io.puharesource.mc.titlemanager.extensions.clearSubtitle
 import io.puharesource.mc.titlemanager.extensions.clearTitle
 import io.puharesource.mc.titlemanager.extensions.color
+import io.puharesource.mc.titlemanager.extensions.modify
 import io.puharesource.mc.titlemanager.extensions.sendActionbar
 import io.puharesource.mc.titlemanager.extensions.sendSubtitle
 import io.puharesource.mc.titlemanager.extensions.sendTitle
 import io.puharesource.mc.titlemanager.extensions.setPlayerListFooter
 import io.puharesource.mc.titlemanager.extensions.setPlayerListHeader
+import io.puharesource.mc.titlemanager.extensions.setScoreboardTitle
+import io.puharesource.mc.titlemanager.extensions.setScoreboardValue
 import io.puharesource.mc.titlemanager.placeholder.PlaceholderAPIHook
 import io.puharesource.mc.titlemanager.reflections.NMSManager
 import io.puharesource.mc.titlemanager.reflections.TitleTypeMapper
 import io.puharesource.mc.titlemanager.reflections.sendNMSPacket
+import io.puharesource.mc.titlemanager.scoreboard.ScoreboardRepresentation
 import io.puharesource.mc.titlemanager.script.ScriptManager
 import me.clip.placeholderapi.PlaceholderAPI
 import net.md_5.bungee.api.ChatMessageType
@@ -70,9 +74,14 @@ object APIProvider : TitleManagerAPI {
     fun removeAllRunningAnimations(player: Player) {
         removeRunningTitleAnimation(player)
         removeRunningSubtitleAnimation(player)
+
         removeRunningActionbarAnimation(player)
+
         removeRunningHeaderAnimation(player)
         removeRunningFooterAnimation(player)
+
+        removeRunningScoreboardTitleAnimation(player)
+        (1..15).forEach { removeRunningScoreboardValueAnimation(player, it) }
     }
 
     fun setRunningHeaderAnimation(player: Player, animation: SendableAnimation) = setRunningAnimation(player, "header", animation)
@@ -89,6 +98,12 @@ object APIProvider : TitleManagerAPI {
 
     fun setRunningActionbarAnimation(player: Player, animation: SendableAnimation) = setRunningAnimation(player, "actionbar", animation)
     fun removeRunningActionbarAnimation(player: Player) = removeRunningAnimation(player, "actionbar")
+
+    fun setRunningScoreboardTitleAnimation(player: Player, animation: SendableAnimation) = setRunningAnimation(player, "scoreboardtitle", animation)
+    fun removeRunningScoreboardTitleAnimation(player: Player) = removeRunningAnimation(player, "scoreboardtitle")
+
+    fun setRunningScoreboardValueAnimation(player: Player, index: Int, animation: SendableAnimation) = setRunningAnimation(player, "scoreboardvalue$index", animation)
+    fun removeRunningScoreboardValueAnimation(player: Player, index: Int) = removeRunningAnimation(player, "scoreboardvalue$index")
 
     // Placeholder
 
@@ -207,6 +222,18 @@ object APIProvider : TitleManagerAPI {
         return EasySendableAnimation(animation, player, {
             player.setPlayerListFooter(it.text, withPlaceholders = withPlaceholders)
         }, continuous = true, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { player, animation -> setRunningFooterAnimation(player, animation) })
+    }
+
+    override fun toScoreboardTitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
+        return EasySendableAnimation(animation, player, {
+            player.setScoreboardTitle(it.text, withPlaceholders = withPlaceholders)
+        }, continuous = true, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardTitleAnimation(player, animation) })
+    }
+
+    override fun toScoreboardValueAnimation(animation: Animation, player: Player, index: Int, withPlaceholders: Boolean): SendableAnimation {
+        return EasySendableAnimation(animation, player, {
+            player.setScoreboardValue(index, it.text, withPlaceholders = withPlaceholders)
+        }, continuous = true, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardValueAnimation(player, index, animation) })
     }
 
     override fun toAnimationPart(text: String): AnimationPart<String> {
@@ -348,6 +375,18 @@ object APIProvider : TitleManagerAPI {
         return PartBasedSendableAnimation(parts, player, {
             player.setPlayerListFooter(it.text, withPlaceholders = withPlaceholders)
         }, continuous = true, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { player, animation -> setRunningFooterAnimation(player, animation) })
+    }
+
+    override fun toScoreboardTitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
+        return PartBasedSendableAnimation(parts, player, {
+            player.setScoreboardTitle(it.text, withPlaceholders = withPlaceholders)
+        }, continuous = true, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardTitleAnimation(player, animation) })
+    }
+
+    override fun toScoreboardValueAnimation(parts: List<AnimationPart<*>>, player: Player, index: Int, withPlaceholders: Boolean): SendableAnimation {
+        return PartBasedSendableAnimation(parts, player, {
+            player.setScoreboardValue(index, it.text, withPlaceholders = withPlaceholders)
+        }, continuous = true, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardValueAnimation(player, index, animation) })
     }
 
     override fun fromText(vararg frames: String): Animation {
@@ -586,15 +625,8 @@ object APIProvider : TitleManagerAPI {
             val packetClass = provider.get("PacketPlayOutPlayerListHeaderFooter")
             packet = packetClass.handle.newInstance()
 
-            val headerField = packetClass.handle.getDeclaredField("a")
-            headerField.isAccessible = true
-            headerField.set(packet, provider.getIChatComponent(header))
-            headerField.isAccessible = false
-
-            val footerField = packetClass.handle.getDeclaredField("b")
-            footerField.isAccessible = true
-            footerField.set(packet, provider.getIChatComponent(footer))
-            footerField.isAccessible = false
+            packetClass.handle.getDeclaredField("a").modify { set(packet, provider.getIChatComponent(header)) }
+            packetClass.handle.getDeclaredField("b").modify { set(packet, provider.getIChatComponent(footer)) }
         }
 
         player.sendNMSPacket(packet)
@@ -602,5 +634,138 @@ object APIProvider : TitleManagerAPI {
 
     override fun setHeaderAndFooterWithPlaceholders(player: Player, header: String, footer: String) {
         setHeaderAndFooter(player, replaceText(player, header), replaceText(player, footer))
+    }
+
+    internal val scoreboards : MutableMap<Player, ScoreboardRepresentation> = ConcurrentHashMap()
+
+    override fun giveScoreboard(player: Player) {
+        val provider = NMSManager.getClassProvider()
+
+        val createPacket = provider.get("PacketPlayOutScoreboardObjective").handle.newInstance()
+        val displayPacket = provider.get("PacketPlayOutScoreboardDisplayObjective").handle.newInstance()
+
+        val createNameField = createPacket.javaClass.getDeclaredField("a")  // Objective Name   | String            | (String                       | A unique name for the objective)
+        val createModeField = createPacket.javaClass.getDeclaredField("d")  // Mode             | Byte              | (int                          | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
+        val createValueField = createPacket.javaClass.getDeclaredField("b") // Objective Value  | Optional String   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
+        val createTypeField = createPacket.javaClass.getDeclaredField("c")  // Type             | Optional String   | (EnumScoreboardHealthDisplay  | Only if mode is 0 or 2. “integer” or “hearts”)
+
+        val displayPositionField = displayPacket.javaClass.getDeclaredField("a")    // Position     | Byte      | (int      | The position of the scoreboard. 0: list, 1: sidebar, 2: below name.)
+        val displayNameField = displayPacket.javaClass.getDeclaredField("b")        // Score Name   | String    | (String   | 	The unique name for the scoreboard to be displayed.)
+
+        createNameField.modify { set(createPacket, "titlemanager") }
+        createModeField.modify { setInt(createPacket, 0) }
+        createValueField.modify { set(createPacket, "") }
+        createTypeField.modify { set(createPacket, provider.get("EnumScoreboardHealthDisplay").handle.enumConstants[0]) }
+
+        displayPositionField.modify { setInt(displayPacket, 1) }
+        displayNameField.modify { set(displayPacket, "titlemanager") }
+
+        player.sendNMSPacket(createPacket)
+        player.sendNMSPacket(displayPacket)
+
+        scoreboards.put(player, ScoreboardRepresentation())
+    }
+
+    override fun removeScoreboard(player: Player) {
+        val provider = NMSManager.getClassProvider()
+        val packet = provider.get("PacketPlayOutScoreboardObjective").handle.newInstance()
+
+        val nameField = packet.javaClass.getDeclaredField("a")  // Objective Name   | String    | (String   | A unique name for the objective)
+        val modeField = packet.javaClass.getDeclaredField("d")  // Mode             | Byte      | (int      | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
+
+        nameField.modify { nameField.set(packet, "titlemanager") }
+        modeField.modify { modeField.set(packet, 1) }
+
+        player.sendNMSPacket(packet)
+
+        scoreboards.remove(player)
+    }
+
+    override fun hasScoreboard(player: Player) = scoreboards.containsKey(player)
+
+    override fun setScoreboardTitle(player: Player, title: String) {
+        val provider = NMSManager.getClassProvider()
+        val packet = provider.get("PacketPlayOutScoreboardObjective").handle.newInstance()
+
+        val nameField = packet.javaClass.getDeclaredField("a")  // Objective Name   | String            | (String                       | A unique name for the objective)
+        val modeField = packet.javaClass.getDeclaredField("d")  // Mode             | Byte              | (int                          | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
+        val valueField = packet.javaClass.getDeclaredField("b") // Objective Value  | Optional String   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
+        val typeField = packet.javaClass.getDeclaredField("c")  // Type             | Optional String   | (EnumScoreboardHealthDisplay  | Only if mode is 0 or 2. “integer” or “hearts”)
+
+        nameField.modify { set(packet, "titlemanager") }
+        modeField.modify { setInt(packet, 2) }
+
+        if (title.length > 32) {
+            valueField.modify { set(packet, title.substring(0, 32)) }
+        } else {
+            valueField.modify { set(packet, title) }
+        }
+
+
+        typeField.modify { set(packet, provider.get("EnumScoreboardHealthDisplay").handle.enumConstants[0]) }
+
+        player.sendNMSPacket(packet)
+
+        scoreboards[player]?.title = title
+    }
+
+    override fun setScoreboardTitleWithPlaceholders(player: Player, title: String) = setScoreboardTitle(player, replaceText(player, title))
+
+    override fun getScoreboardTitle(player: Player) = scoreboards[player]?.title
+
+    override fun setScoreboardValue(player: Player, index: Int, value: String) {
+        if (index < 1 || index > 15) throw IllegalArgumentException("Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index")
+
+        val provider = NMSManager.getClassProvider()
+        val packet = provider.get("PacketPlayOutScoreboardScore").handle.newInstance()
+
+        removeScoreboardValue(player, index)
+
+        val scoreNameField = packet.javaClass.getDeclaredField("a")     // Score Name       | String            | (String               | The name of the score to be updated or removed)
+        val actionField = packet.javaClass.getDeclaredField("d")        // Action           | Byte              | (EnumScoreboardAction | 0 to create/update an item. 1 to remove an item.)
+        val objectiveNameField = packet.javaClass.getDeclaredField("b") // Objective Name   | String            | (String               | The name of the objective the score belongs to)
+        val valueField = packet.javaClass.getDeclaredField("c")         // Value            | Optional VarInt   | (int                  | The score to be displayed next to the entry. Only sent when Action does not equal 1.)
+
+        if (value.length > 40) {
+            scoreNameField.modify { set(packet, value.substring(0, 40)) }
+        } else {
+            scoreNameField.modify { set(packet, value) }
+        }
+
+        actionField.modify { set(packet, provider.get("EnumScoreboardAction").handle.enumConstants[0]) }
+        objectiveNameField.modify { set(packet, "titlemanager") }
+        valueField.modify { setInt(packet, index * -1) }
+
+        player.sendNMSPacket(packet)
+
+        scoreboards[player]?.set(index, value)
+    }
+
+    override fun setScoreboardValueWithPlaceholders(player: Player, index: Int, value: String) = setScoreboardValue(player, index, replaceText(player, value))
+
+    override fun getScoreboardValue(player: Player, index: Int): String? {
+        if (index < 1 || index > 15) throw IllegalArgumentException("Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index")
+
+        return scoreboards[player]?.get(index)
+    }
+
+    override fun removeScoreboardValue(player: Player, index: Int) {
+        if (index < 1 || index > 15) throw IllegalArgumentException("Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index")
+        if (scoreboards[player]?.get(index) == null) return
+
+        val provider = NMSManager.getClassProvider()
+        val packet = provider.get("PacketPlayOutScoreboardScore").handle.newInstance()
+
+        val scoreNameField = packet.javaClass.getDeclaredField("a")     // Score Name       | String            | (String               | The name of the score to be updated or removed)
+        val actionField = packet.javaClass.getDeclaredField("d")        // Action           | Byte              | (EnumScoreboardAction | 0 to create/update an item. 1 to remove an item.)
+        val objectiveNameField = packet.javaClass.getDeclaredField("b") // Objective Name   | String            | (String               | The name of the objective the score belongs to)
+
+        scoreNameField.modify { set(packet, scoreboards[player]!!.get(index)) }
+        actionField.modify { set(packet, provider.get("EnumScoreboardAction").handle.enumConstants[1]) }
+        objectiveNameField.modify { set(packet, "titlemanager") }
+
+        player.sendNMSPacket(packet)
+
+        scoreboards[player]?.remove(index)
     }
 }

@@ -146,3 +146,31 @@ fun Player.clearTitle() = pluginInstance.clearTitle(this)
 fun Player.clearSubtitle() = pluginInstance.clearSubtitle(this)
 
 fun Player.clearActionbar() = pluginInstance.clearActionbar(this)
+
+fun Player.giveScoreboard() = pluginInstance.giveScoreboard(this)
+
+fun Player.removeScoreboard() = pluginInstance.removeScoreboard(this)
+
+fun Player.hasScoreboard() = pluginInstance.hasScoreboard(this)
+
+fun Player.setScoreboardTitle(title: String, withPlaceholders: Boolean) {
+    if (withPlaceholders) {
+        pluginInstance.setScoreboardTitleWithPlaceholders(this, title)
+    } else {
+        pluginInstance.setScoreboardTitle(this, title)
+    }
+}
+
+fun Player.getScoreboardTitle() = pluginInstance.getScoreboardTitle(this)
+
+fun Player.setScoreboardValue(index: Int, value: String, withPlaceholders: Boolean) {
+    if (withPlaceholders) {
+        pluginInstance.setScoreboardValueWithPlaceholders(this, index, value)
+    } else {
+        pluginInstance.setScoreboardValue(this, index, value)
+    }
+}
+
+fun Player.getScoreboardValue(index: Int) = pluginInstance.getScoreboardValue(this, index)
+
+fun Player.removeScoreboardValue(index: Int) = pluginInstance.removeScoreboardValue(this, index)

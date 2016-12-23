@@ -6,7 +6,7 @@ var marquee = function(text, index) {
     var width = 0;
 
     var fadeIn = 0;
-    var stay = 5;
+    var stay = 2;
     var fadeOut = 0;
 
     if (hasTimings(text)) {
