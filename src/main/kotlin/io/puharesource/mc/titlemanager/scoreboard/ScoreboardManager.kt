@@ -1,6 +1,5 @@
 package io.puharesource.mc.titlemanager.scoreboard
 
-import io.puharesource.mc.titlemanager.debug
 import io.puharesource.mc.titlemanager.extensions.modify
 import io.puharesource.mc.titlemanager.reflections.NMSManager
 import io.puharesource.mc.titlemanager.reflections.sendNMSPacket
@@ -15,47 +14,31 @@ object ScoreboardManager {
     fun startUpdateTask(player: Player) {
         if (playerScoreboards.containsKey(player) && !playerScoreboardUpdateTasks.containsKey(player)) {
             playerScoreboardUpdateTasks[player] = AsyncScheduler.schedule({
-                debug("1")
                 val scoreboard = playerScoreboards[player]
 
-                debug("2")
                 if (scoreboard == null) {
-                    debug("3")
                     stopUpdateTask(player)
-                    debug("4")
                     return@schedule
                 }
 
-                debug("5")
                 if (!scoreboard.isUpdatePending.get()) {
-                    debug("6")
                     return@schedule
                 }
 
-                debug("7")
                 createScoreboardWithName(player, scoreboard.otherScoreboardName)
-                debug("8")
                 setScoreboardTitleWithName(player, scoreboard.title, scoreboard.otherScoreboardName)
 
-                debug("9")
                 (1..15).mapNotNull { scoreboard.get(it) }.forEachIndexed { index, text ->
-                    debug("10 - $index | $text")
                     setScoreboardValueWithName(player, index + 1, text, scoreboard.otherScoreboardName)
                 }
 
-                debug("11")
                 scoreboard.isUpdatePending.set(false)
 
-                debug("12")
                 displayScoreboardWithName(player, scoreboard.otherScoreboardName)
 
-                debug("13")
                 scoreboard.isUsingPrimaryBoard.set(!scoreboard.isUsingPrimaryBoard.get())
 
-                debug("14")
                 removeScoreboardWithName(player, scoreboard.otherScoreboardName)
-
-                debug("15")
                 createScoreboardWithName(player, scoreboard.otherScoreboardName)
             }, 1, 1)
         }
