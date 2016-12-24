@@ -24,6 +24,7 @@ import io.puharesource.mc.titlemanager.placeholder.PlaceholderAPIHook
 import io.puharesource.mc.titlemanager.reflections.NMSManager
 import io.puharesource.mc.titlemanager.reflections.TitleTypeMapper
 import io.puharesource.mc.titlemanager.reflections.sendNMSPacket
+import io.puharesource.mc.titlemanager.scoreboard.ScoreboardManager
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardRepresentation
 import io.puharesource.mc.titlemanager.script.ScriptManager
 import me.clip.placeholderapi.PlaceholderAPI
@@ -636,109 +637,45 @@ object APIProvider : TitleManagerAPI {
         setHeaderAndFooter(player, replaceText(player, header), replaceText(player, footer))
     }
 
-    internal val scoreboards : MutableMap<Player, ScoreboardRepresentation> = ConcurrentHashMap()
+    // Scoreboard
 
     override fun giveScoreboard(player: Player) {
-        val provider = NMSManager.getClassProvider()
+        if (!hasScoreboard(player)) {
+            ScoreboardManager.createScoreboardWithName(player, "titlemanager1")
+            ScoreboardManager.createScoreboardWithName(player, "titlemanager2")
 
-        val createPacket = provider.get("PacketPlayOutScoreboardObjective").handle.newInstance()
-        val displayPacket = provider.get("PacketPlayOutScoreboardDisplayObjective").handle.newInstance()
-
-        val createNameField = createPacket.javaClass.getDeclaredField("a")  // Objective Name   | String            | (String                       | A unique name for the objective)
-        val createModeField = createPacket.javaClass.getDeclaredField("d")  // Mode             | Byte              | (int                          | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
-        val createValueField = createPacket.javaClass.getDeclaredField("b") // Objective Value  | Optional String   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
-        val createTypeField = createPacket.javaClass.getDeclaredField("c")  // Type             | Optional String   | (EnumScoreboardHealthDisplay  | Only if mode is 0 or 2. “integer” or “hearts”)
-
-        val displayPositionField = displayPacket.javaClass.getDeclaredField("a")    // Position     | Byte      | (int      | The position of the scoreboard. 0: list, 1: sidebar, 2: below name.)
-        val displayNameField = displayPacket.javaClass.getDeclaredField("b")        // Score Name   | String    | (String   | 	The unique name for the scoreboard to be displayed.)
-
-        createNameField.modify { set(createPacket, "titlemanager") }
-        createModeField.modify { setInt(createPacket, 0) }
-        createValueField.modify { set(createPacket, "") }
-        createTypeField.modify { set(createPacket, provider.get("EnumScoreboardHealthDisplay").handle.enumConstants[0]) }
-
-        displayPositionField.modify { setInt(displayPacket, 1) }
-        displayNameField.modify { set(displayPacket, "titlemanager") }
-
-        player.sendNMSPacket(createPacket)
-        player.sendNMSPacket(displayPacket)
-
-        scoreboards.put(player, ScoreboardRepresentation())
+            ScoreboardManager.playerScoreboards.put(player, ScoreboardRepresentation())
+            ScoreboardManager.startUpdateTask(player)
+        }
     }
 
     override fun removeScoreboard(player: Player) {
-        val provider = NMSManager.getClassProvider()
-        val packet = provider.get("PacketPlayOutScoreboardObjective").handle.newInstance()
+        if (hasScoreboard(player)) {
+            ScoreboardManager.removeScoreboardWithName(player, "titlemanager1")
+            ScoreboardManager.removeScoreboardWithName(player, "titlemanager2")
 
-        val nameField = packet.javaClass.getDeclaredField("a")  // Objective Name   | String    | (String   | A unique name for the objective)
-        val modeField = packet.javaClass.getDeclaredField("d")  // Mode             | Byte      | (int      | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
-
-        nameField.modify { nameField.set(packet, "titlemanager") }
-        modeField.modify { modeField.set(packet, 1) }
-
-        player.sendNMSPacket(packet)
-
-        scoreboards.remove(player)
+            ScoreboardManager.playerScoreboards.remove(player)
+            ScoreboardManager.stopUpdateTask(player)
+        }
     }
 
-    override fun hasScoreboard(player: Player) = scoreboards.containsKey(player)
+    override fun hasScoreboard(player: Player) = ScoreboardManager.playerScoreboards.containsKey(player)
 
     override fun setScoreboardTitle(player: Player, title: String) {
-        val provider = NMSManager.getClassProvider()
-        val packet = provider.get("PacketPlayOutScoreboardObjective").handle.newInstance()
+        ScoreboardManager.setScoreboardTitleWithName(player, title, "titlemanager1")
+        ScoreboardManager.setScoreboardTitleWithName(player, title, "titlemanager2")
 
-        val nameField = packet.javaClass.getDeclaredField("a")  // Objective Name   | String            | (String                       | A unique name for the objective)
-        val modeField = packet.javaClass.getDeclaredField("d")  // Mode             | Byte              | (int                          | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
-        val valueField = packet.javaClass.getDeclaredField("b") // Objective Value  | Optional String   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
-        val typeField = packet.javaClass.getDeclaredField("c")  // Type             | Optional String   | (EnumScoreboardHealthDisplay  | Only if mode is 0 or 2. “integer” or “hearts”)
-
-        nameField.modify { set(packet, "titlemanager") }
-        modeField.modify { setInt(packet, 2) }
-
-        if (title.length > 32) {
-            valueField.modify { set(packet, title.substring(0, 32)) }
-        } else {
-            valueField.modify { set(packet, title) }
-        }
-
-
-        typeField.modify { set(packet, provider.get("EnumScoreboardHealthDisplay").handle.enumConstants[0]) }
-
-        player.sendNMSPacket(packet)
-
-        scoreboards[player]?.title = title
+        ScoreboardManager.playerScoreboards[player]?.title = title
     }
 
     override fun setScoreboardTitleWithPlaceholders(player: Player, title: String) = setScoreboardTitle(player, replaceText(player, title))
 
-    override fun getScoreboardTitle(player: Player) = scoreboards[player]?.title
+    override fun getScoreboardTitle(player: Player) = ScoreboardManager.playerScoreboards[player]?.title
 
     override fun setScoreboardValue(player: Player, index: Int, value: String) {
         if (index < 1 || index > 15) throw IllegalArgumentException("Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index")
 
-        val provider = NMSManager.getClassProvider()
-        val packet = provider.get("PacketPlayOutScoreboardScore").handle.newInstance()
-
-        removeScoreboardValue(player, index)
-
-        val scoreNameField = packet.javaClass.getDeclaredField("a")     // Score Name       | String            | (String               | The name of the score to be updated or removed)
-        val actionField = packet.javaClass.getDeclaredField("d")        // Action           | Byte              | (EnumScoreboardAction | 0 to create/update an item. 1 to remove an item.)
-        val objectiveNameField = packet.javaClass.getDeclaredField("b") // Objective Name   | String            | (String               | The name of the objective the score belongs to)
-        val valueField = packet.javaClass.getDeclaredField("c")         // Value            | Optional VarInt   | (int                  | The score to be displayed next to the entry. Only sent when Action does not equal 1.)
-
-        if (value.length > 40) {
-            scoreNameField.modify { set(packet, value.substring(0, 40)) }
-        } else {
-            scoreNameField.modify { set(packet, value) }
-        }
-
-        actionField.modify { set(packet, provider.get("EnumScoreboardAction").handle.enumConstants[0]) }
-        objectiveNameField.modify { set(packet, "titlemanager") }
-        valueField.modify { setInt(packet, index * -1) }
-
-        player.sendNMSPacket(packet)
-
-        scoreboards[player]?.set(index, value)
+        ScoreboardManager.playerScoreboards[player]?.set(index, value)
     }
 
     override fun setScoreboardValueWithPlaceholders(player: Player, index: Int, value: String) = setScoreboardValue(player, index, replaceText(player, value))
@@ -746,26 +683,12 @@ object APIProvider : TitleManagerAPI {
     override fun getScoreboardValue(player: Player, index: Int): String? {
         if (index < 1 || index > 15) throw IllegalArgumentException("Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index")
 
-        return scoreboards[player]?.get(index)
+        return ScoreboardManager.playerScoreboards[player]?.get(index)
     }
 
     override fun removeScoreboardValue(player: Player, index: Int) {
         if (index < 1 || index > 15) throw IllegalArgumentException("Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index")
-        if (scoreboards[player]?.get(index) == null) return
 
-        val provider = NMSManager.getClassProvider()
-        val packet = provider.get("PacketPlayOutScoreboardScore").handle.newInstance()
-
-        val scoreNameField = packet.javaClass.getDeclaredField("a")     // Score Name       | String            | (String               | The name of the score to be updated or removed)
-        val actionField = packet.javaClass.getDeclaredField("d")        // Action           | Byte              | (EnumScoreboardAction | 0 to create/update an item. 1 to remove an item.)
-        val objectiveNameField = packet.javaClass.getDeclaredField("b") // Objective Name   | String            | (String               | The name of the objective the score belongs to)
-
-        scoreNameField.modify { set(packet, scoreboards[player]!!.get(index)) }
-        actionField.modify { set(packet, provider.get("EnumScoreboardAction").handle.enumConstants[1]) }
-        objectiveNameField.modify { set(packet, "titlemanager") }
-
-        player.sendNMSPacket(packet)
-
-        scoreboards[player]?.remove(index)
+        ScoreboardManager.playerScoreboards[player]?.remove(index)
     }
 }

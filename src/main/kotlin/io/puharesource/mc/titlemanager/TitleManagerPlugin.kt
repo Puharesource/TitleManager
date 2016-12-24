@@ -24,6 +24,7 @@ import io.puharesource.mc.titlemanager.placeholder.VaultHook
 import io.puharesource.mc.titlemanager.reflections.NMSManager
 import io.puharesource.mc.titlemanager.reflections.getPing
 import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler
+import io.puharesource.mc.titlemanager.scoreboard.ScoreboardManager
 import io.puharesource.mc.titlemanager.script.ScriptManager
 import io.puharesource.mc.titlemanager.web.UpdateChecker
 import org.bukkit.ChatColor
@@ -76,10 +77,15 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     }
 
     override fun onDisable() {
+        AsyncScheduler.cancelAll()
+
         server.onlinePlayers.forEach {
             APIProvider.removeAllRunningAnimations(it)
-            AsyncScheduler.cancelAll()
+            it.removeScoreboard()
         }
+
+        ScoreboardManager.playerScoreboards.clear()
+        ScoreboardManager.playerScoreboardUpdateTasks.clear()
     }
 
     // Override default config methods.
@@ -98,12 +104,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     fun reloadPlugin() {
         UpdateChecker.stop()
 
-        server.onlinePlayers.forEach {
-            APIProvider.removeAllRunningAnimations(it)
-            it.removeScoreboard()
-        }
-
-        AsyncScheduler.cancelAll()
+        onDisable()
 
         saveDefaultConfig()
 
@@ -417,18 +418,6 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             toFooterAnimation(parts, this, withPlaceholders = true).start()
         }
 
-        fun Player.setScoreboardTitleFromText(text: String) {
-            val parts = toAnimationParts(text)
-
-            // TODO: toScoreboardTitleAnimation
-        }
-
-        fun Player.setScoreboardValueFromText(index: Int, text: String) {
-            val parts = toAnimationParts(text)
-
-            // TODO: toScoreboardValueAnimation
-        }
-
         // Notify administrators joining the server of the update.
         observeEvent(events = PlayerJoinEvent::class.java)
                 .filter { config.getBoolean("check-for-updates") }
@@ -540,7 +529,10 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         observeEvent(events = PlayerQuitEvent::class.java)
                 .map { it.player }
                 .filter { APIProvider.hasScoreboard(it) }
-                .subscribe { APIProvider.scoreboards.remove(it) }
+                .subscribe {
+                    ScoreboardManager.playerScoreboards.remove(it)
+                    ScoreboardManager.stopUpdateTask(it)
+                }
 
         // End all running animations when they quit the server
         observeEvent(events = PlayerQuitEvent::class.java)
