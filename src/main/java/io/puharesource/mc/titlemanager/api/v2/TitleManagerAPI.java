@@ -316,10 +316,43 @@ public interface TitleManagerAPI {
      */
     SendableAnimation toFooterAnimation(Animation animation, Player player, boolean withPlaceholders);
 
-    // TODO: Write documentation
+    /**
+     * Creates a {@link SendableAnimation} that sets the title for the player's scoreboard.
+     * <p></p>
+     * If <code>withPlaceholders</code> is true, placeholders will be replaced.
+     *
+     * @param animation         The animation to be used.
+     * @param player            The player the {@link SendableAnimation} is associated with.
+     * @param withPlaceholders  Whether or not placeholders should be replaced.
+     *
+     * @see #toScoreboardTitleAnimation(List, Player, boolean)
+     * @see #toScoreboardValueAnimation(Animation, Player, int, boolean)
+     * @see #toScoreboardValueAnimation(List, Player, int, boolean)
+     *
+     * @return The {@link SendableAnimation} instance associated with the given player.
+     *
+     * @since 2.0.0
+     */
     SendableAnimation toScoreboardTitleAnimation(Animation animation, Player player, boolean withPlaceholders);
 
-    // TODO: Write documentation
+    /**
+     * Creates a {@link SendableAnimation} that sets the text value for the player's scoreboard at the given index.
+     * <p></p>
+     * If <code>withPlaceholders</code> is true, placeholders will be replaced.
+     *
+     * @param animation         The animation to be used.
+     * @param player            The player the {@link SendableAnimation} is associated with.
+     * @param index             The index the text value should be set to.
+     * @param withPlaceholders  Whether or not placeholders should be replaced.
+     *
+     * @return The {@link SendableAnimation} instance associated with the given player.
+     *
+     * @see #toScoreboardTitleAnimation(Animation, Player, boolean)
+     * @see #toScoreboardTitleAnimation(List, Player, boolean)
+     * @see #toScoreboardValueAnimation(List, Player, int, boolean)
+     *
+     * @since 2.0.0
+     */
     SendableAnimation toScoreboardValueAnimation(Animation animation, Player player, int index, boolean withPlaceholders);
 
     /**
@@ -452,10 +485,43 @@ public interface TitleManagerAPI {
      */
     SendableAnimation toFooterAnimation(List<AnimationPart> parts, Player player, boolean withPlaceholders);
 
-    // TODO: Write documentation
+    /**
+     * Creates a {@link SendableAnimation} that sets the title for the player's scoreboard.
+     * <p></p>
+     * If <code>withPlaceholders</code> is true, placeholders will be replaced.
+     *
+     * @param parts             The animation parts to be used.
+     * @param player            The player the {@link List} of {@link AnimationPart}s is associated with.
+     * @param withPlaceholders  Whether or not placeholders should be replaced.
+     *
+     * @see #toScoreboardTitleAnimation(Animation, Player, boolean)
+     * @see #toScoreboardValueAnimation(Animation, Player, int, boolean)
+     * @see #toScoreboardValueAnimation(List, Player, int, boolean)
+     *
+     * @return The {@link List} of {@link AnimationPart}s associated with the given player.
+     *
+     * @since 2.0.0
+     */
     SendableAnimation toScoreboardTitleAnimation(List<AnimationPart> parts, Player player, boolean withPlaceholders);
 
-    // TODO: Write documentation
+    /**
+     * Creates a {@link SendableAnimation} that sets the text value for the player's scoreboard at the given index.
+     * <p></p>
+     * If <code>withPlaceholders</code> is true, placeholders will be replaced.
+     *
+     * @param parts         The animation to be used.
+     * @param player            The player the {@link SendableAnimation} is associated with.
+     * @param index             The index the text value should be set to.
+     * @param withPlaceholders  Whether or not placeholders should be replaced.
+     *
+     * @return The {@link SendableAnimation} instance associated with the given player.
+     *
+     * @see #toScoreboardTitleAnimation(Animation, Player, boolean)
+     * @see #toScoreboardTitleAnimation(List, Player, boolean)
+     * @see #toScoreboardValueAnimation(Animation, Player, int, boolean)
+     *
+     * @since 2.0.0
+     */
     SendableAnimation toScoreboardValueAnimation(List<AnimationPart> parts, Player player, int index, boolean withPlaceholders);
 
     /**
@@ -1158,33 +1224,170 @@ public interface TitleManagerAPI {
 
     // Sidebar
 
-    // TODO: Write documentation
+    /**
+     * Gives the {@link Player} a scoreboard as a sidebar.
+     * <p>
+     * The scoreboard won't be displayed until at least one value has been added.
+     *
+     * @param player The player the scoreboard should be given to.
+     *
+     * @see #removeScoreboard(Player)
+     * @see #hasScoreboard(Player)
+     * @see #setScoreboardValue(Player, int, String)
+     * @see #setScoreboardValueWithPlaceholders(Player, int, String)
+     *
+     * @since 2.0.0
+     */
     void giveScoreboard(Player player);
 
-    // TODO: Write documentation
+    /**
+     * Removes the scoreboard sidebar from the given player.
+     *
+     * @param player The player the scoreboard should be removed from.
+     *
+     * @see #giveScoreboard(Player)
+     * @see #hasScoreboard(Player)
+     *
+     * @since 2.0.0
+     */
     void removeScoreboard(Player player);
 
-    // TODO: Write documentation
+    /**
+     * Checks whether or not the given {@link Player} has a scoreboard assigned.
+     *
+     * @param player The player to check for.
+     *
+     * @return Whether or not the player has a scoreboard assigned.
+     *
+     * @see #giveScoreboard(Player)
+     * @see #removeScoreboard(Player)
+     *
+     * @since 2.0.0.
+     */
     boolean hasScoreboard(Player player);
 
-    // TODO: Write documentation
+    /**
+     * Sets the title of the given {@link Player}'s scoreboard, if they have one assigned.
+     *
+     * @param player The player to set the title for.
+     * @param title The title to be set. (Will be trimmed to a maximum of 32 characters)
+     *
+     * @see #giveScoreboard(Player)
+     * @see #hasScoreboard(Player)
+     *
+     * @see #setScoreboardTitleWithPlaceholders(Player, String)
+     * @see #getScoreboardTitle(Player)
+     *
+     * @since 2.0.0
+     */
     void setScoreboardTitle(Player player, String title);
 
-    // TODO: Write documentation
+    /**
+     * Sets the title of the given {@link Player}'s scoreboard, if they have one assigned.
+     * <p>
+     * If placeholders are available, the title will try to replace them.
+     *
+     * @param player The player to set the title for.
+     * @param title The title to be set. (Will be trimmed to a maximum of 32 characters)
+     *
+     * @see #giveScoreboard(Player)
+     * @see #hasScoreboard(Player)
+     *
+     * @see #setScoreboardTitle(Player, String)
+     * @see #getScoreboardTitle(Player)
+     *
+     * @since 2.0.0
+     */
     void setScoreboardTitleWithPlaceholders(Player player, String title);
 
-    // TODO: Write documentation
+    /**
+     * Gets the title of the given {@link Player}'s scoreboard.
+     *
+     * @param player The player to get the title from.
+     *
+     * @return The title of the player's scoreboard, if no scoreboard is assigned this will return null.
+     *
+     * @see #giveScoreboard(Player)
+     * @see #hasScoreboard(Player)
+     *
+     * @see #setScoreboardTitle(Player, String)
+     * @see #setScoreboardTitleWithPlaceholders(Player, String)
+     *
+     * @since 2.0.0
+     */
     String getScoreboardTitle(Player player);
 
-    // TODO: Write documentation
+    /**
+     * Sets the text value of the given {@link Player}'s scoreboard at the given index.
+     *
+     * @param player The player to set the text value for.
+     * @param index The index at which the text should be set. 1-15 (1 and 15 inclusive)
+     * @param value The text value that should be set. (will be trimmed to a maximum of 40 characters)
+     *
+     * @see #giveScoreboard(Player)
+     * @see #hasScoreboard(Player)
+     *
+     * @see #setScoreboardValueWithPlaceholders(Player, int, String)
+     * @see #getScoreboardValue(Player, int)
+     * @see #removeScoreboard(Player)
+     *
+     * @since 2.0.0
+     */
     void setScoreboardValue(Player player, int index, String value);
 
-    // TODO: Write documentation
+    /**
+     * Sets the text value of the given {@link Player}'s scoreboard at the given index.
+     * <p>
+     * If placeholders are available, the value will try to replace them.
+     *
+     * @param player The player to set the text value for.
+     * @param index The index at which the text should be set. 1-15 (1 and 15 inclusive)
+     * @param value The text value that should be set.
+     *
+     * @see #giveScoreboard(Player)
+     * @see #hasScoreboard(Player)
+     *
+     * @see #setScoreboardValue(Player, int, String)
+     * @see #getScoreboardValue(Player, int)
+     * @see #removeScoreboardValue(Player, int)
+     *
+     * @since 2.0.0
+     */
     void setScoreboardValueWithPlaceholders(Player player, int index, String value);
 
-    // TODO: Write documentation
+    /**
+     * Gets the text value of the given {@link Player}'s scoreboard at the given index.
+     *
+     * @param player The player to get the text value from.
+     * @param index The index at which the text value is present.
+     *
+     * @return The text value of the given index. If no text value is present, this will return null.
+     *
+     * @see #giveScoreboard(Player)
+     * @see #hasScoreboard(Player)
+     *
+     * @see #setScoreboardValue(Player, int, String)
+     * @see #setScoreboardValueWithPlaceholders(Player, int, String)
+     * @see #removeScoreboardValue(Player, int)
+     *
+     * @since 2.0.0
+     */
     String getScoreboardValue(Player player, int index);
 
-    // TODO: Write documentation
+    /**
+     * Removes the text value of the given {@link Player}'s scoreboardat the given index.
+     *
+     * @param player The player to remove the text value from.
+     * @param index  The index at which the text value should be removed.
+     *
+     * @see #giveScoreboard(Player)
+     * @see #hasScoreboard(Player)
+     *
+     * @see #setScoreboardValue(Player, int, String)
+     * @see #setScoreboardValueWithPlaceholders(Player, int, String)
+     * @see #getScoreboardValue(Player, int)
+     *
+     * @since 2.0.0
+     */
     void removeScoreboardValue(Player player, int index);
 }
