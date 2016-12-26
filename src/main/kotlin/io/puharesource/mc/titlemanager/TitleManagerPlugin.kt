@@ -107,6 +107,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         onDisable()
 
         saveDefaultConfig()
+        reloadConfig()
 
         registeredAnimations.clear()
         ScriptManager.registeredScripts.clear()
