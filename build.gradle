@@ -50,7 +50,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 task jitpackJavadocJar(type: Jar, dependsOn: javadoc) {
     archiveName 'javadoc.jar'
     from javadoc.destinationDir
-    from(sourceSets.main.java.srcDirs) {
+    from(compileJava) {
         include 'io/puharesource/mc/titlemanager/api/v2/**'
     }
 }
@@ -63,7 +63,7 @@ task sourcesJar(type: Jar) {
 }
 
 task apiJar(type: Jar) {
-    from(sourceSets.main.java.srcDirs) {
+    from(compileJava) {
         include 'io/puharesource/mc/titlemanager/api/v2/**'
     }
 
