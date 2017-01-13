@@ -346,14 +346,16 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 .filter { it.extension.equals("txt", ignoreCase = true) }
                 .forEach { registeredAnimations.put(it.nameWithoutExtension, fromTextFile(it)) }
 
+        ScriptManager.reloadInternals()
+
         // Load JavaScript based animations
         animationsFolder.listFiles()
                 .filter { it.isFile }
                 .filter { it.extension.equals("js", ignoreCase = true) }
                 .forEach {
                     val name = it.nameWithoutExtension
-                    ScriptManager.addJavaScript(it)
 
+                    ScriptManager.addJavaScript(it)
                     ScriptManager.registeredScripts.add(name)
                 }
     }

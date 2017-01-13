@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.script
 
-import com.google.common.io.Resources.getResource
+import com.google.common.io.Resources
 import io.puharesource.mc.titlemanager.APIProvider
 import io.puharesource.mc.titlemanager.animations.StandardAnimationFrame
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
@@ -15,13 +15,19 @@ import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
 object ScriptManager {
-    private val javaScriptEngine : ScriptEngine = ScriptEngineManager().getEngineByName("nashorn")
+    private var javaScriptEngine : ScriptEngine = ScriptEngineManager().getEngineByName("nashorn")
     internal val registeredScripts : MutableSet<String> = ConcurrentSkipListSet(String.CASE_INSENSITIVE_ORDER)
 
     init {
+        reloadInternals()
+    }
+
+    fun reloadInternals() {
+        javaScriptEngine = ScriptEngineManager().getEngineByName("nashorn")
+
         fun addResource(file: String) {
             if (isTesting) {
-                javaScriptEngine.eval(getResource(file).readText())
+                javaScriptEngine.eval(Resources.getResource(file).readText())
             } else {
                 javaScriptEngine.eval(pluginInstance.getResource(file).reader())
             }
