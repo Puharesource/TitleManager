@@ -3,25 +3,9 @@ package io.puharesource.mc.titlemanager.scoreboard
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
-class ScoreboardRepresentation {
-    private val lines : MutableMap<Int, String>
-
+class ScoreboardRepresentation(var title: String = "", private val lines: MutableMap<Int, String> = ConcurrentHashMap()) {
     val isUpdatePending = AtomicBoolean(false)
     val isUsingPrimaryBoard = AtomicBoolean(true)
-
-    constructor(title: String = "", lines: MutableMap<Int, String> = ConcurrentHashMap()) {
-        this.title = title
-        this.lines = lines
-    }
-
-    var title : String
-        set(value) {
-            if (value.length > 32) {
-                field = value.substring(0, 32)
-            } else {
-                field = value
-            }
-        }
 
     val size : Int
         get() = lines.size

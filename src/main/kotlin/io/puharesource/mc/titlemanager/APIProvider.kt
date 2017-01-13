@@ -53,6 +53,7 @@ object APIProvider : TitleManagerAPI {
     internal val animationPattern = """[$][{]([^}]+\b)[}]""".toRegex()
     internal val variablePatternWithParameter = """[%][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
     internal val animationPatternWithParameter = """[$][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
+    internal val commandSplitPattern = """([<]nl[>])|(\\n)""".toRegex()
 
     // Running animations
 
@@ -157,7 +158,7 @@ object APIProvider : TitleManagerAPI {
 
         placeholdersInText
                 .filter { placeholderReplacers.containsKey(it) }
-                .map { Pair(it, placeholderReplacers[it]!!) }
+                .map { it to placeholderReplacers[it]!! }
                 .forEach { replacedText = replacedText.replace("%{${it.first}}", it.second(player), ignoreCase = true) }
 
         if (placeholderAPIEnabled) {
@@ -594,7 +595,7 @@ object APIProvider : TitleManagerAPI {
     override fun getHeader(player: Player) = playerListCache[player]?.first.orEmpty()
 
     override fun setHeader(player: Player, header: String) {
-        playerListCache.put(player, Pair(header, getFooter(player)))
+        playerListCache.put(player, header to getFooter(player))
         setHeaderAndFooter(player, header, getFooter(player))
     }
 
@@ -605,7 +606,7 @@ object APIProvider : TitleManagerAPI {
     override fun getFooter(player: Player) = playerListCache[player]?.second.orEmpty()
 
     override fun setFooter(player: Player, footer: String) {
-        playerListCache.put(player, Pair(getFooter(player), footer))
+        playerListCache.put(player, getFooter(player) to footer)
         setHeaderAndFooter(player, getHeader(player), footer)
     }
 
@@ -614,7 +615,7 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun setHeaderAndFooter(player: Player, header: String, footer: String) {
-        playerListCache.put(player, Pair(header, footer))
+        playerListCache.put(player, header to footer)
         val provider = NMSManager.getClassProvider()
         val packet : Any
 

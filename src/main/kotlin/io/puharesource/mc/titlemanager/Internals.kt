@@ -8,15 +8,9 @@ import rx.Scheduler
 import rx.schedulers.Schedulers
 import java.util.concurrent.Executor
 
-private var instance : TitleManagerPlugin? = null
-internal val pluginInstance : TitleManagerPlugin
-    get() {
-        if (instance == null) {
-            instance = Bukkit.getPluginManager().getPlugin("TitleManager") as TitleManagerPlugin
-        }
-
-        return instance!!
-    }
+internal val pluginInstance : TitleManagerPlugin by lazy {
+    Bukkit.getPluginManager().getPlugin("TitleManager") as TitleManagerPlugin
+}
 
 internal val isTesting : Boolean
     get() = Bukkit.getServer() == null

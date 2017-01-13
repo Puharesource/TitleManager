@@ -1,7 +1,7 @@
 package io.puharesource.mc.titlemanager.reflections
 
 import org.bukkit.Bukkit
-import java.util.*
+import java.util.TreeMap
 import java.util.regex.Pattern
 
 object NMSManager {
@@ -35,12 +35,13 @@ object NMSManager {
     fun getVersionIndex(version: String) = supportedVersions.getOrElse(version) { 4 }
 
     fun getClassProvider() : NMSClassProvider {
-        if (versionIndex == 0) return ProviderProtocolHack
-        if (versionIndex == 1) return Provider18
-        if (versionIndex == 2) return Provider183
-        if (versionIndex == 3) return Provider110
-        if (versionIndex == 4) return Provider110
-
-        return Provider110
+        when (versionIndex) {
+            0    -> return ProviderProtocolHack
+            1    -> return Provider18
+            2    -> return Provider183
+            3    -> return Provider110
+            4    -> return Provider110
+            else -> return Provider110
+        }
     }
 }

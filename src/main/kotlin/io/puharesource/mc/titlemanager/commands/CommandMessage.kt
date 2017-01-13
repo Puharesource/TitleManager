@@ -1,5 +1,7 @@
 package io.puharesource.mc.titlemanager.commands
 
+import io.puharesource.mc.titlemanager.APIProvider
+
 object CommandMessage : TMSubCommand("message",
         aliases = setOf("msg"),
         cmdExecutor = { cmd, sender, args, parameters -> commandExecutor(cmd, sender, args, parameters) {
@@ -11,21 +13,21 @@ object CommandMessage : TMSubCommand("message",
             val player = getPlayerAt(0)
 
             if (player == null) {
-                sendConfigMessage("invalid-player", Pair("player", args.first()))
+                sendConfigMessage("invalid-player", "player" to args.first())
                 return@commandExecutor
             }
 
             val message = getMessageFrom(1)
 
-            if (message.contains("\\n")) {
-                val parts = message.split("\\n", limit = 2)
+            if (message.contains(APIProvider.commandSplitPattern)) {
+                val parts = message.split(APIProvider.commandSplitPattern, limit = 2)
 
                 if (parts[1].isNotBlank()) {
                     if (parts[0].isBlank()) {
-                        sendConfigMessage("subtitle-sent", Pair("player", player.name), Pair("subtitle", parts[1]))
+                        sendConfigMessage("subtitle-sent", "player" to player.name, "subtitle" to parts[1])
                         player.sendSubtitle(parts[1], true)
                     } else {
-                        sendConfigMessage("both-sent", Pair("player", player.name), Pair("title", parts[0]), Pair("subtitle", parts[1]))
+                        sendConfigMessage("both-sent", "player" to player.name, "title" to parts[0], "subtitle" to parts[1])
                         player.sendTitles(parts[0], parts[1], true)
                     }
 
@@ -33,6 +35,6 @@ object CommandMessage : TMSubCommand("message",
                 }
             }
 
-            sendConfigMessage("title-sent", Pair("player", player.name), Pair("title", message))
+            sendConfigMessage("title-sent", "player" to player.name, "title" to message)
             player.sendTitle(message, true)
         }})

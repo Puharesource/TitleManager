@@ -10,6 +10,6 @@ object CommandScripts : TMSubCommand("scripts",
             val joiner = Joiner.on(pluginInstance.config.getString("messages.command-scripts.separator").orEmpty().color())
 
             sendConfigMessage("format",
-                    Pair("count", scripts.size.toString()),
-                    Pair("scripts", joiner.join(scripts)))
+                    "count" to scripts.size.toString(),
+                    "scripts" to joiner.join(scripts))
         }})

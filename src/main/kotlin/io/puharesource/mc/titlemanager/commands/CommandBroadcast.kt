@@ -1,5 +1,7 @@
 package io.puharesource.mc.titlemanager.commands
 
+import io.puharesource.mc.titlemanager.APIProvider
+
 object CommandBroadcast : TMSubCommand("broadcast",
         aliases = setOf("bc"),
         cmdExecutor = { cmd, sender, args, parameters -> commandExecutor(cmd, sender, args, parameters) {
@@ -8,18 +10,18 @@ object CommandBroadcast : TMSubCommand("broadcast",
                 return@commandExecutor
             }
 
-            if (message.contains("\\n")) {
-                val parts = message.split("\\n", limit = 2)
+            if (message.contains(APIProvider.commandSplitPattern)) {
+                val parts = message.split(APIProvider.commandSplitPattern, limit = 2)
 
                 val title = parts[0]
                 val subtitle = parts[1]
 
                 if (subtitle.isNotBlank()) {
                     if (title.isBlank()) {
-                        sendConfigMessage("subtitle-sent", Pair("subtitle", subtitle))
+                        sendConfigMessage("subtitle-sent", "subtitle" to subtitle)
                         broadcastSubtitle(subtitle)
                     } else {
-                        sendConfigMessage("both-sent", Pair("title", title), Pair("subtitle", subtitle))
+                        sendConfigMessage("both-sent", "title" to title, "subtitle" to subtitle)
                         broadcastTitles(title, subtitle)
                     }
 
@@ -27,6 +29,6 @@ object CommandBroadcast : TMSubCommand("broadcast",
                 }
             }
 
-            sendConfigMessage("title-sent", Pair("title", message))
+            sendConfigMessage("title-sent", "title" to message)
             broadcastTitle(message)
         }})

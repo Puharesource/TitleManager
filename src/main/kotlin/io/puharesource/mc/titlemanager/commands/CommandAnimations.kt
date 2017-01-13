@@ -10,6 +10,6 @@ object CommandAnimations : TMSubCommand("animations",
             val joiner = Joiner.on(pluginInstance.config.getString("messages.command-animations.separator").orEmpty().color())
 
             sendConfigMessage("format",
-                    Pair("count", animations.size.toString()),
-                    Pair("animations", joiner.join(animations)))
+                    "count" to animations.size.toString(),
+                    "animations" to joiner.join(animations))
         }})

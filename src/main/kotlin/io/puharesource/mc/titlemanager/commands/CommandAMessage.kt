@@ -11,12 +11,12 @@ object CommandAMessage : TMSubCommand("amessage",
             val player = getPlayerAt(0)
 
             if (player == null) {
-                sendConfigMessage("invalid-player", Pair("player", args.first()))
+                sendConfigMessage("invalid-player", "player" to args.first())
                 return@commandExecutor
             }
 
             val message = getMessageFrom(1)
 
-            sendConfigMessage("sent", Pair("player", player.name), Pair("title", message))
+            sendConfigMessage("sent", "player" to player.name, "title" to message)
             player.sendActionbar(message, checkForAnimations = true)
         }})

@@ -8,6 +8,6 @@ object CommandABroadcast : TMSubCommand("abroadcast",
                 return@commandExecutor
             }
 
-            sendConfigMessage("sent", Pair("title", message))
+            sendConfigMessage("sent", "title" to message)
             broadcastActionbar(message)
         }})
