@@ -6,7 +6,7 @@ var shine = function(text, index) {
     var getShineTextLength = function(text) {
         var match = getShinePattern().exec(text);
 
-        if (match != null) {
+        if (match !== null) {
             return match[3].length
         }
 
@@ -57,7 +57,7 @@ var shine = function(text, index) {
 
     var match = getShinePattern().exec(text);
 
-    if (match != null) {
+    if (match !== null) {
         mainColor = match[1];
         secondaryColor = match[2];
         text = match[3];

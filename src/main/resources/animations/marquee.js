@@ -20,7 +20,7 @@ var marquee = function(text, index) {
 
     var match = getMarqueePattern().exec(text);
 
-    if (match != null) {
+    if (match !== null) {
         width = parseInt(match[1]);
         text = match[2];
     }
