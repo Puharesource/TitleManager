@@ -75,7 +75,7 @@ If your plugin can run without TitleManager, then add the following line to your
 soft-depend: [TitleManager]
 ```
 
-# Getting the API instance
+### Getting the API instance
 Once you want to use TitleManager's API, you'll need an instance of `TitleManagerAPI`, which carries all of the methods available for TitleManager. I suggest getting the instance once you load your plugin and store it somewhere easily accessible, for this example I'll however just be storing it locally in the `onEnable` method.
 
 ##### Java
