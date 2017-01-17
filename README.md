@@ -11,7 +11,7 @@
         <img src="https://jitpack.io/v/Puharesource/TitleManager.svg"
              alt="Maven repository">
     </a>
-    <a href="https://jitpack.io/com/github/Puharesource/TitleManager/2.0.0-10/javadoc/">
+    <a href="https://jitpack.io/com/github/Puharesource/TitleManager/-SNAPSHOT/javadoc/">
         <img src="https://img.shields.io/badge/JitPack-javadoc--2.0.0-blue.svg"
              alt="Javadoc">
     </a>
@@ -29,52 +29,65 @@
 For Developers
 --------------
 
-**Gradle repository**
-````groovy
+### Getting the dependency
+You can get the latest snapshot releases by going over to JitPack here: https://jitpack.io/#Puharesource/TitleManager, but if you want to get official release go with the following repository and dependencies.  
+
+#### The Repository
+Example for Gradle:
+```groovy
 maven {
     name 'puharesource-repo'
     url 'http://repo.puha.io/nexus/content/repositories/releases/'
 }
-````
+```
 
-**Gradle dependency**
-````groovy
-compile group: 'io.puharesource.mc', name: 'TitleManager', version: '2.0.0'
-````
-
-**Maven repository**
-````xml
+Example for Maven:
+```xml
 <repository>
   <id>puha-repo</id>
   <url>http://repo.puha.io/nexus/content/repositories/releases/</url>
 </repository>
-````
+```
 
-**Maven dependency**
-````xml
+#### The dependency
+Example for Gradle:
+```groovy
+compile group: 'io.puharesource.mc', name: 'TitleManager', version: '2.0.0'
+```  
+
+Example for Maven
+```xml
 <dependency>
-  <groupId>com.github.Puharesource</groupId>
-  <artifactId>TitleManager</artifactId>
-  <version>2.0.0</version>
+   <groupId>io.puharesource.mc</groupId>
+   <artifactId>TitleManager</artifactId>
+   <version>2.0.0</version>
 </dependency>
-````
+```
 
----
-
-**Adding TitleManager as a plugin dependency**
-````yml
+### plugin.yml
+If your plugin can't run without TitleManager add the following line to your plugin.yml file.  
+```yaml
 depend: [TitleManager]
-````
-Alternatively, you can add as a soft dependency `softdepend: [TitleManager]` if you can live without it.
-Another alternative would be to check for the plugin within `onEnable()` inside of your Main class:
-````java
+```
+
+If your plugin can run without TitleManager, then add the following line to your plugin.yml file instead
+```yaml
+soft-depend: [TitleManager]
+```
+
+# Getting the API instance
+Once you want to use TitleManager's API, you'll need an instance of `TitleManagerAPI`, which carries all of the methods available for TitleManager. I suggest getting the instance once you load your plugin and store it somewhere easily accessible, for this example I'll however just be storing it locally in the `onEnable` method.
+
+##### Java
+```java
 @Override
 public void onEnable() {
-  if (getServer().getPluginManager().getPlugin("TitleManager") != null && getServer().getPluginManager().getPlugin("TitleManager").isEnabled())
-    getLogger().info("Successfully hooked into TitleManager!");
-  else {
-    getLogger().warning("Failed to hook into TitleManager, disabling plugin!");
-    getPluginLoader().disablePlugin(this);
-  }
+  TitleManagerAPI api = (TitleManagerAPI) Bukkit.getServer().getPluginManager().getPlugin("TitleManager");
 }
-````
+```
+
+##### Kotlin
+For kotlin I suggest using the `lazy` delegate for storing the instance of TitleManager globally.  
+```kotlin
+val titleManagerAPI : TitleManagerAPI by lazy { Bukkit.getServer().pluginManager.getPlugin("TitleManager") }
+```
