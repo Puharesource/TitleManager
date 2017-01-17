@@ -35,6 +35,8 @@ object BungeeCordManager {
                         val input = ByteStreams.newDataInput(message)
                         val subChannel = input.readUTF()
 
+                        println(subChannel)
+
                         when (subChannel) {
                             "GetServers" -> {
                                 val newServers = input.readUTF().split(", ").toSet()
@@ -43,22 +45,35 @@ object BungeeCordManager {
                                         .filterKeys { !newServers.contains(it) }
                                         .forEach { servers.remove(it.key) }
 
+                                newServers.filter { !servers.containsKey(it) }.forEach { servers[it] = ServerInfo(it, 0, -1) }
+
                                 servers.values.forEach { it.update() }
                             }
                             "GetServer" -> {
                                 val server = input.readUTF()
                                 currentServer = server
 
+                                println("$server is current server")
+
                                 if (!servers.containsKey(server)) {
+                                    println("Doesn't exist")
                                     servers.put(server, ServerInfo(server, Bukkit.getOnlinePlayers().size, Bukkit.getMaxPlayers()))
+                                } else {
+                                    servers[server]?.playerCount = Bukkit.getOnlinePlayers().size
                                 }
                             }
                             "PlayerCount" -> {
                                 val server = input.readUTF()
                                 val playerCount = input.readInt()
 
+                                println("$server = $playerCount")
+
                                 if (!servers.containsKey(server)) {
+                                    println("Doesn't exist")
                                     servers.put(server, ServerInfo(server, playerCount, -1))
+                                } else {
+                                    println("Exists")
+                                    servers[server]?.playerCount = playerCount
                                 }
                             }
                         }
