@@ -16,10 +16,10 @@ object NMSManager {
         supportedVersions.put("v1_8_R1", 1)
         supportedVersions.put("v1_8_R2", 2)
         supportedVersions.put("v1_8_R3", 2)
-        supportedVersions.put("v1_9_R1", 2)
-        supportedVersions.put("v1_9_R2", 2)
-        supportedVersions.put("v1_10_R1", 3)
-        supportedVersions.put("v1_11_R1", 4)
+        supportedVersions.put("v1_9_R1", 3)
+        supportedVersions.put("v1_9_R2", 3)
+        supportedVersions.put("v1_10_R1", 4)
+        supportedVersions.put("v1_11_R1", 5)
 
         val pkg: String = Bukkit.getServer().javaClass.`package`.name
         var version = pkg.substring(pkg.lastIndexOf(".") + 1)
@@ -39,8 +39,9 @@ object NMSManager {
             0    -> return ProviderProtocolHack
             1    -> return Provider18
             2    -> return Provider183
-            3    -> return Provider110
+            3    -> return Provider183
             4    -> return Provider110
+            5    -> return Provider110
             else -> return Provider110
         }
     }

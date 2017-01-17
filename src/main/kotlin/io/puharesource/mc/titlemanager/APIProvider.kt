@@ -561,7 +561,7 @@ object APIProvider : TitleManagerAPI {
     override fun sendActionbar(player: Player, text: String) {
         val provider = NMSManager.getClassProvider()
 
-        if (NMSManager.versionIndex >= 4) {
+        if (NMSManager.versionIndex >= 5) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(text))
         } else if (NMSManager.versionIndex == 0) {
             try {

@@ -20,7 +20,7 @@ enum class TitleTypeMapper constructor(private val oldIndex: Int = -1, private v
             val actions = provider.get("EnumTitleAction").handle.enumConstants
 
             // Anything below 1.11
-            if (NMSManager.versionIndex < 4) {
+            if (NMSManager.versionIndex < 5) {
                 return actions[oldIndex]
             }
 

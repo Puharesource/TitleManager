@@ -22,12 +22,19 @@ internal fun Player.isUsing17() : Boolean {
 }
 
 internal fun Player.sendNMSPacket(packet: Any) {
-    val networkManager = getNMSNetworkManager()
     val provider = NMSManager.getClassProvider()
 
-    provider.get("NetworkManager")
-            .getMethod("sendPacket", provider.get("Packet").handle)
-            .invoke(networkManager, packet)
+    if (NMSManager.versionIndex <= 2) {
+        val connection = getNMSPlayerConnection()
+
+        provider.get("PlayerConnection").getMethod("sendPacket", provider.get("Packet").handle).invoke(connection, packet)
+    } else {
+        val networkManager = getNMSNetworkManager()
+
+        networkManager.javaClass
+                .getMethod("sendPacket", provider.get("Packet").handle)
+                .invoke(networkManager, packet)
+    }
 }
 
 internal fun Player.getEntityPlayer() : Any {
