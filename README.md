@@ -53,7 +53,7 @@ compile group: 'io.puharesource.mc', name: 'TitleManager', version: '2.0.0'
 **Maven dependency**
 ````xml
 <dependency>
-  <groupId>io.puharesource.mc</groupId>
+  <groupId>com.github.Puharesource</groupId>
   <artifactId>TitleManager</artifactId>
   <version>2.0.0</version>
 </dependency>
