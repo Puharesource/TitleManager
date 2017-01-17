@@ -7,14 +7,14 @@ class ScoreboardRepresentation(var title: String = "", private val lines: Mutabl
     val isUpdatePending = AtomicBoolean(false)
     val isUsingPrimaryBoard = AtomicBoolean(true)
 
+    var name : String = System.nanoTime().toString()
+
+    fun generateNewScoreboardName() {
+        name = System.nanoTime().toString()
+    }
+
     val size : Int
         get() = lines.size
-
-    val currentScoreboardName : String
-        get() = "titlemanager${if (isUsingPrimaryBoard.get()) 1 else 2}"
-
-    val otherScoreboardName : String
-        get() = "titlemanager${if (isUsingPrimaryBoard.get()) 2 else 1}"
 
     fun get(index: Int) = lines[index]
 

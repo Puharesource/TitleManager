@@ -25,21 +25,25 @@ object ScoreboardManager {
                     return@schedule
                 }
 
-                createScoreboardWithName(player, scoreboard.otherScoreboardName)
-                setScoreboardTitleWithName(player, scoreboard.title, scoreboard.otherScoreboardName)
+                val currentScoreboardName = scoreboard.name
+
+                scoreboard.generateNewScoreboardName()
+                val newScoreboardName = scoreboard.name
+
+                createScoreboardWithName(player, newScoreboardName)
+                setScoreboardTitleWithName(player, scoreboard.title, newScoreboardName)
 
                 (1..15).mapNotNull { scoreboard.get(it) }.forEachIndexed { index, text ->
-                    setScoreboardValueWithName(player, index + 1, text, scoreboard.otherScoreboardName)
+                    setScoreboardValueWithName(player, index + 1, text, newScoreboardName)
                 }
 
                 scoreboard.isUpdatePending.set(false)
 
-                displayScoreboardWithName(player, scoreboard.otherScoreboardName)
+                displayScoreboardWithName(player, newScoreboardName)
 
                 scoreboard.isUsingPrimaryBoard.set(!scoreboard.isUsingPrimaryBoard.get())
 
-                removeScoreboardWithName(player, scoreboard.otherScoreboardName)
-                createScoreboardWithName(player, scoreboard.otherScoreboardName)
+                removeScoreboardWithName(player, currentScoreboardName)
             }, 1, 1)
         }
     }
