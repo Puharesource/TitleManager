@@ -118,7 +118,7 @@ object TMCommand : CommandExecutor, TabCompleter {
         }
 
         if (subCommand.permission.isNotBlank() && !sender.hasPermission(subCommand.permission)) {
-            sender.sendConfigMessage("command.no-permissions")
+            sender.sendConfigMessage("no-permission")
             return true
         }
 

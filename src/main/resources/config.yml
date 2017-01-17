@@ -256,6 +256,8 @@ announcer:
 # Configures all of the messages sent to the users.
 
 messages:
+  # The message shown when a player doesn't have permission to run a command.
+  no-permission: '&cYou do not have permission to run that command!'
 
   # The messages from the command /tm version
   command-version:
