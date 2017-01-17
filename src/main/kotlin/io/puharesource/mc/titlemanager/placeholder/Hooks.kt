@@ -35,7 +35,7 @@ object VanishNoPacketHook : PluginHook("VanishNoPacket") {
     }
 }
 
-object VaultHook : PluginHook("VaultHook") {
+object VaultHook : PluginHook("Vault") {
     var economy: Economy? = null
     var permissions: Permission? = null
 
