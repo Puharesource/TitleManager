@@ -61,6 +61,6 @@ object UpdateChecker {
     fun getLatestVersion() = latestVersion
 
     fun isUpdateAvailable() : Boolean {
-        return latestVersion != null && getCurrentVersion().equals(latestVersion, ignoreCase = true)
+        return latestVersion != null && !getCurrentVersion().equals(latestVersion, ignoreCase = true)
     }
 }
