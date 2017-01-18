@@ -35,8 +35,6 @@ object BungeeCordManager {
                         val input = ByteStreams.newDataInput(message)
                         val subChannel = input.readUTF()
 
-                        println(subChannel)
-
                         when (subChannel) {
                             "GetServers" -> {
                                 val newServers = input.readUTF().split(", ").toSet()
@@ -53,10 +51,7 @@ object BungeeCordManager {
                                 val server = input.readUTF()
                                 currentServer = server
 
-                                println("$server is current server")
-
                                 if (!servers.containsKey(server)) {
-                                    println("Doesn't exist")
                                     servers.put(server, ServerInfo(server, Bukkit.getOnlinePlayers().size, Bukkit.getMaxPlayers()))
                                 } else {
                                     servers[server]?.playerCount = Bukkit.getOnlinePlayers().size
@@ -66,13 +61,9 @@ object BungeeCordManager {
                                 val server = input.readUTF()
                                 val playerCount = input.readInt()
 
-                                println("$server = $playerCount")
-
                                 if (!servers.containsKey(server)) {
-                                    println("Doesn't exist")
                                     servers.put(server, ServerInfo(server, playerCount, -1))
                                 } else {
-                                    println("Exists")
                                     servers[server]?.playerCount = playerCount
                                 }
                             }
