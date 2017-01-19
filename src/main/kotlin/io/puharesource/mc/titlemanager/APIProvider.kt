@@ -200,7 +200,7 @@ object APIProvider : TitleManagerAPI {
 
     override fun toSubtitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(animation, player, {
-            player.sendTitle(it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
+            player.sendSubtitle(it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearSubtitle()
         }, fixedOnStop = { removeRunningSubtitleAnimation(it) }, fixedOnStart = { player, animation -> setRunningSubtitleAnimation(player, animation) })
