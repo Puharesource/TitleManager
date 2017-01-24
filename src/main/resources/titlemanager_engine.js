@@ -1,3 +1,18 @@
+load('nashorn:mozilla_compat.js');
+
+importPackage('org.bukkit');
+
+var Bukkit = Java.type('org.bukkit.Bukkit');
+var ChatColor = Java.type('org.bukkit.ChatColor');
+
+var createCommandSender = function() {
+    return ScriptCommandSender.newInstance();
+};
+
+var isTesting = function () {
+    return Bukkit.getServer() === null;
+};
+
 var getTimingsPattern = function () {
     return /^\[([-]?\d+);([-]?\d+);([-]?\d+)](.+)$/g;
 };
@@ -7,7 +22,7 @@ var tmResult = function(text, done, fadeIn, stay, fadeOut) {
 };
 
 var hasTimings = function (text) {
-    return text.match(getTimingsPattern()) != null;
+    return text.match(getTimingsPattern()) !== null;
 };
 
 var getTimings = function (text) {
@@ -33,4 +48,12 @@ var parseInt = function(string, radix) {
     } catch (e) {}
 
     return val;
+};
+
+var sendCommand = function(commandSender, commandLine) {
+    if (isTesting()) {
+        print("Sending command with command line: " + commandLine);
+    } else {
+        Bukkit.dispatchCommand(commandSender, commandLine);
+    }
 };

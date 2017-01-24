@@ -38,6 +38,8 @@ object ScriptManager {
             registeredScripts.add(name)
         }
 
+        javaScriptEngine.put("ScriptCommandSender", ScriptCommandSender::class.java)
+
         addResource("titlemanager_engine.js")
 
         registerAnimation("count_down")
@@ -46,6 +48,7 @@ object ScriptManager {
         registerAnimation("text_write")
         registerAnimation("shine")
         registerAnimation("marquee")
+        registerAnimation("tps")
     }
 
     fun addJavaScript(js: String) {
