@@ -642,9 +642,6 @@ object APIProvider : TitleManagerAPI {
 
     override fun giveScoreboard(player: Player) {
         if (!hasScoreboard(player)) {
-            ScoreboardManager.createScoreboardWithName(player, "titlemanager1")
-            ScoreboardManager.createScoreboardWithName(player, "titlemanager2")
-
             ScoreboardManager.playerScoreboards.put(player, ScoreboardRepresentation())
             ScoreboardManager.startUpdateTask(player)
         }
@@ -652,9 +649,6 @@ object APIProvider : TitleManagerAPI {
 
     override fun removeScoreboard(player: Player) {
         if (hasScoreboard(player)) {
-            ScoreboardManager.removeScoreboardWithName(player, "titlemanager1")
-            ScoreboardManager.removeScoreboardWithName(player, "titlemanager2")
-
             ScoreboardManager.playerScoreboards.remove(player)
             ScoreboardManager.stopUpdateTask(player)
         }
@@ -663,9 +657,6 @@ object APIProvider : TitleManagerAPI {
     override fun hasScoreboard(player: Player) = ScoreboardManager.playerScoreboards.containsKey(player)
 
     override fun setScoreboardTitle(player: Player, title: String) {
-        ScoreboardManager.setScoreboardTitleWithName(player, title, "titlemanager1")
-        ScoreboardManager.setScoreboardTitleWithName(player, title, "titlemanager2")
-
         ScoreboardManager.playerScoreboards[player]?.title = title
     }
 

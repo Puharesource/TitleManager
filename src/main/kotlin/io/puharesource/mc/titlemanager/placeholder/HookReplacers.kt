@@ -12,8 +12,24 @@ object VanishHookReplacer : HookReplacer() {
         return Bukkit.getOnlinePlayers()
                 .filterNot { EssentialsHook.isPlayerVanished(it) }
                 .filterNot { VanishNoPacketHook.isPlayerVanished(it) }
-                .filterNot { PremiumVanishHook.isPlayerVanished(it) }
-                .filterNot { SuperVanishHook.isPlayerVanished(it) }
+                .filterNot {
+                    try {
+                        return@filterNot PremiumVanishHook.isPlayerVanished(it)
+                    } catch (e: IllegalStateException) {
+                        e.printStackTrace()
+                    }
+
+                    return@filterNot false
+                }
+                .filterNot {
+                    try {
+                        return@filterNot SuperVanishHook.isPlayerVanished(it)
+                    } catch (e: IllegalStateException) {
+                        e.printStackTrace()
+                    }
+
+                    return@filterNot false
+                }
                 .size.toString()
     }
 }

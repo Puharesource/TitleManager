@@ -88,7 +88,5 @@ object BungeeCordManager {
 }
 
 data class ServerInfo(val name: String, var playerCount: Int = 0, var maxPlayers: Int = 0) {
-    fun update() {
-        BungeeCordManager.sendNetworkMessage("PlayerCount", name)
-    }
+    fun update() = BungeeCordManager.sendNetworkMessage("PlayerCount", name)
 }
