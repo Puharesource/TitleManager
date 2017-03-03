@@ -13,7 +13,10 @@ object BungeeCordManager {
     private var currentServer: String? = null
 
     val onlinePlayers: Int
-        get() = servers.values.map { it.playerCount }.sum()
+        get() = servers.values.filter {
+            println("Name: ${it.name}, Player count: ${it.playerCount}, Max player count: ${it.maxPlayers}")
+            true
+        }.map { it.playerCount }.sum()
 
     init {
         scheduleAsyncObservableTimer(period = 200)

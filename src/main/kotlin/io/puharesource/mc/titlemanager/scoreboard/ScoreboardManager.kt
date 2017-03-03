@@ -34,7 +34,7 @@ object ScoreboardManager {
                 setScoreboardTitleWithName(player, scoreboard.title, newScoreboardName)
 
                 (1..15).mapNotNull { scoreboard.get(it) }.forEachIndexed { index, text ->
-                    setScoreboardValueWithName(player, index + 1, text, newScoreboardName)
+                    setScoreboardValueWithName(player, index, text, newScoreboardName)
                 }
 
                 scoreboard.isUpdatePending.set(false)
@@ -140,7 +140,7 @@ object ScoreboardManager {
 
         actionField.modify { set(packet, provider.get("EnumScoreboardAction").handle.enumConstants[0]) }
         objectiveNameField.modify { set(packet, scoreboardName) }
-        valueField.modify { setInt(packet, index * -1) }
+        valueField.modify { setInt(packet, 15 - index) }
 
         player.sendNMSPacket(packet)
     }
