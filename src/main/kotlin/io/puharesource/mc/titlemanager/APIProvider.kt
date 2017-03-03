@@ -400,7 +400,7 @@ object APIProvider : TitleManagerAPI {
                         val fadeIn = matcher.group(1).toInt()
                         val stay = matcher.group(2).toInt()
                         val fadeOut = matcher.group(3).toInt()
-                        val text = matcher.group(4).color()
+                        val text = matcher.group(4).color().replace("\\n", "\n")
 
                         StandardAnimationFrame(text, fadeIn, stay, fadeOut)
                     } else {
