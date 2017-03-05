@@ -22,8 +22,6 @@ object ProviderProtocolHack : NMSClassProvider() {
         put("PacketPlayOutScoreboardObjective",         NET_MINECRAFT_SERVER.getReflectionClass("PacketPlayOutScoreboardObjective"))
         put("PacketPlayOutScoreboardDisplayObjective",  NET_MINECRAFT_SERVER.getReflectionClass("PacketPlayOutScoreboardDisplayObjective"))
         put("PacketPlayOutScoreboardScore",             NET_MINECRAFT_SERVER.getReflectionClass("PacketPlayOutScoreboardScore"))
-        put("EnumScoreboardHealthDisplay",              NET_MINECRAFT_SERVER.getReflectionClass("IScoreboardCriteria").getInnerReflectionClass("EnumScoreboardHealthDisplay"))
-        put("EnumScoreboardAction",                     NET_MINECRAFT_SERVER.getReflectionClass("PacketPlayOutScoreboardScore").getInnerReflectionClass("EnumScoreboardAction"))
 
         val protocolInjector = ORG_SPIGOTMC.getReflectionClass("ProtocolInjector")
         val packetTitle = protocolInjector.getInnerReflectionClass("PacketTitle")
@@ -54,8 +52,8 @@ object Provider18 : NMSClassProvider() {
         put("PacketPlayOutScoreboardObjective",         NET_MINECRAFT_SERVER.getReflectionClass("PacketPlayOutScoreboardObjective"))
         put("PacketPlayOutScoreboardDisplayObjective",  NET_MINECRAFT_SERVER.getReflectionClass("PacketPlayOutScoreboardDisplayObjective"))
         put("PacketPlayOutScoreboardScore",             NET_MINECRAFT_SERVER.getReflectionClass("PacketPlayOutScoreboardScore"))
-        put("EnumScoreboardHealthDisplay",              NET_MINECRAFT_SERVER.getReflectionClass("IScoreboardCriteria").getInnerReflectionClass("EnumScoreboardHealthDisplay"))
-        put("EnumScoreboardAction",                     NET_MINECRAFT_SERVER.getReflectionClass("PacketPlayOutScoreboardScore").getInnerReflectionClass("EnumScoreboardAction"))
+        put("EnumScoreboardHealthDisplay",                     NET_MINECRAFT_SERVER.getReflectionClass("EnumScoreboardHealthDisplay"))
+        put("EnumScoreboardAction",                     NET_MINECRAFT_SERVER.getReflectionClass("EnumScoreboardAction"))
     }
 }
 

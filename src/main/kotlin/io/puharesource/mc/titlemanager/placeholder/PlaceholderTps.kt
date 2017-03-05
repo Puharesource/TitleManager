@@ -15,18 +15,18 @@ object PlaceholderTps {
 
     fun getTps(index: Int? = null) : String {
         val output = getOutput()
-        val matcher = regex.toPattern().matcher(output.substring(29))
+        val result = regex.matchEntire(output.substring(29))!!
 
         if (index === 1) {
-            return matcher.group(1)
+            return result.groups[1]!!.value
         }
 
         if (index === 5) {
-            return matcher.group(2)
+            return result.groups[2]!!.value
         }
 
         if (index === 15) {
-            return matcher.group(3)
+            return result.groups[3]!!.value
         }
 
         return output.substring(29)

@@ -60,15 +60,17 @@ object ScoreboardManager {
 
         val packet = provider.get("PacketPlayOutScoreboardObjective").handle.newInstance()
 
-        val createNameField = packet.javaClass.getDeclaredField("a")  // Objective Name   | String            | (String                       | A unique name for the objective)
-        val createModeField = packet.javaClass.getDeclaredField("d")  // Mode             | Byte              | (int                          | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
-        val createValueField = packet.javaClass.getDeclaredField("b") // Objective Value  | Optional String   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
-        val createTypeField = packet.javaClass.getDeclaredField("c")  // Type             | Optional String   | (EnumScoreboardHealthDisplay  | Only if mode is 0 or 2. “integer” or “hearts”)
+        val createNameField = packet.javaClass.getDeclaredField("a")                                           // Objective Name   | String            | (String                       | A unique name for the objective)
+        val createModeField = packet.javaClass.getDeclaredField(if (NMSManager.versionIndex > 0) "d" else "c") // Mode             | Byte              | (int                          | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
+        val createValueField = packet.javaClass.getDeclaredField("b")                                          // Objective Value  | Optional String   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
+        val createTypeField = packet.javaClass.getDeclaredField("c")                                           // Type             | Optional String   | (EnumScoreboardHealthDisplay  | Only if mode is 0 or 2. “integer” or “hearts”)
 
         createNameField.modify { set(packet, scoreboardName) }
         createModeField.modify { setInt(packet, 0) }
         createValueField.modify { set(packet, "") }
-        createTypeField.modify { set(packet, provider.get("EnumScoreboardHealthDisplay").handle.enumConstants[0]) }
+        if (NMSManager.versionIndex > 0) {
+            createTypeField.modify { set(packet, provider.get("EnumScoreboardHealthDisplay").handle.enumConstants[0]) }
+        }
 
         player.sendNMSPacket(packet)
     }
@@ -91,8 +93,8 @@ object ScoreboardManager {
         val provider = NMSManager.getClassProvider()
         val packet = provider.get("PacketPlayOutScoreboardObjective").handle.newInstance()
 
-        val nameField = packet.javaClass.getDeclaredField("a")  // Objective Name   | String    | (String   | A unique name for the objective)
-        val modeField = packet.javaClass.getDeclaredField("d")  // Mode             | Byte      | (int      | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
+        val nameField = packet.javaClass.getDeclaredField("a")                                           // Objective Name   | String    | (String   | A unique name for the objective)
+        val modeField = packet.javaClass.getDeclaredField(if (NMSManager.versionIndex > 0) "d" else "c") // Mode             | Byte      | (int      | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
 
         nameField.modify { nameField.set(packet, scoreboardName) }
         modeField.modify { modeField.set(packet, 1) }
@@ -104,10 +106,10 @@ object ScoreboardManager {
         val provider = NMSManager.getClassProvider()
         val packet = provider.get("PacketPlayOutScoreboardObjective").handle.newInstance()
 
-        val nameField = packet.javaClass.getDeclaredField("a")  // Objective Name   | String            | (String                       | A unique name for the objective)
-        val modeField = packet.javaClass.getDeclaredField("d")  // Mode             | Byte              | (int                          | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
-        val valueField = packet.javaClass.getDeclaredField("b") // Objective Value  | Optional String   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
-        val typeField = packet.javaClass.getDeclaredField("c")  // Type             | Optional String   | (EnumScoreboardHealthDisplay  | Only if mode is 0 or 2. “integer” or “hearts”)
+        val nameField = packet.javaClass.getDeclaredField("a")                                           // Objective Name   | String            | (String                       | A unique name for the objective)
+        val modeField = packet.javaClass.getDeclaredField(if (NMSManager.versionIndex > 0) "d" else "c") // Mode             | Byte              | (int                          | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
+        val valueField = packet.javaClass.getDeclaredField("b")                                          // Objective Value  | Optional String   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
+        val typeField = packet.javaClass.getDeclaredField("c")                                           // Type             | Optional String   | (EnumScoreboardHealthDisplay  | Only if mode is 0 or 2. “integer” or “hearts”)
 
         nameField.modify { set(packet, scoreboardName) }
         modeField.modify { setInt(packet, 2) }
@@ -118,7 +120,10 @@ object ScoreboardManager {
             valueField.modify { set(packet, title) }
         }
 
-        typeField.modify { set(packet, provider.get("EnumScoreboardHealthDisplay").handle.enumConstants[0]) }
+        if (NMSManager.versionIndex > 0) {
+            typeField.modify { set(packet, provider.get("EnumScoreboardHealthDisplay").handle.enumConstants[0]) }
+        }
+
 
         player.sendNMSPacket(packet)
     }
@@ -138,7 +143,11 @@ object ScoreboardManager {
             scoreNameField.modify { set(packet, value) }
         }
 
-        actionField.modify { set(packet, provider.get("EnumScoreboardAction").handle.enumConstants[0]) }
+        if (NMSManager.versionIndex > 0) {
+            actionField.modify { set(packet, provider.get("EnumScoreboardAction").handle.enumConstants[0]) }
+        } else {
+            actionField.modify { set(packet, 0) }
+        }
         objectiveNameField.modify { set(packet, scoreboardName) }
         valueField.modify { setInt(packet, 15 - index) }
 
