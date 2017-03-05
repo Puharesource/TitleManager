@@ -14,11 +14,13 @@ import io.puharesource.mc.titlemanager.extensions.format
 import io.puharesource.mc.titlemanager.extensions.getFormattedTime
 import io.puharesource.mc.titlemanager.extensions.getStringWithMultilines
 import io.puharesource.mc.titlemanager.extensions.giveScoreboard
+import io.puharesource.mc.titlemanager.extensions.isInt
 import io.puharesource.mc.titlemanager.extensions.removeScoreboard
 import io.puharesource.mc.titlemanager.extensions.sendActionbar
 import io.puharesource.mc.titlemanager.extensions.sendSubtitle
 import io.puharesource.mc.titlemanager.extensions.sendTitle
 import io.puharesource.mc.titlemanager.extensions.stripColor
+import io.puharesource.mc.titlemanager.placeholder.PlaceholderTps
 import io.puharesource.mc.titlemanager.placeholder.VanishHookReplacer
 import io.puharesource.mc.titlemanager.placeholder.VaultHook
 import io.puharesource.mc.titlemanager.reflections.NMSManager
@@ -563,6 +565,14 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         APIProvider.addPlaceholderReplacer("world-players", { it.world.players.size.toString() }, "world-online")
         APIProvider.addPlaceholderReplacer("server-time", { SimpleDateFormat(config.getString("placeholders.date-format")).format(Date(System.currentTimeMillis())) })
         APIProvider.addPlaceholderReplacer("ping", { it.getPing().toString() })
+        APIProvider.addPlaceholderReplacer("tps", { PlaceholderTps.getTps(1) })
+        APIProvider.addPlaceholderReplacerWithValue("tps", replacer@ { player, value ->
+            if (value.isInt()) {
+                return@replacer PlaceholderTps.getTps(value.toInt())
+            }
+
+            return@replacer PlaceholderTps.getTps(value)
+        })
 
         if (config.getBoolean("using-bungeecord")) {
             APIProvider.addPlaceholderReplacer("bungeecord-online", { BungeeCordManager.onlinePlayers.toString() }, "bungeecord-online-players")

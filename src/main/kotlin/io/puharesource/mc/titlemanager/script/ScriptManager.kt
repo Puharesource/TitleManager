@@ -48,7 +48,6 @@ object ScriptManager {
         registerAnimation("text_write")
         registerAnimation("shine")
         registerAnimation("marquee")
-        registerAnimation("tps")
     }
 
     fun addJavaScript(js: String) {
