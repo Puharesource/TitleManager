@@ -35,8 +35,6 @@ import org.bukkit.metadata.FixedMetadataValue
 import java.io.File
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
-import java.util.TreeMap
-import java.util.TreeSet
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListMap
 
@@ -132,32 +130,23 @@ object APIProvider : TitleManagerAPI {
             return text
         }
 
-        val placeholdersInText = TreeSet(String.CASE_INSENSITIVE_ORDER)
-        val parameterPlaceholdersInText = TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
-
         val matcher = variablePattern.toPattern().matcher(text)
+        var replacedText = text
 
         while (matcher.find()) {
             val placeholder = matcher.group(2)
             val parameter : String? = if (matcher.groupCount() === 3) matcher.group(3)?.replace("\\}", "}") else null
 
             if (parameter != null) {
-                parameterPlaceholdersInText.put(placeholder, parameter)
+                placeholderReplacersWithValues[placeholder]?.let { replacer ->
+                    replacedText = replacedText.replace(matcher.group(), replacer.invoke(player, parameter))
+                }
             } else {
-                placeholdersInText.add(matcher.group(1))
+                placeholderReplacers[matcher.group(1)]?.let { replacer ->
+                    replacedText = replacedText.replace(matcher.group(), replacer.invoke(player))
+                }
             }
         }
-
-        var replacedText = text
-
-        parameterPlaceholdersInText
-                .filter { placeholderReplacersWithValues.containsKey(it.key) }
-                .forEach { replacedText = replacedText.replace("%{${it.key}:${it.value}}", placeholderReplacersWithValues[it.key]!!.invoke(player, it.value), ignoreCase = true) }
-
-        placeholdersInText
-                .filter { placeholderReplacers.containsKey(it) }
-                .map { it to placeholderReplacers[it]!! }
-                .forEach { replacedText = replacedText.replace("%{${it.first}}", it.second(player), ignoreCase = true) }
 
         if (placeholderAPIEnabled) {
             return PlaceholderAPI.setPlaceholders(player, replacedText)
