@@ -49,10 +49,8 @@ object APIProvider : TitleManagerAPI {
     internal val placeholderReplacersWithValues : MutableMap<String, (Player, String) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
 
     internal val textAnimationFramePattern = "^\\[([-]?\\d+);([-]?\\d+);([-]?\\d+)\\](.+)$".toRegex()
-    internal val variablePattern = """[%][{]([^}]+\b)[}]""".toRegex()
-    internal val animationPattern = """[$][{]([^}]+\b)[}]""".toRegex()
-    internal val variablePatternWithParameter = """[%][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
-    internal val animationPatternWithParameter = """[$][{](([^}:]+\b)[:]((?:(?>[^}\\]+)|\\.)+))[}]""".toRegex()
+    internal val variablePattern = """[%][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
+    internal val animationPattern = """[$][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
     internal val commandSplitPattern = """([<]nl[>])|(\\n)""".toRegex()
 
     // Running animations
@@ -137,17 +135,17 @@ object APIProvider : TitleManagerAPI {
         val placeholdersInText = TreeSet(String.CASE_INSENSITIVE_ORDER)
         val parameterPlaceholdersInText = TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
 
-        val parameterMatcher = variablePatternWithParameter.toPattern().matcher(text)
-        while (parameterMatcher.find()) {
-            val placeholder = parameterMatcher.group(2)
-            val parameter = parameterMatcher.group(3).replace("\\}", "}")
+        val matcher = variablePattern.toPattern().matcher(text)
 
-            parameterPlaceholdersInText.put(placeholder, parameter)
-        }
+        while (matcher.find()) {
+            val placeholder = matcher.group(2)
+            val parameter : String? = if (matcher.groupCount() === 3) matcher.group(3)?.replace("\\}", "}") else null
 
-        val regularMatcher = variablePattern.toPattern().matcher(text)
-        while (regularMatcher.find()) {
-            placeholdersInText.add(regularMatcher.group(1))
+            if (parameter != null) {
+                parameterPlaceholdersInText.put(placeholder, parameter)
+            } else {
+                placeholdersInText.add(matcher.group(1))
+            }
         }
 
         var replacedText = text
@@ -168,7 +166,7 @@ object APIProvider : TitleManagerAPI {
         return replacedText
     }
 
-    override fun containsPlaceholders(text: String) = text.contains(variablePattern) || text.contains(variablePatternWithParameter)
+    override fun containsPlaceholders(text: String) = text.contains(variablePattern)
 
     override fun containsPlaceholder(text: String, placeholder: String) = text.contains("%{$placeholder}", ignoreCase = true)
 
@@ -247,76 +245,44 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun toAnimationParts(text: String): List<AnimationPart<*>> {
-        if (text.matches(animationPatternWithParameter)) {
-            val result = animationPatternWithParameter.matchEntire(text)!!
+        if (text.matches(animationPattern)) {
+            val result = animationPattern.matchEntire(text)!!
             val animationName = result.groups[2]!!.value
-            val animationValue = result.groups[3]!!.value.replace("\\}", "}")
+            val hasParameter = result.groups.size === 3
 
-            if (ScriptManager.registeredScripts.contains(animationName)) {
+            if (hasParameter && ScriptManager.registeredScripts.contains(animationName)) {
+                val animationValue = result.groups[3]!!.value.replace("\\}", "}")
                 return listOf(AnimationPart { ScriptManager.getJavaScriptAnimation(animationName, animationValue, withPlaceholders = true) })
-            }
-        } else if (text.matches(animationPattern)) {
-            val animationName = animationPattern.matchEntire(text)!!.groups[1]!!.value
-
-            if (registeredAnimations.containsKey(animationName)) {
+            } else if (registeredAnimations.containsKey(animationName)) {
                 return listOf(AnimationPart { registeredAnimations[animationName] })
+            } else {
+                listOf(AnimationPart { text })
             }
-
-            return listOf(AnimationPart { text })
         }
 
-        if (text.contains(animationPatternWithParameter)) {
+        if (text.contains(animationPattern)) {
             val list : MutableList<AnimationPart<*>> = mutableListOf()
-            val matcher = animationPatternWithParameter.toPattern().matcher(text)
+            val matcher = animationPattern.toPattern().matcher(text)
 
             var lastEnd = 0
+
             while (matcher.find()) {
                 val start = matcher.start()
                 val end = matcher.end()
                 val fullAnimation = matcher.group()
                 val animation = matcher.group(2)
-                val animationValue = matcher.group(3).replace("\\}", "}")
+                val hasParameter = matcher.groupCount() === 3
+
                 val part : String = text.substring(lastEnd, start)
 
                 if (part.isNotEmpty()) {
                     list.add(AnimationPart { part })
                 }
 
-                if (ScriptManager.registeredScripts.contains(animation)) {
+                if (hasParameter && ScriptManager.registeredScripts.contains(animation)) {
+                    val animationValue = matcher.group(3).replace("\\}", "}")
                     list.add(AnimationPart { ScriptManager.getJavaScriptAnimation(animation, animationValue, withPlaceholders = true) })
-                } else {
-                    list.add(AnimationPart { fullAnimation })
-                }
-
-                lastEnd = end
-            }
-
-            if (lastEnd != text.length) {
-                val part : String = text.substring(lastEnd, text.length)
-
-                if (part.isNotEmpty()) {
-                    list.add(AnimationPart { part })
-                }
-            }
-
-            return list
-        } else if (text.contains(animationPattern)) {
-            val list : MutableList<AnimationPart<*>> = mutableListOf()
-            val matcher = animationPattern.toPattern().matcher(text)
-
-            var lastEnd = 0
-            while (matcher.find()) {
-                val start = matcher.start()
-                val end = matcher.end()
-                val fullAnimation = matcher.group()
-                val animation = matcher.group(1)
-                val part : String = text.substring(lastEnd, start)
-
-                if (part.isNotEmpty()) {
-                    list.add(AnimationPart { part })
-                }
-
-                if (registeredAnimations.containsKey(animation)) {
+                } else if (registeredAnimations.containsKey(animation)) {
                     list.add(AnimationPart { registeredAnimations[animation] })
                 } else {
                     list.add(AnimationPart { fullAnimation })

@@ -1,7 +1,6 @@
 package tests
 
 import io.puharesource.mc.titlemanager.APIProvider
-import io.puharesource.mc.titlemanager.api.v2.animation.AnimationFrame
 import org.junit.Test
 import testPlayer
 import kotlin.test.assertTrue
@@ -20,18 +19,12 @@ class RegexTest {
 
         assertTrue(APIProvider.variablePattern.toPattern().matcher("%{test}").matches(), "Variable pattern doesn't match.")
         assertTrue(APIProvider.animationPattern.toPattern().matcher("\${test}").matches(), "Animation pattern doesn't match.")
-
-        assertTrue(APIProvider.variablePatternWithParameter.toPattern().matcher("%{test:test test test}").matches(), "Variable with parameter pattern doesn't match.")
-        assertTrue(APIProvider.animationPatternWithParameter.toPattern().matcher("\${test:test test test}").matches(), "Animation with parameter pattern doesn't match.")
     }
 
     @Test
     fun containsMatch() {
         assertTrue("test %{test} test".contains(APIProvider.variablePattern), "Variable pattern isn't contained within string.")
         assertTrue("test \${test} test".contains(APIProvider.animationPattern), "Animation pattern isn't contained within string.")
-
-        assertTrue("test %{test:test test test} test".contains(APIProvider.variablePatternWithParameter), "Variable with parameter pattern isn't contained within string.")
-        assertTrue("test \${test:test test test} test".contains(APIProvider.animationPatternWithParameter), "Animation with parameter pattern isn't contained within string.")
     }
 
     @Test
@@ -42,7 +35,6 @@ class RegexTest {
         println(APIProvider.replaceText(testPlayer, test))
 
         assertTrue { test.contains(APIProvider.variablePattern) }
-        assertTrue { test.contains(APIProvider.variablePatternWithParameter) }
     }
 
     @Test
@@ -52,7 +44,6 @@ class RegexTest {
 
         parts.forEach { println(it.part) }
 
-        //assertTrue(test.contains(APIProvider.animationPatternWithParameter), "Animation with parameter pattern isn't contained within string.")
-        //assertTrue(test.contains(APIProvider.animationPattern), "Animation pattern isn't contained within string.")
+        assertTrue(test.contains(APIProvider.animationPattern), "Animation pattern isn't contained within string.")
     }
 }

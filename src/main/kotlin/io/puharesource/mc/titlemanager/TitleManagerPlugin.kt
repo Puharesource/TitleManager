@@ -568,7 +568,13 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             APIProvider.addPlaceholderReplacer("bungeecord-online", { BungeeCordManager.onlinePlayers.toString() }, "bungeecord-online-players")
             APIProvider.addPlaceholderReplacer("server", { BungeeCordManager.getCurrentServer().orEmpty() }, "server-name")
 
-            APIProvider.addPlaceholderReplacerWithValue("online", { player, value -> BungeeCordManager.getServers()[value]?.playerCount?.toString() ?: "" }, "online-players")
+            APIProvider.addPlaceholderReplacerWithValue("online", replacer@ { player, value ->
+                if (value.contains(",")) {
+                    return@replacer value.split(",").mapNotNull { BungeeCordManager.getServers()[value]?.playerCount }.sum().toString()
+                }
+
+                return@replacer BungeeCordManager.getServers()[value]?.playerCount?.toString() ?: ""
+            }, "online-players")
         }
 
         if (VanishHookReplacer.isValid()) {
