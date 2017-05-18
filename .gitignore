@@ -42,3 +42,8 @@ Icon
 build/
 out/
 /bin/
+
+#Eclipse
+.settings/
+.classpath
+.project
