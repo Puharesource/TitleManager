@@ -26,6 +26,12 @@
 * **[PERMISSIONS](https://github.com/Puharesource/TitleManager/wiki/permissions)** – command and feature permissions.
 * **[SUPPORT CHAT](https://discord.gg/NwdtW2d)** - discord support chat and help.
 
+
+FakeNeth's Fork
+--------------
+### What's Different?
+I simply added the gradle shadow plugin in order to relocate shaded (or "shadowed") dependencies to prevent conflicts with other plugins possibly using different versions of the same dependencies.
+
 For Developers
 --------------
 
