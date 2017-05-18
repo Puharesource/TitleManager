@@ -41,3 +41,4 @@ Icon
 *.iml
 build/
 out/
+/bin/
