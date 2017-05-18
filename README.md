@@ -27,13 +27,11 @@
 * **[SUPPORT CHAT](https://discord.gg/NwdtW2d)** - discord support chat and help.
 
 
-FakeNeth's Fork
---------------
-### What's Different?
-I simply added the gradle shadow plugin in order to relocate shaded (or "shadowed") dependencies to prevent conflicts with other plugins possibly using different versions of the same dependencies.
-
 For Developers
 --------------
+
+### FakeNeth's Fork - What's Different?
+I simply added the gradle shadow plugin in order to relocate shaded (or "shadowed") dependencies to prevent conflicts with other plugins possibly using different versions of the same dependencies.
 
 ### Getting the dependency
 You can get the latest snapshot releases by going over to JitPack here: https://jitpack.io/#Puharesource/TitleManager, but if you want to get official release go with the following repository and dependencies.  
