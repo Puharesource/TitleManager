@@ -26,10 +26,14 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'kotlin'
 
+//Shadow
 apply plugin: 'com.github.johnrengelman.shadow'
+project.tasks.assemble.dependsOn project.tasks.shadowJar
+jar.enabled = false
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
 
 // Manifest
 jar {
