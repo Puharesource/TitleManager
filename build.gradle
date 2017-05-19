@@ -1,5 +1,6 @@
 import com.sun.org.apache.xalan.internal.xsltc.cmdline.Compile
 import org.apache.tools.ant.filters.ReplaceTokens
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 buildscript {
     ext.kotlin_version = '1.0.5'
@@ -100,20 +101,12 @@ clean.doFirst {
 // ========================= Custom compilation task ========================= //
 // Bundles all of the compiled jars into a nice and sane directory. (/out/)
 
-tasks.withType(Jar) {
+tasks.withType(ShadowJar) {
     destinationDir = file("$rootDir/out/")
 }
 
-// ========================= Provided scope ========================= //
-// The provided scope, allows the developer to choose which dependencies
-// will be shaded into the jar file. Provided tells the compiler that the
-// dependency is provided at runtime and should therefor not be compiled
-// while compile tells the compiler that it is needed right here and now
-// and should therefor be compiled into the jar.
-
-configurations {
-    provided
-    compile.extendsFrom provided
+tasks.withType(Jar) {
+    destinationDir = file("$rootDir/out/")
 }
 
 artifacts {
@@ -122,19 +115,6 @@ artifacts {
     archives sourcesJar
     archives apiJar
     archives jitpackJavadocJar
-}
-
-jar {
-    dependsOn configurations.runtime
-    from {
-        (configurations.runtime - configurations.provided).collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    } {
-        exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"
-    }
 }
 
 sourceSets {
@@ -187,14 +167,14 @@ dependencies {
     compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
     compile group: 'io.reactivex', name: 'rxjava', version: '1.2.1'
 
-    provided group: 'org.spigotmc', name: 'spigot-api', version: '1.11-R0.1-SNAPSHOT'
+    compile group: 'org.spigotmc', name: 'spigot-api', version: '1.11-R0.1-SNAPSHOT'
 
-    provided group: 'me.clip', name: 'placeholderapi', version: '2.0.8'
-    provided group: 'net.milkbowl.vault', name: 'VaultAPI', version: '1.5'
-    provided(group: 'net.ess3', name: 'Essentials', version: 'Pre2.14.1.3') { transitive = false }
+    compile group: 'me.clip', name: 'placeholderapi', version: '2.0.8'
+    compile group: 'net.milkbowl.vault', name: 'VaultAPI', version: '1.5'
+    compile(group: 'net.ess3', name: 'Essentials', version: 'Pre2.14.1.3') { transitive = false }
 
-    provided name: 'SuperVanish'
-    provided name: 'VanishNoPacket'
+    compile name: 'SuperVanish'
+    compile name: 'VanishNoPacket'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: kotlin_version
@@ -208,7 +188,7 @@ shadowJar {
         include(dependency('org.jetbrains.kotlin:.*'))
         include(dependency('io.reactivex:.*'))
     }
-    relocate 'rx', 'shaded.rx'
-    relocate 'kotlin', 'shaded.kotlin'
-    relocate 'org.jetbrains', 'shaded.org.jetbrains'
+    relocate 'rx', 'io.puharesource.mc.titlemanager.shaded.rx'
+    relocate 'kotlin', 'io.puharesource.mc.titlemanager.shaded.kotlin'
+    relocate 'org.jetbrains', 'io.puharesource.mc.titlemanager.shaded.org.jetbrains'
 }
