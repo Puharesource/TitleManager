@@ -318,9 +318,9 @@ public interface TitleManagerAPI {
 
     /**
      * Creates a {@link SendableAnimation} that sets the title for the player's scoreboard.
-     * <p></p>
+     * <p>
      * If <code>withPlaceholders</code> is true, placeholders will be replaced.
-     *
+     * </p>
      * @param animation         The animation to be used.
      * @param player            The player the {@link SendableAnimation} is associated with.
      * @param withPlaceholders  Whether or not placeholders should be replaced.
@@ -337,9 +337,9 @@ public interface TitleManagerAPI {
 
     /**
      * Creates a {@link SendableAnimation} that sets the text value for the player's scoreboard at the given index.
-     * <p></p>
+     * <p>
      * If <code>withPlaceholders</code> is true, placeholders will be replaced.
-     *
+     * </p>
      * @param animation         The animation to be used.
      * @param player            The player the {@link SendableAnimation} is associated with.
      * @param index             The index the text value should be set to.
@@ -487,9 +487,9 @@ public interface TitleManagerAPI {
 
     /**
      * Creates a {@link SendableAnimation} that sets the title for the player's scoreboard.
-     * <p></p>
+     * <p>
      * If <code>withPlaceholders</code> is true, placeholders will be replaced.
-     *
+     * </p>
      * @param parts             The animation parts to be used.
      * @param player            The player the {@link List} of {@link AnimationPart}s is associated with.
      * @param withPlaceholders  Whether or not placeholders should be replaced.
@@ -506,9 +506,9 @@ public interface TitleManagerAPI {
 
     /**
      * Creates a {@link SendableAnimation} that sets the text value for the player's scoreboard at the given index.
-     * <p></p>
+     * <p>
      * If <code>withPlaceholders</code> is true, placeholders will be replaced.
-     *
+     * </p>
      * @param parts         The animation to be used.
      * @param player            The player the {@link SendableAnimation} is associated with.
      * @param index             The index the text value should be set to.

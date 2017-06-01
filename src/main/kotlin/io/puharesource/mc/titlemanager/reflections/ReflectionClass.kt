@@ -3,7 +3,7 @@ package io.puharesource.mc.titlemanager.reflections
 import java.lang.reflect.Field
 
 class ReflectionClass(val path: String) {
-    val handle : Class<*>
+    val handle : Class<*> = Class.forName(path)
 
     fun getMethod(methodName: String, vararg params: Class<*>) = handle.declaredMethods
             .filter { it.name == methodName }
@@ -27,8 +27,4 @@ class ReflectionClass(val path: String) {
     fun getInnerClass(className: String) : Class<*> = Class.forName("$path$$className")
 
     fun getInnerReflectionClass(className: String) = ReflectionClass("$path$$className")
-
-    init {
-        this.handle = Class.forName(path)
-    }
 }

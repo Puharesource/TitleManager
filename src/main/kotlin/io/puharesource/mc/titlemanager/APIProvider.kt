@@ -135,7 +135,7 @@ object APIProvider : TitleManagerAPI {
 
         while (matcher.find()) {
             val placeholder = matcher.group(2)
-            val parameter : String? = if (matcher.groupCount() === 3) matcher.group(3)?.replace("\\}", "}") else null
+            val parameter : String? = if (matcher.groupCount() == 3) matcher.group(3)?.replace("\\}", "}") else null
 
             if (parameter != null) {
                 placeholderReplacersWithValues[placeholder]?.let { replacer ->
@@ -237,7 +237,7 @@ object APIProvider : TitleManagerAPI {
         if (text.matches(animationPattern)) {
             val result = animationPattern.matchEntire(text)!!
             val animationName = result.groups[2]!!.value
-            val hasParameter = result.groups.size === 3
+            val hasParameter = result.groups.size == 3
 
             if (hasParameter && ScriptManager.registeredScripts.contains(animationName)) {
                 val animationValue = result.groups[3]!!.value.replace("\\}", "}")
@@ -260,7 +260,7 @@ object APIProvider : TitleManagerAPI {
                 val end = matcher.end()
                 val fullAnimation = matcher.group()
                 val animation = matcher.group(2)
-                val hasParameter = matcher.groupCount() === 3
+                val hasParameter = matcher.groupCount() == 3
 
                 val part : String = text.substring(lastEnd, start)
 
@@ -606,6 +606,7 @@ object APIProvider : TitleManagerAPI {
         if (hasScoreboard(player)) {
             ScoreboardManager.playerScoreboards.remove(player)
             ScoreboardManager.stopUpdateTask(player)
+            ScoreboardManager.removeScoreboard(player)
         }
     }
 

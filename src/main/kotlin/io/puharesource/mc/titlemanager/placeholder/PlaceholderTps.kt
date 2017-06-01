@@ -17,15 +17,15 @@ object PlaceholderTps {
         val output = getOutput()
         val result = regex.matchEntire(output.substring(29))!!
 
-        if (index === 1) {
+        if (index == 1) {
             return result.groups[1]!!.value
         }
 
-        if (index === 5) {
+        if (index == 5) {
             return result.groups[2]!!.value
         }
 
-        if (index === 15) {
+        if (index == 15) {
             return result.groups[3]!!.value
         }
 

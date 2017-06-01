@@ -38,6 +38,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
+import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -265,6 +266,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     private fun registerAnnouncers() {
         var section : ConfigurationSection = config.getConfigurationSection("announcer")
 
+        if (!config.getBoolean("using-config")) return
         if (!section.getBoolean("enabled")) return
 
         section = section.getConfigurationSection("announcements")
@@ -566,7 +568,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         APIProvider.addPlaceholderReplacer("server-time", { SimpleDateFormat(config.getString("placeholders.date-format")).format(Date(System.currentTimeMillis())) })
         APIProvider.addPlaceholderReplacer("ping", { it.getPing().toString() })
         APIProvider.addPlaceholderReplacer("tps", { PlaceholderTps.getTps(1) })
-        APIProvider.addPlaceholderReplacerWithValue("tps", replacer@ { player, value ->
+        APIProvider.addPlaceholderReplacerWithValue("tps", replacer@ { _, value ->
             if (value.isInt()) {
                 return@replacer PlaceholderTps.getTps(value.toInt())
             }
@@ -578,7 +580,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             APIProvider.addPlaceholderReplacer("bungeecord-online", { BungeeCordManager.onlinePlayers.toString() }, "bungeecord-online-players")
             APIProvider.addPlaceholderReplacer("server", { BungeeCordManager.getCurrentServer().orEmpty() }, "server-name")
 
-            APIProvider.addPlaceholderReplacerWithValue("online", replacer@ { player, value ->
+            APIProvider.addPlaceholderReplacerWithValue("online", replacer@ { _, value ->
                 if (value.contains(",")) {
                     return@replacer value.split(",").mapNotNull { BungeeCordManager.getServers()[value]?.playerCount }.sum().toString()
                 }

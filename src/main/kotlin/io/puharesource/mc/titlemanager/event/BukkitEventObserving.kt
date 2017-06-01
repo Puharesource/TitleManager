@@ -22,7 +22,7 @@ internal fun <T : Event> observeEventRaw(priority: EventPriority = EventPriority
     return Observable.create { subscriber ->
         val listener = object : Listener {}
 
-        val executor = EventExecutor { listener, event ->
+        val executor = EventExecutor { _, event ->
             val eventClass = event.javaClass
             val canAssign = events.any { it.isAssignableFrom(eventClass) }
 

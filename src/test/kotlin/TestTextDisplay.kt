@@ -43,7 +43,7 @@ fun main(args: Array<String>) = Application.launch(TestTextDisplay::class.java, 
 fun relativeFile(url: String) = File(url.replace("/", File.separator))
 fun relativeFileURL(url: String) = relativeFile(url).toURI().toURL().toString()
 
-val testPlayer = Proxy.newProxyInstance(Player::class.java.classLoader, arrayOf(Player::class.java), handler@ { proxy, method, args ->
+val testPlayer = Proxy.newProxyInstance(Player::class.java.classLoader, arrayOf(Player::class.java), handler@ { _, method, _ ->
     if (method.name == "isOnline") {
         return@handler true
     }
@@ -142,7 +142,7 @@ object Browser : Region() {
         children.add(browser)
 
         // Process page loading
-        engine.loadWorker.stateProperty().addListener { value, oldState, newState ->
+        engine.loadWorker.stateProperty().addListener { _, _, newState ->
             if (newState != Worker.State.SUCCEEDED) return@addListener
 
             val window = engine.executeScript("window") as JSObject

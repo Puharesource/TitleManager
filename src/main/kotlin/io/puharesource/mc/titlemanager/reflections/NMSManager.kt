@@ -20,6 +20,7 @@ object NMSManager {
         supportedVersions.put("v1_9_R2", 3)
         supportedVersions.put("v1_10_R1", 4)
         supportedVersions.put("v1_11_R1", 5)
+        supportedVersions.put("v1_12_R1", 6)
 
         val pkg: String = Bukkit.getServer().javaClass.`package`.name
         var version = pkg.substring(pkg.lastIndexOf(".") + 1)
@@ -32,7 +33,7 @@ object NMSManager {
         versionIndex = getVersionIndex(version)
     }
 
-    fun getVersionIndex(version: String) = supportedVersions.getOrElse(version) { 4 }
+    fun getVersionIndex(version: String) = supportedVersions.getOrElse(version) { supportedVersions.values.max() ?: -1 }
 
     fun getClassProvider() : NMSClassProvider {
         when (versionIndex) {
@@ -42,7 +43,8 @@ object NMSManager {
             3    -> return Provider183
             4    -> return Provider110
             5    -> return Provider110
-            else -> return Provider110
+            6    -> return Provider112
+            else -> return Provider112
         }
     }
 }

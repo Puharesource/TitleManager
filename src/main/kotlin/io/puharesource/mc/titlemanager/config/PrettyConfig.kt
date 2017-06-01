@@ -19,7 +19,7 @@ class PrettyConfig(file: File) : YamlConfiguration() {
             file.createNewFile()
 
             if (resource != null) {
-                file.writeBytes(resource.readBytes())
+                file.writeText(resource.bufferedReader(Charsets.UTF_8).readText(), Charsets.UTF_8)
             }
         }
 
@@ -32,7 +32,7 @@ class PrettyConfig(file: File) : YamlConfiguration() {
 
         val currentComments : MutableList<String> = mutableListOf()
 
-        currentCommentedData.lines().forEachIndexed { i, line ->
+        currentCommentedData.lines().forEachIndexed { _, line ->
             if (line.matches(KEY_PATTERN) && !line.matches(COMMENT_PATTERN)) {
                 val result = KEY_PATTERN.matchEntire(line)!!.groupValues
 

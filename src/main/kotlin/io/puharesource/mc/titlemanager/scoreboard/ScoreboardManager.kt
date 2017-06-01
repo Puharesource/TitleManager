@@ -102,6 +102,12 @@ object ScoreboardManager {
         player.sendNMSPacket(packet)
     }
 
+    fun removeScoreboard(player: Player) {
+        playerScoreboards[player]?.let {
+            removeScoreboardWithName(player, it.name)
+        }
+    }
+
     fun setScoreboardTitleWithName(player: Player, title: String, scoreboardName: String) {
         val provider = NMSManager.getClassProvider()
         val packet = provider.get("PacketPlayOutScoreboardObjective").handle.newInstance()
