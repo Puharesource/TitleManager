@@ -20,6 +20,7 @@ import io.puharesource.mc.titlemanager.extensions.setPlayerListFooter
 import io.puharesource.mc.titlemanager.extensions.setPlayerListHeader
 import io.puharesource.mc.titlemanager.extensions.setScoreboardTitle
 import io.puharesource.mc.titlemanager.extensions.setScoreboardValue
+import io.puharesource.mc.titlemanager.placeholder.MvdwPlaceholderAPIHook
 import io.puharesource.mc.titlemanager.placeholder.PlaceholderAPIHook
 import io.puharesource.mc.titlemanager.reflections.NMSManager
 import io.puharesource.mc.titlemanager.reflections.TitleTypeMapper
@@ -121,13 +122,21 @@ object APIProvider : TitleManagerAPI {
 
     override fun replaceText(player: Player, text: String): String {
         val placeholderAPIEnabled = !isTesting && PlaceholderAPIHook.isEnabled()
+        val mvdwAPIEnabled = !isTesting && MvdwPlaceholderAPIHook.isEnabled()
+        val mvdwReplace : (Player, String) -> String = { player, text -> be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, text) }
 
         if (!containsPlaceholders(text)) {
+            var replacedText = text
+
             if (placeholderAPIEnabled) {
-                return PlaceholderAPI.setPlaceholders(player, text)
+                replacedText = PlaceholderAPI.setPlaceholders(player, replacedText)
             }
 
-            return text
+            if (mvdwAPIEnabled) {
+                replacedText = mvdwReplace(player, replacedText)
+            }
+
+            return replacedText
         }
 
         val matcher = variablePattern.toPattern().matcher(text)
@@ -149,7 +158,11 @@ object APIProvider : TitleManagerAPI {
         }
 
         if (placeholderAPIEnabled) {
-            return PlaceholderAPI.setPlaceholders(player, replacedText)
+            replacedText = PlaceholderAPI.setPlaceholders(player, replacedText)
+        }
+
+        if (mvdwAPIEnabled) {
+            replacedText = mvdwReplace(player, replacedText)
         }
 
         return replacedText

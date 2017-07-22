@@ -11,6 +11,8 @@ import org.kitteh.vanish.VanishPlugin
 
 object PlaceholderAPIHook : PluginHook("PlaceholderAPI")
 
+object MvdwPlaceholderAPIHook : PluginHook("MVdWPlaceholderAPI")
+
 object EssentialsHook : PluginHook("Essentials") {
     fun isPlayerVanished(player: Player): Boolean {
         return isEnabled() && (getPlugin() as Essentials).getUser(player).isVanished

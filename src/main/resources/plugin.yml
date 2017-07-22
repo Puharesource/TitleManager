@@ -3,7 +3,7 @@ version: @VERSION@
 author: Puharesource
 
 main: io.puharesource.mc.titlemanager.TitleManagerPlugin
-softdepend: [Vault, Essentials, VanishNoPacket, PlaceholderAPI, SuperVanish, PremiumVanish]
+softdepend: [Vault, Essentials, VanishNoPacket, PlaceholderAPI, SuperVanish, PremiumVanish, MVdWPlaceholderAPI]
 
 commands:
   tm:
