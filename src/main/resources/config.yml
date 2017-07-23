@@ -310,3 +310,10 @@ messages:
     usage: '<player> <title>'
     sent: '&aYou have sent %player the actionbar title "&r%title&a".'
     invalid-player: '&c%player is not a valid player.'
+
+  # The messages from the command /tm scoreboard
+  command-scoreboard:
+    description: 'Toggles the scoreboard on or off.'
+    usage: 'toggle'
+    toggled-on: '&aYou have enabled your scoreboard.'
+    toggled-off: '&cYou have disabled your scoreboard.'

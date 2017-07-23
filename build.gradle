@@ -173,7 +173,7 @@ repositories {
 // ========================= Dependencies ========================= //
 
 dependencies {
-    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: kotlin_version
     compile group: 'io.reactivex', name: 'rxjava', version: '1.2.1'
 
     compile group: 'org.spigotmc', name: 'spigot-api', version: '1.11-R0.1-SNAPSHOT'

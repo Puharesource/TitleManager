@@ -20,6 +20,7 @@ object TMCommand : CommandExecutor, TabCompleter {
         addSubCommand(CommandABroadcast)
         addSubCommand(CommandMessage)
         addSubCommand(CommandAMessage)
+        addSubCommand(CommandScoreboard)
         addSubCommand(CommandAnimations)
         addSubCommand(CommandScripts)
         addSubCommand(CommandReload)

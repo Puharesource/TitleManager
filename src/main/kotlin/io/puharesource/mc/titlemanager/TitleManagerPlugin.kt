@@ -23,6 +23,7 @@ import io.puharesource.mc.titlemanager.extensions.stripColor
 import io.puharesource.mc.titlemanager.placeholder.PlaceholderTps
 import io.puharesource.mc.titlemanager.placeholder.VanishHookReplacer
 import io.puharesource.mc.titlemanager.placeholder.VaultHook
+import io.puharesource.mc.titlemanager.playerinfo.PlayerInfoDB
 import io.puharesource.mc.titlemanager.reflections.NMSManager
 import io.puharesource.mc.titlemanager.reflections.getPing
 import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler
@@ -38,7 +39,6 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
-import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -47,6 +47,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     private val animationsFolder = File(dataFolder, "animations")
     private var conf : PrettyConfig? = null
+    var playerInfoDB: PlayerInfoDB? = null
 
     override fun onEnable() {
         debug("Save default config")
@@ -57,6 +58,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
         debug("Updating config from 1.5.13 to 2.0.0")
         updateConfig()
+
+        debug("Setting up player info database")
+        setupDB()
 
         debug("Loading animations & scripts")
         loadAnimations()
@@ -138,12 +142,14 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             }
 
             if (scoreboardSection.getBoolean("enabled")) {
-                it.giveScoreboard()
+                if (playerInfoDB!!.isScoreboardToggled(it)) {
+                    it.giveScoreboard()
 
-                toScoreboardTitleAnimation(title, it, true).start()
+                    toScoreboardTitleAnimation(title, it, true).start()
 
-                lines.forEachIndexed { index, parts ->
-                    toScoreboardValueAnimation(parts, it, index + 1, true).start()
+                    lines.forEachIndexed { index, parts ->
+                        toScoreboardValueAnimation(parts, it, index + 1, true).start()
+                    }
                 }
             }
         }
@@ -261,6 +267,10 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 oldAnimationFile.renameTo(File(dataFolder, "animations-old.yml"))
             }
         }
+    }
+
+    private fun setupDB() {
+        playerInfoDB = PlayerInfoDB(File(dataFolder, "playerinfo.sqlite"), createStatement = getTextResource("playerinfo.sql").readText())
     }
 
     private fun registerAnnouncers() {
@@ -512,6 +522,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 .filter { config.getBoolean("using-config") }
                 .filter { config.getBoolean("scoreboard.enabled") }
                 .map { it.player }
+                .filter { playerInfoDB!!.isScoreboardToggled(it) }
                 .subscribe {
                     val section = config.getConfigurationSection("scoreboard")
 
