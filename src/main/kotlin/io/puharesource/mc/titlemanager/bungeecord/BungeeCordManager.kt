@@ -61,6 +61,8 @@ object BungeeCordManager {
                                 val server = input.readUTF()
                                 val playerCount = input.readInt()
 
+                                if (server.equals("ALL", ignoreCase = true)) return@subscribe
+
                                 if (!servers.containsKey(server)) {
                                     servers.put(server, ServerInfo(server, playerCount, -1))
                                 } else {
