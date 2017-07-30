@@ -13,6 +13,7 @@ class PartBasedSendableAnimation(parts: List<AnimationPart<*>>,
                                  private val onUpdate: (AnimationFrame) -> Unit,
                                  private var continuous: Boolean = false,
                                  private var onStop: Runnable? = null,
+                                 private val tickRate: Long = 50,
                                  private val fixedOnStop: ((Player) -> Unit)? = null,
                                  private val fixedOnStart: ((Player, SendableAnimation) -> Unit)? = null) : SendableAnimation {
     private var sendableParts: List<SendablePart>
@@ -84,9 +85,9 @@ class PartBasedSendableAnimation(parts: List<AnimationPart<*>>,
         val isDone = !isContinuous && sendableParts.filter { it.isDone() }.size == sendableParts.size
 
         if (isDone) {
-            AsyncScheduler.schedule({ stop() }, 1)
+            AsyncScheduler.scheduleRaw({ stop() }, 1 * tickRate)
         } else {
-            AsyncScheduler.schedule({ update(getCurrentFrameText()) }, 1)
+            AsyncScheduler.scheduleRaw({ update(getCurrentFrameText()) }, 1 * tickRate)
         }
     }
 

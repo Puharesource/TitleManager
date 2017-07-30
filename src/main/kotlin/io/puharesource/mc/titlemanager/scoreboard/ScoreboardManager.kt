@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.scoreboard
 
+import io.puharesource.mc.titlemanager.APIProvider
 import io.puharesource.mc.titlemanager.extensions.modify
 import io.puharesource.mc.titlemanager.reflections.NMSManager
 import io.puharesource.mc.titlemanager.reflections.sendNMSPacket
@@ -40,18 +41,14 @@ object ScoreboardManager {
                 scoreboard.isUpdatePending.set(false)
 
                 displayScoreboardWithName(player, newScoreboardName)
-
-                scoreboard.isUsingPrimaryBoard.set(!scoreboard.isUsingPrimaryBoard.get())
-
                 removeScoreboardWithName(player, currentScoreboardName)
             }, 1, 1)
         }
     }
 
     fun stopUpdateTask(player: Player) {
-        playerScoreboardUpdateTasks[player]?.let {
+        playerScoreboardUpdateTasks.remove(player)?.let {
             AsyncScheduler.cancel(it)
-            playerScoreboardUpdateTasks.remove(player)
         }
     }
 
@@ -103,8 +100,13 @@ object ScoreboardManager {
     }
 
     fun removeScoreboard(player: Player) {
-        playerScoreboards[player]?.let {
-            removeScoreboardWithName(player, it.name)
+        playerScoreboards.remove(player)?.let { scoreboard ->
+            stopUpdateTask(player)
+
+            APIProvider.removeRunningScoreboardTitleAnimation(player)
+            (1..15).forEach { APIProvider.removeRunningScoreboardValueAnimation(player, it) }
+
+            removeScoreboardWithName(player, scoreboard.name)
         }
     }
 
@@ -154,6 +156,7 @@ object ScoreboardManager {
         } else {
             actionField.modify { set(packet, 0) }
         }
+
         objectiveNameField.modify { set(packet, scoreboardName) }
         valueField.modify { setInt(packet, 15 - index) }
 

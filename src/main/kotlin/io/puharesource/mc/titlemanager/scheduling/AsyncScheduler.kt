@@ -35,6 +35,17 @@ object AsyncScheduler {
         return id
     }
 
+    fun scheduleRaw(body: () -> Unit, delay: Long, unit: TimeUnit = TimeUnit.MILLISECONDS) : Int {
+        val id = ids.incrementAndGet()
+
+        scheduled.put(id, scheduler.schedule({
+            scheduled.remove(id)
+            body()
+        }, delay, unit))
+
+        return id
+    }
+
     fun scheduleRaw(runnable: Runnable, delay: Int, period: Int) : Int = scheduleRaw({ runnable.run() }, delay, period)
 
     fun scheduleRaw(body: () -> Unit, delay: Int, period: Int, unit: TimeUnit = TimeUnit.MILLISECONDS) : Int {

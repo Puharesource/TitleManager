@@ -26,7 +26,7 @@ object CommandScoreboard : TMSubCommand("scoreboard",
             if (player.hasScoreboard()) {
                 player.removeScoreboard()
 
-                sendConfigMessage("toggled-on")
+                sendConfigMessage("toggled-off")
             } else {
                 val scoreboardSection = pluginInstance.config.getConfigurationSection("scoreboard")
                 val title = toAnimationParts(scoreboardSection.getString("title").color())
@@ -39,6 +39,6 @@ object CommandScoreboard : TMSubCommand("scoreboard",
                     toScoreboardValueAnimation(parts, player, index + 1, true).start()
                 }
 
-                sendConfigMessage("toggled-off")
+                sendConfigMessage("toggled-on")
             }
         }})

@@ -6,7 +6,11 @@ import org.bukkit.event.Listener
 import org.bukkit.event.server.PluginDisableEvent
 import rx.Scheduler
 import rx.schedulers.Schedulers
+import java.math.BigInteger
+import java.util.Random
 import java.util.concurrent.Executor
+
+private val random = Random()
 
 internal val pluginInstance : TitleManagerPlugin by lazy {
     Bukkit.getPluginManager().getPlugin("TitleManager") as TitleManagerPlugin
@@ -42,3 +46,5 @@ internal fun onPluginDisable(body: () -> Unit) {
         }
     }, pluginInstance, false)
 }
+
+internal fun generateRandomString(): String = BigInteger(80, random).toString(32)

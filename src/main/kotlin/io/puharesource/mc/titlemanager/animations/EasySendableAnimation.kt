@@ -11,6 +11,7 @@ class EasySendableAnimation(private val animation: Animation,
                             private val onUpdate: (AnimationFrame) -> Unit,
                             private var continuous: Boolean = false,
                             private var onStop: Runnable? = null,
+                            private val tickRate: Long = 50,
                             private val fixedOnStop: ((Player) -> Unit)? = null,
                             private val fixedOnStart: ((Player, SendableAnimation) -> Unit)? = null) : SendableAnimation {
     private var iterator = animation.iterator(player)
@@ -48,9 +49,9 @@ class EasySendableAnimation(private val animation: Animation,
         }
 
         if (iterator.hasNext()) {
-            AsyncScheduler.schedule({ update(iterator.next()) }, frame.totalTime)
+            AsyncScheduler.scheduleRaw({ update(iterator.next()) }, frame.totalTime * tickRate)
         } else {
-            AsyncScheduler.schedule({ stop() }, frame.totalTime)
+            AsyncScheduler.scheduleRaw({ stop() }, frame.totalTime * tickRate)
         }
     }
 

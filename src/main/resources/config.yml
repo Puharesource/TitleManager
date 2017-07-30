@@ -30,7 +30,7 @@
 ############################################################
 
 # Never change this value
-config-version: 4
+config-version: 5
 
 # Toggles debug mode, which prints additional information when the plugin does something.
 debug: false
@@ -47,6 +47,9 @@ legacy-client-support: false
 
 # Toggles whether or not the plugin should warn administrators if there's a new version out.
 check-for-updates: true
+
+# The locale used for some of the placeholders.
+locale: 'en-US'
 
 ############################################################
 # +------------------------------------------------------+ #
@@ -194,13 +197,13 @@ scoreboard:
   # Each line must also be unique, a work around would be to put a color code at the end your line, to make it unique.
   lines:
   - '&b&m----------------------------------'
-  - '&b● &3&lPlayer Name:'
+  - '&b> &3&lPlayer Name:'
   - '&b%{name}'
   - '&r'
-  - '&b● &3&lPing:'
+  - '&b> &3&lPing:'
   - '&b%{ping} MS'
   - '&r&r'
-  - '&b● &3&lServer Time:'
+  - '&b> &3&lServer Time:'
   - '&b%{server-time}'
   - '&b&m----------------------------------&r'
 
@@ -246,6 +249,24 @@ announcer:
       actionbar:
       - '&aThis is the 1st actionbar announcement'
       - '&bThis is the 2nd actionbar announcement'
+
+############################################################
+# +------------------------------------------------------+ #
+# |                       Bandwidth                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Configures all of the bandwidth saving options.
+
+bandwidth:
+  # Prevents sending identical packets, lowering bandwidth (but might be more CPU intensive).
+  prevent-duplicate-packets: true
+
+  # The tick rate of the player list in milliseconds. (Lower = More bandwidth & CPU usage, Higher = Less bandwidth & CPU usage)
+  player-list-ms-per-tick: 50
+
+  # The tick rate of the scoreboard in milliseconds. (Lower = More bandwidth & CPU usage, Higher = Less bandwidth & CPU usage)
+  scoreboard-ms-per-tick: 50
 
 ############################################################
 # +------------------------------------------------------+ #

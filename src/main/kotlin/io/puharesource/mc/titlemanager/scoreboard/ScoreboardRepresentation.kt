@@ -1,21 +1,33 @@
 package io.puharesource.mc.titlemanager.scoreboard
 
-import java.math.BigInteger
-import java.util.Random
+import io.puharesource.mc.titlemanager.generateRandomString
+import io.puharesource.mc.titlemanager.pluginInstance
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
-class ScoreboardRepresentation(var title: String = "", private val lines: MutableMap<Int, String> = ConcurrentHashMap()) {
-    private val random = Random()
-
+class ScoreboardRepresentation(title: String = "", private val lines: MutableMap<Int, String> = ConcurrentHashMap()) {
     val isUpdatePending = AtomicBoolean(false)
-    val isUsingPrimaryBoard = AtomicBoolean(true)
+    var name : String = generateRandomString()
 
-    var name : String = BigInteger(80, random).toString(32)
+    var title : String = ""
+        set(value) {
+            if (field != value || !preventDuplicatePackets) {
+                isUpdatePending.set(true)
+            }
+
+            field = value
+        }
+
+    init {
+        this.title = title
+    }
 
     fun generateNewScoreboardName() {
-        name = BigInteger(80, random).toString(32)
+        name = generateRandomString()
     }
+
+    private val preventDuplicatePackets: Boolean
+        get() = pluginInstance.config.getBoolean("bandwidth.prevent-duplicate-packets")
 
     val size : Int
         get() = lines.size
@@ -23,18 +35,24 @@ class ScoreboardRepresentation(var title: String = "", private val lines: Mutabl
     fun get(index: Int) = lines[index]
 
     fun set(index: Int, text: String) {
+        val isNew = lines[index] != text
+
         if (text.length > 40) {
             lines[index] = text.substring(0, 40)
         } else {
             lines[index] = text
         }
 
-        isUpdatePending.set(true)
+        if (isNew || !preventDuplicatePackets) {
+            isUpdatePending.set(true)
+        }
     }
 
     fun remove(index: Int) {
-        lines.remove(index)
+        val existed = lines.remove(index) != null
 
-        isUpdatePending.set(true)
+        if (existed || !preventDuplicatePackets) {
+            isUpdatePending.set(true)
+        }
     }
 }

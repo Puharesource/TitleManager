@@ -12,6 +12,9 @@ class PlayerInfoDB(file: File, createStatement: String?) {
     private val connection : Connection
     private val connectionLock : Lock = ReentrantLock()
 
+    private val Boolean.intValue : Int get() = if (this) 1 else 0
+    private val Int.booleanValue : Boolean get() = this != 0
+
     init {
         Class.forName("org.sqlite.JDBC")
         connection = DriverManager.getConnection("jdbc:sqlite:${file.absolutePath}")
@@ -38,7 +41,7 @@ class PlayerInfoDB(file: File, createStatement: String?) {
 
                 statement.executeQuery().use { resultSet ->
                     if (resultSet.next()) {
-                        isToggled = resultSet.getInt("scoreboard_toggled") != 0
+                        isToggled = resultSet.getInt("scoreboard_toggled").booleanValue
                     }
                 }
             }
@@ -50,7 +53,6 @@ class PlayerInfoDB(file: File, createStatement: String?) {
     fun setScoreboardToggled(player: Player, toggled: Boolean) {
         connectionLock.withLock {
             val uuidString = player.uniqueId.toString()
-            val toggledValue = if (toggled) 1 else 0
             var exists = false
 
             connection.prepareStatement("SELECT * FROM playerinfo WHERE uuid = ?;").use { statement ->
@@ -63,13 +65,17 @@ class PlayerInfoDB(file: File, createStatement: String?) {
 
             if (exists) {
                 connection.prepareStatement("UPDATE playerinfo SET scoreboard_toggled = ? WHERE uuid = ?;").use { statement ->
-                    statement.setInt(1, toggledValue)
+                    statement.setInt(1, toggled.intValue)
                     statement.setString(2, uuidString)
+
+                    statement.executeUpdate()
                 }
             } else {
                 connection.prepareStatement("INSERT INTO playerinfo (uuid, scoreboard_toggled) VALUES (?, ?);").use { statement ->
                     statement.setString(1, uuidString)
-                    statement.setInt(2, toggledValue)
+                    statement.setInt(2, toggled.intValue)
+
+                    statement.executeUpdate()
                 }
             }
         }

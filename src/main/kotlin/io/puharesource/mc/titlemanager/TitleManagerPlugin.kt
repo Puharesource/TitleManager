@@ -41,6 +41,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -159,6 +160,8 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         val version = config.getInt("config-version")
 
         if (version <= 3) {
+            debug("Upgrading config to the 2.0 format.")
+
             val configFile = File(dataFolder, "config.yml")
             val oldFile = File(dataFolder, "config-old-3.yml")
             val oldAnimationFile = File(dataFolder, "animations.yml")
@@ -266,6 +269,30 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
                 oldAnimationFile.renameTo(File(dataFolder, "animations-old.yml"))
             }
+        } else if (version == 4) {
+            debug("Upgrading config from version 4 to version 5")
+
+            val configFile = File(dataFolder, "config.yml")
+            val oldFile = File(dataFolder, "config-old-4.yml")
+
+            configFile.renameTo(oldFile)
+            saveDefaultConfig()
+
+            conf = PrettyConfig(configFile)
+            val oldConfig = YamlConfiguration.loadConfiguration(oldFile.reader())
+
+            conf!!.getKeys(false)
+                    .filter { it != "config-version" && it != "messages" }
+                    .filter { oldConfig.contains(it) }
+                    .map { it to oldConfig[it] }
+                    .forEach { conf!!.set(it.first, it.second) }
+
+            conf!!.getConfigurationSection("messages").getKeys(false)
+                    .filter { oldConfig.contains(it) }
+                    .map { it to oldConfig[it] }
+                    .forEach { conf!!.getConfigurationSection("messages").set(it.first, it.second) }
+
+            config.save(configFile)
         }
     }
 
@@ -576,9 +603,17 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         APIProvider.addPlaceholderReplacer("online", { server.onlinePlayers.size.toString() }, "online-players")
         APIProvider.addPlaceholderReplacer("max", { server.maxPlayers.toString() }, "max-players")
         APIProvider.addPlaceholderReplacer("world-players", { it.world.players.size.toString() }, "world-online")
-        APIProvider.addPlaceholderReplacer("server-time", { SimpleDateFormat(config.getString("placeholders.date-format")).format(Date(System.currentTimeMillis())) })
         APIProvider.addPlaceholderReplacer("ping", { it.getPing().toString() })
         APIProvider.addPlaceholderReplacer("tps", { PlaceholderTps.getTps(1) })
+
+        APIProvider.addPlaceholderReplacer("server-time", {
+            val format = config.getString("placeholders.date-format")
+            val date = Date(System.currentTimeMillis())
+            val locale = Locale.forLanguageTag(config.getString("locale"))
+
+            return@addPlaceholderReplacer SimpleDateFormat(format, locale).format(date)
+        })
+
         APIProvider.addPlaceholderReplacerWithValue("tps", replacer@ { _, value ->
             if (value.isInt()) {
                 return@replacer PlaceholderTps.getTps(value.toInt())

@@ -217,25 +217,25 @@ object APIProvider : TitleManagerAPI {
     override fun toHeaderAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(animation, player, {
             player.setPlayerListHeader(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { player, animation -> setRunningHeaderAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginInstance.config.getLong("bandwidth.player-list-ms-per-tick"), fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { player, animation -> setRunningHeaderAnimation(player, animation) })
     }
 
     override fun toFooterAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(animation, player, {
             player.setPlayerListFooter(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { player, animation -> setRunningFooterAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginInstance.config.getLong("bandwidth.player-list-ms-per-tick"), fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { player, animation -> setRunningFooterAnimation(player, animation) })
     }
 
     override fun toScoreboardTitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(animation, player, {
             player.setScoreboardTitle(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardTitleAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginInstance.config.getLong("bandwidth.scoreboard-ms-per-tick"), fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardTitleAnimation(player, animation) })
     }
 
     override fun toScoreboardValueAnimation(animation: Animation, player: Player, index: Int, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(animation, player, {
             player.setScoreboardValue(index, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardValueAnimation(player, index, animation) })
+        }, continuous = true, tickRate = pluginInstance.config.getLong("bandwidth.scoreboard-ms-per-tick"), fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardValueAnimation(player, index, animation) })
     }
 
     override fun toAnimationPart(text: String): AnimationPart<String> {
@@ -338,25 +338,25 @@ object APIProvider : TitleManagerAPI {
     override fun toHeaderAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(parts, player, {
             player.setPlayerListHeader(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { player, animation -> setRunningHeaderAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginInstance.config.getLong("bandwidth.player-list-ms-per-tick"), fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { player, animation -> setRunningHeaderAnimation(player, animation) })
     }
 
     override fun toFooterAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(parts, player, {
             player.setPlayerListFooter(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { player, animation -> setRunningFooterAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginInstance.config.getLong("bandwidth.player-list-ms-per-tick"), fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { player, animation -> setRunningFooterAnimation(player, animation) })
     }
 
     override fun toScoreboardTitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(parts, player, {
             player.setScoreboardTitle(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardTitleAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginInstance.config.getLong("bandwidth.scoreboard-ms-per-tick"), fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardTitleAnimation(player, animation) })
     }
 
     override fun toScoreboardValueAnimation(parts: List<AnimationPart<*>>, player: Player, index: Int, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(parts, player, {
             player.setScoreboardValue(index, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardValueAnimation(player, index, animation) })
+        }, continuous = true, tickRate = pluginInstance.config.getLong("bandwidth.scoreboard-ms-per-tick"), fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardValueAnimation(player, index, animation) })
     }
 
     override fun fromText(vararg frames: String): Animation {
@@ -583,6 +583,16 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun setHeaderAndFooter(player: Player, header: String, footer: String) {
+        if (pluginInstance.config.getBoolean("bandwidth.prevent-duplicate-packets")) {
+            val cachedValues = playerListCache[player]
+
+            if (cachedValues != null) {
+                if (header == cachedValues.first && footer == cachedValues.second) {
+                    return
+                }
+            }
+        }
+
         playerListCache.put(player, header to footer)
         val provider = NMSManager.getClassProvider()
         val packet : Any
@@ -617,8 +627,6 @@ object APIProvider : TitleManagerAPI {
 
     override fun removeScoreboard(player: Player) {
         if (hasScoreboard(player)) {
-            ScoreboardManager.playerScoreboards.remove(player)
-            ScoreboardManager.stopUpdateTask(player)
             ScoreboardManager.removeScoreboard(player)
         }
     }
