@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.reflections
 
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 internal fun Player.getPing() : Int {
@@ -13,7 +14,9 @@ internal fun Player.getPing() : Int {
  * Checks if the player is on 1.7 on the Protocol Hack version of Spigot
  */
 internal fun Player.isUsing17() : Boolean {
-    if (NMSManager.versionIndex != 0) return false
+    if (NMSManager.versionIndex != 0) {
+        return false
+    }
 
     val playerConnection = getNMSPlayerConnection()
     val networkManager = playerConnection.javaClass.getField("networkManager").get(playerConnection)
@@ -22,6 +25,10 @@ internal fun Player.isUsing17() : Boolean {
 }
 
 internal fun Player.sendNMSPacket(packet: Any) {
+    if (isUsing17()) {
+        return
+    }
+
     val provider = NMSManager.getClassProvider()
 
     if (NMSManager.versionIndex <= 2) {

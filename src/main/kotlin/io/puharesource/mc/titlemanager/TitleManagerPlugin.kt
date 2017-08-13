@@ -345,16 +345,17 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                                     val title = titles[i].color().split("\\n", limit = 2)
 
                                     if (title.first().isNotEmpty() && title[1].isEmpty()) {
-                                        sendTitleWithPlaceholders(it, title.first(), fadeIn, stay, fadeOut)
+                                        it.sendTitleFromText(title.first(), fadeIn, stay, fadeOut)
                                     } else if (title.first().isEmpty() && title[1].isNotEmpty()) {
-                                        sendSubtitleWithPlaceholders(it, title[1], fadeIn, stay, fadeOut)
+                                        it.sendSubtitleFromText(title[1], fadeIn, stay, fadeOut)
                                     } else {
-                                        sendTitlesWithPlaceholders(it, title[0], title[1], fadeIn, stay, fadeOut)
+                                        it.sendTitleFromText(title.first(), fadeIn, stay, fadeOut)
+                                        it.sendSubtitleFromText(title[1], fadeIn, stay, fadeOut)
                                     }
                                 }
 
                                 if (i < actionbarTitles.size) {
-                                    sendActionbarWithPlaceholders(it, actionbarTitles[i].color())
+                                    it.sendActionbarFromText(actionbarTitles[i].color())
                                 }
                             }
                         }, interval, interval, TimeUnit.SECONDS)
@@ -402,66 +403,6 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     }
 
     private fun registerListeners() {
-        fun Player.sendTitleFromText(text: String, fadeIn: Int, stay: Int, fadeOut: Int) {
-            val parts = toAnimationParts(text)
-
-            if (parts.size == 1 && parts.first().part is String) {
-                sendTitle(
-                        title = parts.first().part as String,
-                        fadeIn = fadeIn,
-                        stay = stay,
-                        fadeOut = fadeOut,
-                        withPlaceholders = true)
-            } else if (parts.size == 1 && parts.first().part is Animation) {
-                toTitleAnimation(parts.first().part as Animation, this, withPlaceholders = true).start()
-            } else if (parts.isNotEmpty()) {
-                toTitleAnimation(parts, this, withPlaceholders = true).start()
-            }
-        }
-
-        fun Player.sendSubtitleFromText(text: String, fadeIn: Int, stay: Int, fadeOut: Int) {
-            val parts = toAnimationParts(text)
-
-            if (parts.size == 1 && parts.first().part is String) {
-                sendSubtitle(
-                        subtitle = parts.first().part as String,
-                        fadeIn = fadeIn,
-                        stay = stay,
-                        fadeOut = fadeOut,
-                        withPlaceholders = true)
-            } else if (parts.size == 1 && parts.first().part is Animation) {
-                toSubtitleAnimation(parts.first().part as Animation, this, withPlaceholders = true).start()
-            } else if (parts.isNotEmpty()) {
-                toSubtitleAnimation(parts, this, withPlaceholders = true).start()
-            }
-        }
-
-        fun Player.sendActionbarFromText(text: String) {
-            val parts = toAnimationParts(text)
-
-            if (parts.size == 1 && parts.first().part is String) {
-                sendActionbar(
-                        text = parts.first().part as String,
-                        withPlaceholders = true)
-            } else if (parts.size == 1 && parts.first().part is Animation) {
-                toActionbarAnimation(parts.first().part as Animation, this, withPlaceholders = true).start()
-            } else if (parts.isNotEmpty()) {
-                toActionbarAnimation(parts, this, withPlaceholders = true).start()
-            }
-        }
-
-        fun Player.setHeaderFromText(text: String) {
-            val parts = toAnimationParts(text)
-
-            toHeaderAnimation(parts, this, withPlaceholders = true).start()
-        }
-
-        fun Player.setFooterFromText(text: String) {
-            val parts = toAnimationParts(text)
-
-            toFooterAnimation(parts, this, withPlaceholders = true).start()
-        }
-
         // Notify administrators joining the server of the update.
         observeEvent(events = PlayerJoinEvent::class.java)
                 .filter { config.getBoolean("check-for-updates") }
@@ -648,6 +589,66 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 APIProvider.addPlaceholderReplacer("group", { VaultHook.permissions!!.getPrimaryGroup(it) }, "group-name")
             }
         }
+    }
+
+    private fun Player.sendTitleFromText(text: String, fadeIn: Int, stay: Int, fadeOut: Int) {
+        val parts = toAnimationParts(text)
+
+        if (parts.size == 1 && parts.first().part is String) {
+            sendTitle(
+                    title = parts.first().part as String,
+                    fadeIn = fadeIn,
+                    stay = stay,
+                    fadeOut = fadeOut,
+                    withPlaceholders = true)
+        } else if (parts.size == 1 && parts.first().part is Animation) {
+            toTitleAnimation(parts.first().part as Animation, this, withPlaceholders = true).start()
+        } else if (parts.isNotEmpty()) {
+            toTitleAnimation(parts, this, withPlaceholders = true).start()
+        }
+    }
+
+    private fun Player.sendSubtitleFromText(text: String, fadeIn: Int, stay: Int, fadeOut: Int) {
+        val parts = toAnimationParts(text)
+
+        if (parts.size == 1 && parts.first().part is String) {
+            sendSubtitle(
+                    subtitle = parts.first().part as String,
+                    fadeIn = fadeIn,
+                    stay = stay,
+                    fadeOut = fadeOut,
+                    withPlaceholders = true)
+        } else if (parts.size == 1 && parts.first().part is Animation) {
+            toSubtitleAnimation(parts.first().part as Animation, this, withPlaceholders = true).start()
+        } else if (parts.isNotEmpty()) {
+            toSubtitleAnimation(parts, this, withPlaceholders = true).start()
+        }
+    }
+
+    private fun Player.sendActionbarFromText(text: String) {
+        val parts = toAnimationParts(text)
+
+        if (parts.size == 1 && parts.first().part is String) {
+            sendActionbar(
+                    text = parts.first().part as String,
+                    withPlaceholders = true)
+        } else if (parts.size == 1 && parts.first().part is Animation) {
+            toActionbarAnimation(parts.first().part as Animation, this, withPlaceholders = true).start()
+        } else if (parts.isNotEmpty()) {
+            toActionbarAnimation(parts, this, withPlaceholders = true).start()
+        }
+    }
+
+    private fun Player.setHeaderFromText(text: String) {
+        val parts = toAnimationParts(text)
+
+        toHeaderAnimation(parts, this, withPlaceholders = true).start()
+    }
+
+    private fun Player.setFooterFromText(text: String) {
+        val parts = toAnimationParts(text)
+
+        toFooterAnimation(parts, this, withPlaceholders = true).start()
     }
 
     override fun replaceText(player: Player, text: String) = APIProvider.replaceText(player, text)

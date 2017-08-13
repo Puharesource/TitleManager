@@ -48,6 +48,7 @@ object ScriptManager {
         registerAnimation("text_write")
         registerAnimation("shine")
         registerAnimation("marquee")
+        registerAnimation("repeat")
     }
 
     fun addJavaScript(js: String) {
@@ -76,7 +77,7 @@ object ScriptManager {
 
                     done = result[1] as Boolean
 
-                    return StandardAnimationFrame(result[0] as String, result[2] as Int, result[3] as Int, result[4] as Int)
+                    return StandardAnimationFrame(result[0] as String, (result[2] as Number).toInt(), (result[3] as Number).toInt(), (result[4] as Int).toInt())
                 }
             }
         }
