@@ -96,7 +96,7 @@ class CommandExecutor(val cmd: TMSubCommand, val sender: CommandSender, val args
         }
     }
 
-    val recipients: Set<Player>
+    private val recipients: Set<Player>
         get() {
             if (sender is Player && radius != null) {
                 val players = sender.getNearbyEntities(radius!!, radius!!, radius!!)

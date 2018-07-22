@@ -1,6 +1,5 @@
 package io.puharesource.mc.titlemanager.reflections
 
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 internal fun Player.getPing() : Int {

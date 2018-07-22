@@ -25,12 +25,10 @@ class PartBasedSendableAnimation(parts: List<AnimationPart<*>>,
 
     init {
         this.sendableParts = parts.mapNotNull {
-            if (it.part is Animation) {
-                AnimationSendablePart(player = player, part = it as AnimationPart<Animation>, isContinuous = isContinuous)
-            } else if (it.part is String) {
-                StringSendablePart(it as AnimationPart<String>, isContinuous = isContinuous)
-            } else {
-                null
+            when {
+                it.part is Animation -> AnimationSendablePart(player = player, part = it as AnimationPart<Animation>, isContinuous = isContinuous)
+                it.part is String -> StringSendablePart(it as AnimationPart<String>, isContinuous = isContinuous)
+                else -> null
             }
         }
     }
@@ -142,7 +140,7 @@ data class AnimationSendablePart(private val player: Player,
     override fun isDone() = done
 }
 
-data class StringSendablePart(val part: AnimationPart<String>, private val isContinuous: Boolean) : SendablePart {
+data class StringSendablePart(private val part: AnimationPart<String>, private val isContinuous: Boolean) : SendablePart {
     override fun getCurrentText() : String = part.part
     override fun updateText(currentTick: Int) {}
     override fun isDone() = !isContinuous

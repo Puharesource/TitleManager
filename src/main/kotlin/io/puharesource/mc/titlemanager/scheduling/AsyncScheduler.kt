@@ -17,10 +17,10 @@ object AsyncScheduler {
     fun schedule(body: () -> Unit, delay: Int) : Int {
         val id = ids.incrementAndGet()
 
-        scheduled.put(id, scheduler.schedule({
+        scheduled[id] = scheduler.schedule({
             scheduled.remove(id)
             body()
-        }, delay * 50L, TimeUnit.MILLISECONDS))
+        }, delay * 50L, TimeUnit.MILLISECONDS)
 
         return id
     }
@@ -30,7 +30,7 @@ object AsyncScheduler {
     fun schedule(body: () -> Unit, delay: Int, period: Int) : Int {
         val id = ids.incrementAndGet()
 
-        scheduled.put(id, scheduler.scheduleAtFixedRate({ body() }, delay * 50L, period * 50L, TimeUnit.MILLISECONDS))
+        scheduled[id] = scheduler.scheduleAtFixedRate({ body() }, delay * 50L, period * 50L, TimeUnit.MILLISECONDS)
 
         return id
     }
@@ -38,10 +38,10 @@ object AsyncScheduler {
     fun scheduleRaw(body: () -> Unit, delay: Long, unit: TimeUnit = TimeUnit.MILLISECONDS) : Int {
         val id = ids.incrementAndGet()
 
-        scheduled.put(id, scheduler.schedule({
+        scheduled[id] = scheduler.schedule({
             scheduled.remove(id)
             body()
-        }, delay, unit))
+        }, delay, unit)
 
         return id
     }
@@ -51,7 +51,7 @@ object AsyncScheduler {
     fun scheduleRaw(body: () -> Unit, delay: Int, period: Int, unit: TimeUnit = TimeUnit.MILLISECONDS) : Int {
         val id = ids.incrementAndGet()
 
-        scheduled.put(id, scheduler.scheduleAtFixedRate({ body() }, delay.toLong(), period.toLong(), unit))
+        scheduled[id] = scheduler.scheduleAtFixedRate({ body() }, delay.toLong(), period.toLong(), unit)
 
         return id
     }

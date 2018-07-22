@@ -43,7 +43,7 @@ class JSAnimationTest {
     }
 
     fun checkList(animation: String, results: List<String>, expectedResults: List<String>) {
-        (0..results.size - 1).forEach {
+        (0 until results.size).forEach {
             val result = results[it]
             val expectedResult = expectedResults[it]
 

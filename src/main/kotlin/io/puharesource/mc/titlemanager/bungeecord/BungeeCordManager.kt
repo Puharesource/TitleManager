@@ -52,7 +52,7 @@ object BungeeCordManager {
                                 currentServer = server
 
                                 if (!servers.containsKey(server)) {
-                                    servers.put(server, ServerInfo(server, Bukkit.getOnlinePlayers().size, Bukkit.getMaxPlayers()))
+                                    servers[server] = ServerInfo(server, Bukkit.getOnlinePlayers().size, Bukkit.getMaxPlayers())
                                 } else {
                                     servers[server]?.playerCount = Bukkit.getOnlinePlayers().size
                                 }
@@ -64,7 +64,7 @@ object BungeeCordManager {
                                 if (server.equals("ALL", ignoreCase = true)) return@subscribe
 
                                 if (!servers.containsKey(server)) {
-                                    servers.put(server, ServerInfo(server, playerCount, -1))
+                                    servers[server] = ServerInfo(server, playerCount, -1)
                                 } else {
                                     servers[server]?.playerCount = playerCount
                                 }

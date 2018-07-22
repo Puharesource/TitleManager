@@ -2,7 +2,7 @@ package io.puharesource.mc.titlemanager.reflections
 
 import java.lang.reflect.Field
 
-class ReflectionClass(val path: String) {
+class ReflectionClass(private val path: String) {
     val handle : Class<*> = Class.forName(path)
 
     fun getMethod(methodName: String, vararg params: Class<*>) = handle.getDeclaredMethod(methodName, *params) ?: throw NoSuchMethodException("Couldn't find constructor for ${handle.name}.")

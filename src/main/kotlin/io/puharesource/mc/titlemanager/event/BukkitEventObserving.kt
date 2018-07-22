@@ -14,6 +14,14 @@ import org.bukkit.plugin.messaging.PluginMessageListener
 import rx.Observable
 import rx.subscriptions.Subscriptions
 
+internal inline fun <reified T : Event> observeEvent(priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = false) : Observable<T> {
+    return observeEventRaw(priority, ignoreCancelled, T::class.java).subscribeOn(syncScheduler)
+}
+
+internal inline fun <reified T : Event> observeEventRaw(priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = false) : Observable<T> {
+    return observeEventRaw(priority, ignoreCancelled, T::class.java)
+}
+
 internal fun <T : Event> observeEvent(priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = false, vararg events: Class<T>) : Observable<T> {
     return observeEventRaw(priority, ignoreCancelled, *events).subscribeOn(syncScheduler)
 }

@@ -140,13 +140,13 @@ object TMCommand : CommandExecutor, TabCompleter {
             if (arg.matches(parameterPattern)) {
                 val parameter = parameterPattern.matchEntire(arg)!!.groups[1]!!.value
 
-                parameters.put(parameter, CommandParameter(parameter))
+                parameters[parameter] = CommandParameter(parameter)
             } else if (arg.matches(parameterPatternWithValue)) {
                 val result = parameterPatternWithValue.matchEntire(arg)!!.groups
                 val parameter = result[1]!!.value
                 val value = result[2]!!.value
 
-                parameters.put(parameter, CommandParameter(parameter, value))
+                parameters[parameter] = CommandParameter(parameter, value)
             } else {
                 break
             }

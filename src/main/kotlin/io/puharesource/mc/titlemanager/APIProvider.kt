@@ -44,10 +44,10 @@ object APIProvider : TitleManagerAPI {
 
     internal val registeredAnimations : MutableMap<String, Animation> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
 
-    internal val placeholderReplacers : MutableMap<String, (Player) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
-    internal val placeholderReplacersWithValues : MutableMap<String, (Player, String) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
+    private val placeholderReplacers : MutableMap<String, (Player) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
+    private val placeholderReplacersWithValues : MutableMap<String, (Player, String) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
 
-    internal val textAnimationFramePattern = "^\\[([-]?\\d+);([-]?\\d+);([-]?\\d+)\\](.+)$".toRegex()
+    internal val textAnimationFramePattern = "^\\[([-]?\\d+);([-]?\\d+);([-]?\\d+)](.+)$".toRegex()
     internal val variablePattern = """[%][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
     internal val animationPattern = """[$][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
     internal val commandSplitPattern = """([<]nl[>])|(\\n)""".toRegex()
@@ -107,8 +107,8 @@ object APIProvider : TitleManagerAPI {
     // Placeholder
 
     fun addPlaceholderReplacer(name: String, body: (Player) -> String, vararg aliases: String) {
-        placeholderReplacers.put(name, body)
-        aliases.forEach { placeholderReplacers.put(it, body) }
+        placeholderReplacers[name] = body
+        aliases.forEach { placeholderReplacers[it] = body }
     }
 
     fun addPlaceholderReplacer(name: String, instance: Any, method: Method, vararg aliases: String) {
@@ -116,8 +116,8 @@ object APIProvider : TitleManagerAPI {
     }
 
     fun addPlaceholderReplacerWithValue(name: String, body: (Player, String) -> String, vararg aliases: String) {
-        placeholderReplacersWithValues.put(name, body)
-        aliases.forEach { placeholderReplacersWithValues.put(it, body) }
+        placeholderReplacersWithValues[name] = body
+        aliases.forEach { placeholderReplacersWithValues[it] = body }
     }
 
     override fun replaceText(player: Player, text: String): String {
@@ -183,7 +183,7 @@ object APIProvider : TitleManagerAPI {
     override fun getRegisteredScripts(): Set<String> = ScriptManager.registeredScripts
 
     override fun addAnimation(id: String, animation: Animation) {
-        registeredAnimations.put(id, animation)
+        registeredAnimations[id] = animation
     }
 
     override fun removeAnimation(id: String) {
@@ -529,10 +529,9 @@ object APIProvider : TitleManagerAPI {
     override fun sendActionbar(player: Player, text: String) {
         val provider = NMSManager.getClassProvider()
 
-        if (NMSManager.versionIndex >= 5) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(text))
-        } else if (NMSManager.versionIndex == 0) {
-            try {
+        when {
+            NMSManager.versionIndex >= 5 -> player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(text))
+            NMSManager.versionIndex == 0 -> try {
                 val packet = provider.get("PacketPlayOutChat")
                         .getConstructor(provider.get("IChatBaseComponent").handle, Integer.TYPE)
                         .newInstance(provider.getIChatComponent(text), 2)
@@ -541,12 +540,13 @@ object APIProvider : TitleManagerAPI {
             } catch (e: NoSuchMethodException) {
                 error("(If you're using Spigot #1649) Your version of Spigot #1649 doesn't support actionbar messages. Please find that spigot version from another source!")
             }
-        } else {
-            val packet = provider.get("PacketPlayOutChat")
-                    .getConstructor(provider.get("IChatBaseComponent").handle, Byte::class.java)
-                    .newInstance(provider.getIChatComponent(text), 2.toByte())
+            else -> {
+                val packet = provider.get("PacketPlayOutChat")
+                        .getConstructor(provider.get("IChatBaseComponent").handle, Byte::class.java)
+                        .newInstance(provider.getIChatComponent(text), 2.toByte())
 
-            player.sendNMSPacket(packet)
+                player.sendNMSPacket(packet)
+            }
         }
     }
 
@@ -563,7 +563,7 @@ object APIProvider : TitleManagerAPI {
     override fun getHeader(player: Player) = playerListCache[player]?.first.orEmpty()
 
     override fun setHeader(player: Player, header: String) {
-        playerListCache.put(player, header to getFooter(player))
+        playerListCache[player] = header to getFooter(player)
         setHeaderAndFooter(player, header, getFooter(player))
     }
 
@@ -574,7 +574,7 @@ object APIProvider : TitleManagerAPI {
     override fun getFooter(player: Player) = playerListCache[player]?.second.orEmpty()
 
     override fun setFooter(player: Player, footer: String) {
-        playerListCache.put(player, getFooter(player) to footer)
+        playerListCache[player] = getFooter(player) to footer
         setHeaderAndFooter(player, getHeader(player), footer)
     }
 
@@ -593,7 +593,7 @@ object APIProvider : TitleManagerAPI {
             }
         }
 
-        playerListCache.put(player, header to footer)
+        playerListCache[player] = header to footer
         val provider = NMSManager.getClassProvider()
         val packet : Any
 
@@ -620,7 +620,7 @@ object APIProvider : TitleManagerAPI {
 
     override fun giveScoreboard(player: Player) {
         if (!hasScoreboard(player)) {
-            ScoreboardManager.playerScoreboards.put(player, ScoreboardRepresentation())
+            ScoreboardManager.playerScoreboards[player] = ScoreboardRepresentation()
             ScoreboardManager.startUpdateTask(player)
         }
     }

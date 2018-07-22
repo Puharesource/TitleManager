@@ -7,6 +7,7 @@ import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationFrame
 import io.puharesource.mc.titlemanager.isTesting
 import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.warning
 import java.io.File
 import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.atomic.AtomicInteger
@@ -15,21 +16,25 @@ import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
 object ScriptManager {
-    private var javaScriptEngine : ScriptEngine = ScriptEngineManager().getEngineByName("nashorn")
+    private var javaScriptEngine : ScriptEngine? = null
     internal val registeredScripts : MutableSet<String> = ConcurrentSkipListSet(String.CASE_INSENSITIVE_ORDER)
 
     init {
         reloadInternals()
+
+        if (javaScriptEngine == null) {
+            warning("Unable to initialize script engine! Scripts won't be working. This is probably due to running on OpenJDK rather than Oracle.")
+        }
     }
 
     fun reloadInternals() {
-        javaScriptEngine = ScriptEngineManager().getEngineByName("nashorn")
+        javaScriptEngine = ScriptEngineManager().getEngineByName("nashorn") ?: return
 
         fun addResource(file: String) {
             if (isTesting) {
-                javaScriptEngine.eval(Resources.getResource(file).readText())
+                javaScriptEngine!!.eval(Resources.getResource(file).readText())
             } else {
-                javaScriptEngine.eval(pluginInstance.getResource(file).reader())
+                javaScriptEngine!!.eval(pluginInstance.getResource(file).reader())
             }
         }
 
@@ -38,7 +43,7 @@ object ScriptManager {
             registeredScripts.add(name)
         }
 
-        javaScriptEngine.put("ScriptCommandSender", ScriptCommandSender::class.java)
+        javaScriptEngine!!.put("ScriptCommandSender", ScriptCommandSender::class.java)
 
         addResource("titlemanager_engine.js")
 
@@ -52,11 +57,11 @@ object ScriptManager {
     }
 
     fun addJavaScript(js: String) {
-        javaScriptEngine.eval(js)
+        javaScriptEngine?.eval(js)
     }
 
     fun addJavaScript(file: File) {
-        javaScriptEngine.eval(file.reader())
+        javaScriptEngine?.eval(file.reader())
     }
 
     fun getFrameFromScript(name: String, text: String, index: Int) : Array<*> {

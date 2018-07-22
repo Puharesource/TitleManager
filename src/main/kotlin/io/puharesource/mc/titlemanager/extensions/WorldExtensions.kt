@@ -18,7 +18,7 @@ fun World.getFormattedTime(is24HourFormat: Boolean = false) : String {
 
         extra = " "
 
-        if (time < 19000 && time >= 7000) {
+        if (time in 7000..18999) {
             extra += "PM"
         } else {
             extra += "AM"

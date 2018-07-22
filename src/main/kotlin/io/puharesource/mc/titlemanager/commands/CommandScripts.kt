@@ -6,7 +6,7 @@ import io.puharesource.mc.titlemanager.pluginInstance
 
 object CommandScripts : TMSubCommand("scripts",
         cmdExecutor = { cmd, sender, args, parameters -> commandExecutor(cmd, sender, args, parameters) {
-            val scripts = pluginInstance.registeredScripts
+            val scripts = pluginInstance.getRegisteredScripts()
             val joiner = Joiner.on(pluginInstance.config.getString("messages.command-scripts.separator").orEmpty().color())
 
             sendConfigMessage("format",

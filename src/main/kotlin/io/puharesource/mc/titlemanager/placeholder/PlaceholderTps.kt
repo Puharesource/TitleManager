@@ -4,13 +4,13 @@ import io.puharesource.mc.titlemanager.script.createScriptCommandSender
 import org.bukkit.Bukkit
 
 object PlaceholderTps {
-    val regex = """([§][a-f0-9].+), ([§][a-f0-9].+), ([§][a-f0-9].+)""".toRegex()
+    private val regex = """([§][a-f0-9].+), ([§][a-f0-9].+), ([§][a-f0-9].+)""".toRegex()
 
     private fun getOutput() : String {
         val sender = createScriptCommandSender()
         Bukkit.dispatchCommand(sender, "tps")
 
-        return sender.receivedMessages[0]
+        return sender.receivedMessages.first()
     }
 
     fun getTps(index: Int? = null) : String {

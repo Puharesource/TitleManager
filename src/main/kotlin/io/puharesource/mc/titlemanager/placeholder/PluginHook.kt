@@ -4,7 +4,7 @@ import io.puharesource.mc.titlemanager.debug
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 
-abstract class PluginHook constructor(val pluginName: String) {
+abstract class PluginHook constructor(private val pluginName: String) {
     init {
         if (!isEnabled()) {
             debug("$pluginName is not enabled, disabling placeholders related to the plugin.")

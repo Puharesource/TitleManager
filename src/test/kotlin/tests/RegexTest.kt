@@ -1,6 +1,7 @@
 package tests
 
 import io.puharesource.mc.titlemanager.APIProvider
+import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import org.junit.Test
 import testPlayer
 import kotlin.test.assertTrue
@@ -10,7 +11,7 @@ class RegexTest {
         APIProvider.addPlaceholderReplacer("test", { _ -> "test" })
         APIProvider.addPlaceholderReplacerWithValue("test1", { _, value -> "test1: $value" })
         APIProvider.addPlaceholderReplacerWithValue("test2", { _, value -> "test2: $value" })
-        APIProvider.addAnimation("test-animation", { _ -> listOf(APIProvider.createAnimationFrame("hello", 1, 2, 3), APIProvider.createAnimationFrame("der", 1, 2, 3)).iterator() })
+        APIProvider.addAnimation("test-animation", Animation { _ -> listOf(APIProvider.createAnimationFrame("hello", 1, 2, 3), APIProvider.createAnimationFrame("der", 1, 2, 3)).iterator() })
     }
 
     @Test

@@ -7,19 +7,19 @@ internal fun String.color() : String = ChatColor.translateAlternateColorCodes('&
 internal fun String.stripColor() : String = ChatColor.stripColor(this)
 
 internal fun String.isInt() : Boolean {
-    try {
+    return try {
         toInt()
-        return true
+        true
     } catch (e: NumberFormatException) {
-        return false
+        false
     }
 }
 
 internal fun String.isDouble() : Boolean {
-    try {
+    return try {
         toDouble()
-        return true
+        true
     } catch (e: NumberFormatException) {
-        return false
+        false
     }
 }

@@ -3,7 +3,6 @@ package io.puharesource.mc.titlemanager
 import com.google.common.base.Joiner
 import io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
-import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
 import io.puharesource.mc.titlemanager.bungeecord.BungeeCordManager
 import io.puharesource.mc.titlemanager.commands.TMCommand
 import io.puharesource.mc.titlemanager.config.PrettyConfig
@@ -45,7 +44,7 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
-class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
+class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     private val animationsFolder = File(dataFolder, "animations")
     private var conf : PrettyConfig? = null
     var playerInfoDB: PlayerInfoDB? = null
@@ -117,7 +116,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         saveDefaultConfig()
         reloadConfig()
 
-        registeredAnimations.clear()
+        APIProvider.registeredAnimations.clear()
         ScriptManager.registeredScripts.clear()
 
         addFiles()
@@ -173,16 +172,10 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
             val oldConfig = YamlConfiguration.loadConfiguration(oldFile.reader())
 
             val oldAnimationPattern = "(?i)^animation[:](.+)$".toRegex()
-            val oldPlaceholderPattern = "\\{(.+)\\}".toRegex()
+            val oldPlaceholderPattern = "\\{(.+)}".toRegex()
 
             fun move(path: String, newPath: String? = null, transformer: ((Any) -> Any)? = null) {
-                val correctNewPath : String
-
-                if (newPath == null) {
-                    correctNewPath = path
-                } else {
-                    correctNewPath = newPath
-                }
+                val correctNewPath = newPath ?: path
 
                 if (oldConfig.contains(path)) {
                     var oldValue = oldConfig.get(path)
@@ -251,7 +244,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 val oldAnimationsConfig = YamlConfiguration.loadConfiguration(oldAnimationFile)
 
                 oldAnimationsConfig.getKeys(false)
-                        .map { it.to(oldAnimationsConfig.getStringList("$it.frames")) }
+                        .map { it to oldAnimationsConfig.getStringList("$it.frames") }
                         .forEach {
                             val name = it.first
                             val frames = Joiner.on("\n")
@@ -386,7 +379,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
         animationsFolder.listFiles()
                 .filter { it.isFile }
                 .filter { it.extension.equals("txt", ignoreCase = true) }
-                .forEach { registeredAnimations.put(it.nameWithoutExtension, fromTextFile(it)) }
+                .forEach { APIProvider.registeredAnimations[it.nameWithoutExtension] = fromTextFile(it) }
 
         ScriptManager.reloadInternals()
 
@@ -404,7 +397,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
     private fun registerListeners() {
         // Notify administrators joining the server of the update.
-        observeEvent(events = PlayerJoinEvent::class.java)
+        observeEvent<PlayerJoinEvent>()
                 .filter { config.getBoolean("check-for-updates") }
                 .filter { UpdateChecker.isUpdateAvailable() }
                 .map { it.player }
@@ -416,7 +409,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 }
 
         // Welcome title message
-        observeEvent(events = PlayerJoinEvent::class.java)
+        observeEvent<PlayerJoinEvent>()
                 .observeOn(asyncScheduler)
                 .subscribeOn(asyncScheduler)
                 .filter { config.getBoolean("using-config") }
@@ -455,7 +448,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 }
 
         // Welcome actionbar message
-        observeEventRaw(events = PlayerJoinEvent::class.java)
+        observeEventRaw<PlayerJoinEvent>()
                 .observeOn(asyncScheduler)
                 .subscribeOn(asyncScheduler)
                 .filter { config.getBoolean("using-config") }
@@ -474,7 +467,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 }
 
         // Set header and footer
-        observeEvent(events = PlayerJoinEvent::class.java)
+        observeEvent<PlayerJoinEvent>()
                 .filter { config.getBoolean("using-config") }
                 .filter { config.getBoolean("player-list.enabled") }
                 .map { it.player }
@@ -486,7 +479,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 }
 
         // Set scoreboard
-        observeEvent(events = PlayerJoinEvent::class.java)
+        observeEvent<PlayerJoinEvent>()
                 .filter { config.getBoolean("using-config") }
                 .filter { config.getBoolean("scoreboard.enabled") }
                 .map { it.player }
@@ -506,13 +499,13 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 }
 
         // Delete players from the tab list cache when they quit the server
-        observeEvent(events = PlayerQuitEvent::class.java)
+        observeEvent<PlayerQuitEvent>()
                 .map { it.player }
                 .filter { APIProvider.playerListCache.contains(it) }
                 .subscribe { APIProvider.playerListCache.remove(it) }
 
         // Delete players from the scoreboard cache when they quit the server
-        observeEvent(events = PlayerQuitEvent::class.java)
+        observeEvent<PlayerQuitEvent>()
                 .map { it.player }
                 .filter { APIProvider.hasScoreboard(it) }
                 .subscribe {
@@ -521,7 +514,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
                 }
 
         // End all running animations when they quit the server
-        observeEvent(events = PlayerQuitEvent::class.java)
+        observeEvent<PlayerQuitEvent>()
                 .map { it.player }
                 .subscribe { APIProvider.removeAllRunningAnimations(it) }
     }
@@ -650,138 +643,4 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
         toFooterAnimation(parts, this, withPlaceholders = true).start()
     }
-
-    override fun replaceText(player: Player, text: String) = APIProvider.replaceText(player, text)
-
-    override fun containsPlaceholders(text: String) = APIProvider.containsPlaceholders(text)
-
-    override fun containsPlaceholder(text: String, placeholder: String) = APIProvider.containsPlaceholder(text, placeholder)
-
-    override fun containsAnimations(text: String) = APIProvider.containsAnimations(text)
-
-    override fun containsAnimation(text: String, animation: String) = APIProvider.containsAnimation(text, animation)
-
-    override fun getRegisteredAnimations() = APIProvider.registeredAnimations
-
-    override fun getRegisteredScripts() = APIProvider.registeredScripts
-
-    override fun addAnimation(id: String, animation: Animation) = APIProvider.addAnimation(id, animation)
-
-    override fun removeAnimation(id: String) = APIProvider.removeAnimation(id)
-
-    override fun toTitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = APIProvider.toTitleAnimation(animation, player, withPlaceholders)
-
-    override fun toSubtitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = APIProvider.toSubtitleAnimation(animation, player, withPlaceholders)
-
-    override fun toActionbarAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = APIProvider.toActionbarAnimation(animation, player, withPlaceholders)
-
-    override fun toHeaderAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = APIProvider.toHeaderAnimation(animation, player, withPlaceholders)
-
-    override fun toFooterAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = APIProvider.toFooterAnimation(animation, player, withPlaceholders)
-
-    override fun toAnimationPart(text: String) = APIProvider.toAnimationPart(text)
-
-    override fun toAnimationPart(animation: Animation) = APIProvider.toAnimationPart(animation)
-
-    override fun toAnimationParts(text: String) = APIProvider.toAnimationParts(text)
-
-    override fun createAnimationFrame(text: String, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.createAnimationFrame(text, fadeIn, stay, fadeOut)
-
-    override fun toTitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = APIProvider.toTitleAnimation(parts, player, withPlaceholders)
-
-    override fun toSubtitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = APIProvider.toSubtitleAnimation(parts, player, withPlaceholders)
-
-    override fun toActionbarAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = APIProvider.toActionbarAnimation(parts, player, withPlaceholders)
-
-    override fun toHeaderAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = APIProvider.toHeaderAnimation(parts, player, withPlaceholders)
-
-    override fun toFooterAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = APIProvider.toFooterAnimation(parts, player, withPlaceholders)
-
-    override fun toScoreboardTitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = APIProvider.toScoreboardTitleAnimation(animation, player, withPlaceholders)
-
-    override fun toScoreboardTitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = APIProvider.toScoreboardTitleAnimation(parts, player, withPlaceholders)
-
-    override fun toScoreboardValueAnimation(animation: Animation, player: Player, index: Int, withPlaceholders: Boolean) = APIProvider.toScoreboardValueAnimation(animation, player, index, withPlaceholders)
-
-    override fun toScoreboardValueAnimation(parts: List<AnimationPart<*>>, player: Player, index: Int, withPlaceholders: Boolean) = APIProvider.toScoreboardValueAnimation(parts, player, index, withPlaceholders)
-
-    override fun fromText(vararg frames: String) = APIProvider.fromText(*frames)
-
-    override fun fromTextFile(file: File) = APIProvider.fromTextFile(file)
-
-    override fun fromJavaScript(name: String, input: String) = APIProvider.fromJavaScript(name, input)
-
-    override fun sendTitle(player: Player, title: String) = APIProvider.sendTitle(player, title)
-
-    override fun sendTitle(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.sendTitle(player, title, fadeIn, stay, fadeOut)
-
-    override fun sendTitleWithPlaceholders(player: Player, title: String) = APIProvider.sendTitleWithPlaceholders(player, title)
-
-    override fun sendTitleWithPlaceholders(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.sendTitleWithPlaceholders(player, title, fadeIn, stay, fadeOut)
-
-    override fun sendSubtitle(player: Player, subtitle: String) = APIProvider.sendSubtitle(player, subtitle)
-
-    override fun sendSubtitle(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.sendSubtitle(player, subtitle, fadeIn, stay, fadeOut)
-
-    override fun sendSubtitleWithPlaceholders(player: Player, subtitle: String) = APIProvider.sendSubtitleWithPlaceholders(player, subtitle)
-
-    override fun sendSubtitleWithPlaceholders(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.sendSubtitleWithPlaceholders(player, subtitle, fadeIn, stay, fadeOut)
-
-    override fun sendTitles(player: Player, title: String, subtitle: String) = APIProvider.sendTitles(player, title, subtitle)
-
-    override fun sendTitles(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.sendTitles(player, title, subtitle, fadeIn, stay, fadeOut)
-
-    override fun sendTitlesWithPlaceholders(player: Player, title: String, subtitle: String) = APIProvider.sendTitlesWithPlaceholders(player, title, subtitle)
-
-    override fun sendTitlesWithPlaceholders(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.sendTitlesWithPlaceholders(player, title, subtitle, fadeIn, stay, fadeOut)
-
-    override fun sendTimings(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) = APIProvider.sendTimings(player, fadeIn, stay, fadeOut)
-
-    override fun clearTitles(player: Player) = APIProvider.clearTitles(player)
-
-    override fun clearTitle(player: Player) = APIProvider.clearTitle(player)
-
-    override fun clearSubtitle(player: Player) = APIProvider.clearSubtitle(player)
-
-    override fun sendActionbar(player: Player, text: String) = APIProvider.sendActionbar(player, text)
-
-    override fun sendActionbarWithPlaceholders(player: Player, text: String) = APIProvider.sendActionbarWithPlaceholders(player, text)
-
-    override fun clearActionbar(player: Player) = APIProvider.clearActionbar(player)
-
-    override fun getHeader(player: Player) = APIProvider.getHeader(player)
-
-    override fun setHeader(player: Player, header: String) = APIProvider.setHeader(player, header)
-
-    override fun setHeaderWithPlaceholders(player: Player, header: String) = APIProvider.setHeaderWithPlaceholders(player, header)
-
-    override fun getFooter(player: Player) = APIProvider.getFooter(player)
-
-    override fun setFooter(player: Player, footer: String) = APIProvider.setFooter(player, footer)
-
-    override fun setFooterWithPlaceholders(player: Player, footer: String) = APIProvider.setFooterWithPlaceholders(player, footer)
-
-    override fun setHeaderAndFooter(player: Player, header: String, footer: String) = APIProvider.setHeaderAndFooter(player, header, footer)
-
-    override fun setHeaderAndFooterWithPlaceholders(player: Player, header: String, footer: String) = APIProvider.setHeaderAndFooterWithPlaceholders(player, header, footer)
-
-    override fun giveScoreboard(player: Player) = APIProvider.giveScoreboard(player)
-
-    override fun removeScoreboard(player: Player) = APIProvider.removeScoreboard(player)
-
-    override fun hasScoreboard(player: Player) = APIProvider.hasScoreboard(player)
-
-    override fun setScoreboardTitle(player: Player, title: String) = APIProvider.setScoreboardTitle(player, title)
-
-    override fun setScoreboardTitleWithPlaceholders(player: Player, title: String) = APIProvider.setScoreboardTitleWithPlaceholders(player, title)
-
-    override fun getScoreboardTitle(player: Player) = APIProvider.getScoreboardTitle(player)
-
-    override fun setScoreboardValue(player: Player, index: Int, value: String) = APIProvider.setScoreboardValue(player, index, value)
-
-    override fun setScoreboardValueWithPlaceholders(player: Player, index: Int, value: String) = APIProvider.setScoreboardValueWithPlaceholders(player, index, value)
-
-    override fun getScoreboardValue(player: Player, index: Int) = APIProvider.getScoreboardValue(player, index)
-
-    override fun removeScoreboardValue(player: Player, index: Int) = APIProvider.removeScoreboardValue(player, index)
 }

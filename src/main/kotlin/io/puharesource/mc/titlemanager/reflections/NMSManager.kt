@@ -12,15 +12,15 @@ object NMSManager {
     val versionIndex : Int
 
     init {
-        supportedVersions.put("v1_7_R4", 0)
-        supportedVersions.put("v1_8_R1", 1)
-        supportedVersions.put("v1_8_R2", 2)
-        supportedVersions.put("v1_8_R3", 2)
-        supportedVersions.put("v1_9_R1", 3)
-        supportedVersions.put("v1_9_R2", 3)
-        supportedVersions.put("v1_10_R1", 4)
-        supportedVersions.put("v1_11_R1", 5)
-        supportedVersions.put("v1_12_R1", 6)
+        supportedVersions["v1_7_R4"] = 0
+        supportedVersions["v1_8_R1"] = 1
+        supportedVersions["v1_8_R2"] = 2
+        supportedVersions["v1_8_R3"] = 2
+        supportedVersions["v1_9_R1"] = 3
+        supportedVersions["v1_9_R2"] = 3
+        supportedVersions["v1_10_R1"] = 4
+        supportedVersions["v1_11_R1"] = 5
+        supportedVersions["v1_12_R1"] = 6
 
         val pkg: String = Bukkit.getServer().javaClass.`package`.name
         var version = pkg.substring(pkg.lastIndexOf(".") + 1)
@@ -36,15 +36,15 @@ object NMSManager {
     fun getVersionIndex(version: String) = supportedVersions.getOrElse(version) { supportedVersions.values.max() ?: -1 }
 
     fun getClassProvider() : NMSClassProvider {
-        when (versionIndex) {
-            0    -> return ProviderProtocolHack
-            1    -> return Provider18
-            2    -> return Provider183
-            3    -> return Provider183
-            4    -> return Provider110
-            5    -> return Provider110
-            6    -> return Provider112
-            else -> return Provider112
+        return when (versionIndex) {
+            0    -> ProviderProtocolHack
+            1    -> Provider18
+            2    -> Provider183
+            3    -> Provider183
+            4    -> Provider110
+            5    -> Provider110
+            6    -> Provider112
+            else -> Provider112
         }
     }
 }
