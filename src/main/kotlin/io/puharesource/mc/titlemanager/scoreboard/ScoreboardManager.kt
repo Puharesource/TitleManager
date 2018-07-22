@@ -35,7 +35,7 @@ object ScoreboardManager {
                 setScoreboardTitleWithName(player, scoreboard.title, newScoreboardName)
 
                 (1..15).mapNotNull { scoreboard.get(it) }.forEachIndexed { index, text ->
-                    setScoreboardValueWithName(player, index, text, newScoreboardName)
+                    setScoreboardValueWithName(player, index + (15 - scoreboard.size), text, newScoreboardName)
                 }
 
                 scoreboard.isUpdatePending.set(false)
@@ -64,7 +64,13 @@ object ScoreboardManager {
 
         createNameField.modify { set(packet, scoreboardName) }
         createModeField.modify { setInt(packet, 0) }
-        createValueField.modify { set(packet, "") }
+
+        if (NMSManager.versionIndex > 6) {
+            createValueField.modify { set(packet, NMSManager.getClassProvider().getIChatComponent("")) }
+        } else {
+            createValueField.modify { set(packet, "") }
+        }
+
         if (NMSManager.versionIndex > 0) {
             createTypeField.modify { set(packet, provider.get("EnumScoreboardHealthDisplay").handle.enumConstants[0]) }
         }
@@ -122,10 +128,12 @@ object ScoreboardManager {
         nameField.modify { set(packet, scoreboardName) }
         modeField.modify { setInt(packet, 2) }
 
-        if (title.length > 32) {
-            valueField.modify { set(packet, title.substring(0, 32)) }
+        val modifiedTitle = if (title.length > 32) title.substring(0, 32) else title
+
+        if (NMSManager.versionIndex > 6) {
+            valueField.modify { set(packet, NMSManager.getClassProvider().getIChatComponent(modifiedTitle)) }
         } else {
-            valueField.modify { set(packet, title) }
+            valueField.modify { set(packet, modifiedTitle) }
         }
 
         if (NMSManager.versionIndex > 0) {

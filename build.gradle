@@ -3,7 +3,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 buildscript {
-    ext.kotlin_version = '1.2.41'
+    ext.kotlin_version = '1.2.51'
 
     repositories {
         mavenCentral()
@@ -21,7 +21,7 @@ buildscript {
 // ========================= The basics ========================= //
 
 group = 'io.puharesource.mc'
-version = '2.0.10'
+version = '2.1.0'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'

@@ -1,4 +1,4 @@
 CREATE TABLE IF NOT EXISTS "playerinfo" (
-  uuid                TEXT    NOT NULL,
-  scoreboard_toggled  INTEGER NOT NULL
+  uuid                VARCHAR(36) NOT NULL,
+  scoreboard_toggled  INTEGER     NOT NULL
 );

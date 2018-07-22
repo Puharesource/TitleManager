@@ -1,6 +1,7 @@
 package io.puharesource.mc.titlemanager.reflections
 
 import io.puharesource.mc.titlemanager.reflections.NMSType.*
+import io.puharesource.mc.titlemanager.reflections.Provider112.associate
 
 /**
  * Provides classes for Minecraft 1.7 - 1.8 Protocol Hack
@@ -128,5 +129,26 @@ object Provider112 : NMSClassProvider() {
         "PacketPlayOutScoreboardScore".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore")
         "EnumScoreboardHealthDisplay".associate(NET_MINECRAFT_SERVER, "IScoreboardCriteria", "EnumScoreboardHealthDisplay")
         "EnumScoreboardAction".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore", "EnumScoreboardAction")
+    }
+}
+
+object Provider113 : NMSClassProvider() {
+    init {
+        "ChatComponentText".associate(NET_MINECRAFT_SERVER, "ChatComponentText")
+        "IChatBaseComponent".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent")
+        "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
+        "EntityPlayer".associate(NET_MINECRAFT_SERVER, "EntityPlayer")
+        "PlayerConnection".associate(NET_MINECRAFT_SERVER, "PlayerConnection")
+        "NetworkManager".associate(NET_MINECRAFT_SERVER, "NetworkManager")
+        "Packet".associate(NET_MINECRAFT_SERVER, "Packet")
+        "PacketPlayOutTitle".associate(NET_MINECRAFT_SERVER, "PacketPlayOutTitle")
+        "PacketPlayOutChat".associate(NET_MINECRAFT_SERVER, "PacketPlayOutChat")
+        "PacketPlayOutPlayerListHeaderFooter".associate(NET_MINECRAFT_SERVER, "PacketPlayOutPlayerListHeaderFooter")
+        "EnumTitleAction".associate(NET_MINECRAFT_SERVER, "PacketPlayOutTitle", "EnumTitleAction")
+        "PacketPlayOutScoreboardObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardObjective")
+        "PacketPlayOutScoreboardDisplayObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardDisplayObjective")
+        "PacketPlayOutScoreboardScore".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore")
+        "EnumScoreboardHealthDisplay".associate(NET_MINECRAFT_SERVER, "IScoreboardCriteria", "EnumScoreboardHealthDisplay")
+        "EnumScoreboardAction".associate(NET_MINECRAFT_SERVER, "ScoreboardServer", "Action")
     }
 }
