@@ -38,7 +38,7 @@ Example for Gradle:
 ```groovy
 maven {
     name 'puharesource-repo'
-    url 'http://repo.puha.io/nexus/content/repositories/releases/'
+    url 'http://repo.puha.io/repo/'
 }
 ```
 
@@ -46,7 +46,7 @@ Example for Maven:
 ```xml
 <repository>
   <id>puha-repo</id>
-  <url>http://repo.puha.io/nexus/content/repositories/releases/</url>
+  <url>http://repo.puha.io/repo/</url>
 </repository>
 ```
 
