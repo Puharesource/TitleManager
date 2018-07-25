@@ -6,7 +6,7 @@ import org.junit.Test
 import kotlin.test.assertTrue
 
 class JSAnimationTest {
-    fun toResult(animation: String, text: String, index: Int) : Pair<String, Boolean> {
+    private fun toResult(animation: String, text: String, index: Int) : Pair<String, Boolean> {
         val result = ScriptManager.getFrameFromScript(animation, text, index)
         val prefix = "(Animation: $animation | Index: $index)"
 
@@ -21,7 +21,7 @@ class JSAnimationTest {
         return Pair("${result[2]}, ${result[3]}, ${result[4]} | ${result[1]} | \"${result[0]}\"", result[1] as Boolean)
     }
 
-    fun toResultList(animation: String, text: String) : List<String> {
+    private fun toResultList(animation: String, text: String) : List<String> {
         val list : MutableList<String> = mutableListOf()
 
         var isDone = false
@@ -38,11 +38,11 @@ class JSAnimationTest {
         return list
     }
 
-    fun toExpectedResultList(expected: String) : List<String> {
+    private fun toExpectedResultList(expected: String) : List<String> {
         return expected.lines().map(String::trim).filter(String::isNotBlank)
     }
 
-    fun checkList(animation: String, results: List<String>, expectedResults: List<String>) {
+    private fun checkList(animation: String, results: List<String>, expectedResults: List<String>) {
         (0 until results.size).forEach {
             val result = results[it]
             val expectedResult = expectedResults[it]

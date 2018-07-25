@@ -36,7 +36,7 @@ class PrettyConfig(file: File) : YamlConfiguration() {
             if (line.matches(KEY_PATTERN) && !line.matches(COMMENT_PATTERN)) {
                 val result = KEY_PATTERN.matchEntire(line)!!.groupValues
 
-                commentMap.put(result[1] + result[2], currentComments.toList())
+                commentMap[result[1] + result[2]] = currentComments.toList()
 
                 currentComments.clear()
             } else if (line.matches(COMMENT_PATTERN)) {

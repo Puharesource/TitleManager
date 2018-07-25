@@ -16,6 +16,9 @@ object UpdateChecker {
 
     private val spigotAPIUrl = URL("https://api.spigotmc.org/legacy/update.php?resource=1049")
 
+    private val isRunning: Boolean
+        get() = updateTask != null
+
     fun start() {
         updateTask = scheduleAsyncTimer(period = 20 * 60 * 10) {
             debug("Searching for updates...")
@@ -40,13 +43,11 @@ object UpdateChecker {
     }
 
     fun stop() {
-        if (isRunning()) {
+        if (isRunning) {
             updateTask!!.cancel()
             latestVersion = null
         }
     }
-
-    fun isRunning() = updateTask != null
 
     fun getCurrentVersion() : String = pluginInstance.description.version
 

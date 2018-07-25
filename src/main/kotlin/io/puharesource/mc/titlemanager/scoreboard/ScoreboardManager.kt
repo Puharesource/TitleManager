@@ -59,7 +59,7 @@ object ScoreboardManager {
 
         val createNameField = packet.javaClass.getDeclaredField("a")                                           // Objective Name   | String            | (String                       | A unique name for the objective)
         val createModeField = packet.javaClass.getDeclaredField(if (NMSManager.versionIndex > 0) "d" else "c") // Mode             | Byte              | (int                          | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
-        val createValueField = packet.javaClass.getDeclaredField("b")                                          // Objective Value  | Optional String   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
+        val createValueField = packet.javaClass.getDeclaredField("b")                                          // Objective Value  | Optional String/IChatComponent   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
         val createTypeField = packet.javaClass.getDeclaredField("c")                                           // Type             | Optional String   | (EnumScoreboardHealthDisplay  | Only if mode is 0 or 2. “integer” or “hearts”)
 
         createNameField.modify { set(packet, scoreboardName) }
@@ -122,18 +122,16 @@ object ScoreboardManager {
 
         val nameField = packet.javaClass.getDeclaredField("a")                                           // Objective Name   | String            | (String                       | A unique name for the objective)
         val modeField = packet.javaClass.getDeclaredField(if (NMSManager.versionIndex > 0) "d" else "c") // Mode             | Byte              | (int                          | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
-        val valueField = packet.javaClass.getDeclaredField("b")                                          // Objective Value  | Optional String   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
+        val valueField = packet.javaClass.getDeclaredField("b")                                          // Objective Value  | Optional String/IChatComponent   | (String                       | Only if mode is 0 or 2. The text to be displayed for the score)
         val typeField = packet.javaClass.getDeclaredField("c")                                           // Type             | Optional String   | (EnumScoreboardHealthDisplay  | Only if mode is 0 or 2. “integer” or “hearts”)
 
         nameField.modify { set(packet, scoreboardName) }
         modeField.modify { setInt(packet, 2) }
 
-        val modifiedTitle = if (title.length > 32) title.substring(0, 32) else title
-
         if (NMSManager.versionIndex > 6) {
-            valueField.modify { set(packet, NMSManager.getClassProvider().getIChatComponent(modifiedTitle)) }
+            valueField.modify { set(packet, NMSManager.getClassProvider().getIChatComponent(title)) }
         } else {
-            valueField.modify { set(packet, modifiedTitle) }
+            valueField.modify { set(packet, title) }
         }
 
         if (NMSManager.versionIndex > 0) {
@@ -153,11 +151,11 @@ object ScoreboardManager {
         val objectiveNameField = packet.javaClass.getDeclaredField("b") // Objective Name   | String            | (String               | The name of the objective the score belongs to)
         val valueField = packet.javaClass.getDeclaredField("c")         // Value            | Optional VarInt   | (int                  | The score to be displayed next to the entry. Only sent when Action does not equal 1.)
 
-        if (value.length > 40) {
-            scoreNameField.modify { set(packet, value.substring(0, 40)) }
-        } else {
+        //if (value.length > 40) {
+        //    scoreNameField.modify { set(packet, value.substring(0, 40)) }
+        //} else {
             scoreNameField.modify { set(packet, value) }
-        }
+        //}
 
         if (NMSManager.versionIndex > 0) {
             actionField.modify { set(packet, provider.get("EnumScoreboardAction").handle.enumConstants[0]) }

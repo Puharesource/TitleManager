@@ -189,7 +189,6 @@ scoreboard:
   enabled: true
 
   # The title displayed at the very top of the scoreboard
-  # The title must consist of 32 or less characters (this includes color codes)
   title: '${shine:[0;2;0][0;25;0][0;25;0][&3&l;&b&l]My Server}'
 
   # The lines of the scoreboard (Maximum of 15 lines allowed)

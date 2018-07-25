@@ -81,6 +81,8 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         registerAnnouncers()
 
         debug("Using MC version: ${NMSManager.serverVersion} | NMS Index: ${NMSManager.versionIndex}")
+
+        startPlayerTasks()
     }
 
     override fun onDisable() {
@@ -127,6 +129,10 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
             UpdateChecker.start()
         }
 
+        startPlayerTasks()
+    }
+
+    private fun startPlayerTasks() {
         val playerListSection = config.getConfigurationSection("player-list")
         val header = toAnimationParts(playerListSection.getStringWithMultilines("header").color())
         val footer = toAnimationParts(playerListSection.getStringWithMultilines("footer").color())

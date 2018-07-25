@@ -626,9 +626,7 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun removeScoreboard(player: Player) {
-        if (hasScoreboard(player)) {
-            ScoreboardManager.removeScoreboard(player)
-        }
+        ScoreboardManager.removeScoreboard(player)
     }
 
     override fun hasScoreboard(player: Player) = ScoreboardManager.playerScoreboards.containsKey(player)

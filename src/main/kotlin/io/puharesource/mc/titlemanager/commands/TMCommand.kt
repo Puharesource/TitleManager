@@ -28,8 +28,8 @@ object TMCommand : CommandExecutor, TabCompleter {
     }
 
     fun addSubCommand(cmd: TMSubCommand) {
-        subCommands.put(cmd.name, cmd)
-        cmd.aliases.forEach { subCommands.put(it, cmd) }
+        subCommands[cmd.name] = cmd
+        cmd.aliases.forEach { subCommands[it] = cmd }
     }
 
     /**
