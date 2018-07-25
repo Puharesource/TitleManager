@@ -2,11 +2,13 @@ package io.puharesource.mc.titlemanager.reflections
 
 import org.bukkit.entity.Player
 
-internal fun Player.getPing() : Int {
-    val entityPlayer = getEntityPlayer()
-    val pingField = entityPlayer.javaClass.getField("ping")
+private val classCraftPlayer = CraftPlayer()
+private val classEntityPlayer = EntityPlayer()
+private val classPlayerConnection = PlayerConnection()
+private val classNetworkManager = NetworkManager()
 
-    return pingField.getInt(entityPlayer)
+internal fun Player.getPing() : Int {
+    return classEntityPlayer.ping.getInt(getEntityPlayer())
 }
 
 /**
@@ -17,10 +19,7 @@ internal fun Player.isUsing17() : Boolean {
         return false
     }
 
-    val playerConnection = getNMSPlayerConnection()
-    val networkManager = playerConnection.javaClass.getField("networkManager").get(playerConnection)
-
-    return networkManager.javaClass.getMethod("getVersion").invoke(networkManager) as Int != 47
+    return classNetworkManager.getVersion(getNMSNetworkManager()) != 47
 }
 
 internal fun Player.sendNMSPacket(packet: Any) {
@@ -28,36 +27,23 @@ internal fun Player.sendNMSPacket(packet: Any) {
         return
     }
 
-    val provider = NMSManager.getClassProvider()
-
     if (NMSManager.versionIndex <= 2) {
-        val connection = getNMSPlayerConnection()
-
-        provider.get("PlayerConnection").getMethod("sendPacket", provider.get("Packet").handle).invoke(connection, packet)
+        classPlayerConnection.sendPacket(getNMSPlayerConnection(), packet)
     } else {
-        val networkManager = getNMSNetworkManager()
-
-        networkManager.javaClass
-                .getMethod("sendPacket", provider.get("Packet").handle)
-                .invoke(networkManager, packet)
+        classNetworkManager.sendPacket(getNMSNetworkManager(), packet)
     }
 }
 
 internal fun Player.getEntityPlayer() : Any {
-    val craftPlayerClass = NMSManager.getClassProvider().get("CraftPlayer")
-    val instance = craftPlayerClass.handle.cast(this)
+    val instance = classCraftPlayer.clazz.handle.cast(this)
 
-    return craftPlayerClass.getMethod("getHandle").invoke(instance)
+    return classCraftPlayer.getHandle(instance)
 }
 
 internal fun Player.getNMSPlayerConnection() : Any {
-    val entityPlayer = getEntityPlayer()
-
-    return entityPlayer.javaClass.getField("playerConnection").get(entityPlayer)
+    return classEntityPlayer.playerConnection.get(getEntityPlayer())
 }
 
 internal fun Player.getNMSNetworkManager() : Any {
-    val playerConnection = getNMSPlayerConnection()
-
-    return playerConnection.javaClass.getField("networkManager").get(playerConnection)
+    return classPlayerConnection.networkManager.get(getNMSPlayerConnection())
 }

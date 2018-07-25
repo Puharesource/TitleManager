@@ -9,7 +9,7 @@ object VanishHookReplacer : HookReplacer() {
     }
 
     override fun value(player: Player): String {
-        return Bukkit.getOnlinePlayers()
+        return Bukkit.getOnlinePlayers().asSequence()
                 .filterNot { EssentialsHook.isPlayerVanished(it) }
                 .filterNot { VanishNoPacketHook.isPlayerVanished(it) }
                 .filterNot {
@@ -30,6 +30,6 @@ object VanishHookReplacer : HookReplacer() {
 
                     return@filterNot false
                 }
-                .size.toString()
+                .count().toString()
     }
 }

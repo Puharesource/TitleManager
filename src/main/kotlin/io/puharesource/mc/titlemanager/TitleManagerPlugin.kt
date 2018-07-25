@@ -281,12 +281,14 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
             val oldConfig = YamlConfiguration.loadConfiguration(oldFile.reader())
 
             conf!!.getKeys(false)
+                    .asSequence()
                     .filter { it != "config-version" && it != "messages" }
                     .filter { oldConfig.contains(it) }
                     .map { it to oldConfig[it] }
                     .forEach { conf!!.set(it.first, it.second) }
 
             conf!!.getConfigurationSection("messages").getKeys(false)
+                    .asSequence()
                     .filter { oldConfig.contains(it) }
                     .map { it to oldConfig[it] }
                     .forEach { conf!!.getConfigurationSection("messages").set(it.first, it.second) }
@@ -383,6 +385,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     private fun loadAnimations() {
         // Load text based animations
         animationsFolder.listFiles()
+                .asSequence()
                 .filter { it.isFile }
                 .filter { it.extension.equals("txt", ignoreCase = true) }
                 .forEach { APIProvider.registeredAnimations[it.nameWithoutExtension] = fromTextFile(it) }
@@ -391,6 +394,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
 
         // Load JavaScript based animations
         animationsFolder.listFiles()
+                .asSequence()
                 .filter { it.isFile }
                 .filter { it.extension.equals("js", ignoreCase = true) }
                 .forEach {

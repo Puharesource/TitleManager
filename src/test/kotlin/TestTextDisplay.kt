@@ -43,7 +43,7 @@ fun main(args: Array<String>) = Application.launch(TestTextDisplay::class.java, 
 fun relativeFile(url: String) = File(url.replace("/", File.separator))
 fun relativeFileURL(url: String) = relativeFile(url).toURI().toURL().toString()
 
-val testPlayer = Proxy.newProxyInstance(Player::class.java.classLoader, arrayOf(Player::class.java), handler@ { _, method, _ ->
+val testPlayer = Proxy.newProxyInstance(Player::class.java.classLoader, arrayOf(Player::class.java)) handler@ { _, method, _ ->
     if (method.name == "isOnline") {
         return@handler true
     }
@@ -65,7 +65,7 @@ val testPlayer = Proxy.newProxyInstance(Player::class.java.classLoader, arrayOf(
     }
 
     return@handler null
-}) as Player
+} as Player
 
 class TestTextDisplay : Application() {
     override fun start(stage: Stage) {

@@ -100,6 +100,7 @@ class CommandExecutor(val cmd: TMSubCommand, val sender: CommandSender, val args
         get() {
             if (sender is Player && radius != null) {
                 val players = sender.getNearbyEntities(radius!!, radius!!, radius!!)
+                        .asSequence()
                         .filter { it is Player }
                         .map { it as Player }
                         .toMutableSet()

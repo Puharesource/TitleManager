@@ -1,7 +1,8 @@
 package io.puharesource.mc.titlemanager.reflections
 
-import io.puharesource.mc.titlemanager.reflections.NMSType.*
-import io.puharesource.mc.titlemanager.reflections.Provider112.associate
+import io.puharesource.mc.titlemanager.reflections.NMSType.NET_MINECRAFT_SERVER
+import io.puharesource.mc.titlemanager.reflections.NMSType.ORG_BUKKIT_CRAFTBUKKIT
+import io.puharesource.mc.titlemanager.reflections.NMSType.ORG_SPIGOTMC
 
 /**
  * Provides classes for Minecraft 1.7 - 1.8 Protocol Hack

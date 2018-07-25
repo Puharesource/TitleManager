@@ -46,7 +46,7 @@ class PrettyConfig(file: File) : YamlConfiguration() {
 
         val sb = StringBuilder()
 
-        commentlessData.lines().filter { !it.matches(COMMENT_PATTERN) }.forEach { line ->
+        commentlessData.lines().asSequence().filter { !it.matches(COMMENT_PATTERN) }.forEach { line ->
             if (line.matches(KEY_PATTERN)) {
                 val result = KEY_PATTERN.matchEntire(line)!!.groupValues
 

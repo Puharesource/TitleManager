@@ -23,6 +23,9 @@ import io.puharesource.mc.titlemanager.extensions.setScoreboardValue
 import io.puharesource.mc.titlemanager.placeholder.MvdwPlaceholderAPIHook
 import io.puharesource.mc.titlemanager.placeholder.PlaceholderAPIHook
 import io.puharesource.mc.titlemanager.reflections.NMSManager
+import io.puharesource.mc.titlemanager.reflections.PacketPlayOutChat
+import io.puharesource.mc.titlemanager.reflections.PacketTabHeader
+import io.puharesource.mc.titlemanager.reflections.PacketTitle
 import io.puharesource.mc.titlemanager.reflections.TitleTypeMapper
 import io.puharesource.mc.titlemanager.reflections.sendNMSPacket
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardManager
@@ -40,6 +43,10 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListMap
 
 object APIProvider : TitleManagerAPI {
+    private val classPacketTabHeader by lazy { PacketTabHeader() }
+    private val classPacketTitle by lazy { PacketTitle() }
+    private val classPacketPlayOutChat by lazy { PacketPlayOutChat() }
+
     internal val playerListCache = ConcurrentHashMap<Player, Pair<String?, String?>>()
 
     internal val registeredAnimations : MutableMap<String, Animation> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
@@ -395,25 +402,9 @@ object APIProvider : TitleManagerAPI {
 
     override fun sendTitle(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) {
         val provider = NMSManager.getClassProvider()
-        val packetConstructor : Constructor<*>
+        val packetConstructor : Constructor<*> = classPacketTitle.constructor
 
         sendTimings(player, fadeIn, stay, fadeOut)
-
-        if (NMSManager.versionIndex == 0) {
-            val packetTitle = provider.get("PacketTitle")
-
-            packetConstructor = packetTitle.getConstructor(
-                    provider.get("Action").handle,
-                    provider.get("IChatBaseComponent").handle,
-                    Integer.TYPE, Integer.TYPE, Integer.TYPE)
-        } else {
-            packetConstructor = provider.get("PacketPlayOutTitle")
-                    .getConstructor(
-                            provider.get("EnumTitleAction").handle,
-                            provider.get("IChatBaseComponent").handle,
-                            Integer.TYPE, Integer.TYPE, Integer.TYPE)
-
-        }
 
         val packet = packetConstructor
                 .newInstance(
@@ -438,23 +429,7 @@ object APIProvider : TitleManagerAPI {
 
     override fun sendSubtitle(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) {
         val provider = NMSManager.getClassProvider()
-        val packetConstructor : Constructor<*>
-
-        if (NMSManager.versionIndex == 0) {
-            val packetTitle = provider.get("PacketTitle")
-
-            packetConstructor = packetTitle.getConstructor(
-                    provider.get("Action").handle,
-                    provider.get("IChatBaseComponent").handle,
-                    Integer.TYPE, Integer.TYPE, Integer.TYPE)
-        } else {
-            packetConstructor = provider.get("PacketPlayOutTitle")
-                    .getConstructor(
-                            provider.get("EnumTitleAction").handle,
-                            provider.get("IChatBaseComponent").handle,
-                            Integer.TYPE, Integer.TYPE, Integer.TYPE)
-
-        }
+        val packetConstructor = classPacketTitle.constructor
 
         val packet = packetConstructor
                 .newInstance(
@@ -491,22 +466,11 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun sendTimings(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) {
-        val provider = NMSManager.getClassProvider()
-        val packet : Any
-
-        if (NMSManager.versionIndex == 0) {
-            val packetTitle = provider.get("PacketTitle")
-
-            packet = packetTitle.getConstructor(
-                    provider.get("Action").handle, Integer.TYPE, Integer.TYPE, Integer.TYPE)
-                    .newInstance(TitleTypeMapper.TIMES.handle, fadeIn, stay, fadeOut)
+        val packetConstructor = classPacketTitle.constructor
+        val packet = if (NMSManager.versionIndex == 0) {
+            packetConstructor.newInstance(TitleTypeMapper.TIMES.handle, fadeIn, stay, fadeOut)
         } else {
-            packet = provider.get("PacketPlayOutTitle")
-                    .getConstructor(
-                            provider.get("EnumTitleAction").handle,
-                            provider.get("IChatBaseComponent").handle,
-                            Integer.TYPE, Integer.TYPE, Integer.TYPE)
-                    .newInstance(TitleTypeMapper.TIMES.handle, null, fadeIn, stay, fadeOut)
+            packetConstructor.newInstance(TitleTypeMapper.TIMES.handle, null, fadeIn, stay, fadeOut)
         }
 
         player.sendNMSPacket(packet)
@@ -530,20 +494,20 @@ object APIProvider : TitleManagerAPI {
         val provider = NMSManager.getClassProvider()
 
         when {
-            NMSManager.versionIndex >= 5 -> player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(text))
             NMSManager.versionIndex == 0 -> try {
-                val packet = provider.get("PacketPlayOutChat")
-                        .getConstructor(provider.get("IChatBaseComponent").handle, Integer.TYPE)
-                        .newInstance(provider.getIChatComponent(text), 2)
+                val packet = classPacketPlayOutChat.constructor.newInstance(provider.getIChatComponent(text), 2)
 
                 player.sendNMSPacket(packet)
             } catch (e: NoSuchMethodException) {
                 error("(If you're using Spigot #1649) Your version of Spigot #1649 doesn't support actionbar messages. Please find that spigot version from another source!")
             }
+            NMSManager.versionIndex >= 5 -> try {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(text))
+            } catch (e: Exception) {
+                error("To use Actionbar messages you need to run Spigot, not CraftBukkit!")
+            }
             else -> {
-                val packet = provider.get("PacketPlayOutChat")
-                        .getConstructor(provider.get("IChatBaseComponent").handle, Byte::class.java)
-                        .newInstance(provider.getIChatComponent(text), 2.toByte())
+                val packet = classPacketPlayOutChat.constructor.newInstance(provider.getIChatComponent(text), 2.toByte())
 
                 player.sendNMSPacket(packet)
             }
@@ -598,15 +562,12 @@ object APIProvider : TitleManagerAPI {
         val packet : Any
 
         if (NMSManager.versionIndex == 0) {
-            packet = provider.get("PacketTabHeader")
-                    .getConstructor(provider.get("IChatBaseComponent").handle, provider.get("IChatBaseComponent").handle)
-                    .newInstance(provider.getIChatComponent(header), provider.getIChatComponent(footer))
+            packet = classPacketTabHeader.legacyConstructor.newInstance(provider.getIChatComponent(header), provider.getIChatComponent(footer))
         } else {
-            val packetClass = provider.get("PacketPlayOutPlayerListHeaderFooter")
-            packet = packetClass.handle.newInstance()
+            packet = classPacketTabHeader.createInstance()
 
-            packetClass.handle.getDeclaredField("a").modify { set(packet, provider.getIChatComponent(header)) }
-            packetClass.handle.getDeclaredField("b").modify { set(packet, provider.getIChatComponent(footer)) }
+            classPacketTabHeader.headerField.modify { set(packet, provider.getIChatComponent(header)) }
+            classPacketTabHeader.footerField.modify { set(packet, provider.getIChatComponent(footer)) }
         }
 
         player.sendNMSPacket(packet)

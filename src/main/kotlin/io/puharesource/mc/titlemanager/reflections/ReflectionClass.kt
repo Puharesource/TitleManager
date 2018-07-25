@@ -12,7 +12,7 @@ class ReflectionClass(private val path: String) {
     fun createInstance(vararg objects: Any) : Any {
         val classes : Array<Class<*>> = objects.map { it.javaClass }.toTypedArray()
 
-        return getConstructor(*classes).newInstance(objects)
+        return getConstructor(*classes).newInstance(*objects)
     }
 
     fun getField(fieldName: String) : Field = handle.getDeclaredField(fieldName)
