@@ -35,7 +35,7 @@ object ScoreboardManager {
                 setScoreboardTitleWithName(player, scoreboard.title, newScoreboardName)
 
                 (1..15).mapNotNull { scoreboard.get(it) }.forEachIndexed { index, text ->
-                    setScoreboardValueWithName(player, index + (15 - scoreboard.size) - 1, text, newScoreboardName)
+                    setScoreboardValueWithName(player, index + (15 - scoreboard.size) + 1, text, newScoreboardName)
                 }
 
                 scoreboard.isUpdatePending.set(false)
