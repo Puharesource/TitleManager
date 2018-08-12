@@ -21,8 +21,8 @@ internal val isTesting : Boolean
 
 internal val asyncExecutor = Executor { Bukkit.getScheduler().runTaskAsynchronously(pluginInstance, it) }
 internal val syncExecutor = Executor { Bukkit.getScheduler().runTask(pluginInstance, it) }
-internal val asyncScheduler : Scheduler = Schedulers.from({ Bukkit.getScheduler().runTaskAsynchronously(pluginInstance, it) })
-internal val syncScheduler : Scheduler = Schedulers.from({ Bukkit.getScheduler().runTask(pluginInstance, it) })
+internal val asyncScheduler : Scheduler = Schedulers.from { Bukkit.getScheduler().runTaskAsynchronously(pluginInstance, it) }
+internal val syncScheduler : Scheduler = Schedulers.from { Bukkit.getScheduler().runTask(pluginInstance, it) }
 
 internal fun info(message: String) = pluginInstance.logger.info(message)
 

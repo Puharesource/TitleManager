@@ -508,12 +508,6 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                     }
                 }
 
-        // Delete players from the tab list cache when they quit the server
-        observeEvent<PlayerQuitEvent>()
-                .map { it.player }
-                .filter { APIProvider.playerListCache.contains(it) }
-                .subscribe { APIProvider.playerListCache.remove(it) }
-
         // Delete players from the scoreboard cache when they quit the server
         observeEvent<PlayerQuitEvent>()
                 .map { it.player }

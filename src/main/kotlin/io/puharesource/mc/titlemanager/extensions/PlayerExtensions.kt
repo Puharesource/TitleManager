@@ -4,6 +4,8 @@ import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
 import io.puharesource.mc.titlemanager.pluginInstance
 import org.bukkit.entity.Player
+import org.bukkit.metadata.FixedMetadataValue
+import org.bukkit.metadata.MetadataValue
 
 fun Player.sendTitle(title: String, fadeIn: Int = -1, stay: Int = -1, fadeOut: Int = -1, withPlaceholders: Boolean = false) {
     if (withPlaceholders) {
@@ -174,3 +176,7 @@ fun Player.setScoreboardValue(index: Int, value: String, withPlaceholders: Boole
 fun Player.getScoreboardValue(index: Int) = pluginInstance.getScoreboardValue(this, index)
 
 fun Player.removeScoreboardValue(index: Int) = pluginInstance.removeScoreboardValue(this, index)
+
+fun Player.getTitleManagerMetadata(key: String) = getMetadata(key).firstOrNull { it.owningPlugin == pluginInstance }
+
+fun Player.setTitleManagerMetadata(key: String, any: Any) = setMetadata(key, FixedMetadataValue(pluginInstance, any))

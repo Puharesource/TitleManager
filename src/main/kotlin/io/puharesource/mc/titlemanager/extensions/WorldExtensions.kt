@@ -18,10 +18,10 @@ fun World.getFormattedTime(is24HourFormat: Boolean = false) : String {
 
         extra = " "
 
-        if (time in 7000..18999) {
-            extra += "PM"
+        extra += if (time in 7000..18999) {
+            "PM"
         } else {
-            extra += "AM"
+            "AM"
         }
     }
 

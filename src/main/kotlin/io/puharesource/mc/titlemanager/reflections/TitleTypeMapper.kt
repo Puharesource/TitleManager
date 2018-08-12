@@ -14,10 +14,10 @@ enum class TitleTypeMapper constructor(private val oldIndex: Int = -1, private v
 
             // Protocol Hack
             if (NMSManager.versionIndex == 0) {
-                return provider.get("Action").handle.enumConstants[oldIndex]
+                return provider["Action"].handle.enumConstants[oldIndex]
             }
 
-            val actions = provider.get("EnumTitleAction").handle.enumConstants
+            val actions = provider["EnumTitleAction"].handle.enumConstants
 
             // Anything below 1.11
             if (NMSManager.versionIndex < 5) {

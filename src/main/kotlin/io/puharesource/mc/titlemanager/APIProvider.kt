@@ -12,6 +12,7 @@ import io.puharesource.mc.titlemanager.extensions.clearActionbar
 import io.puharesource.mc.titlemanager.extensions.clearSubtitle
 import io.puharesource.mc.titlemanager.extensions.clearTitle
 import io.puharesource.mc.titlemanager.extensions.color
+import io.puharesource.mc.titlemanager.extensions.getTitleManagerMetadata
 import io.puharesource.mc.titlemanager.extensions.modify
 import io.puharesource.mc.titlemanager.extensions.sendActionbar
 import io.puharesource.mc.titlemanager.extensions.sendSubtitle
@@ -20,6 +21,7 @@ import io.puharesource.mc.titlemanager.extensions.setPlayerListFooter
 import io.puharesource.mc.titlemanager.extensions.setPlayerListHeader
 import io.puharesource.mc.titlemanager.extensions.setScoreboardTitle
 import io.puharesource.mc.titlemanager.extensions.setScoreboardValue
+import io.puharesource.mc.titlemanager.extensions.setTitleManagerMetadata
 import io.puharesource.mc.titlemanager.placeholder.MvdwPlaceholderAPIHook
 import io.puharesource.mc.titlemanager.placeholder.PlaceholderAPIHook
 import io.puharesource.mc.titlemanager.reflections.NMSManager
@@ -39,15 +41,15 @@ import org.bukkit.metadata.FixedMetadataValue
 import java.io.File
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListMap
 
 object APIProvider : TitleManagerAPI {
+    private const val HEADER_METADATA_KEY = "TM-HEADER"
+    private const val FOOTER_METADATA_KEY = "TM-FOOTER"
+
     private val classPacketTabHeader by lazy { PacketTabHeader() }
     private val classPacketTitle by lazy { PacketTitle() }
     private val classPacketPlayOutChat by lazy { PacketPlayOutChat() }
-
-    internal val playerListCache = ConcurrentHashMap<Player, Pair<String?, String?>>()
 
     internal val registeredAnimations : MutableMap<String, Animation> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
 
@@ -466,11 +468,10 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun sendTimings(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) {
-        val packetConstructor = classPacketTitle.constructor
         val packet = if (NMSManager.versionIndex == 0) {
-            packetConstructor.newInstance(TitleTypeMapper.TIMES.handle, fadeIn, stay, fadeOut)
+            classPacketTitle.timingsConstructor.newInstance(TitleTypeMapper.TIMES.handle, fadeIn, stay, fadeOut)
         } else {
-            packetConstructor.newInstance(TitleTypeMapper.TIMES.handle, null, fadeIn, stay, fadeOut)
+            classPacketTitle.constructor.newInstance(TitleTypeMapper.TIMES.handle, null, fadeIn, stay, fadeOut)
         }
 
         player.sendNMSPacket(packet)
@@ -524,10 +525,10 @@ object APIProvider : TitleManagerAPI {
 
     // Player list
 
-    override fun getHeader(player: Player) = playerListCache[player]?.first.orEmpty()
+    override fun getHeader(player: Player) = player.getTitleManagerMetadata(HEADER_METADATA_KEY)?.asString().orEmpty()
 
     override fun setHeader(player: Player, header: String) {
-        playerListCache[player] = header to getFooter(player)
+        player.setTitleManagerMetadata(HEADER_METADATA_KEY, header)
         setHeaderAndFooter(player, header, getFooter(player))
     }
 
@@ -535,10 +536,10 @@ object APIProvider : TitleManagerAPI {
         setHeaderAndFooter(player, replaceText(player, header), getFooter(player))
     }
 
-    override fun getFooter(player: Player) = playerListCache[player]?.second.orEmpty()
+    override fun getFooter(player: Player) = player.getTitleManagerMetadata(FOOTER_METADATA_KEY)?.asString().orEmpty()
 
     override fun setFooter(player: Player, footer: String) {
-        playerListCache[player] = getFooter(player) to footer
+        player.setTitleManagerMetadata(FOOTER_METADATA_KEY, footer)
         setHeaderAndFooter(player, getHeader(player), footer)
     }
 
@@ -548,16 +549,17 @@ object APIProvider : TitleManagerAPI {
 
     override fun setHeaderAndFooter(player: Player, header: String, footer: String) {
         if (pluginInstance.config.getBoolean("bandwidth.prevent-duplicate-packets")) {
-            val cachedValues = playerListCache[player]
+            val cachedHeader = getHeader(player)
+            val cachedFooter = getFooter(player)
 
-            if (cachedValues != null) {
-                if (header == cachedValues.first && footer == cachedValues.second) {
-                    return
-                }
+            if (header == cachedHeader && footer == cachedFooter) {
+                return
             }
         }
 
-        playerListCache[player] = header to footer
+        player.setTitleManagerMetadata(HEADER_METADATA_KEY, header)
+        player.setTitleManagerMetadata(FOOTER_METADATA_KEY, footer)
+
         val provider = NMSManager.getClassProvider()
         val packet : Any
 
