@@ -62,8 +62,8 @@ class PacketPlayOutScoreboardScore : NMSClass() {
 class PacketTabHeader : NMSClass(if (NMSManager.versionIndex == 0) "PacketTabHeader" else "PacketPlayOutPlayerListHeaderFooter") {
     val legacyConstructor: Constructor<*> by lazy { clazz.getConstructor(provider["IChatBaseComponent"].handle, provider["IChatBaseComponent"].handle) }
 
-    val headerField = clazz.getField("a")
-    val footerField = clazz.getField("b")
+    val headerField = clazz.getField(if (NMSManager.versionIndex < 8) "a" else "header")
+    val footerField = clazz.getField(if (NMSManager.versionIndex < 8) "b" else "footer")
 }
 
 class PacketTitle : NMSClass(if (NMSManager.versionIndex == 0) "PacketTitle" else "PacketPlayOutTitle") {
