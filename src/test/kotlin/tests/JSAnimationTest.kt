@@ -3,6 +3,7 @@ package tests
 import io.puharesource.mc.titlemanager.APIProvider
 import io.puharesource.mc.titlemanager.script.ScriptManager
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class JSAnimationTest {
@@ -10,15 +11,15 @@ class JSAnimationTest {
         val result = ScriptManager.getFrameFromScript(animation, text, index)
         val prefix = "(Animation: $animation | Index: $index)"
 
-        assertTrue(result.size == 5, "$prefix Must return 5 elements.")
+        assertEquals(result.size, 5, "$prefix Must return 5 elements.")
 
-        assertTrue(result[0] is String, "$prefix Element 0 must be of type String.")
-        assertTrue(result[1] is Boolean, "$prefix Element 1 must be of type Boolean.")
-        assertTrue(result[2] is Int, "$prefix Element 2 must be of type Int.")
-        assertTrue(result[3] is Int, "$prefix Element 3 must be of type Int.")
-        assertTrue(result[4] is Int, "$prefix Element 4 must be of type Int.")
+        assertTrue(result[0].isString, "$prefix Element 0 must be of type String.")
+        assertTrue(result[1].isBoolean, "$prefix Element 1 must be of type Boolean.")
+        assertTrue(result[2].isNumber, "$prefix Element 2 must be of type Int.")
+        assertTrue(result[3].isNumber, "$prefix Element 3 must be of type Int.")
+        assertTrue(result[4].isNumber, "$prefix Element 4 must be of type Int.")
 
-        return Pair("${result[2]}, ${result[3]}, ${result[4]} | ${result[1]} | \"${result[0]}\"", result[1] as Boolean)
+        return Pair("${result[2]}, ${result[3]}, ${result[4]} | ${result[1]} | \"${result[0]}\"", result[1].asBoolean())
     }
 
     private fun toResultList(animation: String, text: String) : List<String> {
@@ -47,7 +48,7 @@ class JSAnimationTest {
             val result = results[it]
             val expectedResult = expectedResults[it]
 
-            assertTrue(result == expectedResult, "(Animation $animation | Index: $it) Expected result \"$expectedResult\" but got \"$result\" instead.")
+            assertEquals(result, expectedResult, "(Animation $animation | Index: $it) Expected result \"$expectedResult\" but got \"$result\" instead.")
         }
     }
 
@@ -55,7 +56,7 @@ class JSAnimationTest {
     fun countdownTest() {
         val results = toResultList("count_down", "[1;2;3]10")
 
-        assertTrue(results.size == 10, "Expected amount of frames is 10, received ${results.size} instead.")
+        assertEquals(results.size, 10, "Expected amount of frames is 10, received ${results.size} instead.")
 
         val expectedResults = toExpectedResultList(
         """
@@ -78,7 +79,7 @@ class JSAnimationTest {
     fun countUpTest() {
         val results = toResultList("count_up", "[1;2;3]10")
 
-        assertTrue(results.size == 10, "Expected amount of frames is 10, received ${results.size} instead.")
+        assertEquals(results.size, 10, "Expected amount of frames is 10, received ${results.size} instead.")
 
         val expectedResults = toExpectedResultList(
         """
@@ -101,7 +102,7 @@ class JSAnimationTest {
     fun shineTest() {
         val results = toResultList("shine", "[1;2;3][4;5;6][7;8;9][&a;&1]Test String")
 
-        assertTrue(results.size == 15, "Expected amount of frames is 15, received ${results.size} instead.")
+        assertEquals(results.size, 15, "Expected amount of frames is 15, received ${results.size} instead.")
 
         val expectedResults = toExpectedResultList(
         """
@@ -129,7 +130,7 @@ class JSAnimationTest {
     fun textWriteTest() {
         val results = toResultList("text_write", "[1;2;3]Test String")
 
-        assertTrue(results.size == 12, "Expected amount of frames is 12, received ${results.size} instead.")
+        assertEquals(results.size, 12, "Expected amount of frames is 12, received ${results.size} instead.")
 
         val expectedResults = toExpectedResultList(
         """
@@ -154,7 +155,7 @@ class JSAnimationTest {
     fun textDeleteTest() {
         val results = toResultList("text_delete", "[1;2;3]Test String")
 
-        assertTrue(results.size == 12, "Expected amount of frames is 12, received ${results.size} instead.")
+        assertEquals(results.size, 12, "Expected amount of frames is 12, received ${results.size} instead.")
 
         val expectedResults = toExpectedResultList(
         """
@@ -182,7 +183,7 @@ class JSAnimationTest {
 
             parts.forEach { println(text) }
 
-            assertTrue(expectedAmount == parts.size, "Expected $expectedAmount animation parts, got ${parts.size} instead.")
+            assertEquals(expectedAmount, parts.size, "Expected $expectedAmount animation parts, got ${parts.size} instead.")
         }
 
         test("\${count_up:3}", 1)

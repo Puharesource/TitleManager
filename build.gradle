@@ -21,7 +21,7 @@ buildscript {
 // ========================= The basics ========================= //
 
 group = 'io.puharesource.mc'
-version = '2.1.3'
+version = '2.1.4'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
@@ -193,6 +193,11 @@ dependencies {
 
     compile name: 'SuperVanish'
     compile name: 'VanishNoPacket'
+    compile name: 'graaljs'
+    compile name: 'tregex'
+
+    compile group: 'org.graalvm', name: 'graal-sdk', version: '1.0.0-rc7'
+    compile group: 'com.oracle.truffle', name: 'truffle-api', version: '1.0.0-rc7'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: kotlin_version
@@ -206,9 +211,15 @@ shadowJar {
     dependencies {
         include(dependency('org.jetbrains.kotlin:.*'))
         include(dependency('io.reactivex:.*'))
+        include(dependency('com.oracle.truffle:.*'))
+        include(dependency('org.graalvm:.*'))
+        include(dependency(name: 'graaljs'))
+        include(dependency(name: 'tregex'))
     }
 
     relocate 'rx', 'io.puharesource.mc.titlemanager.shaded.rx'
     relocate 'kotlin', 'io.puharesource.mc.titlemanager.shaded.kotlin'
     relocate 'org.jetbrains', 'io.puharesource.mc.titlemanager.shaded.org.jetbrains'
+    relocate 'com.oracle', 'io.puharesource.mc.titlemanager.shaded.com.oracle'
+    relocate 'org.graalvm', 'io.puharesource.mc.titlemanager.shaded.org.graalvm'
 }

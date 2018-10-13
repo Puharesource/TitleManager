@@ -1,18 +1,18 @@
-var count_down = function(text, index) {
-    var fadeIn = 0;
-    var stay = 20;
-    var fadeOut = 0;
+const count_down = (text, index) => {
+    let fadeIn = 0
+    let stay = 20
+    let fadeOut = 0
 
     if (hasTimings(text)) {
-        var timings = getTimings(text);
+        const timings = getTimings(text)
 
-        text = timings[0];
-        fadeIn = timings[1];
-        stay = timings[2];
-        fadeOut = timings[3];
+        text = timings[0]
+        fadeIn = timings[1]
+        stay = timings[2]
+        fadeOut = timings[3]
     }
 
-    var countdown = parseInt(text) - index;
+    const countdown = parseInt(text) - index
 
     return tmResult(countdown.toString(), countdown <= 1, fadeIn, stay, fadeOut)
-};
+}

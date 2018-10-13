@@ -7,34 +7,28 @@ import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationFrame
 import io.puharesource.mc.titlemanager.isTesting
 import io.puharesource.mc.titlemanager.pluginInstance
-import io.puharesource.mc.titlemanager.warning
+import org.graalvm.polyglot.Context
+import org.graalvm.polyglot.Value
 import java.io.File
 import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.atomic.AtomicInteger
-import javax.script.Invocable
-import javax.script.ScriptEngine
-import javax.script.ScriptEngineManager
 
 object ScriptManager {
-    private var javaScriptEngine : ScriptEngine? = null
+    private var context : Context = Context.newBuilder("js").allowAllAccess(true).build()
     internal val registeredScripts : MutableSet<String> = ConcurrentSkipListSet(String.CASE_INSENSITIVE_ORDER)
 
     init {
         reloadInternals()
-
-        if (javaScriptEngine == null) {
-            warning("Unable to initialize script engine! Scripts won't be working. This is probably due to running on OpenJDK rather than Oracle.")
-        }
     }
 
     fun reloadInternals() {
-        javaScriptEngine = ScriptEngineManager().getEngineByName("nashorn") ?: return
+        context = Context.newBuilder("js").allowAllAccess(true).build()
 
         fun addResource(file: String) {
             if (isTesting) {
-                javaScriptEngine!!.eval(Resources.getResource(file).readText())
+                context.eval("js", Resources.getResource(file).readText())
             } else {
-                javaScriptEngine!!.eval(pluginInstance.getResource(file).reader())
+                context.eval("js", pluginInstance.getResource(file).bufferedReader().readText())
             }
         }
 
@@ -43,7 +37,7 @@ object ScriptManager {
             registeredScripts.add(name)
         }
 
-        javaScriptEngine!!.put("ScriptCommandSender", ScriptCommandSender::class.java)
+        context.polyglotBindings.putMember("ScriptCommandSender", ScriptCommandSender::class.java)
 
         addResource("titlemanager_engine.js")
 
@@ -57,15 +51,22 @@ object ScriptManager {
     }
 
     fun addJavaScript(js: String) {
-        javaScriptEngine?.eval(js)
+        context.eval("js", js)
     }
 
     fun addJavaScript(file: File) {
-        javaScriptEngine?.eval(file.reader())
+        addJavaScript(file.bufferedReader().readText())
     }
 
-    fun getFrameFromScript(name: String, text: String, index: Int) : Array<*> {
-        return (javaScriptEngine as Invocable).invokeFunction(name, text, index) as Array<*>
+    fun getFrameFromScript(name: String, text: String, index: Int) : Array<Value> {
+        val valueArray = context.eval("js", "$name('${text.replace("'", "\\'")}', $index)")
+        val convertedArray = arrayOfNulls<Value>(valueArray.arraySize.toInt())
+
+        for (i in 0 until valueArray.arraySize) {
+            convertedArray[i.toInt()] = valueArray.getArrayElement(i)
+        }
+
+        return convertedArray as Array<Value>
     }
 
     fun getJavaScriptAnimation(name: String, text: String, withPlaceholders: Boolean = false) : Animation {
@@ -80,9 +81,9 @@ object ScriptManager {
                     val str = if (withPlaceholders) APIProvider.replaceText(it, text) else text
                     val result = getFrameFromScript(name, str, i.getAndIncrement())
 
-                    done = result[1] as Boolean
+                    done = result[1].asBoolean()
 
-                    return StandardAnimationFrame(result[0] as String, (result[2] as Number).toInt(), (result[3] as Number).toInt(), (result[4] as Int).toInt())
+                    return StandardAnimationFrame(result[0].asString(), result[2].asInt(), result[3].asInt(), result[4].asInt())
                 }
             }
         }

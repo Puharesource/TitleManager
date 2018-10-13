@@ -1,16 +1,14 @@
-var marquee = function(text, index) {
-    var getMarqueePattern = function () {
-        return /\[(\d+)](.+)/g;
-    };
+const marquee = (text, index) => {
+    const getMarqueePattern = () => /\[(\d+)](.+)/g
 
-    var width = 0;
+    let width = 0;
 
-    var fadeIn = 0;
-    var stay = 2;
-    var fadeOut = 0;
+    let fadeIn = 0;
+    let stay = 2;
+    let fadeOut = 0;
 
     if (hasTimings(text)) {
-        var timings = getTimings(text);
+        const timings = getTimings(text);
 
         text = timings[0];
         fadeIn = timings[1];
@@ -18,9 +16,9 @@ var marquee = function(text, index) {
         fadeOut = timings[3];
     }
 
-    var match = getMarqueePattern().exec(text);
+    const match = getMarqueePattern().exec(text);
 
-    if (match !== null) {
+    if (match) {
         width = parseInt(match[1]);
         text = match[2];
     }
@@ -29,11 +27,11 @@ var marquee = function(text, index) {
         width = text.length;
     }
 
-    var marquee = '';
+    let marquee = '';
 
-    for (var i = 0; i < width; i++) {
+    for (let i = 0; i < width; i++) {
         marquee += text.charAt((index + i) % text.length);
     }
 
     return tmResult(marquee, text.length <= index, fadeIn, stay, fadeOut)
-};
+}
