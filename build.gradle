@@ -181,27 +181,25 @@ repositories {
 // ========================= Dependencies ========================= //
 
 dependencies {
-    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version
-    compile group: 'io.reactivex', name: 'rxjava', version: '1.2.1'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version
+    implementation group: 'io.reactivex', name: 'rxjava', version: '1.2.1'
 
-    compile group: 'org.spigotmc', name: 'spigot-api', version: '1.11-R0.1-SNAPSHOT'
+    implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.11-R0.1-SNAPSHOT'
 
-    compile group: 'me.clip', name: 'placeholderapi', version: '2.0.8'
-    compile group: 'be.maximvdw', name: 'MVdWPlaceholderAPI', version: '1.0.2-SNAPSHOT'
-    compile group: 'net.milkbowl.vault', name: 'VaultAPI', version: '1.5'
-    compile(group: 'net.ess3', name: 'Essentials', version: 'Pre2.14.1.3') { transitive = false }
+    implementation group: 'me.clip', name: 'placeholderapi', version: '2.0.8'
+    implementation group: 'be.maximvdw', name: 'MVdWPlaceholderAPI', version: '1.0.2-SNAPSHOT'
+    implementation group: 'net.milkbowl.vault', name: 'VaultAPI', version: '1.5'
+    implementation(group: 'net.ess3', name: 'Essentials', version: 'Pre2.14.1.3') { transitive = false }
 
-    compile name: 'SuperVanish'
-    compile name: 'VanishNoPacket'
-    compile name: 'graaljs'
-    compile name: 'tregex'
+    implementation name: 'SuperVanish'
+    implementation name: 'VanishNoPacket'
 
-    compile group: 'org.graalvm', name: 'graal-sdk', version: '1.0.0-rc7'
-    compile group: 'com.oracle.truffle', name: 'truffle-api', version: '1.0.0-rc7'
+    implementation group: 'org.graalvm', name: 'graal-sdk', version: '1.0.0-rc7'
+    implementation group: 'com.oracle.truffle', name: 'truffle-api', version: '1.0.0-rc7'
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: kotlin_version
-    testCompile group: 'com.madgag', name: 'animated-gif-lib', version: '1.2'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: kotlin_version
+    testImplementation group: 'com.madgag', name: 'animated-gif-lib', version: '1.2'
 }
 
 shadowJar {
@@ -211,15 +209,9 @@ shadowJar {
     dependencies {
         include(dependency('org.jetbrains.kotlin:.*'))
         include(dependency('io.reactivex:.*'))
-        include(dependency('com.oracle.truffle:.*'))
-        include(dependency('org.graalvm:.*'))
-        include(dependency(name: 'graaljs'))
-        include(dependency(name: 'tregex'))
     }
 
     relocate 'rx', 'io.puharesource.mc.titlemanager.shaded.rx'
     relocate 'kotlin', 'io.puharesource.mc.titlemanager.shaded.kotlin'
     relocate 'org.jetbrains', 'io.puharesource.mc.titlemanager.shaded.org.jetbrains'
-    relocate 'com.oracle', 'io.puharesource.mc.titlemanager.shaded.com.oracle'
-    relocate 'org.graalvm', 'io.puharesource.mc.titlemanager.shaded.org.graalvm'
 }

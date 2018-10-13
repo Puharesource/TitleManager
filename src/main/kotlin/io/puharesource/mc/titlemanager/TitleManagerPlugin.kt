@@ -27,6 +27,7 @@ import io.puharesource.mc.titlemanager.reflections.NMSManager
 import io.puharesource.mc.titlemanager.reflections.getPing
 import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardManager
+import io.puharesource.mc.titlemanager.script.GraalScriptManager
 import io.puharesource.mc.titlemanager.script.ScriptManager
 import io.puharesource.mc.titlemanager.web.UpdateChecker
 import org.bukkit.ChatColor
@@ -119,7 +120,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         reloadConfig()
 
         APIProvider.registeredAnimations.clear()
-        ScriptManager.registeredScripts.clear()
+        APIProvider.scriptManager = ScriptManager.create()
 
         addFiles()
         loadAnimations()
@@ -390,7 +391,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                 .filter { it.extension.equals("txt", ignoreCase = true) }
                 .forEach { APIProvider.registeredAnimations[it.nameWithoutExtension] = fromTextFile(it) }
 
-        ScriptManager.reloadInternals()
+        APIProvider.scriptManager = ScriptManager.create() ?: return
 
         // Load JavaScript based animations
         animationsFolder.listFiles()
@@ -400,8 +401,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                 .forEach {
                     val name = it.nameWithoutExtension
 
-                    ScriptManager.addJavaScript(it)
-                    ScriptManager.registeredScripts.add(name)
+                    APIProvider.scriptManager!!.addScript(name, it)
                 }
     }
 

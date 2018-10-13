@@ -1,16 +1,18 @@
-const repeat = (text, index) => {
-    const getRepeatPattern = () => /\[(\d+)](.+)/g
+var repeat = function(text, index) {
+    var getRepeatPattern = function () {
+        return /\[(\d+)](.+)/g;
+    };
 
-    let totalStay = 60
-    const match = getRepeatPattern().exec(text)
+    var totalStay = 60;
+    var match = getRepeatPattern().exec(text);
 
     if (match) {
-        totalStay = parseInt(match[1])
-        text = match[2]
+        totalStay = parseInt(match[1]);
+        text = match[2];
     }
 
-    let stay = 20
-    const indexStay = index * 20
+    var stay = 20;
+    var indexStay = index * 20;
 
     if (totalStay - indexStay <= 0) {
         return tmResult(" ", true, 0, 1, 0)
@@ -19,4 +21,4 @@ const repeat = (text, index) => {
     }
 
     return tmResult(text, false, 0, stay, 0)
-}
+};

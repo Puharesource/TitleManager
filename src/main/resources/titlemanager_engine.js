@@ -1,46 +1,61 @@
-const Bukkit = Java.type('org.bukkit.Bukkit');
-const ChatColor = Java.type('org.bukkit.ChatColor');
+try {
+    load('nashorn:mozilla_compat.js');
 
-const createCommandSender = () => ScriptCommandSender.newInstance()
+    importPackage('org.bukkit');
+} catch (e) {}
 
-const isTesting = () => Bukkit.getServer() === null
+var Bukkit = Java.type('org.bukkit.Bukkit');
+var ChatColor = Java.type('org.bukkit.ChatColor');
 
-const getTimingsPattern = () => /^\[([-]?\d+);([-]?\d+);([-]?\d+)](.+)$/g
+var createCommandSender = function() {
+    return ScriptCommandSender.newInstance();
+};
 
-const tmResult = (text, done, fadeIn, stay, fadeOut) => Java.to([text, done, fadeIn, stay, fadeOut])
+var isTesting = function () {
+    return Bukkit.getServer() === null;
+};
 
-const hasTimings = (text) => text.match(getTimingsPattern()) !== null
+var getTimingsPattern = function () {
+    return /^\[([-]?\d+);([-]?\d+);([-]?\d+)](.+)$/g;
+};
 
-const getTimings = (text) => {
-    const match = getTimingsPattern().exec(text)
+var tmResult = function(text, done, fadeIn, stay, fadeOut) {
+    return Java.to([text, done, fadeIn, stay, fadeOut])
+};
 
-    let fadeIn = parseInt(match[1])
-    let stay = parseInt(match[2])
-    let fadeOut = parseInt(match[3])
-    let groupText = match[4]
+var hasTimings = function (text) {
+    return text.match(getTimingsPattern()) !== null;
+};
+
+var getTimings = function (text) {
+    var match = getTimingsPattern().exec(text);
+
+    var fadeIn = parseInt(match[1]);
+    var stay = parseInt(match[2]);
+    var fadeOut = parseInt(match[3]);
+    var groupText = match[4];
 
     return [groupText, fadeIn, stay, fadeOut]
-}
+};
 
-const parseInt = (string, radix) => {
-    let val = NaN
-    const Integer = Java.type('java.lang.Integer')
+var parseInt = function(string, radix) {
+    var val = NaN;
 
     try {
         if (radix) {
-            val = Integer.parseInt(string, radix)
+            val = java.lang.Integer.parseInt(string, radix);
         } else {
-            val = Integer.parseInt(string)
+            val = java.lang.Integer.parseInt(string);
         }
     } catch (e) {}
 
-    return val
-}
+    return val;
+};
 
-const sendCommand = (commandSender, commandLine) => {
+var sendCommand = function(commandSender, commandLine) {
     if (isTesting()) {
-        print("Sending command with command line: " + commandLine)
+        print("Sending command with command line: " + commandLine);
     } else {
-        Bukkit.dispatchCommand(commandSender, commandLine)
+        Bukkit.dispatchCommand(commandSender, commandLine);
     }
-}
+};

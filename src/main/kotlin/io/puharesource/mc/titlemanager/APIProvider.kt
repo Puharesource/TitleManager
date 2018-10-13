@@ -32,6 +32,7 @@ import io.puharesource.mc.titlemanager.reflections.TitleTypeMapper
 import io.puharesource.mc.titlemanager.reflections.sendNMSPacket
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardManager
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardRepresentation
+import io.puharesource.mc.titlemanager.script.GraalScriptManager
 import io.puharesource.mc.titlemanager.script.ScriptManager
 import me.clip.placeholderapi.PlaceholderAPI
 import net.md_5.bungee.api.ChatMessageType
@@ -39,6 +40,7 @@ import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
 import java.io.File
+import java.lang.RuntimeException
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentSkipListMap
@@ -60,6 +62,8 @@ object APIProvider : TitleManagerAPI {
     internal val variablePattern = """[%][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
     internal val animationPattern = """[$][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
     internal val commandSplitPattern = """([<]nl[>])|(\\n)""".toRegex()
+
+    var scriptManager: ScriptManager? = ScriptManager.create()
 
     // Running animations
 
@@ -189,7 +193,9 @@ object APIProvider : TitleManagerAPI {
 
     override fun getRegisteredAnimations(): Map<String, Animation> = registeredAnimations
 
-    override fun getRegisteredScripts(): Set<String> = ScriptManager.registeredScripts
+    override fun getRegisteredScripts(): Set<String> = scriptManager?.registeredScripts ?: emptySet()
+
+    fun doesScriptExist(name: String) = getRegisteredScripts().contains(name)
 
     override fun addAnimation(id: String, animation: Animation) {
         registeredAnimations[id] = animation
@@ -261,9 +267,9 @@ object APIProvider : TitleManagerAPI {
             val animationName = result.groups[2]!!.value
             val hasParameter = result.groups.size == 3
 
-            if (hasParameter && ScriptManager.registeredScripts.contains(animationName)) {
+            if (hasParameter && doesScriptExist(animationName)) {
                 val animationValue = result.groups[3]!!.value.replace("\\}", "}")
-                return listOf(AnimationPart { ScriptManager.getJavaScriptAnimation(animationName, animationValue, withPlaceholders = true) })
+                return listOf(AnimationPart { scriptManager!!.getScriptAnimation(animationName, animationValue, withPlaceholders = true) })
             } else if (registeredAnimations.containsKey(animationName)) {
                 return listOf(AnimationPart { registeredAnimations[animationName] })
             } else {
@@ -290,9 +296,9 @@ object APIProvider : TitleManagerAPI {
                     list.add(AnimationPart { part })
                 }
 
-                if (hasParameter && ScriptManager.registeredScripts.contains(animation)) {
+                if (hasParameter && doesScriptExist(animation)) {
                     val animationValue = matcher.group(3).replace("\\}", "}")
-                    list.add(AnimationPart { ScriptManager.getJavaScriptAnimation(animation, animationValue, withPlaceholders = true) })
+                    list.add(AnimationPart { scriptManager!!.getScriptAnimation(animation, animationValue, withPlaceholders = true) })
                 } else if (registeredAnimations.containsKey(animation)) {
                     list.add(AnimationPart { registeredAnimations[animation] })
                 } else {
@@ -393,7 +399,7 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun fromJavaScript(name: String, input: String): Animation {
-        return ScriptManager.getJavaScriptAnimation(name, input)
+        return scriptManager?.getScriptAnimation(name, input) ?: throw RuntimeException("Script engine does not exist")
     }
 
     // Titles

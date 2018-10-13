@@ -1,25 +1,51 @@
 package tests
 
 import io.puharesource.mc.titlemanager.APIProvider
+import io.puharesource.mc.titlemanager.script.GraalScriptManager
+import io.puharesource.mc.titlemanager.script.NashornScriptManager
 import io.puharesource.mc.titlemanager.script.ScriptManager
+import org.graalvm.polyglot.Value
+import org.junit.Before
 import org.junit.Test
+import java.lang.RuntimeException
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class JSAnimationTest {
+    private lateinit var scriptManager: ScriptManager
+
+    @Before
+    fun init() {
+        this.scriptManager = ScriptManager.create()!!
+    }
+
     private fun toResult(animation: String, text: String, index: Int) : Pair<String, Boolean> {
-        val result = ScriptManager.getFrameFromScript(animation, text, index)
+        val result = scriptManager.getFrameFromScript(animation, text, index)
         val prefix = "(Animation: $animation | Index: $index)"
 
         assertEquals(result.size, 5, "$prefix Must return 5 elements.")
 
-        assertTrue(result[0].isString, "$prefix Element 0 must be of type String.")
-        assertTrue(result[1].isBoolean, "$prefix Element 1 must be of type Boolean.")
-        assertTrue(result[2].isNumber, "$prefix Element 2 must be of type Int.")
-        assertTrue(result[3].isNumber, "$prefix Element 3 must be of type Int.")
-        assertTrue(result[4].isNumber, "$prefix Element 4 must be of type Int.")
+        if (scriptManager is GraalScriptManager) {
+            result as Array<Value>
 
-        return Pair("${result[2]}, ${result[3]}, ${result[4]} | ${result[1]} | \"${result[0]}\"", result[1].asBoolean())
+            assertTrue(result[0].isString, "$prefix Element 0 must be of type String.")
+            assertTrue(result[1].isBoolean, "$prefix Element 1 must be of type Boolean.")
+            assertTrue(result[2].isNumber, "$prefix Element 2 must be of type Int.")
+            assertTrue(result[3].isNumber, "$prefix Element 3 must be of type Int.")
+            assertTrue(result[4].isNumber, "$prefix Element 4 must be of type Int.")
+
+            return Pair("${result[2]}, ${result[3]}, ${result[4]} | ${result[1]} | \"${result[0]}\"", result[1].asBoolean())
+        } else if (scriptManager is NashornScriptManager) {
+            assertTrue(result[0] is String, "$prefix Element 0 must be of type String.")
+            assertTrue(result[1] is Boolean, "$prefix Element 1 must be of type Boolean.")
+            assertTrue(result[2] is Int, "$prefix Element 2 must be of type Int.")
+            assertTrue(result[3] is Int, "$prefix Element 3 must be of type Int.")
+            assertTrue(result[4] is Int, "$prefix Element 4 must be of type Int.")
+
+            return Pair("${result[2]}, ${result[3]}, ${result[4]} | ${result[1]} | \"${result[0]}\"", result[1] as Boolean)
+        }
+
+        throw RuntimeException("ScriptManager does not exist")
     }
 
     private fun toResultList(animation: String, text: String) : List<String> {
