@@ -140,7 +140,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
 
         val scoreboardSection = config.getConfigurationSection("scoreboard")
         val title = toAnimationParts(scoreboardSection.getString("title").color())
-        val lines = scoreboardSection.getStringList("lines").take(15).map { toAnimationParts(it.color()) }
+        val lines = scoreboardSection.getStringList("lines").asSequence().take(15).map { toAnimationParts(it.color()) }.toList()
 
         server.onlinePlayers.forEach {
             if (playerListSection.getBoolean("enabled")) {
@@ -566,7 +566,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
 
             APIProvider.addPlaceholderReplacerWithValue("online", replacer@ { _, value ->
                 if (value.contains(",")) {
-                    return@replacer value.split(",").mapNotNull { BungeeCordManager.getServers()[value]?.playerCount }.sum().toString()
+                    return@replacer value.split(",").asSequence().mapNotNull { BungeeCordManager.getServers()[value]?.playerCount }.sum().toString()
                 }
 
                 return@replacer BungeeCordManager.getServers()[value]?.playerCount?.toString() ?: ""

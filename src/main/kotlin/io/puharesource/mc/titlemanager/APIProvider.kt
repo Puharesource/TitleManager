@@ -32,7 +32,6 @@ import io.puharesource.mc.titlemanager.reflections.TitleTypeMapper
 import io.puharesource.mc.titlemanager.reflections.sendNMSPacket
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardManager
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardRepresentation
-import io.puharesource.mc.titlemanager.script.GraalScriptManager
 import io.puharesource.mc.titlemanager.script.ScriptManager
 import me.clip.placeholderapi.PlaceholderAPI
 import net.md_5.bungee.api.ChatMessageType
@@ -40,7 +39,6 @@ import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
 import java.io.File
-import java.lang.RuntimeException
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentSkipListMap
@@ -63,7 +61,7 @@ object APIProvider : TitleManagerAPI {
     internal val animationPattern = """[$][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
     internal val commandSplitPattern = """([<]nl[>])|(\\n)""".toRegex()
 
-    var scriptManager: ScriptManager? = ScriptManager.create()
+    var scriptManager: ScriptManager? = null
 
     // Running animations
 
@@ -534,7 +532,6 @@ object APIProvider : TitleManagerAPI {
     override fun getHeader(player: Player) = player.getTitleManagerMetadata(HEADER_METADATA_KEY)?.asString().orEmpty()
 
     override fun setHeader(player: Player, header: String) {
-        player.setTitleManagerMetadata(HEADER_METADATA_KEY, header)
         setHeaderAndFooter(player, header, getFooter(player))
     }
 
@@ -545,7 +542,6 @@ object APIProvider : TitleManagerAPI {
     override fun getFooter(player: Player) = player.getTitleManagerMetadata(FOOTER_METADATA_KEY)?.asString().orEmpty()
 
     override fun setFooter(player: Player, footer: String) {
-        player.setTitleManagerMetadata(FOOTER_METADATA_KEY, footer)
         setHeaderAndFooter(player, getHeader(player), footer)
     }
 
