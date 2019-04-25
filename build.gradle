@@ -1,31 +1,17 @@
-import com.sun.org.apache.xalan.internal.xsltc.cmdline.Compile
 import org.apache.tools.ant.filters.ReplaceTokens
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-buildscript {
-    ext.kotlin_version = '1.2.71'
-
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Kotlin Build Script
-        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.0" // Shadow Build Script
-    }
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.21'
+    id 'com.github.johnrengelman.shadow' version '5.0.0'
 }
-
-// ========================= The basics ========================= //
 
 group = 'io.puharesource.mc'
 version = '2.1.4'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "com.github.johnrengelman.shadow"
 
 //Shadow
 project.tasks.assemble.dependsOn project.tasks.shadowJar
@@ -43,7 +29,7 @@ shadowJar {
 }
 
 // Force UTF-8
-tasks.withType(Compile) {
+tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
@@ -181,7 +167,7 @@ repositories {
 // ========================= Dependencies ========================= //
 
 dependencies {
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: '1.3.21'
     implementation group: 'io.reactivex', name: 'rxjava', version: '1.2.1'
 
     implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.11-R0.1-SNAPSHOT'
@@ -198,7 +184,7 @@ dependencies {
     implementation group: 'com.oracle.truffle', name: 'truffle-api', version: '1.0.0-rc7'
 
     testImplementation group: 'junit', name: 'junit', version: '4.12'
-    testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: kotlin_version
+    testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: '1.3.21'
     testImplementation group: 'com.madgag', name: 'animated-gif-lib', version: '1.2'
 }
 
