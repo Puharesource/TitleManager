@@ -173,7 +173,7 @@ dependencies {
     implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.11-R0.1-SNAPSHOT'
 
     implementation group: 'me.clip', name: 'placeholderapi', version: '2.10.2'
-    implementation group: 'be.maximvdw', name: 'MVdWPlaceholderAPI', version: '3.0.0-SNAPSHOT'
+    implementation(group: 'be.maximvdw', name: 'MVdWPlaceholderAPI', version: '3.0.0-SNAPSHOT') { transitive = false }
     implementation group: 'net.milkbowl.vault', name: 'VaultAPI', version: '1.7'
     implementation(group: 'net.ess3', name: 'Essentials', version: '2.13.1') { transitive = false }
 

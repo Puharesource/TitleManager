@@ -24,12 +24,7 @@ object UpdateChecker {
             debug("Searching for updates...")
 
             try {
-                val connection = spigotAPIUrl.openConnection() as HttpsURLConnection
-                connection.requestMethod = "GET"
-
-                latestVersion = connection.inputStream.use { it.bufferedReader().readText() }
-
-                connection.disconnect()
+                latestVersion = retrieveVersion()
             } catch (e: IOException) {
                 debug("Failed to get information for update check.")
             }
@@ -54,4 +49,15 @@ object UpdateChecker {
     fun getLatestVersion() = latestVersion
 
     fun isUpdateAvailable() = latestVersion != null && !getCurrentVersion().equals(latestVersion, ignoreCase = true)
+
+    private fun retrieveVersion(): String {
+        val connection = spigotAPIUrl.openConnection() as HttpsURLConnection
+        connection.requestMethod = "GET"
+
+        val version = connection.inputStream.use { it.bufferedReader().readText() }
+
+        connection.disconnect()
+
+        return version
+    }
 }
