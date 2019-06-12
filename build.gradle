@@ -175,7 +175,7 @@ dependencies {
     implementation group: 'me.clip', name: 'placeholderapi', version: '2.10.2'
     implementation group: 'be.maximvdw', name: 'MVdWPlaceholderAPI', version: '1.0.2-SNAPSHOT'
     implementation group: 'net.milkbowl.vault', name: 'VaultAPI', version: '1.7'
-    implementation(group: 'net.ess3', name: 'Essentials', version: 'Pre2.14.1.3') { transitive = false }
+    implementation(group: 'net.ess3', name: 'Essentials', version: '2.13.1') { transitive = false }
 
     implementation name: 'SuperVanish'
     implementation name: 'VanishNoPacket'
