@@ -50,7 +50,7 @@ object NMSManager {
             6    -> Provider112
             7    -> Provider113
             8    -> Provider113
-            else -> Provider112
+            else -> Provider113
         }
     }
 }

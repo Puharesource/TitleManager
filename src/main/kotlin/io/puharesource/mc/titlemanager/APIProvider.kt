@@ -33,7 +33,6 @@ import io.puharesource.mc.titlemanager.reflections.sendNMSPacket
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardManager
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardRepresentation
 import io.puharesource.mc.titlemanager.script.ScriptManager
-import me.clip.placeholderapi.PlaceholderAPI
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.entity.Player
@@ -132,48 +131,35 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun replaceText(player: Player, text: String): String {
-        val placeholderAPIEnabled = !isTesting && PlaceholderAPIHook.isEnabled()
-        val mvdwAPIEnabled = !isTesting && MvdwPlaceholderAPIHook.isEnabled()
-        val mvdwReplace : (Player, String) -> String = { player, text -> be.maximvdw.placeholderapi.PlaceholderAPI.replacePlaceholders(player, text) }
-
-        if (!containsPlaceholders(text)) {
-            var replacedText = text
-
-            if (placeholderAPIEnabled) {
-                replacedText = PlaceholderAPI.setPlaceholders(player, replacedText)
-            }
-
-            if (mvdwAPIEnabled) {
-                replacedText = mvdwReplace(player, replacedText)
-            }
-
-            return replacedText
-        }
-
-        val matcher = variablePattern.toPattern().matcher(text)
         var replacedText = text
 
-        while (matcher.find()) {
-            val placeholder = matcher.group(2)
-            val parameter : String? = if (matcher.groupCount() == 3) matcher.group(3)?.replace("\\}", "}") else null
+        if (containsPlaceholders(text)) {
+            val matcher = variablePattern.toPattern().matcher(text)
 
-            if (parameter != null) {
-                placeholderReplacersWithValues[placeholder]?.let { replacer ->
-                    replacedText = replacedText.replace(matcher.group(), replacer.invoke(player, parameter))
-                }
-            } else {
-                placeholderReplacers[matcher.group(1)]?.let { replacer ->
-                    replacedText = replacedText.replace(matcher.group(), replacer.invoke(player))
+            while (matcher.find()) {
+                val placeholder = matcher.group(2)
+                val parameter : String? = if (matcher.groupCount() == 3) matcher.group(3)?.replace("\\}", "}") else null
+
+                if (parameter != null) {
+                    placeholderReplacersWithValues[placeholder]?.let { replacer ->
+                        replacedText = replacedText.replace(matcher.group(), replacer.invoke(player, parameter))
+                    }
+                } else {
+                    placeholderReplacers[matcher.group(1)]?.let { replacer ->
+                        replacedText = replacedText.replace(matcher.group(), replacer.invoke(player))
+                    }
                 }
             }
         }
 
-        if (placeholderAPIEnabled) {
-            replacedText = PlaceholderAPI.setPlaceholders(player, replacedText)
-        }
+        if (!isTesting) {
+            if (PlaceholderAPIHook.isEnabled()) {
+                replacedText = PlaceholderAPIHook.replacePlaceholders(player, replacedText)
+            }
 
-        if (mvdwAPIEnabled) {
-            replacedText = mvdwReplace(player, replacedText)
+            if (MvdwPlaceholderAPIHook.canReplace()) {
+                replacedText = MvdwPlaceholderAPIHook.replacePlaceholders(player, replacedText)
+            }
         }
 
         return replacedText

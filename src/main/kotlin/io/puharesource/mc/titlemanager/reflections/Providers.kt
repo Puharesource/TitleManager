@@ -133,6 +133,9 @@ object Provider112 : NMSClassProvider() {
     }
 }
 
+/**
+ * Provides classes for Minecraft 1.13 <=
+ */
 object Provider113 : NMSClassProvider() {
     init {
         "ChatComponentText".associate(NET_MINECRAFT_SERVER, "ChatComponentText")

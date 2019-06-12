@@ -8,10 +8,35 @@ import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.kitteh.vanish.VanishPlugin
+import java.lang.Exception
+import me.clip.placeholderapi.PlaceholderAPI as ClipsPlaceholderApi
+import be.maximvdw.placeholderapi.PlaceholderAPI as MvdwPlaceholderApi
 
-object PlaceholderAPIHook : PluginHook("PlaceholderAPI")
+object PlaceholderAPIHook : PluginHook("PlaceholderAPI") {
+    fun replacePlaceholders(player: Player, text: String): String {
+        return try {
+            ClipsPlaceholderApi.setPlaceholders(player, text)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            text
+        }
+    }
+}
 
-object MvdwPlaceholderAPIHook : PluginHook("MVdWPlaceholderAPI")
+object MvdwPlaceholderAPIHook : PluginHook("MVdWPlaceholderAPI") {
+    fun replacePlaceholders(player: Player, text: String): String {
+        return try {
+            MvdwPlaceholderApi.replacePlaceholders(player, text)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            text
+        }
+    }
+
+    fun canReplace(): Boolean {
+        return isEnabled() && MvdwPlaceholderApi.getLoadedPlaceholderCount() > 0
+    }
+}
 
 object EssentialsHook : PluginHook("Essentials") {
     fun isPlayerVanished(player: Player): Boolean {
