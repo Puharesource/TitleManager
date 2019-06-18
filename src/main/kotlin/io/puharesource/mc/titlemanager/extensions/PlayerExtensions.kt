@@ -180,3 +180,5 @@ fun Player.removeScoreboardValue(index: Int) = pluginInstance.removeScoreboardVa
 fun Player.getTitleManagerMetadata(key: String) = getMetadata(key).firstOrNull { it.owningPlugin == pluginInstance }
 
 fun Player.setTitleManagerMetadata(key: String, any: Any) = setMetadata(key, FixedMetadataValue(pluginInstance, any))
+
+fun Player.removeTitleManagerMetadata(key: String) = removeMetadata(key, pluginInstance)

@@ -12,6 +12,7 @@ import io.puharesource.mc.titlemanager.extensions.color
 import io.puharesource.mc.titlemanager.extensions.format
 import io.puharesource.mc.titlemanager.extensions.getFormattedTime
 import io.puharesource.mc.titlemanager.extensions.getStringWithMultilines
+import io.puharesource.mc.titlemanager.extensions.getTitleManagerMetadata
 import io.puharesource.mc.titlemanager.extensions.giveScoreboard
 import io.puharesource.mc.titlemanager.extensions.isInt
 import io.puharesource.mc.titlemanager.extensions.removeScoreboard
@@ -92,6 +93,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         server.onlinePlayers.forEach {
             APIProvider.removeAllRunningAnimations(it)
             it.removeScoreboard()
+            APIProvider.clearHeaderAndFooterCache(it)
         }
 
         ScoreboardManager.playerScoreboards.clear()
@@ -506,6 +508,12 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                     lines.forEachIndexed { index, parts ->
                         toScoreboardValueAnimation(parts, it, index + 1, true).start()
                     }
+                }
+
+        observeEvent<PlayerQuitEvent>()
+                .map { it.player }
+                .subscribe {
+                    APIProvider.clearHeaderAndFooterCache(it)
                 }
 
         // Delete players from the scoreboard cache when they quit the server

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'io.puharesource.mc'
-version = '2.1.4'
+version = '2.1.5'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'

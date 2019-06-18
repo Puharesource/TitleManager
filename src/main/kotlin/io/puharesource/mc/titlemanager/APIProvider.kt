@@ -14,6 +14,7 @@ import io.puharesource.mc.titlemanager.extensions.clearTitle
 import io.puharesource.mc.titlemanager.extensions.color
 import io.puharesource.mc.titlemanager.extensions.getTitleManagerMetadata
 import io.puharesource.mc.titlemanager.extensions.modify
+import io.puharesource.mc.titlemanager.extensions.removeTitleManagerMetadata
 import io.puharesource.mc.titlemanager.extensions.sendActionbar
 import io.puharesource.mc.titlemanager.extensions.sendSubtitle
 import io.puharesource.mc.titlemanager.extensions.sendTitle
@@ -543,10 +544,10 @@ object APIProvider : TitleManagerAPI {
             if (header == cachedHeader && footer == cachedFooter) {
                 return
             }
-        }
 
-        player.setTitleManagerMetadata(HEADER_METADATA_KEY, header)
-        player.setTitleManagerMetadata(FOOTER_METADATA_KEY, footer)
+            player.setTitleManagerMetadata(HEADER_METADATA_KEY, header)
+            player.setTitleManagerMetadata(FOOTER_METADATA_KEY, footer)
+        }
 
         val provider = NMSManager.getClassProvider()
         val packet : Any
@@ -565,6 +566,11 @@ object APIProvider : TitleManagerAPI {
 
     override fun setHeaderAndFooterWithPlaceholders(player: Player, header: String, footer: String) {
         setHeaderAndFooter(player, replaceText(player, header), replaceText(player, footer))
+    }
+
+    fun clearHeaderAndFooterCache(player: Player) {
+        player.removeTitleManagerMetadata(HEADER_METADATA_KEY)
+        player.removeTitleManagerMetadata(FOOTER_METADATA_KEY)
     }
 
     // Scoreboard
