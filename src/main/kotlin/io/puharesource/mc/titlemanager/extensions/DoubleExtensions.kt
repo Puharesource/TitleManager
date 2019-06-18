@@ -1,20 +1,15 @@
 package io.puharesource.mc.titlemanager.extensions
 
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.pluginConfig
 import java.math.BigDecimal
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.Locale
 
 internal fun Double.format() : String {
-    val section = pluginInstance.config.getConfigurationSection("placeholders.number-format")
+    val numberFormat = pluginConfig.placeholders.numberFormat
 
-    if (section.getBoolean("enabled")) {
+    if (numberFormat.enabled) {
         val decimal = BigDecimal(this)
-        val format = section.getString("format")
-        val symbols = DecimalFormatSymbols(Locale.US)
 
-        return DecimalFormat(format, symbols).format(decimal)
+        return numberFormat.format.format(decimal)
     }
 
     return toString()

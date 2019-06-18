@@ -8,9 +8,8 @@ import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.kitteh.vanish.VanishPlugin
-import java.lang.Exception
-import me.clip.placeholderapi.PlaceholderAPI as ClipsPlaceholderApi
 import be.maximvdw.placeholderapi.PlaceholderAPI as MvdwPlaceholderApi
+import me.clip.placeholderapi.PlaceholderAPI as ClipsPlaceholderApi
 
 object PlaceholderAPIHook : PluginHook("PlaceholderAPI") {
     fun replacePlaceholders(player: Player, text: String): String {

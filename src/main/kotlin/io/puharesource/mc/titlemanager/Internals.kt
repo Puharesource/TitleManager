@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager
 
+import io.puharesource.mc.titlemanager.config.TMConfigMain
 import org.bukkit.Bukkit
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -14,6 +15,10 @@ private val random = Random()
 
 internal val pluginInstance : TitleManagerPlugin by lazy {
     Bukkit.getPluginManager().getPlugin("TitleManager") as TitleManagerPlugin
+}
+
+internal val pluginConfig : TMConfigMain by lazy {
+    pluginInstance.tmConfig
 }
 
 internal val isTesting : Boolean

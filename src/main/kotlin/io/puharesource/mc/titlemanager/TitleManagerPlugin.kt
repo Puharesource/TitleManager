@@ -6,13 +6,12 @@ import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.bungeecord.BungeeCordManager
 import io.puharesource.mc.titlemanager.commands.TMCommand
 import io.puharesource.mc.titlemanager.config.PrettyConfig
+import io.puharesource.mc.titlemanager.config.TMConfigMain
 import io.puharesource.mc.titlemanager.event.observeEvent
 import io.puharesource.mc.titlemanager.event.observeEventRaw
 import io.puharesource.mc.titlemanager.extensions.color
 import io.puharesource.mc.titlemanager.extensions.format
 import io.puharesource.mc.titlemanager.extensions.getFormattedTime
-import io.puharesource.mc.titlemanager.extensions.getStringWithMultilines
-import io.puharesource.mc.titlemanager.extensions.getTitleManagerMetadata
 import io.puharesource.mc.titlemanager.extensions.giveScoreboard
 import io.puharesource.mc.titlemanager.extensions.isInt
 import io.puharesource.mc.titlemanager.extensions.removeScoreboard
@@ -28,11 +27,9 @@ import io.puharesource.mc.titlemanager.reflections.NMSManager
 import io.puharesource.mc.titlemanager.reflections.getPing
 import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardManager
-import io.puharesource.mc.titlemanager.script.GraalScriptManager
 import io.puharesource.mc.titlemanager.script.ScriptManager
 import io.puharesource.mc.titlemanager.web.UpdateChecker
 import org.bukkit.ChatColor
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
@@ -40,9 +37,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -50,6 +45,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     private val animationsFolder = File(dataFolder, "animations")
     private var conf : PrettyConfig? = null
     var playerInfoDB: PlayerInfoDB? = null
+    internal lateinit var tmConfig: TMConfigMain
 
     override fun onEnable() {
         debug("Save default config")
@@ -103,7 +99,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     // Override default config methods.
     override fun getConfig() : FileConfiguration {
         if (conf == null) {
-            conf = PrettyConfig(File(dataFolder, "config.yml"))
+            reloadConfig()
         }
 
         return conf!!
@@ -111,6 +107,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     override fun saveConfig() = config.save(File(dataFolder, "config.yml"))
     override fun reloadConfig() {
         conf = PrettyConfig(File(dataFolder, "config.yml"))
+        tmConfig = TMConfigMain(conf!!)
     }
 
     fun reloadPlugin() {
@@ -128,7 +125,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         loadAnimations()
         registerAnnouncers()
 
-        if (config.getBoolean("check-for-updates")) {
+        if (tmConfig.checkForUpdates) {
             UpdateChecker.start()
         }
 
@@ -136,21 +133,19 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     }
 
     private fun startPlayerTasks() {
-        val playerListSection = config.getConfigurationSection("player-list")
-        val header = toAnimationParts(playerListSection.getStringWithMultilines("header").color())
-        val footer = toAnimationParts(playerListSection.getStringWithMultilines("footer").color())
+        val header = toAnimationParts(tmConfig.playerList.header.color())
+        val footer = toAnimationParts(tmConfig.playerList.footer.color())
 
-        val scoreboardSection = config.getConfigurationSection("scoreboard")
-        val title = toAnimationParts(scoreboardSection.getString("title").color())
-        val lines = scoreboardSection.getStringList("lines").asSequence().take(15).map { toAnimationParts(it.color()) }.toList()
+        val title = toAnimationParts(tmConfig.scoreboard.title.color())
+        val lines = tmConfig.scoreboard.lines.asSequence().take(15).map { toAnimationParts(it.color()) }.toList()
 
         server.onlinePlayers.forEach {
-            if (playerListSection.getBoolean("enabled")) {
+            if (tmConfig.playerList.enabled) {
                 toHeaderAnimation(header, it, withPlaceholders = true).start()
                 toFooterAnimation(footer, it, withPlaceholders = true).start()
             }
 
-            if (scoreboardSection.getBoolean("enabled")) {
+            if (tmConfig.scoreboard.enabled) {
                 if (playerInfoDB!!.isScoreboardToggled(it)) {
                     it.giveScoreboard()
 
@@ -298,6 +293,8 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
 
             config.save(configFile)
         }
+
+        reloadConfig()
     }
 
     private fun setupDB() {
@@ -305,17 +302,11 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     }
 
     private fun registerAnnouncers() {
-        var section : ConfigurationSection = config.getConfigurationSection("announcer")
+        if (!tmConfig.usingConfig) return
+        if (!tmConfig.announcer.enabled) return
 
-        if (!config.getBoolean("using-config")) return
-        if (!section.getBoolean("enabled")) return
-
-        section = section.getConfigurationSection("announcements")
-
-        section.getKeys(false)
-                .forEach {
-                    val announcement = section.getConfigurationSection(it)
-
+        tmConfig.announcer.announcements
+                .forEach { announcement ->
                     val interval = announcement.getInt("interval", 60)
 
                     val fadeIn = announcement.getInt("timings.fade-in", 20)
@@ -328,7 +319,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                     val size = if (titles.size > actionbarTitles.size) titles.size else actionbarTitles.size
                     val index = AtomicInteger(0)
 
-                    debug("Registering announcement: $it")
+                    debug("Registering announcement: ${announcement.name}")
                     debug("Announcement Info:")
                     debug("Interval: $interval")
                     debug("Fade in: $fadeIn")
@@ -340,7 +331,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
 
                     if (size != 0) {
                         AsyncScheduler.scheduleRaw({
-                            debug("Sending announcement: $it")
+                            debug("Sending announcement: ${announcement.name}")
 
                             val i = index.andIncrement % size
 
@@ -410,7 +401,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     private fun registerListeners() {
         // Notify administrators joining the server of the update.
         observeEvent<PlayerJoinEvent>()
-                .filter { config.getBoolean("check-for-updates") }
+                .filter { tmConfig.checkForUpdates }
                 .filter { UpdateChecker.isUpdateAvailable() }
                 .map { it.player }
                 .filter { it.hasPermission("titlemanager.update.notify") }
@@ -424,38 +415,38 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         observeEvent<PlayerJoinEvent>()
                 .observeOn(asyncScheduler)
                 .subscribeOn(asyncScheduler)
-                .filter { config.getBoolean("using-config") }
-                .filter { config.getBoolean("welcome-title.enabled") }
+                .filter { tmConfig.usingConfig }
+                .filter { tmConfig.welcomeTitle.enabled }
                 .map { it.player }
                 .delay(1, TimeUnit.SECONDS)
                 .filter { it.isOnline }
                 .subscribe {
-                    val section = config.getConfigurationSection("welcome-title")
+                    val welcomeTitle = tmConfig.welcomeTitle
 
                     if (it.hasPlayedBefore()) {
                         it.sendTitleFromText(
-                                section.getString("title").color(),
-                                section.getInt("fade-in"),
-                                section.getInt("stay"),
-                                section.getInt("fade-out"))
+                                welcomeTitle.title.color(),
+                                welcomeTitle.fadeIn,
+                                welcomeTitle.stay,
+                                welcomeTitle.fadeOut)
 
                         it.sendSubtitleFromText(
-                                section.getString("subtitle").color(),
-                                section.getInt("fade-in"),
-                                section.getInt("stay"),
-                                section.getInt("fade-out"))
+                                welcomeTitle.subtitle.color(),
+                                welcomeTitle.fadeIn,
+                                welcomeTitle.stay,
+                                welcomeTitle.fadeOut)
                     } else {
                         it.sendTitleFromText(
-                                section.getString("first-join.title").color(),
-                                section.getInt("fade-in"),
-                                section.getInt("stay"),
-                                section.getInt("fade-out"))
+                                welcomeTitle.firstJoin.title.color(),
+                                welcomeTitle.fadeIn,
+                                welcomeTitle.stay,
+                                welcomeTitle.fadeOut)
 
                         it.sendSubtitleFromText(
-                                section.getString("first-join.subtitle").color(),
-                                section.getInt("fade-in"),
-                                section.getInt("stay"),
-                                section.getInt("fade-out"))
+                                welcomeTitle.firstJoin.subtitle.color(),
+                                welcomeTitle.fadeIn,
+                                welcomeTitle.stay,
+                                welcomeTitle.fadeOut)
                     }
                 }
 
@@ -463,50 +454,44 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         observeEventRaw<PlayerJoinEvent>()
                 .observeOn(asyncScheduler)
                 .subscribeOn(asyncScheduler)
-                .filter { config.getBoolean("using-config") }
-                .filter { config.getBoolean("welcome-actionbar.enabled") }
+                .filter { tmConfig.usingConfig }
+                .filter { tmConfig.welcomeActionbar.enabled }
                 .map { it.player }
                 .delay(1, TimeUnit.SECONDS)
                 .filter { it.isOnline }
                 .subscribe {
-                    val section = config.getConfigurationSection("welcome-actionbar")
-
                     if (it.hasPlayedBefore()) {
-                        it.sendActionbarFromText(section.getString("title").color())
+                        it.sendActionbarFromText(tmConfig.welcomeActionbar.title.color())
                     } else {
-                        it.sendActionbarFromText(section.getString("first-join").color())
+                        it.sendActionbarFromText(tmConfig.welcomeActionbar.firstJoin.color())
                     }
                 }
 
         // Set header and footer
         observeEvent<PlayerJoinEvent>()
-                .filter { config.getBoolean("using-config") }
-                .filter { config.getBoolean("player-list.enabled") }
+                .filter { tmConfig.usingConfig }
+                .filter { tmConfig.playerList.enabled }
                 .map { it.player }
                 .subscribe {
-                    val section = config.getConfigurationSection("player-list")
-
-                    it.setHeaderFromText(section.getStringWithMultilines("header").color())
-                    it.setFooterFromText(section.getStringWithMultilines("footer").color())
+                    it.setHeaderFromText(tmConfig.playerList.header.color())
+                    it.setFooterFromText(tmConfig.playerList.footer.color())
                 }
 
         // Set scoreboard
         observeEvent<PlayerJoinEvent>()
-                .filter { config.getBoolean("using-config") }
-                .filter { config.getBoolean("scoreboard.enabled") }
+                .filter { tmConfig.usingConfig }
+                .filter { tmConfig.scoreboard.enabled }
                 .map { it.player }
                 .filter { playerInfoDB!!.isScoreboardToggled(it) }
-                .subscribe {
-                    val section = config.getConfigurationSection("scoreboard")
+                .subscribe { player ->
+                    val title = toAnimationParts(tmConfig.scoreboard.title.color())
+                    val lines = tmConfig.scoreboard.lines.take(15).map { toAnimationParts(it.color()) }
 
-                    val title = toAnimationParts(section.getString("title").color())
-                    val lines = section.getStringList("lines").take(15).map { toAnimationParts(it.color()) }
-
-                    it.giveScoreboard()
-                    toScoreboardTitleAnimation(title, it, true).start()
+                    player.giveScoreboard()
+                    toScoreboardTitleAnimation(title, player, true).start()
 
                     lines.forEachIndexed { index, parts ->
-                        toScoreboardValueAnimation(parts, it, index + 1, true).start()
+                        toScoreboardValueAnimation(parts, player, index + 1, true).start()
                     }
                 }
 
@@ -553,11 +538,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         APIProvider.addPlaceholderReplacer("tps", { PlaceholderTps.getTps(1) })
 
         APIProvider.addPlaceholderReplacer("server-time", {
-            val format = config.getString("placeholders.date-format")
             val date = Date(System.currentTimeMillis())
-            val locale = Locale.forLanguageTag(config.getString("locale"))
 
-            return@addPlaceholderReplacer SimpleDateFormat(format, locale).format(date)
+            return@addPlaceholderReplacer tmConfig.placeholders.dateFormat.format(date)
         })
 
         APIProvider.addPlaceholderReplacerWithValue("tps", replacer@ { _, value ->
@@ -568,7 +551,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
             return@replacer PlaceholderTps.getTps(value)
         })
 
-        if (config.getBoolean("using-bungeecord")) {
+        if (tmConfig.usingBungeecord) {
             APIProvider.addPlaceholderReplacer("bungeecord-online", { BungeeCordManager.onlinePlayers.toString() }, "bungeecord-online-players")
             APIProvider.addPlaceholderReplacer("server", { BungeeCordManager.getCurrentServer().orEmpty() }, "server-name")
 

@@ -7,6 +7,7 @@ import io.puharesource.mc.titlemanager.extensions.color
 import io.puharesource.mc.titlemanager.extensions.giveScoreboard
 import io.puharesource.mc.titlemanager.extensions.hasScoreboard
 import io.puharesource.mc.titlemanager.extensions.removeScoreboard
+import io.puharesource.mc.titlemanager.pluginConfig
 import io.puharesource.mc.titlemanager.pluginInstance
 import org.bukkit.entity.Player
 
@@ -28,9 +29,8 @@ object CommandScoreboard : TMSubCommand("scoreboard",
 
                 sendConfigMessage("toggled-off")
             } else {
-                val scoreboardSection = pluginInstance.config.getConfigurationSection("scoreboard")
-                val title = toAnimationParts(scoreboardSection.getString("title").color())
-                val lines = scoreboardSection.getStringList("lines").take(15).map { toAnimationParts(it.color()) }
+                val title = toAnimationParts(pluginConfig.scoreboard.title.color())
+                val lines = pluginConfig.scoreboard.lines.take(15).map { toAnimationParts(it.color()) }
 
                 player.giveScoreboard()
                 toScoreboardTitleAnimation(title, player, true).start()

@@ -1,7 +1,7 @@
 package io.puharesource.mc.titlemanager.scoreboard
 
 import io.puharesource.mc.titlemanager.generateRandomString
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.pluginConfig
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -11,7 +11,7 @@ class ScoreboardRepresentation(title: String = "", private val lines: MutableMap
 
     var title : String = ""
         set(value) {
-            if (field != value || !preventDuplicatePackets) {
+            if (field != value || !pluginConfig.bandwidth.preventDuplicatePackets) {
                 isUpdatePending.set(true)
             }
 
@@ -25,9 +25,6 @@ class ScoreboardRepresentation(title: String = "", private val lines: MutableMap
     fun generateNewScoreboardName() {
         name = generateRandomString()
     }
-
-    private val preventDuplicatePackets: Boolean
-        get() = pluginInstance.config.getBoolean("bandwidth.prevent-duplicate-packets")
 
     val size : Int
         get() = lines.size
@@ -43,7 +40,7 @@ class ScoreboardRepresentation(title: String = "", private val lines: MutableMap
             lines[index] = text
         }
 
-        if (isNew || !preventDuplicatePackets) {
+        if (isNew || !pluginConfig.bandwidth.preventDuplicatePackets) {
             isUpdatePending.set(true)
         }
     }
@@ -51,7 +48,7 @@ class ScoreboardRepresentation(title: String = "", private val lines: MutableMap
     fun remove(index: Int) {
         val existed = lines.remove(index) != null
 
-        if (existed || !preventDuplicatePackets) {
+        if (existed || !pluginConfig.bandwidth.preventDuplicatePackets) {
             isUpdatePending.set(true)
         }
     }

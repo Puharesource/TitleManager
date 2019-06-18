@@ -1,8 +1,7 @@
 package io.puharesource.mc.titlemanager.api.v2.animation;
 
-import org.bukkit.entity.Player;
-
 import java.util.Iterator;
+import org.bukkit.entity.Player;
 
 /**
  * @since 2.0.0

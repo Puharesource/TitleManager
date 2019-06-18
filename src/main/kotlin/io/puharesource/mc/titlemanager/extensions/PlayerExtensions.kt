@@ -5,7 +5,6 @@ import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
 import io.puharesource.mc.titlemanager.pluginInstance
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
-import org.bukkit.metadata.MetadataValue
 
 fun Player.sendTitle(title: String, fadeIn: Int = -1, stay: Int = -1, fadeOut: Int = -1, withPlaceholders: Boolean = false) {
     if (withPlaceholders) {

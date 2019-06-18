@@ -2,10 +2,9 @@ package io.puharesource.mc.titlemanager.api;
 
 import io.puharesource.mc.titlemanager.InternalsKt;
 import io.puharesource.mc.titlemanager.TitleManagerPlugin;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 /**
  * Due to the fact that you can't simply change the header or footer by themselves, this class acts as a cache for and easy way to do so.

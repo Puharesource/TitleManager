@@ -2,13 +2,12 @@ package io.puharesource.mc.titlemanager.api.variables;
 
 import io.puharesource.mc.titlemanager.APIProvider;
 import io.puharesource.mc.titlemanager.InternalsKt;
-import org.bukkit.entity.Player;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.bukkit.entity.Player;
 
 @Deprecated
 public final class VariableManager {

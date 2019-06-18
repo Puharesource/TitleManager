@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.reflections
 
-import java.util.*
+import java.util.TreeMap
 
 abstract class NMSClassProvider {
     private val classes : MutableMap<String, ReflectionClass> = TreeMap(String.CASE_INSENSITIVE_ORDER)

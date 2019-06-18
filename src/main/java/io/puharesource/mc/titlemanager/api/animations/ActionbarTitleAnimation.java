@@ -5,10 +5,9 @@ import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation;
 import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import java.util.List;
 
 /**
  * This is the actionbar title animation.

@@ -2,6 +2,7 @@ package io.puharesource.mc.titlemanager.bungeecord
 
 import com.google.common.io.ByteStreams
 import io.puharesource.mc.titlemanager.event.observePluginMessageReceived
+import io.puharesource.mc.titlemanager.pluginConfig
 import io.puharesource.mc.titlemanager.pluginInstance
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -17,14 +18,14 @@ object BungeeCordManager {
 
     init {
         scheduleAsyncObservableTimer(period = 200)
-                .filter { pluginInstance.config.getBoolean("using-bungeecord") }
+                .filter { pluginConfig.usingBungeecord }
                 .subscribe {
                     sendNetworkMessage("GetServers")
                     sendNetworkMessage("GetServer")
                 }
 
         observePluginMessageReceived()
-                .filter { pluginInstance.config.getBoolean("using-bungeecord") }
+                .filter { pluginConfig.usingBungeecord }
                 .onErrorResumeNext { null }
                 .filter { it != null }
                 .filter { it.channel == "BungeeCord" }
@@ -33,9 +34,8 @@ object BungeeCordManager {
                         val message = it.message
 
                         val input = ByteStreams.newDataInput(message)
-                        val subChannel = input.readUTF()
 
-                        when (subChannel) {
+                        when (input.readUTF()) {
                             "GetServers" -> {
                                 val newServers = input.readUTF().split(", ").toSet()
 
