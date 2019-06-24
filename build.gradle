@@ -184,7 +184,7 @@ dependencies {
     implementation group: 'com.oracle.truffle', name: 'truffle-api', version: '1.0.0-rc7'
 
     testImplementation group: 'junit', name: 'junit', version: '4.12'
-    testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: '1.3.31'
+    testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit', version: '1.3.40'
     testImplementation group: 'com.madgag', name: 'animated-gif-lib', version: '1.4'
 }
 
