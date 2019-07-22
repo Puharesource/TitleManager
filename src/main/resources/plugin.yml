@@ -1,6 +1,7 @@
 name: TitleManager
 version: @VERSION@
 author: Puharesource
+api-version: 1.13
 
 main: io.puharesource.mc.titlemanager.TitleManagerPlugin
 softdepend: [Vault, Essentials, VanishNoPacket, PlaceholderAPI, SuperVanish, PremiumVanish, MVdWPlaceholderAPI]
