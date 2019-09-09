@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'io.puharesource.mc'
-version = '2.1.5'
+version = '2.1.6'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
@@ -75,25 +75,6 @@ processResources {
         include '**/*.yml'
         filter(ReplaceTokens, tokens: [VERSION: project.version])
     }
-}
-
-// ========================= Clean extension ========================= //
-// Removes the folder out/ which is would have otherwise been left in
-// the root directory, if it wasn't for this method.
-
-clean.doFirst {
-    delete "$rootDir/out/"
-}
-
-// ========================= Custom compilation task ========================= //
-// Bundles all of the compiled jars into a nice and sane directory. (/out/)
-
-tasks.withType(ShadowJar) {
-    destinationDir = file("$rootDir/out/")
-}
-
-tasks.withType(Jar) {
-    destinationDir = file("$rootDir/out/")
 }
 
 artifacts {
