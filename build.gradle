@@ -145,18 +145,19 @@ repositories {
     }
 
     maven {
-        name 'ess-repo'
-        url 'http://repo.ess3.net/content/groups/essentials'
-    }
-
-    maven {
         name 'placeholderapi'
         url 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
     }
 
     maven {
         name 'mvdw-software'
-        url 'http://repo.mvdw-software.be/content/groups/public/'
+        url 'http://repo.mvdw-software.com/content/groups/public/'
+    }
+
+    // ! Needs to be last, as it screws with both PlaceholderAPI plugins.
+    maven {
+        name 'ess-repo'
+        url 'http://repo.ess3.net/content/groups/essentials'
     }
 
     flatDir {
@@ -172,8 +173,8 @@ dependencies {
 
     implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.11-R0.1-SNAPSHOT'
 
-    implementation group: 'me.clip', name: 'placeholderapi', version: '2.10.3'
     implementation(group: 'be.maximvdw', name: 'MVdWPlaceholderAPI', version: '3.0.1-SNAPSHOT') { transitive = false }
+    implementation group: 'me.clip', name: 'placeholderapi', version: '2.10.3'
     implementation group: 'net.milkbowl.vault', name: 'VaultAPI', version: '1.7'
     implementation(group: 'net.ess3', name: 'Essentials', version: '2.13.1') { transitive = false }
 
