@@ -57,7 +57,7 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.java.srcDirs
     from sourceSets.main.kotlin.srcDirs
 
-    classifier = 'sources'
+    archiveClassifier.set('sources')
 }
 
 task apiJar(type: Jar) {
@@ -65,7 +65,7 @@ task apiJar(type: Jar) {
         include 'io/puharesource/mc/titlemanager/api/v2/**'
     }
 
-    classifier = 'api'
+    archiveClassifier.set('api')
 }
 
 // ========================= Resource Filtering ========================= //
@@ -169,8 +169,8 @@ dependencies {
 }
 
 shadowJar {
-    baseName = 'TitleManager'
-    classifier = null
+    archiveBaseName.set('TitleManager')
+    archiveClassifier.set(null)
 
     dependencies {
         include(dependency('org.jetbrains.kotlin:.*'))
