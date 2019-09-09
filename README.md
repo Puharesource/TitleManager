@@ -3,8 +3,8 @@
 </h1>
 
 <p align="center">
-    <a href="https://github.com/Puharesource/TitleManager/workflows/Java%20CI/badge.svg">
-        <img src="https://github.com/Puharesource/TitleManager/actions"
+    <a href="https://github.com/Puharesource/TitleManager/actions">
+        <img src="https://github.com/Puharesource/TitleManager/workflows/Java%20CI/badge.svg"
              alt="Actions Status">
     </a>
     <a href="https://jitpack.io/#Puharesource/TitleManager">
