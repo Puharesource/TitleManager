@@ -48,7 +48,6 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     internal lateinit var tmConfig: TMConfigMain
 
     override fun onEnable() {
-        debug("Save default config")
         saveDefaultConfig()
 
         debug("Adding script files")
