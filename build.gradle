@@ -145,6 +145,11 @@ repositories {
     }
 
     maven {
+        name 'ess-repo'
+        url 'https://ci.ender.zone/plugin/repository/everything/'
+    }
+
+    maven {
         name 'placeholderapi'
         url 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
     }
@@ -152,12 +157,6 @@ repositories {
     maven {
         name 'mvdw-software'
         url 'http://repo.mvdw-software.com/content/groups/public/'
-    }
-
-    // ! Needs to be last, as it screws with both PlaceholderAPI plugins.
-    maven {
-        name 'ess-repo'
-        url 'http://repo.ess3.net/content/groups/essentials'
     }
 
     flatDir {
@@ -176,7 +175,7 @@ dependencies {
     implementation(group: 'be.maximvdw', name: 'MVdWPlaceholderAPI', version: '3.0.1-SNAPSHOT') { transitive = false }
     implementation group: 'me.clip', name: 'placeholderapi', version: '2.10.3'
     implementation group: 'net.milkbowl.vault', name: 'VaultAPI', version: '1.7'
-    implementation(group: 'net.ess3', name: 'Essentials', version: '2.13.1') { transitive = false }
+    implementation(group: 'net.ess3', name: 'EssentialsX', version: '2.17.1') { transitive = false }
 
     implementation name: 'SuperVanish'
     implementation name: 'VanishNoPacket'
