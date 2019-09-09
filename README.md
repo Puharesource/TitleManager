@@ -3,9 +3,9 @@
 </h1>
 
 <p align="center">
-    <a href="https://travis-ci.org/Puharesource/TitleManager">
-        <img src="https://travis-ci.org/Puharesource/TitleManager.svg?branch=master"
-             alt="Build status">
+    <a href="https://github.com/Puharesource/TitleManager/workflows/Java%20CI/badge.svg">
+        <img src="https://github.com/Puharesource/TitleManager/actions"
+             alt="Actions Status">
     </a>
     <a href="https://jitpack.io/#Puharesource/TitleManager">
         <img src="https://jitpack.io/v/Puharesource/TitleManager.svg"
