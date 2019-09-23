@@ -11,8 +11,8 @@
         <img src="https://jitpack.io/v/Puharesource/TitleManager.svg"
              alt="Maven repository">
     </a>
-    <a href="https://jitpack.io/com/github/Puharesource/TitleManager/-SNAPSHOT/javadoc/">
-        <img src="https://img.shields.io/badge/JitPack-javadoc--2.0.0-blue.svg"
+    <a href="https://tarkan.dev/javadoc/titlemanager/">
+        <img src="https://img.shields.io/badge/JavaDoc-2.0-blue.svg"
              alt="Javadoc">
     </a>
 </p>
