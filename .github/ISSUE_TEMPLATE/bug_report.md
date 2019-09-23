@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a bug report
 title: ''
 labels: Bug
 assignees: Puharesource
@@ -27,8 +27,8 @@ If applicable, add screenshots to help explain your problem.
 Please check the console for any errors that TitleManager might be producing.
 
 **Server information:**
- - TitleManager version: [e.g. 2.1.5]
- - Spigot version: 1.14.4
+ - TitleManager version: [Example:. 2.1.5]
+ - Spigot version: [Example: Spigot 1.14.4 or PaperSpigot 1.12]
 
 **Additional context**
 Add any other context about the problem here.
