@@ -42,6 +42,7 @@ Icon
 build/
 out/
 /bin/
+gradle-local.properties
 
 #Eclipse
 .settings/

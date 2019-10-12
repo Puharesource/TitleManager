@@ -12,7 +12,7 @@
              alt="Maven repository">
     </a>
     <a href="https://tarkan.dev/javadoc/titlemanager/">
-        <img src="https://img.shields.io/badge/JavaDoc-2.0-blue.svg"
+        <img src="https://img.shields.io/badge/JavaDoc-2.1:-blue.svg"
              alt="Javadoc">
     </a>
 </p>
