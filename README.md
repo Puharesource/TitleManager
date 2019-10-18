@@ -3,6 +3,10 @@
 </h1>
 
 <p align="center">
+    <a href="https://www.spigotmc.org/resources/titlemanager.1049">
+        <img src="https://img.shields.io/badge/Version-2.1.6-green"
+             alt="Version">
+    </a>
     <a href="https://github.com/Puharesource/TitleManager/actions">
         <img src="https://github.com/Puharesource/TitleManager/workflows/Java%20CI/badge.svg"
              alt="Actions Status">
@@ -14,6 +18,10 @@
     <a href="https://tarkan.dev/javadoc/titlemanager/">
         <img src="https://img.shields.io/badge/JavaDoc-2.0-blue.svg"
              alt="Javadoc">
+    </a>
+    <a href="https://www.spigotmc.org/resources/titlemanager.1049/updates">
+        <img src="https://img.shields.io/badge/Minecraft-1.7%20--%201.14.4-blue"
+             alt="Minecraft versions">
     </a>
 </p>
 
