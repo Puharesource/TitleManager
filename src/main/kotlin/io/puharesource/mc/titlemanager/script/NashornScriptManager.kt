@@ -38,7 +38,7 @@ class NashornScriptManager : ScriptManager {
         if (isTesting) {
             engine.eval(Resources.getResource(name).readText())
         } else {
-            engine.eval(pluginInstance.getResource(name).bufferedReader().readText())
+            engine.eval(pluginInstance.getResource(name)!!.bufferedReader().readText())
         }
     }
 

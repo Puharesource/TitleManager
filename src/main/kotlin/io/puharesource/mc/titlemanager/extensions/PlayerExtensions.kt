@@ -120,7 +120,7 @@ fun Player.setPlayerListHeader(animation: Animation, withPlaceholders: Boolean =
     pluginInstance.toHeaderAnimation(animation, this, withPlaceholders = withPlaceholders).start()
 }
 
-fun Player.getPlayerListHeader() = pluginInstance.getHeader(this)
+fun Player.getTitleManagerPlayerListHeader() = pluginInstance.getHeader(this)
 
 fun Player.setPlayerListFooter(footer: String, withPlaceholders: Boolean = false) {
     if (withPlaceholders) {
@@ -138,7 +138,7 @@ fun Player.setPlayerListFooter(animation: Animation, withPlaceholders: Boolean =
     pluginInstance.toFooterAnimation(animation, this, withPlaceholders = withPlaceholders).start()
 }
 
-fun Player.getPlayerListFooter() = pluginInstance.getFooter(this)
+fun Player.getTitleManagerPlayerListFooter() = pluginInstance.getFooter(this)
 
 fun Player.clearTitles() = pluginInstance.clearTitles(this)
 

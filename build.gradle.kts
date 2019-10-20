@@ -10,37 +10,12 @@ plugins {
     kotlin("jvm") version "1.3.50"
 
     id("com.github.johnrengelman.shadow") version "5.1.0"
-    id("org.jetbrains.dokka") version "0.9.18"
+    id("org.jetbrains.dokka") version "0.10.0"
     id("net.saliman.properties") version "1.5.1"
 }
 
 group = "io.puharesource.mc"
 version = "2.1.6"
-
-tasks.withType<Assemble> {
-    dependsOn.add(tasks.getting(ShadowJar::class))
-}
-
-tasks.withType<Jar> {
-    enabled = false
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.withType<ShadowJar> {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    archiveBaseName.set("TitleManager")
-    archiveClassifier.set(null as String?)
-
-    dependencies {
-        include(dependency("org.jetbrains.kotlin:.*"))
-        include(dependency("io.reactivex:.*"))
-    }
-
-    relocate("rx", "io.puharesource.mc.titlemanager.shaded.rx")
-    relocate("kotlin", "io.puharesource.mc.titlemanager.shaded.kotlin")
-    relocate("org.jetbrains", "io.puharesource.mc.titlemanager.shaded.org.jetbrains")
-}
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -51,17 +26,81 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks {
+    val fatJar by named("shadowJar", ShadowJar::class) {
+        dependencies {
+            include(dependency("org.jetbrains.kotlin:.*"))
+            include(dependency("io.reactivex:.*"))
+        }
+
+        relocate("rx", "io.puharesource.mc.titlemanager.shaded.rx")
+        relocate("kotlin", "io.puharesource.mc.titlemanager.shaded.kotlin")
+        relocate("org.jetbrains", "io.puharesource.mc.titlemanager.shaded.org.jetbrains")
+    }
+
+    val dokka by getting(DokkaTask::class) {
+        outputFormat = "javadoc"
+        outputDirectory = "$buildDir/docs/javadoc/"
+
+        configuration {
+            jdkVersion = 8
+            platform = "JVM"
+
+            externalDocumentationLink {
+                url = uri("https://hub.spigotmc.org/javadocs/spigot/").toURL()
+                packageListUrl = uri("https://hub.spigotmc.org/javadocs/spigot/package-list").toURL()
+            }
+
+            sourceLink {
+                path = "src/main/kotlin"
+                url = "https://github.com/Puharesource/TitleManager/tree/master/src/main/kotlin"
+                lineSuffix = "#L"
+            }
+
+            perPackageOption {
+                prefix = "io.puharesource.mc.titlemanager.api.v2"
+                suppress = false
+            }
+
+            perPackageOption {
+                prefix = "io.puharesource.mc.titlemanager"
+                suppress = true
+            }
+        }
+    }
+
     val javadocJar by creating(Jar::class) {
         archiveClassifier.set("javadoc")
 
-        dependsOn.add(this@tasks.getting(DokkaTask::class))
-        from(this@tasks["dokka"])
+        dependsOn.add(dokka)
+        from(dokka.outputDirectory)
     }
 
     val apiJar by creating(Jar::class) {
         archiveClassifier.set("api")
 
+        from(sourceSets.main.get().output.classesDirs)
         include("io/puharesource/mc/titlemanager/api/v2/**")
+    }
+
+    val publishJar by creating(Jar::class) {
+        archiveClassifier.set(null as String?)
+
+        from(sourceSets.main.get().output.classesDirs)
+        include("io/puharesource/mc/titlemanager/api/v2/**")
+    }
+
+    val sourcesJar by creating(Jar::class) {
+        archiveClassifier.set("sources")
+
+        dependsOn(JavaPlugin.JAVADOC_TASK_NAME)
+        from(sourceSets.main.get().allSource)
+    }
+
+    artifacts {
+        add("archives", fatJar)
+        add("archives", apiJar)
+        add("archives", javadocJar)
+        add("archives", sourcesJar)
     }
 }
 
@@ -69,7 +108,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Puharesource/grp_test")
+            url = uri("https://maven.pkg.github.com/Puharesource/TitleManager")
 
             credentials {
                 username = (findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME")) as? String
@@ -80,37 +119,21 @@ publishing {
 
     publications {
         register<MavenPublication>("gpr") {
-            // from(components["java"])
+            pom {
+                developers {
+                    developer {
+                        id.set("pmtn")
+                        name.set("Tarkan Nielsen")
+                        email.set("pmtarkan@gmail.com")
+                        url.set("https://tarkan.dev")
+                    }
+                }
+            }
+
+            artifact(tasks["publishJar"])
+            artifact(tasks["javadocJar"])
+            artifact(tasks["sourcesJar"])
         }
-    }
-}
-
-val dokka by tasks.getting(DokkaTask::class) {
-    outputFormat = "javadoc"
-    outputDirectory = "$buildDir/docs/javadoc"
-
-    jdkVersion = 8
-
-    impliedPlatforms = mutableListOf("JVM")
-
-    linkMapping {
-        dir = "src/main/kotlin"
-        url = "https://github.com/Puharesource/TitleManager/tree/master/src/main/kotlin"
-        suffix = "#L"
-    }
-
-    externalDocumentationLink {
-        url = uri("https://hub.spigotmc.org/javadocs/spigot/").toURL()
-    }
-
-    packageOptions {
-        prefix = "io.puharesource.mc.titlemanager"
-        suppress = true
-    }
-
-    packageOptions {
-        prefix = "io.puharesource.mc.titlemanager.api.v2"
-        suppress = false
     }
 }
 
@@ -156,23 +179,32 @@ repositories {
         name = "mvdw-software"
         url = uri("http://repo.mvdw-software.com/content/groups/public/")
     }
+
+    maven {
+        name = "cubekrowd-repo"
+        url = uri("https://mavenrepo.cubekrowd.net/artifactory/repo/")
+    }
+
+    maven {
+        name = "kitteh-repo"
+        url = uri("http://repo.kitteh.org/content/groups/public/")
+    }
 }
 
 dependencies {
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.3.50")
     implementation(group = "io.reactivex", name = "rxjava", version = "1.3.8")
 
-    implementation(group = "org.spigotmc", name = "spigot-api", version = "1.11-R0.1-SNAPSHOT")
+    implementation(group = "org.spigotmc", name = "spigot-api", version = "1.14-R0.1-SNAPSHOT")
 
     implementation(group = "be.maximvdw", name = "MVdWPlaceholderAPI", version = "3.0.1-SNAPSHOT") { isTransitive = false }
     implementation(group = "me.clip", name = "placeholderapi", version = "2.10.4")
-    implementation(group = "net.milkbowl.vault", name = "VaultAPI", version = "1.7")
+    implementation(group = "net.milkbowl.vault", name = "VaultAPI", version = "1.7") { isTransitive = false }
     implementation(group = "net.ess3", name = "EssentialsX", version = "2.17.1") { isTransitive = false }
+    implementation(group = "de.myzelyam", name = "SuperVanish", version = "6.1.3") { isTransitive = false }
+    implementation(group = "org.kitteh", name = "VanishNoPacket", version = "3.19.1") { isTransitive = false }
 
-    implementation(fileTree("$rootDir/libs"))
-
-    implementation(group = "org.graalvm", name = "graal-sdk", version = "1.0.0-rc7")
-    implementation(group = "com.oracle.truffle", name = "truffle-api", version = "1.0.0-rc7")
+    implementation(group = "org.graalvm.sdk", name = "graal-sdk", version = "19.2.0.1")
 
     testImplementation(group = "junit", name = "junit", version = "4.12")
     testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.3.50")

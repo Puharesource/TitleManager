@@ -4,7 +4,7 @@ import org.bukkit.ChatColor
 
 internal fun String.color() : String = ChatColor.translateAlternateColorCodes('&', this)
 
-internal fun String.stripColor() : String = ChatColor.stripColor(this)
+internal fun String.stripColor() : String = ChatColor.stripColor(this)!!
 
 internal fun String.isInt() : Boolean {
     return try {

@@ -1,3 +1,5 @@
+package io.puharesource.mc.titlemanager.scheduling
+
 import io.puharesource.mc.titlemanager.onPluginDisable
 import io.puharesource.mc.titlemanager.pluginInstance
 import org.bukkit.Bukkit

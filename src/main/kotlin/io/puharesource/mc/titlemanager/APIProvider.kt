@@ -195,7 +195,7 @@ object APIProvider : TitleManagerAPI {
             player.sendTitle(it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearTitle()
-        }, fixedOnStop = { removeRunningTitleAnimation(it) }, fixedOnStart = { player, animation -> setRunningTitleAnimation(player, animation) })
+        }, fixedOnStop = { removeRunningTitleAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> setRunningTitleAnimation(receiver, sendableAnimation) })
     }
 
     override fun toSubtitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
@@ -203,7 +203,7 @@ object APIProvider : TitleManagerAPI {
             player.sendSubtitle(it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearSubtitle()
-        }, fixedOnStop = { removeRunningSubtitleAnimation(it) }, fixedOnStart = { player, animation -> setRunningSubtitleAnimation(player, animation) })
+        }, fixedOnStop = { removeRunningSubtitleAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> setRunningSubtitleAnimation(receiver, sendableAnimation) })
     }
 
     override fun toActionbarAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
@@ -211,31 +211,31 @@ object APIProvider : TitleManagerAPI {
             player.sendActionbar(it.text, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearActionbar()
-        }, fixedOnStop = { removeRunningActionbarAnimation(it) }, fixedOnStart = { player, animation -> setRunningActionbarAnimation(player, animation) })
+        }, fixedOnStop = { removeRunningActionbarAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> setRunningActionbarAnimation(receiver, sendableAnimation) })
     }
 
     override fun toHeaderAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(animation, player, {
             player.setPlayerListHeader(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = pluginConfig.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { player, animation -> setRunningHeaderAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginConfig.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> setRunningHeaderAnimation(receiver, sendableAnimation) })
     }
 
     override fun toFooterAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(animation, player, {
             player.setPlayerListFooter(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = pluginConfig.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { player, animation -> setRunningFooterAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginConfig.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> setRunningFooterAnimation(receiver, sendableAnimation) })
     }
 
     override fun toScoreboardTitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(animation, player, {
             player.setScoreboardTitle(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = pluginConfig.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardTitleAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginConfig.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { receiver, sendableAnimation -> setRunningScoreboardTitleAnimation(receiver, sendableAnimation) })
     }
 
     override fun toScoreboardValueAnimation(animation: Animation, player: Player, index: Int, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(animation, player, {
             player.setScoreboardValue(index, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = pluginConfig.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardValueAnimation(player, index, animation) })
+        }, continuous = true, tickRate = pluginConfig.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { receiver, sendableAnimation -> setRunningScoreboardValueAnimation(receiver, index, sendableAnimation) })
     }
 
     override fun toAnimationPart(text: String): AnimationPart<String> {
@@ -316,7 +316,7 @@ object APIProvider : TitleManagerAPI {
             player.sendTitle(it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearTitle()
-        }, fixedOnStop = { removeRunningTitleAnimation(it) }, fixedOnStart = { player, animation -> setRunningTitleAnimation(player, animation) })
+        }, fixedOnStop = { removeRunningTitleAnimation(it) }, fixedOnStart = { receiver, animation -> setRunningTitleAnimation(receiver, animation) })
     }
 
     override fun toSubtitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
@@ -324,7 +324,7 @@ object APIProvider : TitleManagerAPI {
             player.sendSubtitle(it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearSubtitle()
-        }, fixedOnStop = { removeRunningSubtitleAnimation(it) }, fixedOnStart = { player, animation -> setRunningSubtitleAnimation(player, animation) })
+        }, fixedOnStop = { removeRunningSubtitleAnimation(it) }, fixedOnStart = { receiver, animation -> setRunningSubtitleAnimation(receiver, animation) })
     }
 
     override fun toActionbarAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
@@ -332,31 +332,31 @@ object APIProvider : TitleManagerAPI {
             player.sendActionbar(it.text, withPlaceholders = withPlaceholders)
         }, onStop = Runnable {
             player.clearActionbar()
-        }, fixedOnStop = { removeRunningActionbarAnimation(it) }, fixedOnStart = { player, animation -> setRunningActionbarAnimation(player, animation) })
+        }, fixedOnStop = { removeRunningActionbarAnimation(it) }, fixedOnStart = { receiver, animation -> setRunningActionbarAnimation(receiver, animation) })
     }
 
     override fun toHeaderAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(parts, player, {
             player.setPlayerListHeader(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = pluginConfig.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { player, animation -> setRunningHeaderAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginConfig.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { receiver, animation -> setRunningHeaderAnimation(receiver, animation) })
     }
 
     override fun toFooterAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(parts, player, {
             player.setPlayerListFooter(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = pluginConfig.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { player, animation -> setRunningFooterAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginConfig.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { receiver, animation -> setRunningFooterAnimation(receiver, animation) })
     }
 
     override fun toScoreboardTitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(parts, player, {
             player.setScoreboardTitle(it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = pluginConfig.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardTitleAnimation(player, animation) })
+        }, continuous = true, tickRate = pluginConfig.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { receiver, animation -> setRunningScoreboardTitleAnimation(receiver, animation) })
     }
 
     override fun toScoreboardValueAnimation(parts: List<AnimationPart<*>>, player: Player, index: Int, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(parts, player, {
             player.setScoreboardValue(index, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = pluginConfig.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { player, animation -> setRunningScoreboardValueAnimation(player, index, animation) })
+        }, continuous = true, tickRate = pluginConfig.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { receiver, animation -> setRunningScoreboardValueAnimation(receiver, index, animation) })
     }
 
     override fun fromText(vararg frames: String): Animation {
@@ -389,11 +389,15 @@ object APIProvider : TitleManagerAPI {
 
     // Titles
 
-    override fun sendTitle(player: Player, title: String) {
-        sendTitle(player, title, -1, -1, -1)
-    }
+    override fun sendTitle(player: Player, title: String) = sendTitle(player, title, -1, -1, -1)
 
     override fun sendTitle(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) {
+        if (NMSManager.versionIndex >= 9) {
+            player.sendTitle(title, null, fadeIn, stay, fadeOut)
+
+            return
+        }
+
         val provider = NMSManager.getClassProvider()
         val packetConstructor : Constructor<*> = classPacketTitle.constructor
 
@@ -408,19 +412,19 @@ object APIProvider : TitleManagerAPI {
         player.sendNMSPacket(packet)
     }
 
-    override fun sendTitleWithPlaceholders(player: Player, title: String) {
-        sendTitle(player, replaceText(player, title))
-    }
+    override fun sendTitleWithPlaceholders(player: Player, title: String) = sendTitle(player, replaceText(player, title))
 
-    override fun sendTitleWithPlaceholders(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) {
-        sendTitle(player, replaceText(player, title), fadeIn, stay, fadeOut)
-    }
+    override fun sendTitleWithPlaceholders(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) = sendTitle(player, replaceText(player, title), fadeIn, stay, fadeOut)
 
-    override fun sendSubtitle(player: Player, subtitle: String) {
-        sendSubtitle(player, subtitle, -1, -1, -1)
-    }
+    override fun sendSubtitle(player: Player, subtitle: String) = sendSubtitle(player, subtitle, -1, -1, -1)
 
     override fun sendSubtitle(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) {
+        if (NMSManager.versionIndex >= 9) {
+            player.sendTitle(null, subtitle, fadeIn, stay, fadeOut)
+
+            return
+        }
+
         val provider = NMSManager.getClassProvider()
         val packetConstructor = classPacketTitle.constructor
 
@@ -446,6 +450,12 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun sendTitles(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) {
+        if (NMSManager.versionIndex >= 9) {
+            player.sendTitle(title, subtitle, fadeIn, stay, fadeOut)
+
+            return
+        }
+
         sendTitle(player, title, fadeIn, stay, fadeOut)
         sendSubtitle(player, subtitle, fadeIn, stay, fadeOut)
     }
@@ -459,6 +469,12 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun sendTimings(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) {
+        if (NMSManager.versionIndex >= 9) {
+            player.sendTitle(null, null, fadeIn, stay, fadeOut)
+
+            return
+        }
+
         val packet = if (NMSManager.versionIndex == 0) {
             classPacketTitle.timingsConstructor.newInstance(TitleTypeMapper.TIMES.handle, fadeIn, stay, fadeOut)
         } else {
@@ -469,6 +485,12 @@ object APIProvider : TitleManagerAPI {
     }
 
     override fun clearTitles(player: Player) {
+        if (NMSManager.versionIndex >= 9) {
+            player.resetTitle()
+
+            return
+        }
+
         sendTitles(player, " ", " ") // TODO: Make this actually use the "Clear" enum.
     }
 
@@ -516,25 +538,45 @@ object APIProvider : TitleManagerAPI {
 
     // Player list
 
-    override fun getHeader(player: Player) = player.getTitleManagerMetadata(HEADER_METADATA_KEY)?.asString().orEmpty()
+    override fun getHeader(player: Player): String {
+        if (NMSManager.versionIndex >= 9) {
+            return player.playerListHeader.orEmpty()
+        }
+
+        return player.getTitleManagerMetadata(HEADER_METADATA_KEY)?.asString().orEmpty()
+    }
 
     override fun setHeader(player: Player, header: String) {
+        if (NMSManager.versionIndex >= 9) {
+            player.playerListHeader = header
+
+            return
+        }
+
         setHeaderAndFooter(player, header, getFooter(player))
     }
 
-    override fun setHeaderWithPlaceholders(player: Player, header: String) {
-        setHeaderAndFooter(player, replaceText(player, header), getFooter(player))
+    override fun setHeaderWithPlaceholders(player: Player, header: String) = setHeader(player, replaceText(player, header))
+
+    override fun getFooter(player: Player): String {
+        if (NMSManager.versionIndex >= 9) {
+            return player.playerListFooter.orEmpty()
+        }
+
+        return player.getTitleManagerMetadata(FOOTER_METADATA_KEY)?.asString().orEmpty()
     }
 
-    override fun getFooter(player: Player) = player.getTitleManagerMetadata(FOOTER_METADATA_KEY)?.asString().orEmpty()
-
     override fun setFooter(player: Player, footer: String) {
+        if (NMSManager.versionIndex >= 9) {
+            player.playerListFooter = footer
+
+            return
+        }
+
         setHeaderAndFooter(player, getHeader(player), footer)
     }
 
-    override fun setFooterWithPlaceholders(player: Player, footer: String) {
-        setHeaderAndFooter(player, getHeader(player), replaceText(player, footer))
-    }
+    override fun setFooterWithPlaceholders(player: Player, footer: String) = setFooter(player, replaceText(player, footer))
 
     override fun setHeaderAndFooter(player: Player, header: String, footer: String) {
         if (pluginConfig.bandwidth.preventDuplicatePackets) {
@@ -545,8 +587,16 @@ object APIProvider : TitleManagerAPI {
                 return
             }
 
-            player.setTitleManagerMetadata(HEADER_METADATA_KEY, header)
-            player.setTitleManagerMetadata(FOOTER_METADATA_KEY, footer)
+            if (NMSManager.versionIndex < 9) {
+                player.setTitleManagerMetadata(HEADER_METADATA_KEY, header)
+                player.setTitleManagerMetadata(FOOTER_METADATA_KEY, footer)
+            }
+        }
+
+        if (NMSManager.versionIndex >= 9) {
+            player.setPlayerListHeaderFooter(header, footer)
+
+            return
         }
 
         val provider = NMSManager.getClassProvider()
@@ -597,7 +647,7 @@ object APIProvider : TitleManagerAPI {
     override fun getScoreboardTitle(player: Player) = ScoreboardManager.playerScoreboards[player]?.title
 
     override fun setScoreboardValue(player: Player, index: Int, value: String) {
-        if (index < 1 || index > 15) throw IllegalArgumentException("Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index")
+        require(index in 1..15) { "Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index" }
 
         ScoreboardManager.playerScoreboards[player]?.set(index, value)
     }
@@ -605,13 +655,13 @@ object APIProvider : TitleManagerAPI {
     override fun setScoreboardValueWithPlaceholders(player: Player, index: Int, value: String) = setScoreboardValue(player, index, replaceText(player, value))
 
     override fun getScoreboardValue(player: Player, index: Int): String? {
-        if (index < 1 || index > 15) throw IllegalArgumentException("Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index")
+        require(index in 1..15) { "Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index" }
 
         return ScoreboardManager.playerScoreboards[player]?.get(index)
     }
 
     override fun removeScoreboardValue(player: Player, index: Int) {
-        if (index < 1 || index > 15) throw IllegalArgumentException("Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index")
+        require(index in 1..15) { "Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index" }
 
         ScoreboardManager.playerScoreboards[player]?.remove(index)
     }

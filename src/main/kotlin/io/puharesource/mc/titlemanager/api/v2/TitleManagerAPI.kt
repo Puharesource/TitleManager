@@ -8,7 +8,7 @@ import org.bukkit.entity.Player
 import java.io.File
 
 /**
- * The API for TitleManager<p>
+ * The API for TitleManager<p/>
  *
  * Here you'll find all methods available in the API.
  *
@@ -28,8 +28,6 @@ interface TitleManagerAPI {
      *
      * @return       The input text with all available placeholders replaced.
      * If no placeholders were found the input text will be returned instead.
-     *
-     * @see [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/)
      *
      * @see .containsPlaceholders
      * @see .containsPlaceholder
@@ -591,7 +589,7 @@ interface TitleManagerAPI {
 
     /**
      * Creates an animation from a File. Each line of the file will be converted to an Array
-     * and fed into the [.fromText]
+     * and fed into the [fromText]
      *
      *
      * Each line must follow the pattern `[fade-in;stay;fade-out]text`

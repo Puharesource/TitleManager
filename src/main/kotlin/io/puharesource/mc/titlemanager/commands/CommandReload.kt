@@ -12,5 +12,5 @@ object CommandReload : TMSubCommand("reload",
             fadeOut = 20
 
             sendConfigMessage("reloaded")
-            sendTitle(pluginInstance.config.getString("messages.command-reload.reloaded").color())
+            sendTitle(pluginInstance.config.getString("messages.command-reload.reloaded")!!.color())
         }})

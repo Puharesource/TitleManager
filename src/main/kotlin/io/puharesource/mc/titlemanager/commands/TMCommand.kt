@@ -154,7 +154,7 @@ object TMCommand : CommandExecutor, TabCompleter {
             i++
         }
 
-        subCommand.runCommand(sender, Arrays.copyOfRange(args, i, args.size), parameters)
+        subCommand.runCommand(sender, args.copyOfRange(i, args.size), parameters)
         return true
     }
 

@@ -2,12 +2,10 @@ package io.puharesource.mc.titlemanager.extensions
 
 import java.lang.reflect.Field
 
-internal fun Field.modify(body: Field.() -> Unit) {
-    if (isAccessible) {
-        body()
-    } else {
+internal inline fun Field.modify(body: Field.() -> Unit) {
+    if (!isAccessible) {
         isAccessible = true
-        body()
-        isAccessible = false
     }
+
+    body()
 }

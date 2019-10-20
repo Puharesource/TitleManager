@@ -39,14 +39,14 @@ data class TMConfigMain(override val section: ConfigurationSection) : TMConfig {
     val checkForUpdates : Boolean = value("check-for-updates")
     val locale : Locale = value<String, Locale>("locale") { Locale.forLanguageTag(it) }
 
-    val playerList by lazy { TMConfigPlayerList(section.getConfigurationSection("player-list")) }
-    val welcomeTitle by lazy { TMConfigWelcomeTitle(section.getConfigurationSection("welcome-title")) }
-    val welcomeActionbar by lazy { TMConfigWelcomeActionbar(section.getConfigurationSection("welcome-actionbar")) }
-    val placeholders by lazy { TMConfigPlaceholders(section.getConfigurationSection("placeholders")) }
-    val scoreboard by lazy { TMConfigScoreboard(section.getConfigurationSection("scoreboard")) }
-    val announcer by lazy { TMConfigAnnouncer(section.getConfigurationSection("announcer")) }
-    val bandwidth by lazy { TMConfigBandwidth(section.getConfigurationSection("bandwidth")) }
-    val messages by lazy { TMConfigMessages(section.getConfigurationSection("messages")) }
+    val playerList by lazy { TMConfigPlayerList(section.getConfigurationSection("player-list")!!) }
+    val welcomeTitle by lazy { TMConfigWelcomeTitle(section.getConfigurationSection("welcome-title")!!) }
+    val welcomeActionbar by lazy { TMConfigWelcomeActionbar(section.getConfigurationSection("welcome-actionbar")!!) }
+    val placeholders by lazy { TMConfigPlaceholders(section.getConfigurationSection("placeholders")!!) }
+    val scoreboard by lazy { TMConfigScoreboard(section.getConfigurationSection("scoreboard")!!) }
+    val announcer by lazy { TMConfigAnnouncer(section.getConfigurationSection("announcer")!!) }
+    val bandwidth by lazy { TMConfigBandwidth(section.getConfigurationSection("bandwidth")!!) }
+    val messages by lazy { TMConfigMessages(section.getConfigurationSection("messages")!!) }
 }
 
 data class TMConfigPlayerList(override val section: ConfigurationSection) : TMConfig {
@@ -65,7 +65,7 @@ data class TMConfigWelcomeTitle(override val section: ConfigurationSection) : TM
     val stay : Int = value("stay")
     val fadeOut : Int = value("fade-out")
 
-    val firstJoin by lazy { TMConfigWelcomeTitleFirstJoin(section.getConfigurationSection("first-join")) }
+    val firstJoin by lazy { TMConfigWelcomeTitleFirstJoin(section.getConfigurationSection("first-join")!!) }
 }
 
 data class TMConfigWelcomeTitleFirstJoin(override val section: ConfigurationSection) : TMConfig {
@@ -81,7 +81,7 @@ data class TMConfigWelcomeActionbar(override val section: ConfigurationSection) 
 }
 
 data class TMConfigPlaceholders(override val section: ConfigurationSection) : TMConfig {
-    val numberFormat = TMConfigPlaceholdersNumberFormat(section.getConfigurationSection("number-format"))
+    val numberFormat = TMConfigPlaceholdersNumberFormat(section.getConfigurationSection("number-format")!!)
     val dateFormat : SimpleDateFormat = value<String, SimpleDateFormat>("date-format") { SimpleDateFormat(it, pluginInstance.tmConfig.locale) }
 }
 
@@ -102,7 +102,7 @@ data class TMConfigScoreboard(override val section: ConfigurationSection) : TMCo
 
 data class TMConfigAnnouncer(override val section: ConfigurationSection) : TMConfig {
     val enabled : Boolean = value("enabled")
-    val announcements : List<ConfigurationSection> = section.getConfigurationSection("announcements").getKeys(false).map { section.getConfigurationSection("announcements.$it") }
+    val announcements : List<ConfigurationSection> = section.getConfigurationSection("announcements")!!.getKeys(false).map { section.getConfigurationSection("announcements.$it")!! }
 }
 
 data class TMConfigBandwidth(override val section: ConfigurationSection) : TMConfig {

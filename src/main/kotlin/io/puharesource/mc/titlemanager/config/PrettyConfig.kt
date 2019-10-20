@@ -50,8 +50,8 @@ class PrettyConfig(file: File) : YamlConfiguration() {
             if (line.matches(KEY_PATTERN)) {
                 val result = KEY_PATTERN.matchEntire(line)!!.groupValues
 
-                commentMap[result[1] + result[2]]?.let {
-                    it.forEach { sb.append(it).append('\n') }
+                commentMap[result[1] + result[2]]?.let { list ->
+                    list.forEach { sb.append(it).append('\n') }
 
                     sb.removeSuffix("\n")
                 }

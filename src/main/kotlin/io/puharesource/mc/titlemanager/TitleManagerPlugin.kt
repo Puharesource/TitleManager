@@ -181,7 +181,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                 val correctNewPath = newPath ?: path
 
                 if (oldConfig.contains(path)) {
-                    var oldValue = oldConfig.get(path)
+                    var oldValue = oldConfig.get(path)!!
 
                     if (oldValue is String) {
                         if (oldValue.matches(oldAnimationPattern)) {
@@ -248,10 +248,10 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
 
                 oldAnimationsConfig.getKeys(false)
                         .map { it to oldAnimationsConfig.getStringList("$it.frames") }
-                        .forEach {
-                            val name = it.first
+                        .forEach { entry ->
+                            val name = entry.first
                             val frames = Joiner.on("\n")
-                                    .join(it.second)
+                                    .join(entry.second)
                                     .replace(oldPlaceholderPattern, transform = { "%{${it.groups[1]!!.value}}" })
 
                             animationsFolder.mkdirs()
@@ -284,11 +284,11 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                     .map { it to oldConfig[it] }
                     .forEach { conf!!.set(it.first, it.second) }
 
-            conf!!.getConfigurationSection("messages").getKeys(false)
+            conf!!.getConfigurationSection("messages")!!.getKeys(false)
                     .asSequence()
                     .filter { oldConfig.contains(it) }
                     .map { it to oldConfig[it] }
-                    .forEach { conf!!.getConfigurationSection("messages").set(it.first, it.second) }
+                    .forEach { conf!!.getConfigurationSection("messages")!!.set(it.first, it.second) }
 
             config.save(configFile)
         }
@@ -297,7 +297,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     }
 
     private fun setupDB() {
-        playerInfoDB = PlayerInfoDB(File(dataFolder, "playerinfo.sqlite"), createStatement = getTextResource("playerinfo.sql").readText())
+        playerInfoDB = PlayerInfoDB(File(dataFolder, "playerinfo.sqlite"), createStatement = getTextResource("playerinfo.sql")!!.readText())
     }
 
     private fun registerAnnouncers() {
@@ -312,8 +312,8 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                     val stay = announcement.getInt("timings.stay", 40)
                     val fadeOut = announcement.getInt("timings.fade-out", 20)
 
-                    val titles : List<String> = announcement.getStringList("titles") ?: listOf()
-                    val actionbarTitles : List<String> = announcement.getStringList("actionbar") ?: listOf()
+                    val titles : List<String> = announcement.getStringList("titles")
+                    val actionbarTitles : List<String> = announcement.getStringList("actionbar")
 
                     val size = if (titles.size > actionbarTitles.size) titles.size else actionbarTitles.size
                     val index = AtomicInteger(0)
@@ -366,7 +366,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
             animationsFolder.mkdir()
 
             fun saveAnimationFiles(fileName: String) {
-                File(animationsFolder, fileName).writeBytes(getResource("animations/$fileName").readBytes())
+                File(animationsFolder, fileName).writeBytes(getResource("animations/$fileName")!!.readBytes())
             }
 
             // Text based animations
@@ -516,9 +516,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     }
 
     private fun registerCommands() {
-        val cmd = getCommand("tm")
+        val cmd = getCommand("tm")!!
 
-        cmd.executor = TMCommand
+        cmd.setExecutor(TMCommand)
         cmd.tabCompleter = TMCommand
     }
 

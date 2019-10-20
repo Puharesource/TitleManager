@@ -4,7 +4,7 @@ import io.puharesource.mc.titlemanager.debug
 import io.puharesource.mc.titlemanager.info
 import io.puharesource.mc.titlemanager.pluginInstance
 import org.bukkit.scheduler.BukkitTask
-import scheduleAsyncTimer
+import io.puharesource.mc.titlemanager.scheduling.scheduleAsyncTimer
 import java.io.IOException
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection

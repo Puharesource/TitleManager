@@ -6,7 +6,7 @@ import io.puharesource.mc.titlemanager.pluginConfig
 import io.puharesource.mc.titlemanager.pluginInstance
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import scheduleAsyncObservableTimer
+import io.puharesource.mc.titlemanager.scheduling.scheduleAsyncObservableTimer
 import java.util.concurrent.ConcurrentSkipListMap
 
 object BungeeCordManager {
@@ -29,9 +29,9 @@ object BungeeCordManager {
                 .onErrorResumeNext { null }
                 .filter { it != null }
                 .filter { it.channel == "BungeeCord" }
-                .subscribe {
+                .subscribe { pluginMessage ->
                     try {
-                        val message = it.message
+                        val message = pluginMessage.message
 
                         val input = ByteStreams.newDataInput(message)
 

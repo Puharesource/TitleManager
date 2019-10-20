@@ -118,7 +118,7 @@ class CommandExecutor(val cmd: TMSubCommand, val sender: CommandSender, val args
 
     val message: String get() = joiner.join(args).color()
 
-    fun getMessageFrom(from: Int) : String = joiner.join(Arrays.copyOfRange(args, from, args.size)).color()
+    fun getMessageFrom(from: Int) : String = joiner.join(args.copyOfRange(from, args.size)).color()
 
     fun getPlayerAt(index: Int) : Player? = Bukkit.getPlayer(args[index])
 
@@ -160,27 +160,14 @@ internal fun commandExecutor(cmd: TMSubCommand, sender: CommandSender, args: Arr
 
     executor.silent = parameters.containsKey("silent")
 
-    if (parameters.containsKey("fadein")) {
-        executor.fadeIn = parameters["fadein"]!!.getIntOr(-1)
-    }
+    parameters["fadein"]?.let { executor.fadeIn = it.getIntOr(-1) }
+    parameters["stay"]?.let { executor.stay = it.getIntOr(-1) }
+    parameters["fadeout"]?.let { executor.fadeOut = it.getIntOr(-1) }
+    parameters["radius"]?.let { executor.radius = it.getDoubleOrNull() }
 
-    if (parameters.containsKey("stay")) {
-        executor.stay = parameters["stay"]!!.getIntOr(-1)
-    }
-
-    if (parameters.containsKey("fadeout")) {
-        executor.fadeOut = parameters["fadeout"]!!.getIntOr(-1)
-    }
-
-    if (parameters.containsKey("radius")) {
-        executor.radius = parameters["radius"]!!.getDoubleOrNull()
-    }
-
-    if (parameters.containsKey("world")) {
-        val param = parameters["world"]!!
-
+    parameters["world"]?.let { param ->
         if (param.hasValue()) {
-            executor.world = Bukkit.getWorld(param.value)
+            executor.world = Bukkit.getWorld(param.value!!)
         } else if (sender is Player) {
             executor.world = sender.world
         }

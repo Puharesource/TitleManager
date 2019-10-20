@@ -37,7 +37,7 @@ class GraalScriptManager : ScriptManager {
         if (isTesting) {
             context.eval("js", Resources.getResource(name).readText())
         } else {
-            context.eval("js", pluginInstance.getResource(name).bufferedReader().readText())
+            context.eval("js", pluginInstance.getResource(name)!!.bufferedReader().readText())
         }
     }
 
