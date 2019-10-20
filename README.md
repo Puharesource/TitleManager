@@ -11,10 +11,6 @@
         <img src="https://github.com/Puharesource/TitleManager/workflows/Java%20CI/badge.svg"
              alt="Actions Status">
     </a>
-    <a href="https://jitpack.io/#Puharesource/TitleManager">
-        <img src="https://jitpack.io/v/Puharesource/TitleManager.svg"
-             alt="Maven repository">
-    </a>
     <a href="https://tarkan.dev/javadoc/titlemanager/">
         <img src="https://img.shields.io/badge/JavaDoc-2.1:-blue.svg"
              alt="Javadoc">
@@ -41,9 +37,6 @@ Sponsors
 
 For Developers
 --------------
-
-### Getting the dependency
-You can get the latest snapshot releases by going over to JitPack here: https://jitpack.io/#Puharesource/TitleManager, but if you want to get official release go with the following repository and dependencies.  
 
 #### The Repository
 Example for Gradle:
