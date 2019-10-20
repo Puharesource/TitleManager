@@ -3,6 +3,10 @@
 </h1>
 
 <p align="center">
+    <a href="https://www.spigotmc.org/resources/titlemanager.1049">
+        <img src="https://img.shields.io/badge/Version-2.1.6-green"
+             alt="Version">
+    </a>
     <a href="https://github.com/Puharesource/TitleManager/actions">
         <img src="https://github.com/Puharesource/TitleManager/workflows/Java%20CI/badge.svg"
              alt="Actions Status">
@@ -15,6 +19,10 @@
         <img src="https://img.shields.io/badge/JavaDoc-2.1:-blue.svg"
              alt="Javadoc">
     </a>
+    <a href="https://www.spigotmc.org/resources/titlemanager.1049/updates">
+        <img src="https://img.shields.io/badge/Minecraft-1.7%20--%201.14.4-blue"
+             alt="Minecraft versions">
+    </a>
 </p>
 
 <p align="center"><sup><strong>A Bukkit plugin for sending titles and setting the header and footer of the player list. <a href="https://www.spigotmc.org/resources/titlemanager.1049/">Spigot Project Page</a></strong></sup></p>
@@ -26,6 +34,10 @@
 * **[PERMISSIONS](https://github.com/Puharesource/TitleManager/wiki/permissions)** – command and feature permissions.
 * **[SUPPORT CHAT](https://discord.gg/U3Yyu6G)** - discord support chat and help.
 
+Sponsors
+--------
+
+<a href="https://mineacademy.org/invite?rl=epqj"><img src="https://i.imgur.com/uIAi9Lx.png"></a>
 
 For Developers
 --------------
