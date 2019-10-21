@@ -12,7 +12,7 @@
              alt="Actions Status">
     </a>
     <a href="https://tarkan.dev/javadoc/titlemanager/">
-        <img src="https://img.shields.io/badge/JavaDoc-2.1:-blue.svg"
+        <img src="https://img.shields.io/badge/JavaDoc-2.1-blue.svg"
              alt="Javadoc">
     </a>
     <a href="https://www.spigotmc.org/resources/titlemanager.1049/updates">
@@ -93,7 +93,7 @@ public void onEnable() {
 ```
 
 ##### Kotlin
-For kotlin I suggest using the `lazy` delegate for storing the instance of TitleManager globally.  
+For kotlin I suggest using the `lazy` delegate for storing the instance of TitleManager when accessed.  
 ```kotlin
 val titleManagerAPI : TitleManagerAPI by lazy { Bukkit.getServer().pluginManager.getPlugin("TitleManager") }
 ```
