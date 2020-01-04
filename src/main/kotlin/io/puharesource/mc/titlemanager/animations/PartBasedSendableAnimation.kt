@@ -1,6 +1,5 @@
 package io.puharesource.mc.titlemanager.animations
 
-import com.google.common.base.Joiner
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationFrame
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
@@ -21,15 +20,15 @@ class PartBasedSendableAnimation(parts: List<AnimationPart<*>>,
     private var running: Boolean = false
     private var ticksRun: Int = 0
 
-    private val joiner = Joiner.on("")
-
     init {
-        this.sendableParts = parts.mapNotNull {
-            when {
-                it.part is Animation -> AnimationSendablePart(player = player, part = it as AnimationPart<Animation>, isContinuous = isContinuous)
-                it.part is String -> StringSendablePart(it as AnimationPart<String>, isContinuous = isContinuous)
-                else -> null
-            }
+        this.sendableParts = parts.mapNotNull { animationPartToSendablePart(it) }
+    }
+
+    private fun animationPartToSendablePart(animationPart: AnimationPart<*>): SendablePart? {
+        return when (animationPart.part) {
+            is Animation -> AnimationSendablePart(player = player, part = animationPart as AnimationPart<Animation>, isContinuous = isContinuous)
+            is String -> StringSendablePart(animationPart as AnimationPart<String>, isContinuous = isContinuous)
+            else -> null
         }
     }
 
@@ -44,7 +43,7 @@ class PartBasedSendableAnimation(parts: List<AnimationPart<*>>,
                     }
                 }.toTypedArray()
 
-        return StandardAnimationFrame(joiner.join(textParts), 0, 2, 0)
+        return StandardAnimationFrame(textParts.joinToString(separator = ""), 0, 2, 0)
     }
 
     override fun start() {
@@ -120,11 +119,10 @@ data class AnimationSendablePart(private val player: Player,
 
     override fun updateText(currentTick: Int) {
         if (nextUpdateTick > currentTick) return
+        if (!iterator.hasNext() && !isContinuous) return
 
         if (!iterator.hasNext() && isContinuous) {
             iterator = part.part.iterator(player)
-        } else if (!iterator.hasNext()) {
-            return
         }
 
         val frame = iterator.next()

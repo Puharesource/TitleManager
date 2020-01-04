@@ -28,7 +28,7 @@ object CommandMessage : TMSubCommand("message",
                         player.sendSubtitle(parts[1], true)
                     } else {
                         sendConfigMessage("both-sent", "player" to player.name, "title" to parts[0], "subtitle" to parts[1])
-                        player.sendTitles(parts[0], parts[1], true)
+                        player.sendTitleAndSubtitle(parts[0], parts[1], true)
                     }
 
                     return@commandExecutor

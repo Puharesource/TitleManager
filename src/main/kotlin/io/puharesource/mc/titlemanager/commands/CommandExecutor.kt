@@ -1,6 +1,5 @@
 package io.puharesource.mc.titlemanager.commands
 
-import com.google.common.base.Joiner
 import io.puharesource.mc.titlemanager.extensions.color
 import io.puharesource.mc.titlemanager.extensions.sendActionbar
 import io.puharesource.mc.titlemanager.extensions.sendConfigMessage
@@ -12,11 +11,8 @@ import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.util.Arrays
 
 class CommandExecutor(val cmd: TMSubCommand, val sender: CommandSender, val args: Array<out String>, val parameters: Map<String, CommandParameter>) {
-    private val joiner = Joiner.on(' ')
-
     var silent: Boolean = false
 
     var fadeIn: Int = -1
@@ -52,7 +48,7 @@ class CommandExecutor(val cmd: TMSubCommand, val sender: CommandSender, val args
         }
     }
 
-    fun sendTitles(title: String, subtitle: String) {
+    fun sendTitleAndSubtitle(title: String, subtitle: String) {
         if (!silent && sender is Player) {
             sender.sendTitles(title, subtitle, fadeIn, stay, fadeOut, withPlaceholders = true)
         }
@@ -82,9 +78,24 @@ class CommandExecutor(val cmd: TMSubCommand, val sender: CommandSender, val args
         }
     }
 
-    fun Player.sendTitles(title: String, subtitle: String, checkForAnimations: Boolean = false) {
-        this.sendTitle(title, checkForAnimations = checkForAnimations)
-        this.sendSubtitle(subtitle, checkForAnimations = checkForAnimations)
+    fun Player.sendTitleAndSubtitle(title: String, subtitle: String, checkForAnimations: Boolean = false) {
+        if (checkForAnimations && (pluginInstance.containsAnimations(title) || pluginInstance.containsAnimations(subtitle))) {
+            if (pluginInstance.containsAnimations(title)) {
+                val parts = pluginInstance.toAnimationParts(title)
+                this.sendTitle(parts, withPlaceholders = true)
+            } else {
+                this.sendTitle(title, fadeIn, stay, fadeOut, withPlaceholders = true)
+            }
+
+            if (pluginInstance.containsAnimations(subtitle)) {
+                val parts = pluginInstance.toAnimationParts(subtitle)
+                this.sendTitle(parts, withPlaceholders = true)
+            } else {
+                this.sendSubtitle(subtitle, fadeIn, stay, fadeOut, withPlaceholders = true)
+            }
+        } else {
+            this.sendTitles(title, subtitle, fadeIn, stay, fadeOut)
+        }
     }
 
     fun Player.sendActionbar(text: String, checkForAnimations: Boolean = false) {
@@ -116,9 +127,9 @@ class CommandExecutor(val cmd: TMSubCommand, val sender: CommandSender, val args
             return Bukkit.getOnlinePlayers().toSet()
         }
 
-    val message: String get() = joiner.join(args).color()
+    val message: String get() = args.joinToString(separator = " ").color()
 
-    fun getMessageFrom(from: Int) : String = joiner.join(args.copyOfRange(from, args.size)).color()
+    fun getMessageFrom(from: Int) : String = args.copyOfRange(from, args.size).joinToString(separator = " ").color()
 
     fun getPlayerAt(index: Int) : Player? = Bukkit.getPlayer(args[index])
 
@@ -141,8 +152,7 @@ class CommandExecutor(val cmd: TMSubCommand, val sender: CommandSender, val args
     }
 
     fun broadcastTitles(title: String, subtitle: String) {
-        broadcastTitle(title)
-        broadcastSubtitle(subtitle)
+        recipients.forEach { it.sendTitleAndSubtitle(title, subtitle) }
     }
 
     fun broadcastActionbar(text: String) {

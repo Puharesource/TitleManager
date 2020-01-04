@@ -13,7 +13,6 @@ import io.puharesource.mc.titlemanager.extensions.clearSubtitle
 import io.puharesource.mc.titlemanager.extensions.clearTitle
 import io.puharesource.mc.titlemanager.extensions.color
 import io.puharesource.mc.titlemanager.extensions.getTitleManagerMetadata
-import io.puharesource.mc.titlemanager.extensions.modify
 import io.puharesource.mc.titlemanager.extensions.removeTitleManagerMetadata
 import io.puharesource.mc.titlemanager.extensions.sendActionbar
 import io.puharesource.mc.titlemanager.extensions.sendSubtitle
@@ -26,11 +25,7 @@ import io.puharesource.mc.titlemanager.extensions.setTitleManagerMetadata
 import io.puharesource.mc.titlemanager.placeholder.MvdwPlaceholderAPIHook
 import io.puharesource.mc.titlemanager.placeholder.PlaceholderAPIHook
 import io.puharesource.mc.titlemanager.reflections.NMSManager
-import io.puharesource.mc.titlemanager.reflections.PacketPlayOutChat
-import io.puharesource.mc.titlemanager.reflections.PacketTabHeader
-import io.puharesource.mc.titlemanager.reflections.PacketTitle
-import io.puharesource.mc.titlemanager.reflections.TitleTypeMapper
-import io.puharesource.mc.titlemanager.reflections.sendNMSPacket
+import io.puharesource.mc.titlemanager.reflections.NMSUtil
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardManager
 import io.puharesource.mc.titlemanager.scoreboard.ScoreboardRepresentation
 import io.puharesource.mc.titlemanager.script.ScriptManager
@@ -39,17 +34,12 @@ import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
 import java.io.File
-import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentSkipListMap
 
 object APIProvider : TitleManagerAPI {
     private const val HEADER_METADATA_KEY = "TM-HEADER"
     private const val FOOTER_METADATA_KEY = "TM-FOOTER"
-
-    private val classPacketTabHeader by lazy { PacketTabHeader() }
-    private val classPacketTitle by lazy { PacketTitle() }
-    private val classPacketPlayOutChat by lazy { PacketPlayOutChat() }
 
     internal val registeredAnimations : MutableMap<String, Animation> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
 
@@ -154,13 +144,21 @@ object APIProvider : TitleManagerAPI {
         }
 
         if (!isTesting) {
-            if (PlaceholderAPIHook.isEnabled()) {
-                replacedText = PlaceholderAPIHook.replacePlaceholders(player, replacedText)
-            }
+            replacedText = replaceTextFromHooks(player, replacedText)
+        }
 
-            if (MvdwPlaceholderAPIHook.canReplace()) {
-                replacedText = MvdwPlaceholderAPIHook.replacePlaceholders(player, replacedText)
-            }
+        return replacedText
+    }
+
+    private fun replaceTextFromHooks(player: Player, text: String): String {
+        var replacedText = text
+
+        if (PlaceholderAPIHook.isEnabled()) {
+            replacedText = PlaceholderAPIHook.replacePlaceholders(player, replacedText)
+        }
+
+        if (MvdwPlaceholderAPIHook.canReplace()) {
+            replacedText = MvdwPlaceholderAPIHook.replacePlaceholders(player, replacedText)
         }
 
         return replacedText
@@ -180,7 +178,7 @@ object APIProvider : TitleManagerAPI {
 
     override fun getRegisteredScripts(): Set<String> = scriptManager?.registeredScripts ?: emptySet()
 
-    fun doesScriptExist(name: String) = getRegisteredScripts().contains(name)
+    private fun doesScriptExist(name: String) = getRegisteredScripts().contains(name)
 
     override fun addAnimation(id: String, animation: Animation) {
         registeredAnimations[id] = animation
@@ -394,22 +392,9 @@ object APIProvider : TitleManagerAPI {
     override fun sendTitle(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) {
         if (NMSManager.versionIndex >= 9) {
             player.sendTitle(title, null, fadeIn, stay, fadeOut)
-
-            return
+        } else {
+            NMSUtil.sendTitle(player, title, fadeIn, stay, fadeOut)
         }
-
-        val provider = NMSManager.getClassProvider()
-        val packetConstructor : Constructor<*> = classPacketTitle.constructor
-
-        sendTimings(player, fadeIn, stay, fadeOut)
-
-        val packet = packetConstructor
-                .newInstance(
-                        TitleTypeMapper.TITLE.handle,
-                        provider.getIChatComponent(title),
-                        fadeIn, stay, fadeOut)
-
-        player.sendNMSPacket(packet)
     }
 
     override fun sendTitleWithPlaceholders(player: Player, title: String) = sendTitle(player, replaceText(player, title))
@@ -420,21 +405,10 @@ object APIProvider : TitleManagerAPI {
 
     override fun sendSubtitle(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) {
         if (NMSManager.versionIndex >= 9) {
-            player.sendTitle(null, subtitle, fadeIn, stay, fadeOut)
-
-            return
+            player.sendTitle("", subtitle, fadeIn, stay, fadeOut)
+        } else {
+            NMSUtil.sendSubtitle(player, subtitle, fadeIn, stay, fadeOut)
         }
-
-        val provider = NMSManager.getClassProvider()
-        val packetConstructor = classPacketTitle.constructor
-
-        val packet = packetConstructor
-                .newInstance(
-                        TitleTypeMapper.SUBTITLE.handle,
-                        provider.getIChatComponent(subtitle),
-                        fadeIn, stay, fadeOut)
-
-        player.sendNMSPacket(packet)
     }
 
     override fun sendSubtitleWithPlaceholders(player: Player, subtitle: String) {
@@ -456,8 +430,8 @@ object APIProvider : TitleManagerAPI {
             return
         }
 
-        sendTitle(player, title, fadeIn, stay, fadeOut)
-        sendSubtitle(player, subtitle, fadeIn, stay, fadeOut)
+        NMSUtil.sendTitle(player, title, fadeIn, stay, fadeOut)
+        NMSUtil.sendSubtitle(player, subtitle, fadeIn, stay, fadeOut)
     }
 
     override fun sendTitlesWithPlaceholders(player: Player, title: String, subtitle: String) {
@@ -475,13 +449,7 @@ object APIProvider : TitleManagerAPI {
             return
         }
 
-        val packet = if (NMSManager.versionIndex == 0) {
-            classPacketTitle.timingsConstructor.newInstance(TitleTypeMapper.TIMES.handle, fadeIn, stay, fadeOut)
-        } else {
-            classPacketTitle.constructor.newInstance(TitleTypeMapper.TIMES.handle, null, fadeIn, stay, fadeOut)
-        }
-
-        player.sendNMSPacket(packet)
+        NMSUtil.sendTimings(player, fadeIn, stay, fadeOut)
     }
 
     override fun clearTitles(player: Player) {
@@ -505,26 +473,14 @@ object APIProvider : TitleManagerAPI {
     // Actionbar
 
     override fun sendActionbar(player: Player, text: String) {
-        val provider = NMSManager.getClassProvider()
-
-        when {
-            NMSManager.versionIndex == 0 -> try {
-                val packet = classPacketPlayOutChat.constructor.newInstance(provider.getIChatComponent(text), 2)
-
-                player.sendNMSPacket(packet)
-            } catch (e: NoSuchMethodException) {
-                error("(If you're using Spigot #1649) Your version of Spigot #1649 doesn't support actionbar messages. Please find that spigot version from another source!")
-            }
-            NMSManager.versionIndex >= 5 -> try {
+        if (NMSManager.versionIndex >= 5) {
+            try {
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(text))
             } catch (e: Exception) {
                 error("To use Actionbar messages you need to run Spigot, not CraftBukkit!")
             }
-            else -> {
-                val packet = classPacketPlayOutChat.constructor.newInstance(provider.getIChatComponent(text), 2.toByte())
-
-                player.sendNMSPacket(packet)
-            }
+        } else {
+            NMSUtil.sendActionbar(player, text)
         }
     }
 
@@ -595,23 +551,9 @@ object APIProvider : TitleManagerAPI {
 
         if (NMSManager.versionIndex >= 9) {
             player.setPlayerListHeaderFooter(header, footer)
-
-            return
-        }
-
-        val provider = NMSManager.getClassProvider()
-        val packet : Any
-
-        if (NMSManager.versionIndex == 0) {
-            packet = classPacketTabHeader.legacyConstructor.newInstance(provider.getIChatComponent(header), provider.getIChatComponent(footer))
         } else {
-            packet = classPacketTabHeader.createInstance()
-
-            classPacketTabHeader.headerField.modify { set(packet, provider.getIChatComponent(header)) }
-            classPacketTabHeader.footerField.modify { set(packet, provider.getIChatComponent(footer)) }
+            NMSUtil.setHeaderAndFooter(player, header, footer)
         }
-
-        player.sendNMSPacket(packet)
     }
 
     override fun setHeaderAndFooterWithPlaceholders(player: Player, header: String, footer: String) {

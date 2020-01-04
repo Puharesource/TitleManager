@@ -1,10 +1,10 @@
 package io.puharesource.mc.titlemanager
 
-import com.google.common.base.Joiner
 import io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.bungeecord.BungeeCordManager
 import io.puharesource.mc.titlemanager.commands.TMCommand
+import io.puharesource.mc.titlemanager.config.ConfigMigration
 import io.puharesource.mc.titlemanager.config.PrettyConfig
 import io.puharesource.mc.titlemanager.config.TMConfigMain
 import io.puharesource.mc.titlemanager.event.observeEvent
@@ -18,6 +18,7 @@ import io.puharesource.mc.titlemanager.extensions.removeScoreboard
 import io.puharesource.mc.titlemanager.extensions.sendActionbar
 import io.puharesource.mc.titlemanager.extensions.sendSubtitle
 import io.puharesource.mc.titlemanager.extensions.sendTitle
+import io.puharesource.mc.titlemanager.extensions.sendTitles
 import io.puharesource.mc.titlemanager.extensions.stripColor
 import io.puharesource.mc.titlemanager.placeholder.PlaceholderTps
 import io.puharesource.mc.titlemanager.placeholder.VanishHookReplacer
@@ -31,7 +32,6 @@ import io.puharesource.mc.titlemanager.script.ScriptManager
 import io.puharesource.mc.titlemanager.web.UpdateChecker
 import org.bukkit.ChatColor
 import org.bukkit.configuration.file.FileConfiguration
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -42,8 +42,8 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
-    private val animationsFolder = File(dataFolder, "animations")
-    private var conf : PrettyConfig? = null
+    internal val animationsFolder = File(dataFolder, "animations")
+    internal var conf : PrettyConfig? = null
     var playerInfoDB: PlayerInfoDB? = null
     internal lateinit var tmConfig: TMConfigMain
 
@@ -159,141 +159,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     }
 
     private fun updateConfig() {
-        val version = config.getInt("config-version")
+        val migration = ConfigMigration(this)
 
-        if (version <= 3) {
-            debug("Upgrading config to the 2.0 format.")
-
-            val configFile = File(dataFolder, "config.yml")
-            val oldFile = File(dataFolder, "config-old-3.yml")
-            val oldAnimationFile = File(dataFolder, "animations.yml")
-
-            configFile.renameTo(oldFile)
-            saveDefaultConfig()
-
-            conf = PrettyConfig(configFile)
-            val oldConfig = YamlConfiguration.loadConfiguration(oldFile.reader())
-
-            val oldAnimationPattern = "(?i)^animation[:](.+)$".toRegex()
-            val oldPlaceholderPattern = "\\{(.+)}".toRegex()
-
-            fun move(path: String, newPath: String? = null, transformer: ((Any) -> Any)? = null) {
-                val correctNewPath = newPath ?: path
-
-                if (oldConfig.contains(path)) {
-                    var oldValue = oldConfig.get(path)!!
-
-                    if (oldValue is String) {
-                        if (oldValue.matches(oldAnimationPattern)) {
-                            oldValue = "\${${oldValue.substring(10)}}"
-                        } else if (oldValue.contains(oldPlaceholderPattern)) {
-                            oldValue.replace(oldPlaceholderPattern, transform = { "%{${it.groups[1]!!.value}}" })
-                        }
-                    }
-
-                    if (transformer != null) {
-                        config.set(correctNewPath, transformer(oldValue))
-                    } else {
-                        config.set(correctNewPath, oldValue)
-                    }
-                }
-            }
-
-            move("usingConfig", "using-config")
-            move("using-bungeecord")
-            move("legacy-client-support")
-            move("updater.check-automatically", "check-for-updates")
-
-            move("tabmenu.enabled", "player-list.enabled")
-            move("tabmenu.header", "player-list.header", transformer = {
-                val header = it as String
-
-                if (header.contains("\\n")) {
-                    header.split("\\n")
-                } else {
-                    header
-                }
-            })
-            move("tabmenu.footer", "player-list.footer", transformer = {
-                val footer = it as String
-
-                if (footer.contains("\\n")) {
-                    footer.split("\\n")
-                } else {
-                    footer
-                }
-            })
-
-            move("welcome_message.enabled", "welcome-title.enabled")
-            move("welcome_message.title", "welcome-title.title")
-            move("welcome_message.subtitle", "welcome-title.subtitle")
-            move("welcome_message.fadeIn", "welcome-title.fade-in")
-            move("welcome_message.stay", "welcome-title.stay")
-            move("welcome_message.fadeOut", "welcome-title.fade-out")
-            move("welcome_message.first-join.title", "welcome-title.first-join.title")
-            move("welcome_message.first-join.subtitle", "welcome-title.first-join.subtitle")
-
-            move("actionbar-welcome.enabled", "welcome-actionbar.enabled")
-            move("actionbar-welcome.message", "welcome-actionbar.title")
-            move("actionbar-welcome.first-join.message", "welcome-actionbar.first-join")
-
-            move("number-format.enabled", "placeholders.number-format.enabled")
-            move("number-format.format", "placeholders.number-format.format")
-            move("date-format.format", "placeholders.date-format")
-
-            config.save(configFile)
-
-            if (oldAnimationFile.exists()) {
-                val oldAnimationsConfig = YamlConfiguration.loadConfiguration(oldAnimationFile)
-
-                oldAnimationsConfig.getKeys(false)
-                        .map { it to oldAnimationsConfig.getStringList("$it.frames") }
-                        .forEach { entry ->
-                            val name = entry.first
-                            val frames = Joiner.on("\n")
-                                    .join(entry.second)
-                                    .replace(oldPlaceholderPattern, transform = { "%{${it.groups[1]!!.value}}" })
-
-                            animationsFolder.mkdirs()
-                            val file = File(animationsFolder, "$name.txt")
-
-                            if (!file.exists()) {
-                                file.createNewFile()
-                                file.writeText(frames)
-                            }
-                        }
-
-                oldAnimationFile.renameTo(File(dataFolder, "animations-old.yml"))
-            }
-        } else if (version == 4) {
-            debug("Upgrading config from version 4 to version 5")
-
-            val configFile = File(dataFolder, "config.yml")
-            val oldFile = File(dataFolder, "config-old-4.yml")
-
-            configFile.renameTo(oldFile)
-            saveDefaultConfig()
-
-            conf = PrettyConfig(configFile)
-            val oldConfig = YamlConfiguration.loadConfiguration(oldFile.reader())
-
-            conf!!.getKeys(false)
-                    .asSequence()
-                    .filter { it != "config-version" && it != "messages" }
-                    .filter { oldConfig.contains(it) }
-                    .map { it to oldConfig[it] }
-                    .forEach { conf!!.set(it.first, it.second) }
-
-            conf!!.getConfigurationSection("messages")!!.getKeys(false)
-                    .asSequence()
-                    .filter { oldConfig.contains(it) }
-                    .map { it to oldConfig[it] }
-                    .forEach { conf!!.getConfigurationSection("messages")!!.set(it.first, it.second) }
-
-            config.save(configFile)
-        }
-
-        reloadConfig()
+        migration.updateConfig()
     }
 
     private fun setupDB() {
@@ -343,6 +211,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                                     } else if (title.first().isEmpty() && title[1].isNotEmpty()) {
                                         it.sendSubtitleFromText(title[1], fadeIn, stay, fadeOut)
                                     } else {
+                                        it.sendTitles(title.first(), title[1], fadeIn, stay, fadeOut)
                                         it.sendTitleFromText(title.first(), fadeIn, stay, fadeOut)
                                         it.sendSubtitleFromText(title[1], fadeIn, stay, fadeOut)
                                     }

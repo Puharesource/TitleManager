@@ -3,8 +3,8 @@ package io.puharesource.mc.titlemanager.web
 import io.puharesource.mc.titlemanager.debug
 import io.puharesource.mc.titlemanager.info
 import io.puharesource.mc.titlemanager.pluginInstance
-import org.bukkit.scheduler.BukkitTask
 import io.puharesource.mc.titlemanager.scheduling.scheduleAsyncTimer
+import org.bukkit.scheduler.BukkitTask
 import java.io.IOException
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
