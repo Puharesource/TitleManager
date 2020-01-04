@@ -23,6 +23,7 @@ import io.puharesource.mc.titlemanager.internal.extensions.setScoreboardTitle
 import io.puharesource.mc.titlemanager.internal.extensions.setScoreboardValue
 import io.puharesource.mc.titlemanager.internal.extensions.setTitleManagerMetadata
 import io.puharesource.mc.titlemanager.internal.functionality.placeholder.MvdwPlaceholderAPIHook
+import io.puharesource.mc.titlemanager.internal.functionality.placeholder.Placeholder
 import io.puharesource.mc.titlemanager.internal.functionality.placeholder.PlaceholderAPIHook
 import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
 import io.puharesource.mc.titlemanager.internal.reflections.NMSUtil
@@ -34,7 +35,6 @@ import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
 import java.io.File
-import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentSkipListMap
 
 object APIProvider : TitleManagerAPI {
@@ -42,9 +42,7 @@ object APIProvider : TitleManagerAPI {
     private const val FOOTER_METADATA_KEY = "TM-FOOTER"
 
     internal val registeredAnimations : MutableMap<String, Animation> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
-
-    private val placeholderReplacers : MutableMap<String, (Player) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
-    private val placeholderReplacersWithValues : MutableMap<String, (Player, String) -> String> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
+    private val placeholderReplacers : MutableMap<String, Placeholder> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
 
     internal val textAnimationFramePattern = "^\\[([-]?\\d+);([-]?\\d+);([-]?\\d+)](.+)$".toRegex()
     internal val variablePattern = """[%][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
@@ -107,18 +105,8 @@ object APIProvider : TitleManagerAPI {
 
     // Placeholder
 
-    fun addPlaceholderReplacer(name: String, body: (Player) -> String, vararg aliases: String) {
-        placeholderReplacers[name] = body
-        aliases.forEach { placeholderReplacers[it] = body }
-    }
-
-    fun addPlaceholderReplacer(name: String, instance: Any, method: Method, vararg aliases: String) {
-        addPlaceholderReplacer(name, { method.invoke(instance, it) as String }, *aliases)
-    }
-
-    fun addPlaceholderReplacerWithValue(name: String, body: (Player, String) -> String, vararg aliases: String) {
-        placeholderReplacersWithValues[name] = body
-        aliases.forEach { placeholderReplacersWithValues[it] = body }
+    fun addPlaceholder(placeholder: Placeholder) {
+        placeholder.aliases.forEach { placeholderReplacers[it] = placeholder }
     }
 
     override fun replaceText(player: Player, text: String): String {
@@ -128,17 +116,12 @@ object APIProvider : TitleManagerAPI {
             val matcher = variablePattern.toPattern().matcher(text)
 
             while (matcher.find()) {
-                val placeholder = matcher.group(2)
+                val placeholderName = matcher.group(2)
                 val parameter : String? = if (matcher.groupCount() == 3) matcher.group(3)?.replace("\\}", "}") else null
+                val placeholder = placeholderReplacers[placeholderName]
 
-                if (parameter != null) {
-                    placeholderReplacersWithValues[placeholder]?.let { replacer ->
-                        replacedText = replacedText.replace(matcher.group(), replacer.invoke(player, parameter))
-                    }
-                } else {
-                    placeholderReplacers[matcher.group(1)]?.let { replacer ->
-                        replacedText = replacedText.replace(matcher.group(), replacer.invoke(player))
-                    }
+                placeholder?.getText(player, parameter)?.let {
+                    replacedText = replacedText.replace(matcher.group(), it)
                 }
             }
         }

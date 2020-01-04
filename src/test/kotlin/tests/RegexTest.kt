@@ -2,15 +2,16 @@ package tests
 
 import io.puharesource.mc.titlemanager.internal.APIProvider
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
+import io.puharesource.mc.titlemanager.internal.functionality.placeholder.createPlaceholder
 import org.junit.Test
 import testPlayer
 import kotlin.test.assertTrue
 
 class RegexTest {
     init {
-        APIProvider.addPlaceholderReplacer("test", { _ -> "test" })
-        APIProvider.addPlaceholderReplacerWithValue("test1", { _, value -> "test1: $value" })
-        APIProvider.addPlaceholderReplacerWithValue("test2", { _, value -> "test2: $value" })
+        APIProvider.addPlaceholder(createPlaceholder("test") { _ -> "test" })
+        APIProvider.addPlaceholder(createPlaceholder("test1") { _, value -> "test1: $value" })
+        APIProvider.addPlaceholder(createPlaceholder("test2") { _, value -> "test2: $value" })
         APIProvider.addAnimation("test-animation", Animation { _ -> listOf(APIProvider.createAnimationFrame("hello", 1, 2, 3), APIProvider.createAnimationFrame("der", 1, 2, 3)).iterator() })
     }
 

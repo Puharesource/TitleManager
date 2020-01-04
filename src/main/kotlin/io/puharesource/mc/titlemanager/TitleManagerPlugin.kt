@@ -10,7 +10,6 @@ import io.puharesource.mc.titlemanager.internal.config.PrettyConfig
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
 import io.puharesource.mc.titlemanager.internal.functionality.event.listenEventSync
 import io.puharesource.mc.titlemanager.internal.extensions.color
-import io.puharesource.mc.titlemanager.internal.extensions.format
 import io.puharesource.mc.titlemanager.internal.extensions.getFormattedTime
 import io.puharesource.mc.titlemanager.internal.extensions.giveScoreboard
 import io.puharesource.mc.titlemanager.internal.extensions.isInt
@@ -21,11 +20,13 @@ import io.puharesource.mc.titlemanager.internal.extensions.sendTitle
 import io.puharesource.mc.titlemanager.internal.extensions.sendTitles
 import io.puharesource.mc.titlemanager.internal.extensions.stripColor
 import io.puharesource.mc.titlemanager.internal.debug
+import io.puharesource.mc.titlemanager.internal.extensions.format
 import io.puharesource.mc.titlemanager.internal.functionality.event.TMEventListener
 import io.puharesource.mc.titlemanager.internal.functionality.event.listenEventAsync
 import io.puharesource.mc.titlemanager.internal.functionality.placeholder.PlaceholderTps
 import io.puharesource.mc.titlemanager.internal.functionality.placeholder.VanishHookReplacer
 import io.puharesource.mc.titlemanager.internal.functionality.placeholder.VaultHook
+import io.puharesource.mc.titlemanager.internal.functionality.placeholder.createPlaceholder
 import io.puharesource.mc.titlemanager.internal.playerinfo.PlayerInfoDB
 import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
 import io.puharesource.mc.titlemanager.internal.reflections.getPing
@@ -396,59 +397,44 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     }
 
     private fun registerPlaceholders() {
-        APIProvider.addPlaceholderReplacer("player", { it.name }, "username", "name")
-        APIProvider.addPlaceholderReplacer("displayname", { it.displayName }, "display-name", "nickname", "nick")
-        APIProvider.addPlaceholderReplacer("strippeddisplayname", { it.displayName.stripColor() }, "strippeddisplayname", "stripped-displayname", "stripped-nickname", "stripped-nick")
-        APIProvider.addPlaceholderReplacer("world", { it.world.name }, "world-name")
-        APIProvider.addPlaceholderReplacer("world-time", { it.world.time.toString() })
-        APIProvider.addPlaceholderReplacer("24h-world-time", { it.world.getFormattedTime(true) })
-        APIProvider.addPlaceholderReplacer("12h-world-time", { it.world.getFormattedTime(false) })
-        APIProvider.addPlaceholderReplacer("online", { server.onlinePlayers.size.toString() }, "online-players")
-        APIProvider.addPlaceholderReplacer("max", { server.maxPlayers.toString() }, "max-players")
-        APIProvider.addPlaceholderReplacer("world-players", { it.world.players.size.toString() }, "world-online")
-        APIProvider.addPlaceholderReplacer("ping", { it.getPing().toString() })
-        APIProvider.addPlaceholderReplacer("tps", { PlaceholderTps.getTps(1) })
+        APIProvider.addPlaceholder(createPlaceholder("player", "username", "name") { player -> player.name })
+        APIProvider.addPlaceholder(createPlaceholder("displayname", "display-name", "nickname", "nick") { player -> player.displayName })
+        APIProvider.addPlaceholder(createPlaceholder("strippeddisplayname", "stripped-displayname", "stripped-nickname", "stripped-nick") { player -> player.displayName.stripColor() })
+        APIProvider.addPlaceholder(createPlaceholder("world", "world-name") { player -> player.world.name })
+        APIProvider.addPlaceholder(createPlaceholder("world-time") { player -> player.world.time })
+        APIProvider.addPlaceholder(createPlaceholder("24h-world-time") { player -> player.world.getFormattedTime(true) })
+        APIProvider.addPlaceholder(createPlaceholder("12h-world-time") { player -> player.world.getFormattedTime(false) })
+        APIProvider.addPlaceholder(createPlaceholder("online", "online-players") { _, value ->
+            if (value == null || !tmConfig.usingBungeecord || bungeeCordManager == null) {
+                return@createPlaceholder server.onlinePlayers.size
+            }
 
-        APIProvider.addPlaceholderReplacer("server-time", {
-            val date = Date(System.currentTimeMillis())
+            if (value.contains(",")) {
+                return@createPlaceholder value.split(",").asSequence().mapNotNull { bungeeCordManager!!.getServers()[value]?.playerCount }.sum().toString()
+            }
 
-            return@addPlaceholderReplacer tmConfig.placeholders.dateFormat.format(date)
+            return@createPlaceholder bungeeCordManager!!.getServers()[value]?.playerCount?.toString() ?: ""
         })
+        APIProvider.addPlaceholder(createPlaceholder("max", "max-players") { _ -> server.maxPlayers })
+        APIProvider.addPlaceholder(createPlaceholder("world-players", "world-online") { player -> player.world.players.size })
+        APIProvider.addPlaceholder(createPlaceholder("ping") { player -> player.getPing() })
+        APIProvider.addPlaceholder(createPlaceholder("tps") { _, value ->
+            if (value == null) {
+                return@createPlaceholder PlaceholderTps.getTps(1)
+            }
 
-        APIProvider.addPlaceholderReplacerWithValue("tps", replacer@ { _, value ->
             if (value.isInt()) {
-                return@replacer PlaceholderTps.getTps(value.toInt())
+                return@createPlaceholder PlaceholderTps.getTps(value.toInt())
             }
 
-            return@replacer PlaceholderTps.getTps(value)
+            return@createPlaceholder PlaceholderTps.getTps(value)
         })
-
-        if (tmConfig.usingBungeecord) {
-            APIProvider.addPlaceholderReplacer("bungeecord-online", { bungeeCordManager!!.onlinePlayers.toString() }, "bungeecord-online-players")
-            APIProvider.addPlaceholderReplacer("server", { bungeeCordManager!!.getCurrentServer().orEmpty() }, "server-name")
-
-            APIProvider.addPlaceholderReplacerWithValue("online", replacer@ { _, value ->
-                if (value.contains(",")) {
-                    return@replacer value.split(",").asSequence().mapNotNull { bungeeCordManager!!.getServers()[value]?.playerCount }.sum().toString()
-                }
-
-                return@replacer bungeeCordManager!!.getServers()[value]?.playerCount?.toString() ?: ""
-            }, "online-players")
-        }
-
-        if (VanishHookReplacer.isValid()) {
-            APIProvider.addPlaceholderReplacer("safe-online", { VanishHookReplacer.value(it) }, "safe-online-players")
-        }
-
-        if (VaultHook.isEnabled()) {
-            if (VaultHook.economySupported) {
-                APIProvider.addPlaceholderReplacer("balance", { VaultHook.economy!!.getBalance(it).format() }, "money")
-            }
-
-            if (VaultHook.hasGroupSupport()) {
-                APIProvider.addPlaceholderReplacer("group", { VaultHook.permissions!!.getPrimaryGroup(it) }, "group-name")
-            }
-        }
+        APIProvider.addPlaceholder(createPlaceholder("server-time") { _ -> tmConfig.placeholders.dateFormat.format(Date(System.currentTimeMillis())) })
+        APIProvider.addPlaceholder(createPlaceholder("bungeecord-online", "bungeecord-online-players", enabled = { tmConfig.usingBungeecord && bungeeCordManager != null }) { _ -> bungeeCordManager!!.onlinePlayers })
+        APIProvider.addPlaceholder(createPlaceholder("server", "server-name", enabled = { tmConfig.usingBungeecord && bungeeCordManager != null }) { _ -> bungeeCordManager!!.getCurrentServer().orEmpty() })
+        APIProvider.addPlaceholder(createPlaceholder("safe-online", "safe-online-players", enabled = { VanishHookReplacer.isValid() }) { player -> VanishHookReplacer.value(player) })
+        APIProvider.addPlaceholder(createPlaceholder("balance", "money", enabled = { VaultHook.isEnabled() && VaultHook.isEconomySupported }) { player -> VaultHook.economy!!.getBalance(player).format() })
+        APIProvider.addPlaceholder(createPlaceholder("group", "group-name", enabled = { VaultHook.isEnabled() && VaultHook.hasGroupSupport }) { player -> VaultHook.permissions!!.getPrimaryGroup(player) })
     }
 
     private fun Player.sendTitleFromText(text: String, fadeIn: Int, stay: Int, fadeOut: Int) {

@@ -2,12 +2,16 @@ package io.puharesource.mc.titlemanager.api.variables;
 
 import io.puharesource.mc.titlemanager.internal.APIProvider;
 import io.puharesource.mc.titlemanager.internal.InternalsKt;
+import io.puharesource.mc.titlemanager.internal.functionality.placeholder.Placeholder;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Deprecated
 public final class VariableManager {
@@ -17,7 +21,19 @@ public final class VariableManager {
     @Deprecated
     private void registerMethod(final Method method, int replacer, final Variable variable) {
         for (String var : variable.vars()) {
-            APIProvider.INSTANCE.addPlaceholderReplacer(var, replacers.get(replacer), method);
+            APIProvider.INSTANCE.addPlaceholder(new Placeholder("") {
+                @NotNull
+                @Override
+                public String getText(@NotNull Player player, @Nullable String value) {
+                    try {
+                        return method.invoke(replacers.get(replacer), player).toString();
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+
+                    return "";
+                }
+            });
         }
     }
 

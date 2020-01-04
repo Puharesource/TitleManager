@@ -63,23 +63,29 @@ object VanishNoPacketHook : PluginHook("VanishNoPacket") {
 
 object VaultHook : PluginHook("Vault") {
     var economy: Economy? = null
+        private set
     var permissions: Permission? = null
+        private set
 
-    var economySupported: Boolean = false
-    var permissionsSupported: Boolean = false
+    var isEconomySupported: Boolean = false
+        private set
+    var isPermissionsSupported: Boolean = false
+        private set
+    val hasGroupSupport: Boolean
+        get() = permissions?.hasGroupSupport() ?: false
 
     init {
         if (isEnabled()) {
             if (!setupEconomy()) {
                 debug("There's no economy plugin hooked into vault! Disabling economy based variables.")
             } else {
-                economySupported = true
+                isEconomySupported = true
             }
 
             if (!setupPermissions()) {
                 debug("There's no permissions plugin hooked into vault! Disabling permissions based variables!")
             } else {
-                permissionsSupported = true
+                isPermissionsSupported = true
             }
         }
     }
@@ -94,9 +100,5 @@ object VaultHook : PluginHook("Vault") {
         val rsp = Bukkit.getServer().servicesManager.getRegistration(Permission::class.java) ?: return false
         permissions = rsp.provider
         return permissions != null
-    }
-
-    fun hasGroupSupport(): Boolean {
-        return permissions != null && permissions!!.hasGroupSupport()
     }
 }
