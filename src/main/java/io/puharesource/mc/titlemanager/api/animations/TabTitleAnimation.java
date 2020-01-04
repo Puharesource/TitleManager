@@ -4,7 +4,7 @@ import io.puharesource.mc.titlemanager.api.TabTitleObject;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation;
-import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler;
+import io.puharesource.mc.titlemanager.internal.scheduling.AsyncScheduler;
 import java.util.List;
 import java.util.UUID;
 import org.bukkit.Bukkit;

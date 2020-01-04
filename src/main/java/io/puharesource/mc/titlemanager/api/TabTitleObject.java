@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.api;
 
-import io.puharesource.mc.titlemanager.InternalsKt;
+import io.puharesource.mc.titlemanager.internal.InternalsKt;
 import io.puharesource.mc.titlemanager.TitleManagerPlugin;
 import io.puharesource.mc.titlemanager.api.events.TabTitleChangeEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITabObject;

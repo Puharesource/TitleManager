@@ -1,7 +1,7 @@
 package io.puharesource.mc.titlemanager.internal
 
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
-import io.puharesource.mc.titlemanager.config.TMConfigMain
+import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
 import org.bukkit.Bukkit
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener

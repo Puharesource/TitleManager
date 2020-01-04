@@ -1,9 +1,9 @@
 package tests
 
-import io.puharesource.mc.titlemanager.APIProvider
-import io.puharesource.mc.titlemanager.script.GraalScriptManager
-import io.puharesource.mc.titlemanager.script.NashornScriptManager
-import io.puharesource.mc.titlemanager.script.ScriptManager
+import io.puharesource.mc.titlemanager.internal.APIProvider
+import io.puharesource.mc.titlemanager.internal.script.GraalScriptManager
+import io.puharesource.mc.titlemanager.internal.script.NashornScriptManager
+import io.puharesource.mc.titlemanager.internal.script.ScriptManager
 import org.graalvm.polyglot.Value
 import org.junit.Before
 import org.junit.Test

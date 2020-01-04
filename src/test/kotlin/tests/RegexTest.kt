@@ -1,6 +1,6 @@
 package tests
 
-import io.puharesource.mc.titlemanager.APIProvider
+import io.puharesource.mc.titlemanager.internal.APIProvider
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import org.junit.Test
 import testPlayer

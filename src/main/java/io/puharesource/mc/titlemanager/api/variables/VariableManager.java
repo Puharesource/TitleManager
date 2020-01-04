@@ -1,7 +1,7 @@
 package io.puharesource.mc.titlemanager.api.variables;
 
-import io.puharesource.mc.titlemanager.APIProvider;
-import io.puharesource.mc.titlemanager.InternalsKt;
+import io.puharesource.mc.titlemanager.internal.APIProvider;
+import io.puharesource.mc.titlemanager.internal.InternalsKt;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;

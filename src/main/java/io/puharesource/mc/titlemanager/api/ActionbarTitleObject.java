@@ -2,6 +2,7 @@ package io.puharesource.mc.titlemanager.api;
 
 import io.puharesource.mc.titlemanager.api.events.ActionbarEvent;
 import io.puharesource.mc.titlemanager.api.iface.IActionbarObject;
+import io.puharesource.mc.titlemanager.internal.InternalsKt;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

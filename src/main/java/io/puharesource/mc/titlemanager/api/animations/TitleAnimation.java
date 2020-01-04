@@ -1,11 +1,11 @@
 package io.puharesource.mc.titlemanager.api.animations;
 
-import io.puharesource.mc.titlemanager.InternalsKt;
+import io.puharesource.mc.titlemanager.internal.InternalsKt;
 import io.puharesource.mc.titlemanager.TitleManagerPlugin;
 import io.puharesource.mc.titlemanager.api.iface.IAnimation;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation;
-import io.puharesource.mc.titlemanager.scheduling.AsyncScheduler;
+import io.puharesource.mc.titlemanager.internal.scheduling.AsyncScheduler;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

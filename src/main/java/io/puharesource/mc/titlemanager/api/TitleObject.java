@@ -1,10 +1,10 @@
 package io.puharesource.mc.titlemanager.api;
 
-import io.puharesource.mc.titlemanager.InternalsKt;
+import io.puharesource.mc.titlemanager.internal.InternalsKt;
 import io.puharesource.mc.titlemanager.TitleManagerPlugin;
 import io.puharesource.mc.titlemanager.api.events.TitleEvent;
 import io.puharesource.mc.titlemanager.api.iface.ITitleObject;
-import io.puharesource.mc.titlemanager.reflections.TitleTypeMapper;
+import io.puharesource.mc.titlemanager.internal.reflections.TitleTypeMapper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
