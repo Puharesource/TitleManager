@@ -1,7 +1,7 @@
 package io.puharesource.mc.titlemanager.config
 
 import com.google.common.io.Files
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 

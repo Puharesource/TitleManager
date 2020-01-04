@@ -2,7 +2,7 @@ package io.puharesource.mc.titlemanager.commands
 
 import io.puharesource.mc.titlemanager.extensions.color
 import io.puharesource.mc.titlemanager.extensions.stripColor
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 import org.bukkit.ChatColor
 import org.bukkit.block.CommandBlock
 import org.bukkit.command.CommandSender

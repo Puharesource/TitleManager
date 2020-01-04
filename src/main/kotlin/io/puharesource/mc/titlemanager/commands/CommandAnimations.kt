@@ -1,7 +1,7 @@
 package io.puharesource.mc.titlemanager.commands
 
 import io.puharesource.mc.titlemanager.extensions.color
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 
 object CommandAnimations : TMSubCommand("animations",
         cmdExecutor = { cmd, sender, args, parameters -> commandExecutor(cmd, sender, args, parameters) {

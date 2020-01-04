@@ -7,8 +7,8 @@ import io.puharesource.mc.titlemanager.extensions.color
 import io.puharesource.mc.titlemanager.extensions.giveScoreboard
 import io.puharesource.mc.titlemanager.extensions.hasScoreboard
 import io.puharesource.mc.titlemanager.extensions.removeScoreboard
-import io.puharesource.mc.titlemanager.pluginConfig
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.internal.pluginConfig
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 import org.bukkit.entity.Player
 
 object CommandScoreboard : TMSubCommand("scoreboard",

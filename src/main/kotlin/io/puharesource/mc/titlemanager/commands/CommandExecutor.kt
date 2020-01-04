@@ -6,7 +6,7 @@ import io.puharesource.mc.titlemanager.extensions.sendConfigMessage
 import io.puharesource.mc.titlemanager.extensions.sendSubtitle
 import io.puharesource.mc.titlemanager.extensions.sendTitle
 import io.puharesource.mc.titlemanager.extensions.sendTitles
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.command.CommandSender

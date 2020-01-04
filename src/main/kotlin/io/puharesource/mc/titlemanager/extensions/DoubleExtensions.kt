@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.extensions
 
-import io.puharesource.mc.titlemanager.pluginConfig
+import io.puharesource.mc.titlemanager.internal.pluginConfig
 import java.math.BigDecimal
 
 internal fun Double.format() : String {

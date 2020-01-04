@@ -5,8 +5,8 @@ import io.puharesource.mc.titlemanager.APIProvider
 import io.puharesource.mc.titlemanager.animations.StandardAnimationFrame
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationFrame
-import io.puharesource.mc.titlemanager.isTesting
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.internal.isTesting
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.atomic.AtomicInteger
 import javax.script.Invocable

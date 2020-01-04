@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.config
 
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 import org.bukkit.configuration.ConfigurationSection
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols

@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.placeholder
 
-import io.puharesource.mc.titlemanager.debug
+import io.puharesource.mc.titlemanager.internal.debug
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 

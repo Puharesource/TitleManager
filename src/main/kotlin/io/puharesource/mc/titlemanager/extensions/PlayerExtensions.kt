@@ -2,7 +2,7 @@ package io.puharesource.mc.titlemanager.extensions
 
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
 

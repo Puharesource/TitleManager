@@ -3,8 +3,8 @@ package io.puharesource.mc.titlemanager.bungeecord
 import com.google.common.io.ByteArrayDataInput
 import com.google.common.io.ByteStreams
 import io.puharesource.mc.titlemanager.event.observePluginMessageReceived
-import io.puharesource.mc.titlemanager.pluginConfig
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.internal.pluginConfig
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 import io.puharesource.mc.titlemanager.scheduling.scheduleAsyncObservableTimer
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

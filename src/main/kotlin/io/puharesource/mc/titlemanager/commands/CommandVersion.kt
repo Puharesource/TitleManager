@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.commands
 
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 import io.puharesource.mc.titlemanager.web.UpdateChecker
 import org.bukkit.ChatColor
 

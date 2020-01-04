@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.extensions
 
-import io.puharesource.mc.titlemanager.pluginInstance
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 import org.bukkit.command.CommandSender
 
 internal fun CommandSender.sendConfigMessage(path: String, vararg replace: Pair<String, String>) {

@@ -20,6 +20,8 @@ import io.puharesource.mc.titlemanager.extensions.sendSubtitle
 import io.puharesource.mc.titlemanager.extensions.sendTitle
 import io.puharesource.mc.titlemanager.extensions.sendTitles
 import io.puharesource.mc.titlemanager.extensions.stripColor
+import io.puharesource.mc.titlemanager.internal.asyncScheduler
+import io.puharesource.mc.titlemanager.internal.debug
 import io.puharesource.mc.titlemanager.placeholder.PlaceholderTps
 import io.puharesource.mc.titlemanager.placeholder.VanishHookReplacer
 import io.puharesource.mc.titlemanager.placeholder.VaultHook

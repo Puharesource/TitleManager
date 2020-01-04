@@ -1,7 +1,7 @@
 package io.puharesource.mc.titlemanager.scoreboard
 
-import io.puharesource.mc.titlemanager.generateRandomString
-import io.puharesource.mc.titlemanager.pluginConfig
+import io.puharesource.mc.titlemanager.internal.generateRandomString
+import io.puharesource.mc.titlemanager.internal.pluginConfig
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 

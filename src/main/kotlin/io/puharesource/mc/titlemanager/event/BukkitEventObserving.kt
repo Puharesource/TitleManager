@@ -1,8 +1,8 @@
 package io.puharesource.mc.titlemanager.event
 
-import io.puharesource.mc.titlemanager.onPluginDisable
-import io.puharesource.mc.titlemanager.pluginInstance
-import io.puharesource.mc.titlemanager.syncScheduler
+import io.puharesource.mc.titlemanager.internal.onPluginDisable
+import io.puharesource.mc.titlemanager.internal.pluginInstance
+import io.puharesource.mc.titlemanager.internal.syncScheduler
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Event

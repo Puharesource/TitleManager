@@ -2,7 +2,7 @@ package io.puharesource.mc.titlemanager.placeholder
 
 import com.earth2me.essentials.Essentials
 import de.myzelyam.api.vanish.VanishAPI
-import io.puharesource.mc.titlemanager.debug
+import io.puharesource.mc.titlemanager.internal.debug
 import net.milkbowl.vault.economy.Economy
 import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit

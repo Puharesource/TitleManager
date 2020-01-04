@@ -22,6 +22,9 @@ import io.puharesource.mc.titlemanager.extensions.setPlayerListHeader
 import io.puharesource.mc.titlemanager.extensions.setScoreboardTitle
 import io.puharesource.mc.titlemanager.extensions.setScoreboardValue
 import io.puharesource.mc.titlemanager.extensions.setTitleManagerMetadata
+import io.puharesource.mc.titlemanager.internal.isTesting
+import io.puharesource.mc.titlemanager.internal.pluginConfig
+import io.puharesource.mc.titlemanager.internal.pluginInstance
 import io.puharesource.mc.titlemanager.placeholder.MvdwPlaceholderAPIHook
 import io.puharesource.mc.titlemanager.placeholder.PlaceholderAPIHook
 import io.puharesource.mc.titlemanager.reflections.NMSManager
