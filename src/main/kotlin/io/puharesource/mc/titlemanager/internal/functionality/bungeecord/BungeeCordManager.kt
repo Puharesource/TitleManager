@@ -21,7 +21,7 @@ class BungeeCordManager {
         get() = servers.values.map { it.playerCount }.sum()
 
     init {
-        scheduleAsyncTimer {
+        scheduleAsyncTimer(period = 200) {
             sendNetworkMessage(Messages.GET_SERVERS.message)
             sendNetworkMessage(Messages.GET_SERVER.message)
         }.addTo(tasks)

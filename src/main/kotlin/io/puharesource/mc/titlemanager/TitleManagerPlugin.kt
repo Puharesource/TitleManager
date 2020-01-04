@@ -428,9 +428,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
             }
 
             return@createPlaceholder PlaceholderTps.getTps(value)
-        })
+        }.cached(30))
         APIProvider.addPlaceholder(createPlaceholder("server-time") { _ -> tmConfig.placeholders.dateFormat.format(Date(System.currentTimeMillis())) })
-        APIProvider.addPlaceholder(createPlaceholder("bungeecord-online", "bungeecord-online-players", enabled = { tmConfig.usingBungeecord && bungeeCordManager != null }) { _ -> bungeeCordManager!!.onlinePlayers })
+        APIProvider.addPlaceholder(createPlaceholder("bungeecord-online", "bungeecord-online-players", enabled = { tmConfig.usingBungeecord && bungeeCordManager != null }) { _ -> bungeeCordManager!!.onlinePlayers }.cached(5))
         APIProvider.addPlaceholder(createPlaceholder("server", "server-name", enabled = { tmConfig.usingBungeecord && bungeeCordManager != null }) { _ -> bungeeCordManager!!.getCurrentServer().orEmpty() })
         APIProvider.addPlaceholder(createPlaceholder("safe-online", "safe-online-players", enabled = { VanishHookReplacer.isValid() }) { player -> VanishHookReplacer.value(player) })
         APIProvider.addPlaceholder(createPlaceholder("balance", "money", enabled = { VaultHook.isEnabled() && VaultHook.isEconomySupported }) { player -> VaultHook.economy!!.getBalance(player).format() })
