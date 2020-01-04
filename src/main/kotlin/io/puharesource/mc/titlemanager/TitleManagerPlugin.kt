@@ -8,8 +8,7 @@ import io.puharesource.mc.titlemanager.internal.functionality.commands.TMCommand
 import io.puharesource.mc.titlemanager.internal.config.ConfigMigration
 import io.puharesource.mc.titlemanager.internal.config.PrettyConfig
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
-import io.puharesource.mc.titlemanager.internal.functionality.event.observeEvent
-import io.puharesource.mc.titlemanager.internal.functionality.event.observeEventRaw
+import io.puharesource.mc.titlemanager.internal.functionality.event.listenEventSync
 import io.puharesource.mc.titlemanager.internal.extensions.color
 import io.puharesource.mc.titlemanager.internal.extensions.format
 import io.puharesource.mc.titlemanager.internal.extensions.getFormattedTime
@@ -21,8 +20,9 @@ import io.puharesource.mc.titlemanager.internal.extensions.sendSubtitle
 import io.puharesource.mc.titlemanager.internal.extensions.sendTitle
 import io.puharesource.mc.titlemanager.internal.extensions.sendTitles
 import io.puharesource.mc.titlemanager.internal.extensions.stripColor
-import io.puharesource.mc.titlemanager.internal.asyncScheduler
 import io.puharesource.mc.titlemanager.internal.debug
+import io.puharesource.mc.titlemanager.internal.functionality.event.TMEventListener
+import io.puharesource.mc.titlemanager.internal.functionality.event.listenEventAsync
 import io.puharesource.mc.titlemanager.internal.functionality.placeholder.PlaceholderTps
 import io.puharesource.mc.titlemanager.internal.functionality.placeholder.VanishHookReplacer
 import io.puharesource.mc.titlemanager.internal.functionality.placeholder.VaultHook
@@ -48,7 +48,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     internal val animationsFolder = File(dataFolder, "animations")
     internal var conf : PrettyConfig? = null
     var playerInfoDB: PlayerInfoDB? = null
+    private var bungeeCordManager: BungeeCordManager? = null
     internal lateinit var tmConfig: TMConfigMain
+    private val listeners: MutableSet<TMEventListener<*>> = mutableSetOf()
 
     override fun onEnable() {
         saveDefaultConfig()
@@ -81,6 +83,11 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         registerAnnouncers()
 
         debug("Using MC version: ${NMSManager.serverVersion} | NMS Index: ${NMSManager.versionIndex}")
+
+        if (tmConfig.usingBungeecord) {
+            debug("Creating BungeeCord manager")
+            bungeeCordManager = BungeeCordManager()
+        }
 
         startPlayerTasks()
     }
@@ -116,11 +123,18 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         UpdateChecker.stop()
 
         onDisable()
+        unregisterListeners()
+
+        if (bungeeCordManager != null) {
+            bungeeCordManager!!.invalidate()
+            bungeeCordManager = null
+        }
+
+        APIProvider.registeredAnimations.clear()
 
         saveDefaultConfig()
         reloadConfig()
 
-        APIProvider.registeredAnimations.clear()
         APIProvider.scriptManager = ScriptManager.create()
 
         addFiles()
@@ -129,6 +143,10 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
 
         if (tmConfig.checkForUpdates) {
             UpdateChecker.start()
+        }
+
+        if (tmConfig.usingBungeecord) {
+            bungeeCordManager = BungeeCordManager()
         }
 
         startPlayerTasks()
@@ -271,90 +289,86 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
 
     private fun registerListeners() {
         // Notify administrators joining the server of the update.
-        observeEvent<PlayerJoinEvent>()
-                .filter { tmConfig.checkForUpdates }
-                .filter { UpdateChecker.isUpdateAvailable() }
-                .map { it.player }
-                .filter { it.hasPermission("titlemanager.update.notify") }
-                .subscribe {
-                    it.sendMessage("${ChatColor.WHITE}[${ChatColor.GOLD}TitleManager${ChatColor.WHITE}] ${ChatColor.YELLOW}An update was found!")
-                    it.sendMessage("${ChatColor.YELLOW}You're currently on version ${UpdateChecker.getCurrentVersion()} while ${UpdateChecker.getLatestVersion()} is available.")
-                    it.sendMessage("${ChatColor.YELLOW}Download it here:${ChatColor.GOLD}${ChatColor.UNDERLINE} http://www.spigotmc.org/resources/titlemanager.1049")
-                }
+        if (tmConfig.checkForUpdates) {
+            listenEventSync<PlayerJoinEvent> {
+                if (!UpdateChecker.isUpdateAvailable()) return@listenEventSync
 
-        // Welcome title message
-        observeEvent<PlayerJoinEvent>()
-                .observeOn(asyncScheduler)
-                .subscribeOn(asyncScheduler)
-                .filter { tmConfig.usingConfig }
-                .filter { tmConfig.welcomeTitle.enabled }
-                .map { it.player }
-                .delay(1, TimeUnit.SECONDS)
-                .filter { it.isOnline }
-                .subscribe {
+                val player = it.player
+
+                if (!player.hasPermission("titlemanager.update.notify")) return@listenEventSync
+
+                player.sendMessage("${ChatColor.WHITE}[${ChatColor.GOLD}TitleManager${ChatColor.WHITE}] ${ChatColor.YELLOW}An update was found!")
+                player.sendMessage("${ChatColor.YELLOW}You're currently on version ${UpdateChecker.getCurrentVersion()} while ${UpdateChecker.getLatestVersion()} is available.")
+                player.sendMessage("${ChatColor.YELLOW}Download it here:${ChatColor.GOLD}${ChatColor.UNDERLINE} http://www.spigotmc.org/resources/titlemanager.1049")
+            }.addTo(listeners)
+        }
+
+        // Delete players from player list cache when they quit the server
+        listenEventSync<PlayerQuitEvent> { APIProvider.clearHeaderAndFooterCache(it.player) }.addTo(listeners)
+
+        // Delete players from the scoreboard cache when they quit the server
+        listenEventSync<PlayerQuitEvent> {
+            val player = it.player
+
+            if (hasScoreboard(player)) {
+                ScoreboardManager.playerScoreboards.remove(player)
+                ScoreboardManager.stopUpdateTask(player)
+            }
+        }.addTo(listeners)
+
+        // End all running animations when they quit the server
+        listenEventSync<PlayerQuitEvent> { APIProvider.removeAllRunningAnimations(it.player) }.addTo(listeners)
+
+        if (tmConfig.usingConfig) {
+            // Welcome title message
+            if (tmConfig.welcomeTitle.enabled) {
+                listenEventAsync<PlayerJoinEvent> {
+                    val player = it.player
+
+                    if (!player.isOnline) return@listenEventAsync
+
                     val welcomeTitle = tmConfig.welcomeTitle
 
-                    if (it.hasPlayedBefore()) {
-                        it.sendTitleFromText(
-                                welcomeTitle.title.color(),
-                                welcomeTitle.fadeIn,
-                                welcomeTitle.stay,
-                                welcomeTitle.fadeOut)
-
-                        it.sendSubtitleFromText(
-                                welcomeTitle.subtitle.color(),
-                                welcomeTitle.fadeIn,
-                                welcomeTitle.stay,
-                                welcomeTitle.fadeOut)
+                    if (player.hasPlayedBefore()) {
+                        player.sendTitles(welcomeTitle.title.color(), welcomeTitle.subtitle.color(), welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut)
                     } else {
-                        it.sendTitleFromText(
-                                welcomeTitle.firstJoin.title.color(),
-                                welcomeTitle.fadeIn,
-                                welcomeTitle.stay,
-                                welcomeTitle.fadeOut)
-
-                        it.sendSubtitleFromText(
-                                welcomeTitle.firstJoin.subtitle.color(),
-                                welcomeTitle.fadeIn,
-                                welcomeTitle.stay,
-                                welcomeTitle.fadeOut)
+                        player.sendTitles(welcomeTitle.firstJoin.title.color(), welcomeTitle.firstJoin.subtitle.color(), welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut)
                     }
-                }
+                }.delay(20).addTo(listeners)
+            }
 
-        // Welcome actionbar message
-        observeEventRaw<PlayerJoinEvent>()
-                .observeOn(asyncScheduler)
-                .subscribeOn(asyncScheduler)
-                .filter { tmConfig.usingConfig }
-                .filter { tmConfig.welcomeActionbar.enabled }
-                .map { it.player }
-                .delay(1, TimeUnit.SECONDS)
-                .filter { it.isOnline }
-                .subscribe {
-                    if (it.hasPlayedBefore()) {
-                        it.sendActionbarFromText(tmConfig.welcomeActionbar.title.color())
+            // Welcome actionbar message
+            if (tmConfig.welcomeActionbar.enabled) {
+                listenEventAsync<PlayerJoinEvent> {
+                    val player = it.player
+
+                    if (!player.isOnline) return@listenEventAsync
+
+                    if (player.hasPlayedBefore()) {
+                        player.sendActionbarFromText(tmConfig.welcomeActionbar.title.color())
                     } else {
-                        it.sendActionbarFromText(tmConfig.welcomeActionbar.firstJoin.color())
+                        player.sendActionbarFromText(tmConfig.welcomeActionbar.firstJoin.color())
                     }
-                }
+                }.delay(20).addTo(listeners)
+            }
 
-        // Set header and footer
-        observeEvent<PlayerJoinEvent>()
-                .filter { tmConfig.usingConfig }
-                .filter { tmConfig.playerList.enabled }
-                .map { it.player }
-                .subscribe {
-                    it.setHeaderFromText(tmConfig.playerList.header.color())
-                    it.setFooterFromText(tmConfig.playerList.footer.color())
-                }
+            // Set header and footer
+            if (tmConfig.playerList.enabled) {
+                listenEventSync<PlayerJoinEvent> {
+                    val player = it.player
 
-        // Set scoreboard
-        observeEvent<PlayerJoinEvent>()
-                .filter { tmConfig.usingConfig }
-                .filter { tmConfig.scoreboard.enabled }
-                .map { it.player }
-                .filter { playerInfoDB!!.isScoreboardToggled(it) }
-                .subscribe { player ->
+                    player.setHeaderFromText(tmConfig.playerList.header.color())
+                    player.setFooterFromText(tmConfig.playerList.footer.color())
+                }.addTo(listeners)
+            }
+
+            // Set scoreboard
+            if (tmConfig.scoreboard.enabled) {
+                listenEventSync<PlayerJoinEvent> {
+                    val player = it.player
+
+                    if (!playerInfoDB!!.isScoreboardToggled(player)) return@listenEventSync
+
                     val title = toAnimationParts(tmConfig.scoreboard.title.color())
                     val lines = tmConfig.scoreboard.lines.take(15).map { toAnimationParts(it.color()) }
 
@@ -364,27 +378,14 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                     lines.forEachIndexed { index, parts ->
                         toScoreboardValueAnimation(parts, player, index + 1, true).start()
                     }
-                }
+                }.addTo(listeners)
+            }
+        }
+    }
 
-        observeEvent<PlayerQuitEvent>()
-                .map { it.player }
-                .subscribe {
-                    APIProvider.clearHeaderAndFooterCache(it)
-                }
-
-        // Delete players from the scoreboard cache when they quit the server
-        observeEvent<PlayerQuitEvent>()
-                .map { it.player }
-                .filter { APIProvider.hasScoreboard(it) }
-                .subscribe {
-                    ScoreboardManager.playerScoreboards.remove(it)
-                    ScoreboardManager.stopUpdateTask(it)
-                }
-
-        // End all running animations when they quit the server
-        observeEvent<PlayerQuitEvent>()
-                .map { it.player }
-                .subscribe { APIProvider.removeAllRunningAnimations(it) }
+    private fun unregisterListeners() {
+        this.listeners.forEach { it.invalidate() }
+        this.listeners.clear()
     }
 
     private fun registerCommands() {
@@ -423,15 +424,15 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         })
 
         if (tmConfig.usingBungeecord) {
-            APIProvider.addPlaceholderReplacer("bungeecord-online", { BungeeCordManager.onlinePlayers.toString() }, "bungeecord-online-players")
-            APIProvider.addPlaceholderReplacer("server", { BungeeCordManager.getCurrentServer().orEmpty() }, "server-name")
+            APIProvider.addPlaceholderReplacer("bungeecord-online", { bungeeCordManager!!.onlinePlayers.toString() }, "bungeecord-online-players")
+            APIProvider.addPlaceholderReplacer("server", { bungeeCordManager!!.getCurrentServer().orEmpty() }, "server-name")
 
             APIProvider.addPlaceholderReplacerWithValue("online", replacer@ { _, value ->
                 if (value.contains(",")) {
-                    return@replacer value.split(",").asSequence().mapNotNull { BungeeCordManager.getServers()[value]?.playerCount }.sum().toString()
+                    return@replacer value.split(",").asSequence().mapNotNull { bungeeCordManager!!.getServers()[value]?.playerCount }.sum().toString()
                 }
 
-                return@replacer BungeeCordManager.getServers()[value]?.playerCount?.toString() ?: ""
+                return@replacer bungeeCordManager!!.getServers()[value]?.playerCount?.toString() ?: ""
             }, "online-players")
         }
 

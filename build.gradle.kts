@@ -29,10 +29,8 @@ tasks {
     val fatJar by named("shadowJar", ShadowJar::class) {
         dependencies {
             include(dependency("org.jetbrains.kotlin:.*"))
-            include(dependency("io.reactivex:.*"))
         }
 
-        relocate("rx", "io.puharesource.mc.titlemanager.shaded.rx")
         relocate("kotlin", "io.puharesource.mc.titlemanager.shaded.kotlin")
         relocate("org.jetbrains", "io.puharesource.mc.titlemanager.shaded.org.jetbrains")
     }
@@ -193,7 +191,6 @@ repositories {
 
 dependencies {
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.3.50")
-    implementation(group = "io.reactivex", name = "rxjava", version = "1.3.8")
 
     implementation(group = "org.spigotmc", name = "spigot-api", version = "1.14-R0.1-SNAPSHOT")
 

@@ -6,8 +6,6 @@ import org.bukkit.Bukkit
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.server.PluginDisableEvent
-import rx.Scheduler
-import rx.schedulers.Schedulers
 import java.math.BigInteger
 import java.util.Random
 import java.util.concurrent.Executor
@@ -27,8 +25,6 @@ internal val isTesting : Boolean
 
 internal val asyncExecutor = Executor { Bukkit.getScheduler().runTaskAsynchronously(pluginInstance, it) }
 internal val syncExecutor = Executor { Bukkit.getScheduler().runTask(pluginInstance, it) }
-internal val asyncScheduler : Scheduler = Schedulers.from { asyncExecutor }
-internal val syncScheduler : Scheduler = Schedulers.from { syncExecutor }
 
 internal fun info(message: String) = pluginInstance.logger.info(message)
 
