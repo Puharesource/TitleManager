@@ -234,8 +234,6 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                                         it.sendSubtitleFromText(title[1], fadeIn, stay, fadeOut)
                                     } else {
                                         it.sendTitles(title.first(), title[1], fadeIn, stay, fadeOut)
-                                        it.sendTitleFromText(title.first(), fadeIn, stay, fadeOut)
-                                        it.sendSubtitleFromText(title[1], fadeIn, stay, fadeOut)
                                     }
                                 }
 
