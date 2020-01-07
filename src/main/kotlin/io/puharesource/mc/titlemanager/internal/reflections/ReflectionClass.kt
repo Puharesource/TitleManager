@@ -5,7 +5,7 @@ import java.lang.reflect.Field
 class ReflectionClass(private val path: String) {
     val handle : Class<*> = Class.forName(path)
 
-    fun getMethod(methodName: String, vararg params: Class<*>) = handle.getDeclaredMethod(methodName, *params) ?: throw NoSuchMethodException("Couldn't find constructor for ${handle.name}.")
+    fun getMethod(methodName: String, vararg params: Class<*>) = handle.getDeclaredMethod(methodName, *params) ?: throw NoSuchMethodException("Couldn't find method for ${handle.name}.")
 
     fun getConstructor(vararg params: Class<*>) = handle.getDeclaredConstructor(*params) ?: throw NoSuchMethodException("Couldn't find constructor for ${handle.name}")
 

@@ -35,7 +35,7 @@ class NetworkManager : NMSClass() {
     private val methodSendPacket: Method by lazy { clazz.getMethod("sendPacket", classPacket) }
     private val methodGetVersion: Method by lazy { clazz.getMethod("getVersion") }
 
-    fun sendPacket(instance: Any, packet: Any) : Any = methodSendPacket.invoke(instance, packet) // NMSVersionIndex > 2
+    fun sendPacket(instance: Any, packet: Any) : Any? = methodSendPacket.invoke(instance, packet) // NMSVersionIndex > 2
 
     fun getVersion(instance: Any) = methodGetVersion.invoke(instance) as Int
 }
