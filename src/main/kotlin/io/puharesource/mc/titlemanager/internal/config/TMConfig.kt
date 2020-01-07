@@ -1,6 +1,7 @@
 package io.puharesource.mc.titlemanager.internal.config
 
 import io.puharesource.mc.titlemanager.internal.pluginInstance
+import org.bukkit.ChatColor
 import org.bukkit.configuration.ConfigurationSection
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -23,7 +24,7 @@ interface TMConfig {
         if (value is String) {
             return value
         } else if (value is List<*>) {
-            return stringList(path).joinToString(separator = "\n")
+            return stringList(path).joinToString(separator = "\n") { if (it.isEmpty()) " " else it }
         }
 
         return ""
