@@ -13,7 +13,7 @@ abstract class NMSClass(className: String? = null) {
 class CraftPlayer : NMSClass() {
     private val methodGetHandle: Method = clazz.getMethod("getHandle")
 
-    fun getHandle(player: Any) : Any = methodGetHandle.invoke(player)
+    fun getHandle(player: Any) : Any? = methodGetHandle.invoke(player)
 }
 
 class EntityPlayer : NMSClass() {
@@ -27,7 +27,7 @@ class PlayerConnection : NMSClass() {
 
     val networkManager = clazz.getField("networkManager")
 
-    fun sendPacket(instance: Any, packet: Any) : Any = methodSendPacket.invoke(instance, packet) // NMSVersionIndex <= 2
+    fun sendPacket(instance: Any, packet: Any) : Any? = methodSendPacket.invoke(instance, packet) // NMSVersionIndex <= 2
 }
 
 class NetworkManager : NMSClass() {

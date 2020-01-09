@@ -34,7 +34,7 @@ internal fun Player.sendNMSPacket(packet: Any) {
     }
 }
 
-internal fun Player.getEntityPlayer() : Any {
+internal fun Player.getEntityPlayer() : Any? {
     val instance = classCraftPlayer.clazz.handle.cast(this)
 
     return classCraftPlayer.getHandle(instance)
