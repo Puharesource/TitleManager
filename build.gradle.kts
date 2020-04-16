@@ -7,7 +7,7 @@ plugins {
     java
     `maven-publish`
 
-    kotlin("jvm") version "1.3.60"
+    kotlin("jvm") version "1.3.72"
 
     id("com.github.johnrengelman.shadow") version "5.1.0"
     id("org.jetbrains.dokka") version "0.10.0"
@@ -190,7 +190,7 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.3.50")
+    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.3.72")
 
     implementation(group = "org.spigotmc", name = "spigot-api", version = "1.14-R0.1-SNAPSHOT")
 

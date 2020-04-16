@@ -55,12 +55,10 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
 
     override fun onEnable() {
         saveDefaultConfig()
+        updateConfig()
 
         debug("Adding script files")
         addFiles()
-
-        debug("Updating config from 1.5.13 to 2.0.0")
-        updateConfig()
 
         debug("Setting up player info database")
         setupDB()

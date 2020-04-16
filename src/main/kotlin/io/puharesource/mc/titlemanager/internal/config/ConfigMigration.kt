@@ -34,15 +34,19 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
     fun updateConfig() {
         val config = plugin.config
 
-        val version = config.getInt("config-version")
+        var version = config.getInt("config-version")
 
-        if (version <= 3) {
-            updateTo3()
-        } else if (version == 4) {
+        if (version < 4) {
             updateTo4()
+            plugin.reloadConfig()
         }
 
-        plugin.reloadConfig()
+        version = config.getInt("config-version")
+
+        if (version < 5) {
+            updateTo5()
+            plugin.reloadConfig()
+        }
     }
 
     private fun move(path: String, newPath: String? = null, transformer: ((Any) -> Any)? = null) {
@@ -67,7 +71,7 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
         }
     }
 
-    private fun updateTo3() {
+    private fun updateTo4() {
         debug("Upgrading config to the 2.0 format.")
 
         configFile.renameTo(oldConfigFile)
@@ -143,7 +147,7 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
         }
     }
 
-    private fun updateTo4() {
+    private fun updateTo5() {
         debug("Upgrading config from version 4 to version 5")
 
         val configFile = File(dataFolder, "config.yml")
@@ -169,6 +173,7 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
                 .map { it to oldConfig[it] }
                 .forEach { conf.getConfigurationSection("messages")!!.set(it.first, it.second) }
 
+        config.set("config-version", 5)
         config.save(configFile)
     }
 }
