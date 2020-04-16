@@ -328,9 +328,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                     val welcomeTitle = tmConfig.welcomeTitle
 
                     if (player.hasPlayedBefore()) {
-                        player.sendTitles(welcomeTitle.title.color(), welcomeTitle.subtitle.color(), welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut)
+                        player.sendTitles(welcomeTitle.title.color(), welcomeTitle.subtitle.color(), welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut, withPlaceholders = true)
                     } else {
-                        player.sendTitles(welcomeTitle.firstJoin.title.color(), welcomeTitle.firstJoin.subtitle.color(), welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut)
+                        player.sendTitles(welcomeTitle.firstJoin.title.color(), welcomeTitle.firstJoin.subtitle.color(), welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut, withPlaceholders = true)
                     }
                 }.delay(20).addTo(listeners)
             }
