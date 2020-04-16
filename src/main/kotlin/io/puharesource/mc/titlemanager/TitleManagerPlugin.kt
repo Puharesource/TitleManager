@@ -138,6 +138,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
 
         addFiles()
         loadAnimations()
+        registerListeners()
         registerAnnouncers()
 
         if (tmConfig.checkForUpdates) {
