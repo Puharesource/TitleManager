@@ -3,7 +3,6 @@ package io.puharesource.mc.titlemanager.internal.functionality.commands
 import io.puharesource.mc.titlemanager.internal.APIProvider.toAnimationParts
 import io.puharesource.mc.titlemanager.internal.APIProvider.toScoreboardTitleAnimation
 import io.puharesource.mc.titlemanager.internal.APIProvider.toScoreboardValueAnimation
-import io.puharesource.mc.titlemanager.internal.extensions.color
 import io.puharesource.mc.titlemanager.internal.extensions.giveScoreboard
 import io.puharesource.mc.titlemanager.internal.extensions.hasScoreboard
 import io.puharesource.mc.titlemanager.internal.extensions.removeScoreboard
@@ -29,8 +28,8 @@ object CommandScoreboard : TMSubCommand("scoreboard",
 
                 sendConfigMessage("toggled-off")
             } else {
-                val title = toAnimationParts(pluginConfig.scoreboard.title.color())
-                val lines = pluginConfig.scoreboard.lines.take(15).map { toAnimationParts(it.color()) }
+                val title = toAnimationParts(pluginConfig.scoreboard.title)
+                val lines = pluginConfig.scoreboard.lines.map { toAnimationParts(it) }
 
                 player.giveScoreboard()
                 toScoreboardTitleAnimation(title, player, true).start()

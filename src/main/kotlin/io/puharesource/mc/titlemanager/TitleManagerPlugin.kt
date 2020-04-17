@@ -153,11 +153,11 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     }
 
     private fun startPlayerTasks() {
-        val header = toAnimationParts(tmConfig.playerList.header.color())
-        val footer = toAnimationParts(tmConfig.playerList.footer.color())
+        val header = toAnimationParts(tmConfig.playerList.header)
+        val footer = toAnimationParts(tmConfig.playerList.footer)
 
-        val title = toAnimationParts(tmConfig.scoreboard.title.color())
-        val lines = tmConfig.scoreboard.lines.asSequence().take(15).map { toAnimationParts(it.color()) }.toList()
+        val title = toAnimationParts(tmConfig.scoreboard.title)
+        val lines = tmConfig.scoreboard.lines.map { toAnimationParts(it) }
 
         server.onlinePlayers.forEach {
             if (tmConfig.playerList.enabled) {
@@ -328,9 +328,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                     val welcomeTitle = tmConfig.welcomeTitle
 
                     if (player.hasPlayedBefore()) {
-                        player.sendTitles(welcomeTitle.title.color(), welcomeTitle.subtitle.color(), welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut, withPlaceholders = true)
+                        player.sendTitles(welcomeTitle.title, welcomeTitle.subtitle, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut, withPlaceholders = true)
                     } else {
-                        player.sendTitles(welcomeTitle.firstJoin.title.color(), welcomeTitle.firstJoin.subtitle.color(), welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut, withPlaceholders = true)
+                        player.sendTitles(welcomeTitle.firstJoin.title, welcomeTitle.firstJoin.subtitle, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut, withPlaceholders = true)
                     }
                 }.delay(20).addTo(listeners)
             }
@@ -343,9 +343,9 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                     if (!player.isOnline) return@listenEventAsync
 
                     if (player.hasPlayedBefore()) {
-                        player.sendActionbarFromText(tmConfig.welcomeActionbar.title.color())
+                        player.sendActionbarFromText(tmConfig.welcomeActionbar.title)
                     } else {
-                        player.sendActionbarFromText(tmConfig.welcomeActionbar.firstJoin.color())
+                        player.sendActionbarFromText(tmConfig.welcomeActionbar.firstJoin)
                     }
                 }.delay(20).addTo(listeners)
             }
@@ -355,8 +355,8 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
                 listenEventSync<PlayerJoinEvent> {
                     val player = it.player
 
-                    player.setHeaderFromText(tmConfig.playerList.header.color())
-                    player.setFooterFromText(tmConfig.playerList.footer.color())
+                    player.setHeaderFromText(tmConfig.playerList.header)
+                    player.setFooterFromText(tmConfig.playerList.footer)
                 }.addTo(listeners)
             }
 
@@ -367,8 +367,8 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
 
                     if (!playerInfoDB!!.isScoreboardToggled(player)) return@listenEventSync
 
-                    val title = toAnimationParts(tmConfig.scoreboard.title.color())
-                    val lines = tmConfig.scoreboard.lines.take(15).map { toAnimationParts(it.color()) }
+                    val title = toAnimationParts(tmConfig.scoreboard.title)
+                    val lines = tmConfig.scoreboard.lines.map { toAnimationParts(it) }
 
                     player.giveScoreboard()
                     toScoreboardTitleAnimation(title, player, true).start()

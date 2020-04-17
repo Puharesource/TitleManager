@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.internal.config
 
+import io.puharesource.mc.titlemanager.internal.extensions.color
 import io.puharesource.mc.titlemanager.internal.pluginInstance
 import org.bukkit.ChatColor
 import org.bukkit.configuration.ConfigurationSection
@@ -53,15 +54,15 @@ data class TMConfigMain(override val section: ConfigurationSection) : TMConfig {
 data class TMConfigPlayerList(override val section: ConfigurationSection) : TMConfig {
     val enabled : Boolean = value("enabled")
 
-    val header : String = multilineString("header")
-    val footer : String = multilineString("footer")
+    val header : String = multilineString("header").color()
+    val footer : String = multilineString("footer").color()
 }
 
 data class TMConfigWelcomeTitle(override val section: ConfigurationSection) : TMConfig {
     val enabled : Boolean = value("enabled")
 
-    val title : String = value("title")
-    val subtitle : String = value("subtitle")
+    val title : String = value<String>("title").color()
+    val subtitle : String = value<String>("subtitle").color()
     val fadeIn : Int = value("fade-in")
     val stay : Int = value("stay")
     val fadeOut : Int = value("fade-out")
@@ -70,15 +71,15 @@ data class TMConfigWelcomeTitle(override val section: ConfigurationSection) : TM
 }
 
 data class TMConfigWelcomeTitleFirstJoin(override val section: ConfigurationSection) : TMConfig {
-    val title : String = value("title")
-    val subtitle : String = value("subtitle")
+    val title : String = value<String>("title").color()
+    val subtitle : String = value<String>("subtitle").color()
 }
 
 data class TMConfigWelcomeActionbar(override val section: ConfigurationSection) : TMConfig {
     val enabled : Boolean = value("enabled")
 
-    val title : String = value("title")
-    val firstJoin : String = value("first-join")
+    val title : String = value<String>("title").color()
+    val firstJoin : String = value<String>("first-join").color()
 }
 
 data class TMConfigPlaceholders(override val section: ConfigurationSection) : TMConfig {
@@ -97,8 +98,8 @@ data class TMConfigPlaceholdersNumberFormat(override val section: ConfigurationS
 
 data class TMConfigScoreboard(override val section: ConfigurationSection) : TMConfig {
     val enabled : Boolean = value("enabled")
-    val title : String = value("title")
-    val lines : List<String> = stringList("lines")
+    val title : String = value<String>("title").color()
+    val lines : List<String> = stringList("lines").take(15).map { it.color() }
 }
 
 data class TMConfigAnnouncer(override val section: ConfigurationSection) : TMConfig {
