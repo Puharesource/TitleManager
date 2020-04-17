@@ -431,7 +431,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         APIProvider.addPlaceholder(createPlaceholder("server", "server-name", enabled = { tmConfig.usingBungeecord && bungeeCordManager != null }) { _ -> bungeeCordManager!!.getCurrentServer().orEmpty() })
         APIProvider.addPlaceholder(createPlaceholder("safe-online", "safe-online-players", enabled = { VanishHookReplacer.isValid() }) { player -> VanishHookReplacer.value(player) })
         APIProvider.addPlaceholder(createPlaceholder("balance", "money", enabled = { VaultHook.isEnabled() && VaultHook.isEconomySupported }) { player -> VaultHook.economy!!.getBalance(player).format() })
-        APIProvider.addPlaceholder(createPlaceholder("group", "group-name", enabled = { VaultHook.isEnabled() && VaultHook.hasGroupSupport }) { player -> VaultHook.permissions!!.getPrimaryGroup(player) })
+        APIProvider.addPlaceholder(createPlaceholder("group", "group-name", enabled = { VaultHook.isEnabled() && VaultHook.hasGroupSupport }) { player -> VaultHook.permissions!!.getPrimaryGroup(player).color() })
     }
 
     private fun Player.sendTitleFromText(text: String, fadeIn: Int, stay: Int, fadeOut: Int) {
