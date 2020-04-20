@@ -7,14 +7,14 @@ private val classEntityPlayer = EntityPlayer()
 private val classPlayerConnection = PlayerConnection()
 private val classNetworkManager = NetworkManager()
 
-internal fun Player.getPing() : Int {
+internal fun Player.getPing(): Int {
     return classEntityPlayer.ping.getInt(getEntityPlayer())
 }
 
 /**
  * Checks if the player is on 1.7 on the Protocol Hack version of Spigot
  */
-internal fun Player.isUsing17() : Boolean {
+internal fun Player.isUsing17(): Boolean {
     if (NMSManager.versionIndex != 0) {
         return false
     }
@@ -34,16 +34,16 @@ internal fun Player.sendNMSPacket(packet: Any) {
     }
 }
 
-internal fun Player.getEntityPlayer() : Any? {
+internal fun Player.getEntityPlayer(): Any? {
     val instance = classCraftPlayer.clazz.handle.cast(this)
 
     return classCraftPlayer.getHandle(instance)
 }
 
-internal fun Player.getNMSPlayerConnection() : Any {
+internal fun Player.getNMSPlayerConnection(): Any {
     return classEntityPlayer.playerConnection.get(getEntityPlayer())
 }
 
-internal fun Player.getNMSNetworkManager() : Any {
+internal fun Player.getNMSNetworkManager(): Any {
     return classPlayerConnection.networkManager.get(getNMSPlayerConnection())
 }

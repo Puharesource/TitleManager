@@ -1,6 +1,5 @@
 package io.puharesource.mc.titlemanager.internal.reflections
 
-import io.puharesource.mc.titlemanager.internal.APIProvider
 import io.puharesource.mc.titlemanager.internal.extensions.modify
 import org.bukkit.entity.Player
 import java.lang.reflect.Constructor
@@ -22,9 +21,9 @@ object NMSUtil {
 
     fun sendTitle(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) {
         val provider = NMSManager.getClassProvider()
-        val packetConstructor : Constructor<*> = classPacketTitle.constructor
+        val packetConstructor: Constructor<*> = classPacketTitle.constructor
 
-        APIProvider.sendTimings(player, fadeIn, stay, fadeOut)
+        sendTimings(player, fadeIn, stay, fadeOut)
 
         val packet = packetConstructor
                 .newInstance(
@@ -68,7 +67,7 @@ object NMSUtil {
 
     fun setHeaderAndFooter(player: Player, header: String, footer: String) {
         val provider = NMSManager.getClassProvider()
-        val packet : Any
+        val packet: Any
 
         if (NMSManager.versionIndex == 0) {
             packet = classPacketTabHeader.legacyConstructor.newInstance(provider.getIChatComponent(header), provider.getIChatComponent(footer))

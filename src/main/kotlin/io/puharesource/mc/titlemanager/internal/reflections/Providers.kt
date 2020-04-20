@@ -28,10 +28,10 @@ object ProviderProtocolHack : NMSClassProvider() {
         val protocolInjector = ORG_SPIGOTMC.getReflectionClass("ProtocolInjector")
         val packetTitle = protocolInjector.getInnerReflectionClass("PacketTitle")
 
-        put("ProtocolInjector",         protocolInjector)
-        put("PacketTitle",              packetTitle)
-        put("Action",                   packetTitle.getInnerReflectionClass("Action"))
-        put("PacketTabHeader",          protocolInjector.getInnerReflectionClass("PacketTabHeader"))
+        put("ProtocolInjector", protocolInjector)
+        put("PacketTitle", packetTitle)
+        put("Action", packetTitle.getInnerReflectionClass("Action"))
+        put("PacketTabHeader", protocolInjector.getInnerReflectionClass("PacketTabHeader"))
     }
 }
 

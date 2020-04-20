@@ -1,17 +1,20 @@
-import org.apache.tools.ant.filters.ReplaceTokens
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    idea
     java
     `maven-publish`
 
     kotlin("jvm") version "1.3.72"
+    kotlin("kapt") version "1.3.72"
 
     id("com.github.johnrengelman.shadow") version "5.1.0"
     id("org.jetbrains.dokka") version "0.10.0"
     id("net.saliman.properties") version "1.5.1"
+    id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
 }
 
 group = "io.puharesource.mc"
@@ -29,6 +32,7 @@ tasks {
     val fatJar by named("shadowJar", ShadowJar::class) {
         dependencies {
             include(dependency("org.jetbrains.kotlin:.*"))
+            include(dependency("org.jetbrains.kotlinx:.*"))
         }
 
         relocate("kotlin", "io.puharesource.mc.titlemanager.shaded.kotlin")
@@ -145,6 +149,12 @@ publishing {
     }
 }
 
+idea {
+    module {
+        generatedSourceDirs.add(file("$buildDir/generated/source/kapt"))
+    }
+}
+
 repositories {
     jcenter()
 
@@ -190,7 +200,11 @@ repositories {
 }
 
 dependencies {
+    implementation("com.google.dagger:dagger:2.27")
+    kapt("com.google.dagger:dagger-compiler:2.27")
+
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.3.72")
+    implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.3.5")
 
     implementation(group = "org.spigotmc", name = "spigot-api", version = "1.14-R0.1-SNAPSHOT")
 

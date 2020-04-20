@@ -2,7 +2,7 @@ package io.puharesource.mc.titlemanager.internal.extensions
 
 import org.bukkit.World
 
-fun World.getFormattedTime(is24HourFormat: Boolean = false) : String {
+fun World.getFormattedTime(is24HourFormat: Boolean = false): String {
     var hours = time.toInt() / 1000 + 6
     val minutes = time.toInt() % 1000 * 60 / 1000
     var extra = ""

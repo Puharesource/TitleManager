@@ -2,116 +2,60 @@ package io.puharesource.mc.titlemanager
 
 import io.puharesource.mc.titlemanager.api.v2.TitleManagerAPI
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
-import io.puharesource.mc.titlemanager.internal.APIProvider
-import io.puharesource.mc.titlemanager.internal.functionality.bungeecord.BungeeCordManager
-import io.puharesource.mc.titlemanager.internal.functionality.commands.TMCommand
+import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
+import io.puharesource.mc.titlemanager.internal.commands.TMCommand
+import io.puharesource.mc.titlemanager.internal.components.DaggerTitleManagerComponent
+import io.puharesource.mc.titlemanager.internal.components.TitleManagerComponent
 import io.puharesource.mc.titlemanager.internal.config.ConfigMigration
 import io.puharesource.mc.titlemanager.internal.config.PrettyConfig
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
-import io.puharesource.mc.titlemanager.internal.functionality.event.listenEventSync
-import io.puharesource.mc.titlemanager.internal.extensions.color
-import io.puharesource.mc.titlemanager.internal.extensions.getFormattedTime
-import io.puharesource.mc.titlemanager.internal.extensions.giveScoreboard
-import io.puharesource.mc.titlemanager.internal.extensions.isInt
-import io.puharesource.mc.titlemanager.internal.extensions.removeScoreboard
-import io.puharesource.mc.titlemanager.internal.extensions.sendActionbar
-import io.puharesource.mc.titlemanager.internal.extensions.sendSubtitle
-import io.puharesource.mc.titlemanager.internal.extensions.sendTitle
-import io.puharesource.mc.titlemanager.internal.extensions.sendTitles
-import io.puharesource.mc.titlemanager.internal.extensions.stripColor
 import io.puharesource.mc.titlemanager.internal.debug
-import io.puharesource.mc.titlemanager.internal.extensions.format
-import io.puharesource.mc.titlemanager.internal.functionality.event.TMEventListener
-import io.puharesource.mc.titlemanager.internal.functionality.event.listenEventAsync
-import io.puharesource.mc.titlemanager.internal.functionality.placeholder.PlaceholderTps
-import io.puharesource.mc.titlemanager.internal.functionality.placeholder.VanishHookReplacer
-import io.puharesource.mc.titlemanager.internal.functionality.placeholder.VaultHook
-import io.puharesource.mc.titlemanager.internal.functionality.placeholder.createPlaceholder
-import io.puharesource.mc.titlemanager.internal.playerinfo.PlayerInfoDB
+import io.puharesource.mc.titlemanager.internal.model.animation.StandardAnimationFrame
 import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
-import io.puharesource.mc.titlemanager.internal.reflections.getPing
-import io.puharesource.mc.titlemanager.internal.scheduling.AsyncScheduler
-import io.puharesource.mc.titlemanager.internal.functionality.scoreboard.ScoreboardManager
-import io.puharesource.mc.titlemanager.internal.script.ScriptManager
-import io.puharesource.mc.titlemanager.internal.web.UpdateChecker
-import org.bukkit.ChatColor
+import io.puharesource.mc.titlemanager.internal.services.TitleManagerService
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
-import java.util.Date
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
 
-class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
-    internal val animationsFolder = File(dataFolder, "animations")
-    internal var conf : PrettyConfig? = null
-    var playerInfoDB: PlayerInfoDB? = null
-    private var bungeeCordManager: BungeeCordManager? = null
+class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
+    internal var conf: PrettyConfig? = null
     internal lateinit var tmConfig: TMConfigMain
-    private val listeners: MutableSet<TMEventListener<*>> = mutableSetOf()
+
+    lateinit var titleManagerComponent: TitleManagerComponent
+    private lateinit var titleManagerService: TitleManagerService
 
     override fun onEnable() {
         saveDefaultConfig()
         updateConfig()
 
-        debug("Adding script files")
-        addFiles()
+        titleManagerComponent = DaggerTitleManagerComponent.create()
+        titleManagerService = titleManagerComponent.titleManagerService()
 
-        debug("Setting up player info database")
-        setupDB()
-
-        debug("Loading animations & scripts")
-        loadAnimations()
-
-        debug("Registering listeners")
-        registerListeners()
+        titleManagerService.start()
 
         debug("Registering commands")
         registerCommands()
 
-        debug("Registering placeholders")
-        registerPlaceholders()
-
         debug("Registering BungeeCord messengers")
         registerBungeeCord()
 
-        debug("Registering Announcers")
-        registerAnnouncers()
-
         debug("Using MC version: ${NMSManager.serverVersion} | NMS Index: ${NMSManager.versionIndex}")
-
-        if (tmConfig.usingBungeecord) {
-            debug("Creating BungeeCord manager")
-            bungeeCordManager = BungeeCordManager()
-        }
-
-        startPlayerTasks()
     }
 
     override fun onDisable() {
-        AsyncScheduler.cancelAll()
-
-        server.onlinePlayers.forEach {
-            APIProvider.removeAllRunningAnimations(it)
-            it.removeScoreboard()
-            APIProvider.clearHeaderAndFooterCache(it)
-        }
-
-        ScoreboardManager.playerScoreboards.clear()
-        ScoreboardManager.playerScoreboardUpdateTasks.clear()
+        titleManagerService.stop()
     }
 
     // Override default config methods.
-    override fun getConfig() : FileConfiguration {
+    override fun getConfig(): FileConfiguration {
         if (conf == null) {
             reloadConfig()
         }
 
         return conf!!
     }
+
     override fun saveConfig() = config.save(File(dataFolder, "config.yml"))
     override fun reloadConfig() {
         conf = PrettyConfig(File(dataFolder, "config.yml"))
@@ -119,64 +63,15 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
     }
 
     fun reloadPlugin() {
-        UpdateChecker.stop()
-
         onDisable()
-        unregisterListeners()
-
-        if (bungeeCordManager != null) {
-            bungeeCordManager!!.invalidate()
-            bungeeCordManager = null
-        }
-
-        APIProvider.registeredAnimations.clear()
 
         saveDefaultConfig()
         reloadConfig()
 
-        APIProvider.scriptManager = ScriptManager.create()
+        titleManagerComponent = DaggerTitleManagerComponent.create()
+        titleManagerService = titleManagerComponent.titleManagerService()
 
-        addFiles()
-        loadAnimations()
-        registerListeners()
-        registerAnnouncers()
-
-        if (tmConfig.checkForUpdates) {
-            UpdateChecker.start()
-        }
-
-        if (tmConfig.usingBungeecord) {
-            bungeeCordManager = BungeeCordManager()
-        }
-
-        startPlayerTasks()
-    }
-
-    private fun startPlayerTasks() {
-        val header = toAnimationParts(tmConfig.playerList.header)
-        val footer = toAnimationParts(tmConfig.playerList.footer)
-
-        val title = toAnimationParts(tmConfig.scoreboard.title)
-        val lines = tmConfig.scoreboard.lines.map { toAnimationParts(it) }
-
-        server.onlinePlayers.forEach {
-            if (tmConfig.playerList.enabled) {
-                toHeaderAnimation(header, it, withPlaceholders = true).start()
-                toFooterAnimation(footer, it, withPlaceholders = true).start()
-            }
-
-            if (tmConfig.scoreboard.enabled) {
-                if (playerInfoDB!!.isScoreboardToggled(it)) {
-                    it.giveScoreboard()
-
-                    toScoreboardTitleAnimation(title, it, true).start()
-
-                    lines.forEachIndexed { index, parts ->
-                        toScoreboardValueAnimation(parts, it, index + 1, true).start()
-                    }
-                }
-            }
-        }
+        titleManagerService.start()
     }
 
     private fun updateConfig() {
@@ -185,312 +80,106 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI by APIProvider {
         migration.updateConfig()
     }
 
-    private fun setupDB() {
-        playerInfoDB = PlayerInfoDB(File(dataFolder, "playerinfo.sqlite"), createStatement = getTextResource("playerinfo.sql")!!.readText())
-    }
-
-    private fun registerAnnouncers() {
-        if (!tmConfig.usingConfig) return
-        if (!tmConfig.announcer.enabled) return
-
-        tmConfig.announcer.announcements
-                .forEach { announcement ->
-                    val interval = announcement.getInt("interval", 60)
-
-                    val fadeIn = announcement.getInt("timings.fade-in", 20)
-                    val stay = announcement.getInt("timings.stay", 40)
-                    val fadeOut = announcement.getInt("timings.fade-out", 20)
-
-                    val titles : List<String> = announcement.getStringList("titles")
-                    val actionbarTitles : List<String> = announcement.getStringList("actionbar")
-
-                    val size = if (titles.size > actionbarTitles.size) titles.size else actionbarTitles.size
-                    val index = AtomicInteger(0)
-
-                    debug("Registering announcement: ${announcement.name}")
-                    debug("Announcement Info:")
-                    debug("Interval: $interval")
-                    debug("Fade in: $fadeIn")
-                    debug("Stay: $stay")
-                    debug("Fade out: $fadeOut")
-                    debug("Titles: ${titles.size}")
-                    debug("Actionbar Titles: ${actionbarTitles.size}")
-                    debug("Size: $size")
-
-                    if (size != 0) {
-                        AsyncScheduler.scheduleRaw({
-                            debug("Sending announcement: ${announcement.name}")
-
-                            val i = index.andIncrement % size
-
-                            server.onlinePlayers.forEach {
-                                if (i < titles.size) {
-                                    val title = titles[i].color().split("\\n", limit = 2)
-
-                                    if (title.first().isNotEmpty() && title[1].isEmpty()) {
-                                        it.sendTitleFromText(title.first(), fadeIn, stay, fadeOut)
-                                    } else if (title.first().isEmpty() && title[1].isNotEmpty()) {
-                                        it.sendSubtitleFromText(title[1], fadeIn, stay, fadeOut)
-                                    } else {
-                                        it.sendTitles(title.first(), title[1], fadeIn, stay, fadeOut)
-                                    }
-                                }
-
-                                if (i < actionbarTitles.size) {
-                                    it.sendActionbarFromText(actionbarTitles[i].color())
-                                }
-                            }
-                        }, interval, interval, TimeUnit.SECONDS)
-                    }
-                }
-    }
-
     private fun registerBungeeCord() {
         server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
     }
 
-    private fun addFiles() {
-        if (!animationsFolder.exists()) {
-            animationsFolder.mkdir()
-
-            fun saveAnimationFiles(fileName: String) {
-                File(animationsFolder, fileName).writeBytes(getResource("animations/$fileName")!!.readBytes())
-            }
-
-            // Text based animations
-            saveAnimationFiles("left-to-right.txt")
-            saveAnimationFiles("right-to-left.txt")
-        }
-    }
-
-    private fun loadAnimations() {
-        // Load text based animations
-        animationsFolder.listFiles()
-                .asSequence()
-                .filter { it.isFile }
-                .filter { it.extension.equals("txt", ignoreCase = true) }
-                .forEach { APIProvider.registeredAnimations[it.nameWithoutExtension] = fromTextFile(it) }
-
-        APIProvider.scriptManager = ScriptManager.create() ?: return
-
-        // Load JavaScript based animations
-        animationsFolder.listFiles()
-                .asSequence()
-                .filter { it.isFile }
-                .filter { it.extension.equals("js", ignoreCase = true) }
-                .forEach {
-                    val name = it.nameWithoutExtension
-
-                    APIProvider.scriptManager!!.addScript(name, it)
-                }
-    }
-
-    private fun registerListeners() {
-        // Notify administrators joining the server of the update.
-        if (tmConfig.checkForUpdates) {
-            listenEventSync<PlayerJoinEvent> {
-                if (!UpdateChecker.isUpdateAvailable()) return@listenEventSync
-
-                val player = it.player
-
-                if (!player.hasPermission("titlemanager.update.notify")) return@listenEventSync
-
-                player.sendMessage("${ChatColor.WHITE}[${ChatColor.GOLD}TitleManager${ChatColor.WHITE}] ${ChatColor.YELLOW}An update was found!")
-                player.sendMessage("${ChatColor.YELLOW}You're currently on version ${UpdateChecker.getCurrentVersion()} while ${UpdateChecker.getLatestVersion()} is available.")
-                player.sendMessage("${ChatColor.YELLOW}Download it here:${ChatColor.GOLD}${ChatColor.UNDERLINE} http://www.spigotmc.org/resources/titlemanager.1049")
-            }.addTo(listeners)
-        }
-
-        // Delete players from player list cache when they quit the server
-        listenEventSync<PlayerQuitEvent> { APIProvider.clearHeaderAndFooterCache(it.player) }.addTo(listeners)
-
-        // Delete players from the scoreboard cache when they quit the server
-        listenEventSync<PlayerQuitEvent> {
-            val player = it.player
-
-            if (hasScoreboard(player)) {
-                ScoreboardManager.playerScoreboards.remove(player)
-                ScoreboardManager.stopUpdateTask(player)
-            }
-        }.addTo(listeners)
-
-        // End all running animations when they quit the server
-        listenEventSync<PlayerQuitEvent> { APIProvider.removeAllRunningAnimations(it.player) }.addTo(listeners)
-
-        if (tmConfig.usingConfig) {
-            // Welcome title message
-            if (tmConfig.welcomeTitle.enabled) {
-                listenEventAsync<PlayerJoinEvent> {
-                    val player = it.player
-
-                    if (!player.isOnline) return@listenEventAsync
-
-                    val welcomeTitle = tmConfig.welcomeTitle
-
-                    if (player.hasPlayedBefore()) {
-                        player.sendTitles(welcomeTitle.title, welcomeTitle.subtitle, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut, withPlaceholders = true)
-                    } else {
-                        player.sendTitles(welcomeTitle.firstJoin.title, welcomeTitle.firstJoin.subtitle, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut, withPlaceholders = true)
-                    }
-                }.delay(20).addTo(listeners)
-            }
-
-            // Welcome actionbar message
-            if (tmConfig.welcomeActionbar.enabled) {
-                listenEventAsync<PlayerJoinEvent> {
-                    val player = it.player
-
-                    if (!player.isOnline) return@listenEventAsync
-
-                    if (player.hasPlayedBefore()) {
-                        player.sendActionbarFromText(tmConfig.welcomeActionbar.title)
-                    } else {
-                        player.sendActionbarFromText(tmConfig.welcomeActionbar.firstJoin)
-                    }
-                }.delay(20).addTo(listeners)
-            }
-
-            // Set header and footer
-            if (tmConfig.playerList.enabled) {
-                listenEventSync<PlayerJoinEvent> {
-                    val player = it.player
-
-                    player.setHeaderFromText(tmConfig.playerList.header)
-                    player.setFooterFromText(tmConfig.playerList.footer)
-                }.addTo(listeners)
-            }
-
-            // Set scoreboard
-            if (tmConfig.scoreboard.enabled) {
-                listenEventSync<PlayerJoinEvent> {
-                    val player = it.player
-
-                    if (!playerInfoDB!!.isScoreboardToggled(player)) return@listenEventSync
-
-                    val title = toAnimationParts(tmConfig.scoreboard.title)
-                    val lines = tmConfig.scoreboard.lines.map { toAnimationParts(it) }
-
-                    player.giveScoreboard()
-                    toScoreboardTitleAnimation(title, player, true).start()
-
-                    lines.forEachIndexed { index, parts ->
-                        toScoreboardValueAnimation(parts, player, index + 1, true).start()
-                    }
-                }.addTo(listeners)
-            }
-        }
-    }
-
-    private fun unregisterListeners() {
-        this.listeners.forEach { it.invalidate() }
-        this.listeners.clear()
-    }
-
     private fun registerCommands() {
-        val cmd = getCommand("tm")!!
+        getCommand("tm")?.let {
+            val tmCommand = TMCommand(this)
 
-        cmd.setExecutor(TMCommand)
-        cmd.tabCompleter = TMCommand
-    }
-
-    private fun registerPlaceholders() {
-        APIProvider.addPlaceholder(createPlaceholder("player", "username", "name") { player -> player.name })
-        APIProvider.addPlaceholder(createPlaceholder("displayname", "display-name", "nickname", "nick") { player -> player.displayName })
-        APIProvider.addPlaceholder(createPlaceholder("strippeddisplayname", "stripped-displayname", "stripped-nickname", "stripped-nick") { player -> player.displayName.stripColor() })
-        APIProvider.addPlaceholder(createPlaceholder("world", "world-name") { player -> player.world.name })
-        APIProvider.addPlaceholder(createPlaceholder("world-time") { player -> player.world.time })
-        APIProvider.addPlaceholder(createPlaceholder("24h-world-time") { player -> player.world.getFormattedTime(true) })
-        APIProvider.addPlaceholder(createPlaceholder("12h-world-time") { player -> player.world.getFormattedTime(false) })
-        APIProvider.addPlaceholder(createPlaceholder("online", "online-players") { _, value ->
-            if (value == null || !tmConfig.usingBungeecord || bungeeCordManager == null) {
-                return@createPlaceholder server.onlinePlayers.size
-            }
-
-            if (value.contains(",")) {
-                return@createPlaceholder value.split(",").asSequence().mapNotNull { bungeeCordManager!!.getServers()[value]?.playerCount }.sum().toString()
-            }
-
-            return@createPlaceholder bungeeCordManager!!.getServers()[value]?.playerCount?.toString() ?: ""
-        })
-        APIProvider.addPlaceholder(createPlaceholder("max", "max-players") { _ -> server.maxPlayers })
-        APIProvider.addPlaceholder(createPlaceholder("world-players", "world-online") { player -> player.world.players.size })
-        APIProvider.addPlaceholder(createPlaceholder("ping") { player -> player.getPing() })
-        APIProvider.addPlaceholder(createPlaceholder("tps") { _, value ->
-            if (value == null) {
-                return@createPlaceholder PlaceholderTps.getTps(1)
-            }
-
-            if (value.isInt()) {
-                return@createPlaceholder PlaceholderTps.getTps(value.toInt())
-            }
-
-            return@createPlaceholder PlaceholderTps.getTps(value)
-        }.cached(30))
-        APIProvider.addPlaceholder(createPlaceholder("server-time") { _ -> tmConfig.placeholders.dateFormat.format(Date(System.currentTimeMillis())) })
-        APIProvider.addPlaceholder(createPlaceholder("bungeecord-online", "bungeecord-online-players", enabled = { tmConfig.usingBungeecord && bungeeCordManager != null }) { _ -> bungeeCordManager!!.onlinePlayers }.cached(5))
-        APIProvider.addPlaceholder(createPlaceholder("server", "server-name", enabled = { tmConfig.usingBungeecord && bungeeCordManager != null }) { _ -> bungeeCordManager!!.getCurrentServer().orEmpty() })
-        APIProvider.addPlaceholder(createPlaceholder("safe-online", "safe-online-players", enabled = { VanishHookReplacer.isValid() }) { player -> VanishHookReplacer.value(player) })
-        APIProvider.addPlaceholder(createPlaceholder("balance", "money", enabled = { VaultHook.isEnabled() && VaultHook.isEconomySupported }) { player -> VaultHook.economy!!.getBalance(player).format() })
-        APIProvider.addPlaceholder(createPlaceholder("group", "group-name", enabled = { VaultHook.isEnabled() && VaultHook.hasGroupSupport }) { player -> VaultHook.permissions!!.getPrimaryGroup(player).color() })
-    }
-
-    private fun Player.sendTitleFromText(text: String, fadeIn: Int, stay: Int, fadeOut: Int) {
-        val parts = toAnimationParts(text)
-
-        if (parts.size == 1 && parts.first().part is String) {
-            sendTitle(
-                    title = parts.first().part as String,
-                    fadeIn = fadeIn,
-                    stay = stay,
-                    fadeOut = fadeOut,
-                    withPlaceholders = true)
-        } else if (parts.size == 1 && parts.first().part is Animation) {
-            toTitleAnimation(parts.first().part as Animation, this, withPlaceholders = true).start()
-        } else if (parts.isNotEmpty()) {
-            toTitleAnimation(parts, this, withPlaceholders = true).start()
+            it.setExecutor(tmCommand)
+            it.tabCompleter = tmCommand
         }
     }
 
-    private fun Player.sendSubtitleFromText(text: String, fadeIn: Int, stay: Int, fadeOut: Int) {
-        val parts = toAnimationParts(text)
+    override fun replaceText(player: Player, text: String) = titleManagerComponent.placeholderService().replaceText(player, text)
 
-        if (parts.size == 1 && parts.first().part is String) {
-            sendSubtitle(
-                    subtitle = parts.first().part as String,
-                    fadeIn = fadeIn,
-                    stay = stay,
-                    fadeOut = fadeOut,
-                    withPlaceholders = true)
-        } else if (parts.size == 1 && parts.first().part is Animation) {
-            toSubtitleAnimation(parts.first().part as Animation, this, withPlaceholders = true).start()
-        } else if (parts.isNotEmpty()) {
-            toSubtitleAnimation(parts, this, withPlaceholders = true).start()
-        }
-    }
+    override fun containsPlaceholders(text: String) = titleManagerComponent.placeholderService().containsPlaceholders(text)
+    override fun containsPlaceholder(text: String, placeholder: String) = titleManagerComponent.placeholderService().containsPlaceholder(text, placeholder)
 
-    private fun Player.sendActionbarFromText(text: String) {
-        val parts = toAnimationParts(text)
+    override fun containsAnimations(text: String) = titleManagerComponent.animationsService().containsAnimations(text)
+    override fun containsAnimation(text: String, animation: String) = titleManagerComponent.animationsService().containsAnimation(text, animation)
+    override fun getRegisteredAnimations() = titleManagerComponent.animationsService().animations
+    override fun getRegisteredScripts() = titleManagerComponent.scriptService().scripts
+    override fun addAnimation(id: String, animation: Animation) = titleManagerComponent.animationsService().addAnimation(name, animation)
+    override fun removeAnimation(id: String) = titleManagerComponent.animationsService().removeAnimation(name)
 
-        if (parts.size == 1 && parts.first().part is String) {
-            sendActionbar(
-                    text = parts.first().part as String,
-                    withPlaceholders = true)
-        } else if (parts.size == 1 && parts.first().part is Animation) {
-            toActionbarAnimation(parts.first().part as Animation, this, withPlaceholders = true).start()
-        } else if (parts.isNotEmpty()) {
-            toActionbarAnimation(parts, this, withPlaceholders = true).start()
-        }
-    }
+    override fun toTitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = titleManagerComponent.titleService().createTitleSendableAnimation(animation, player, withPlaceholders)
+    override fun toTitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = titleManagerComponent.titleService().createTitleSendableAnimation(parts, player, withPlaceholders)
+    override fun toSubtitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = titleManagerComponent.titleService().createSubtitleSendableAnimation(animation, player, withPlaceholders)
+    override fun toSubtitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = titleManagerComponent.titleService().createSubtitleSendableAnimation(parts, player, withPlaceholders)
 
-    private fun Player.setHeaderFromText(text: String) {
-        val parts = toAnimationParts(text)
+    override fun toActionbarAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = titleManagerComponent.actionbarService().createActionbarSendableAnimation(animation, player, withPlaceholders)
+    override fun toActionbarAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = titleManagerComponent.actionbarService().createActionbarSendableAnimation(parts, player, withPlaceholders)
 
-        toHeaderAnimation(parts, this, withPlaceholders = true).start()
-    }
+    override fun toHeaderAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = titleManagerComponent.playerListService().createHeaderSendableAnimation(animation, player, withPlaceholders)
+    override fun toHeaderAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = titleManagerComponent.playerListService().createHeaderSendableAnimation(parts, player, withPlaceholders)
+    override fun toFooterAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = titleManagerComponent.playerListService().createFooterSendableAnimation(animation, player, withPlaceholders)
+    override fun toFooterAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = titleManagerComponent.playerListService().createFooterSendableAnimation(parts, player, withPlaceholders)
 
-    private fun Player.setFooterFromText(text: String) {
-        val parts = toAnimationParts(text)
+    override fun toScoreboardTitleAnimation(animation: Animation, player: Player, withPlaceholders: Boolean) = titleManagerComponent.scoreboardService().createScoreboardTitleSendableAnimation(animation, player, withPlaceholders)
+    override fun toScoreboardTitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean) = titleManagerComponent.scoreboardService().createScoreboardTitleSendableAnimation(parts, player, withPlaceholders)
 
-        toFooterAnimation(parts, this, withPlaceholders = true).start()
-    }
+    override fun toScoreboardValueAnimation(animation: Animation, player: Player, index: Int, withPlaceholders: Boolean) = titleManagerComponent.scoreboardService().createScoreboardValueSendableAnimation(animation, player, index, withPlaceholders)
+    override fun toScoreboardValueAnimation(parts: List<AnimationPart<*>>, player: Player, index: Int, withPlaceholders: Boolean) = titleManagerComponent.scoreboardService().createScoreboardValueSendableAnimation(parts, player, index, withPlaceholders)
+
+    override fun toAnimationPart(text: String) = AnimationPart { text }
+    override fun toAnimationPart(animation: Animation) = AnimationPart { animation }
+    override fun toAnimationParts(text: String) = titleManagerComponent.animationsService().textToAnimationParts(text)
+
+    override fun createAnimationFrame(text: String, fadeIn: Int, stay: Int, fadeOut: Int) = StandardAnimationFrame(text, fadeIn, stay, fadeOut)
+
+    override fun fromText(vararg frames: String) = titleManagerComponent.animationsService().createAnimationFromTextLines(*frames)
+    override fun fromTextFile(file: File) = titleManagerComponent.animationsService().createAnimationFromTextFile(file)
+    override fun fromJavaScript(name: String, input: String) = titleManagerComponent.scriptService().getScriptAnimation(name, input, true)
+
+    override fun sendTitle(player: Player, title: String) = titleManagerComponent.titleService().sendTitle(player, title, withPlaceholders = false)
+    override fun sendTitle(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendTitle(player, title, fadeIn, stay, fadeOut, withPlaceholders = false)
+    override fun sendTitleWithPlaceholders(player: Player, title: String) = titleManagerComponent.titleService().sendTitle(player, title, withPlaceholders = true)
+    override fun sendTitleWithPlaceholders(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendTitle(player, title, fadeIn, stay, fadeOut, withPlaceholders = true)
+
+    override fun sendSubtitle(player: Player, subtitle: String) = titleManagerComponent.titleService().sendSubtitle(player, subtitle, withPlaceholders = false)
+    override fun sendSubtitle(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendSubtitle(player, subtitle, fadeIn, stay, fadeOut, withPlaceholders = false)
+    override fun sendSubtitleWithPlaceholders(player: Player, subtitle: String) = titleManagerComponent.titleService().sendSubtitle(player, subtitle, withPlaceholders = true)
+    override fun sendSubtitleWithPlaceholders(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendSubtitle(player, subtitle, fadeIn, stay, fadeOut, withPlaceholders = true)
+
+    override fun sendTitles(player: Player, title: String, subtitle: String) = titleManagerComponent.titleService().sendTitles(player, title, subtitle, withPlaceholders = false)
+    override fun sendTitles(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendTitles(player, title, subtitle, fadeIn, stay, fadeOut, withPlaceholders = false)
+    override fun sendTitlesWithPlaceholders(player: Player, title: String, subtitle: String) = titleManagerComponent.titleService().sendTitles(player, title, subtitle, withPlaceholders = true)
+    override fun sendTitlesWithPlaceholders(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendTitles(player, title, subtitle, fadeIn, stay, fadeOut, withPlaceholders = true)
+
+    override fun sendTimings(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendTimings(player, fadeIn, stay, fadeOut)
+
+    override fun clearTitle(player: Player) = titleManagerComponent.titleService().clearTitle(player)
+    override fun clearSubtitle(player: Player) = titleManagerComponent.titleService().clearSubtitle(player)
+    override fun clearTitles(player: Player) = titleManagerComponent.titleService().clearTitles(player)
+
+    override fun sendActionbar(player: Player, text: String) = titleManagerComponent.actionbarService().sendActionbar(player, text, withPlaceholders = false)
+    override fun sendActionbarWithPlaceholders(player: Player, text: String) = titleManagerComponent.actionbarService().sendActionbar(player, text, withPlaceholders = true)
+    override fun clearActionbar(player: Player) = titleManagerComponent.actionbarService().clearActionbar(player)
+
+    override fun setHeader(player: Player, header: String) = titleManagerComponent.playerListService().setHeader(player, header, withPlaceholders = false)
+    override fun setHeaderWithPlaceholders(player: Player, header: String) = titleManagerComponent.playerListService().setHeader(player, header, withPlaceholders = true)
+    override fun getHeader(player: Player) = titleManagerComponent.playerListService().getHeader(player)
+
+    override fun setFooter(player: Player, footer: String) = titleManagerComponent.playerListService().setFooter(player, footer, withPlaceholders = false)
+    override fun setFooterWithPlaceholders(player: Player, footer: String) = titleManagerComponent.playerListService().setFooter(player, footer, withPlaceholders = true)
+    override fun getFooter(player: Player) = titleManagerComponent.playerListService().getFooter(player)
+
+    override fun setHeaderAndFooter(player: Player, header: String, footer: String) = titleManagerComponent.playerListService().setHeaderAndFooter(player, header, footer, withPlaceholders = false)
+    override fun setHeaderAndFooterWithPlaceholders(player: Player, header: String, footer: String) = titleManagerComponent.playerListService().setHeaderAndFooter(player, header, footer)
+
+    override fun giveScoreboard(player: Player) = titleManagerComponent.scoreboardService().giveScoreboard(player)
+    override fun removeScoreboard(player: Player) = titleManagerComponent.scoreboardService().removeScoreboard(player)
+    override fun hasScoreboard(player: Player) = titleManagerComponent.scoreboardService().hasScoreboard(player)
+
+    override fun setScoreboardTitle(player: Player, title: String) = titleManagerComponent.scoreboardService().setScoreboardTitle(player, title, withPlaceholders = false)
+    override fun setScoreboardTitleWithPlaceholders(player: Player, title: String) = titleManagerComponent.scoreboardService().setScoreboardTitle(player, title, withPlaceholders = true)
+    override fun getScoreboardTitle(player: Player) = titleManagerComponent.scoreboardService().getScoreboardTitle(player)
+
+    override fun setScoreboardValue(player: Player, index: Int, value: String) = titleManagerComponent.scoreboardService().setScoreboardValue(player, index, value, withPlaceholders = false)
+    override fun setScoreboardValueWithPlaceholders(player: Player, index: Int, value: String) = titleManagerComponent.scoreboardService().setScoreboardValue(player, index, value, withPlaceholders = false)
+    override fun getScoreboardValue(player: Player, index: Int) = titleManagerComponent.scoreboardService().getScoreboardValue(player, index)
+    override fun removeScoreboardValue(player: Player, index: Int) = titleManagerComponent.scoreboardService().removeScoreboardValue(player, index)
 }

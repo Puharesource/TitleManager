@@ -24,9 +24,9 @@ interface TitleManagerAPI {
      * any placeholders available within PlaceholderAPI will be replaced before TitleManager replaces its own.
      *
      * @param player The player that any player specific placeholders will be matched to.
-     * @param text   The text that will be replaced.
+     * @param text The text that will be replaced.
      *
-     * @return       The input text with all available placeholders replaced.
+     * @return The input text with all available placeholders replaced.
      * If no placeholders were found the input text will be returned instead.
      *
      * @see .containsPlaceholders
@@ -42,7 +42,7 @@ interface TitleManagerAPI {
      *
      * @param text The text that will be matched to the patterns.
      *
-     * @return     `true` if the text returned with a match and `false` if it doesn't.
+     * @return `true` if the text returned with a match and `false` if it doesn't.
      *
      * @see .replaceText
      * @see .containsPlaceholder
@@ -54,10 +54,10 @@ interface TitleManagerAPI {
      * Checks if the input text contains the pattern `%{my-placeholder}` or the pattern
      * `%{my-placeholder:parameter}` where `my-placeholder` is the placeholder parameter.
      *
-     * @param text        The text that will be matched to the pattern.
+     * @param text The text that will be matched to the pattern.
      * @param placeholder The placeholder that will be matched for.
      *
-     * @return            `true` if the text returned with a match and `false` if it doesn't.
+     * @return `true` if the text returned with a match and `false` if it doesn't.
      *
      * @see .replaceText
      * @see .containsPlaceholders
@@ -72,7 +72,7 @@ interface TitleManagerAPI {
      *
      * @param text The text that will be matched to the patterns.
      *
-     * @return     `true` if the text returned with a match and `false` if it doesn't.
+     * @return `true` if the text returned with a match and `false` if it doesn't.
      *
      * @see .containsAnimation
      * @see .addAnimation
@@ -89,10 +89,10 @@ interface TitleManagerAPI {
      * Checks if the input text contains the pattern `${my-animation}` or the pattern
      * `${my-animation:parameter}` where `my-animation` is the animation parameter.
      *
-     * @param text      The text that will be matched.
+     * @param text The text that will be matched.
      * @param animation The animation or script that will be matched for.
      *
-     * @return          `true` if the text returned with a match and `false` if it doesn't.
+     * @return `true` if the text returned with a match and `false` if it doesn't.
      *
      * @see .containsAnimations
      * @see .addAnimation
@@ -140,7 +140,7 @@ interface TitleManagerAPI {
     /**
      * Adds an animation to the plugin.
      *
-     * @param id        The id of the animation (case-insensitive).
+     * @param id The id of the animation (case-insensitive).
      * @param animation The animation to be added.
      *
      * @see .containsAnimations
@@ -174,8 +174,8 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param animation        The animation to be used.
-     * @param player           The player the [SendableAnimation] is associated with.
+     * @param animation The animation to be used.
+     * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @see .toSubtitleAnimation
@@ -199,8 +199,8 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param animation        The animation to be used.
-     * @param player           The player the [SendableAnimation] is associated with.
+     * @param animation The animation to be used.
+     * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @see .toTitleAnimation
@@ -224,8 +224,8 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param animation        The animation to be used.
-     * @param player           The player the [SendableAnimation] is associated with.
+     * @param animation The animation to be used.
+     * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @see .toTitleAnimation
@@ -249,8 +249,8 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param animation        The animation to be used.
-     * @param player           The player the [SendableAnimation] is associated with.
+     * @param animation The animation to be used.
+     * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @see .toTitleAnimation
@@ -274,8 +274,8 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param animation        The animation to be used.
-     * @param player           The player the [SendableAnimation] is associated with.
+     * @param animation The animation to be used.
+     * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @see .toTitleAnimation
@@ -299,9 +299,9 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param animation         The animation to be used.
-     * @param player            The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders  Whether or not placeholders should be replaced.
+     * @param animation The animation to be used.
+     * @param player The player the [SendableAnimation] is associated with.
+     * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @see .toScoreboardTitleAnimation
      * @see .toScoreboardValueAnimation
@@ -318,10 +318,10 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param animation         The animation to be used.
-     * @param player            The player the [SendableAnimation] is associated with.
-     * @param index             The index the text value should be set to.
-     * @param withPlaceholders  Whether or not placeholders should be replaced.
+     * @param animation The animation to be used.
+     * @param player The player the [SendableAnimation] is associated with.
+     * @param index The index the text value should be set to.
+     * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the given player.
      *
@@ -338,8 +338,8 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param parts            The parts of the animation the [SendableAnimation] will be made off of.
-     * @param player           The player the [SendableAnimation] is associated with.
+     * @param parts The parts of the animation the [SendableAnimation] will be made off of.
+     * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
@@ -363,8 +363,8 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param parts            The parts of the animation the [SendableAnimation] will be made off of.
-     * @param player           The player the [SendableAnimation] is associated with.
+     * @param parts The parts of the animation the [SendableAnimation] will be made off of.
+     * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
@@ -388,8 +388,8 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param parts            The parts of the animation the [SendableAnimation] will be made off of.
-     * @param player           The player the [SendableAnimation] is associated with.
+     * @param parts The parts of the animation the [SendableAnimation] will be made off of.
+     * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
@@ -413,8 +413,8 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param parts            The parts of the animation the [SendableAnimation] will be made off of.
-     * @param player           The player the [SendableAnimation] is associated with.
+     * @param parts The parts of the animation the [SendableAnimation] will be made off of.
+     * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
@@ -438,8 +438,8 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param parts            The parts of the animation the [SendableAnimation] will be made off of.
-     * @param player           The player the [SendableAnimation] is associated with.
+     * @param parts The parts of the animation the [SendableAnimation] will be made off of.
+     * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
@@ -463,9 +463,9 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param parts             The animation parts to be used.
-     * @param player            The player the [List] of [AnimationPart]s is associated with.
-     * @param withPlaceholders  Whether or not placeholders should be replaced.
+     * @param parts The animation parts to be used.
+     * @param player The player the [List] of [AnimationPart]s is associated with.
+     * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @see .toScoreboardTitleAnimation
      * @see .toScoreboardValueAnimation
@@ -482,10 +482,10 @@ interface TitleManagerAPI {
      *
      * If `withPlaceholders` is true, placeholders will be replaced.
      *
-     * @param parts         The animation to be used.
-     * @param player            The player the [SendableAnimation] is associated with.
-     * @param index             The index the text value should be set to.
-     * @param withPlaceholders  Whether or not placeholders should be replaced.
+     * @param parts The animation to be used.
+     * @param player The player the [SendableAnimation] is associated with.
+     * @param index The index the text value should be set to.
+     * @param withPlaceholders Whether or not placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the given player.
      *
@@ -530,7 +530,7 @@ interface TitleManagerAPI {
      *
      * @param text The text to be converted.
      *
-     * @return     The instance of the immutable list with all of the Animation parts, that were converted from the text.
+     * @return The instance of the immutable list with all of the Animation parts, that were converted from the text.
      *
      * @see .toAnimationPart
      * @see .toAnimationPart
@@ -544,17 +544,17 @@ interface TitleManagerAPI {
      *
      * All timings are measured in ticks.
      *
-     * @param text    The input text to be displayed.
-     * @param fadeIn  If the frame is being used in a title,
+     * @param text The input text to be displayed.
+     * @param fadeIn If the frame is being used in a title,
      * this is the time it takes for the title to fade onto the screen.
      * If the frame is not being used in a title, it will be added onto the stay time.
-     * @param stay    The time it takes for the frame to stay on the screen.
+     * @param stay The time it takes for the frame to stay on the screen.
      * (The only exception is for Actionbar messages)
      * @param fadeOut If the frame is being used in a title,
      * this is the time it takes for the title to fade off of the screen.
      * If this frame is not being used in a title, it will be added onto the stay time.
      *
-     * @return        An instance of [AnimationFrame] that has the given values assigned.
+     * @return An instance of [AnimationFrame] that has the given values assigned.
      *
      * @since 2.0.0
      */
@@ -607,7 +607,7 @@ interface TitleManagerAPI {
      *
      * @param file The file that will be read and converted to an [Animation].
      *
-     * @return     The [Animation] generated from the frames.
+     * @return The [Animation] generated from the frames.
      *
      * @see .fromText
      * @see .fromJavaScript
@@ -619,7 +619,7 @@ interface TitleManagerAPI {
      * Creates an [Animation] from the name of a loaded JavaScript animation,
      * with the given input text.
      *
-     * @param name  The name of the JavaScript animation.
+     * @param name The name of the JavaScript animation.
      * @param input The input text to be converted to an [Animation]
      *
      * @return The [Animation] generated from the JavaScript.
@@ -635,7 +635,7 @@ interface TitleManagerAPI {
      * This will also use the last sent timings.
      *
      * @param player The player the title should be sent to.
-     * @param title  The title to be displayed.
+     * @param title The title to be displayed.
      *
      * @see .sendTitle
      * @see .sendTitleWithPlaceholders
@@ -655,10 +655,10 @@ interface TitleManagerAPI {
     /**
      * Sends a title message to the given [Player] with the given timings.
      *
-     * @param player  The player the title should be sent to.
-     * @param title   The title to be sent to the [Player].
-     * @param fadeIn  The time it takes for the title to fade onto the screen.
-     * @param stay    The time it takes for the title to stay on the screen.
+     * @param player The player the title should be sent to.
+     * @param title The title to be sent to the [Player].
+     * @param fadeIn The time it takes for the title to fade onto the screen.
+     * @param stay The time it takes for the title to stay on the screen.
      * @param fadeOut The time it takes for the title to fade off of the screen.
      *
      * @see .sendTitle
@@ -681,7 +681,7 @@ interface TitleManagerAPI {
      * This will also use the last sent timings.
      *
      * @param player The player the title should be sent to.
-     * @param title  The title to be sent to the [Player].
+     * @param title The title to be sent to the [Player].
      *
      * @see .sendTitle
      * @see .sendTitle
@@ -702,10 +702,10 @@ interface TitleManagerAPI {
      * Sends a title message to the given [Player] with the given timings where all placeholders have been replaced
      * and with the given timings.
      *
-     * @param player  The player the title should be sent to.
-     * @param title   The title to be sent to the [Player].
-     * @param fadeIn  The time it takes for the title to fade onto the screen.
-     * @param stay    The time it takes for the title to stay on the screen.
+     * @param player The player the title should be sent to.
+     * @param title The title to be sent to the [Player].
+     * @param fadeIn The time it takes for the title to fade onto the screen.
+     * @param stay The time it takes for the title to stay on the screen.
      * @param fadeOut The time it takes for the title to fade off of the screen.
      *
      * @see .sendTitle
@@ -727,8 +727,8 @@ interface TitleManagerAPI {
      * Sends a subtitle message to the given [Player].
      * This will also use the last sent timings.
      *
-     * @param player    The player the subtitle should be sent to.
-     * @param subtitle  The subtitle to be displayed.
+     * @param player The player the subtitle should be sent to.
+     * @param subtitle The subtitle to be displayed.
      *
      * @see .sendTitle
      * @see .sendTitle
@@ -748,11 +748,11 @@ interface TitleManagerAPI {
     /**
      * Sends a subtitle message to the given [Player] with the given timings as well as the given subtitles.
      *
-     * @param player    The player the subtitle should be sent to.
-     * @param subtitle  The subtitle to be displayed.
-     * @param fadeIn    The time it takes for the subtitle to fade onto the screen.
-     * @param stay      The time it takes for the subtitle to stay on the screen.
-     * @param fadeOut   The time it takes for the subtitle to fade off of the screen.
+     * @param player The player the subtitle should be sent to.
+     * @param subtitle The subtitle to be displayed.
+     * @param fadeIn The time it takes for the subtitle to fade onto the screen.
+     * @param stay The time it takes for the subtitle to stay on the screen.
+     * @param fadeOut The time it takes for the subtitle to fade off of the screen.
      *
      * @see .sendTitle
      * @see .sendTitle
@@ -773,8 +773,8 @@ interface TitleManagerAPI {
      * Sends a subtitle message to the given [Player] where all placeholders have been replaced.
      * This will also use the last sent timings.
      *
-     * @param player    The player the subtitle should be sent to.
-     * @param subtitle  The subtitle to be displayed.
+     * @param player The player the subtitle should be sent to.
+     * @param subtitle The subtitle to be displayed.
      *
      * @see .sendTitle
      * @see .sendTitle
@@ -795,11 +795,11 @@ interface TitleManagerAPI {
      * Sends a subtitle message to the given [Player] where all placeholders have been replaced
      * and with the given timings.
      *
-     * @param player    The player the subtitle should be sent to.
-     * @param subtitle  The subtitle to be displayed.
-     * @param fadeIn    The time it takes for the subtitle to fade onto the screen.
-     * @param stay      The time it takes for the subtitle to stay on the screen.
-     * @param fadeOut   The time it takes for the subtitle to fade off of the screen.
+     * @param player The player the subtitle should be sent to.
+     * @param subtitle The subtitle to be displayed.
+     * @param fadeIn The time it takes for the subtitle to fade onto the screen.
+     * @param stay The time it takes for the subtitle to stay on the screen.
+     * @param fadeOut The time it takes for the subtitle to fade off of the screen.
      *
      * @see .sendTitle
      * @see .sendTitle
@@ -819,9 +819,9 @@ interface TitleManagerAPI {
     /**
      * Sends a title and a subtitle message to the given [Player].
      *
-     * @param player    The player the titles should be sent to.
-     * @param title     The title to be displayed.
-     * @param subtitle  The subtitle to be displayed.
+     * @param player The player the titles should be sent to.
+     * @param title The title to be displayed.
+     * @param subtitle The subtitle to be displayed.
      *
      * @see .sendTitle
      * @see .sendTitle
@@ -841,12 +841,12 @@ interface TitleManagerAPI {
     /**
      * Sends a title and a subtitle message to the given [Player] with the given timings.
      *
-     * @param player    The player the titles should be sent to.
-     * @param title     The title to be displayed.
-     * @param subtitle  The subtitle to be displayed.
-     * @param fadeIn    The time it takes for the titles to fade onto the screen.
-     * @param stay      The time it takes for the titles to stay on the screen.
-     * @param fadeOut   The time it takes for the titles to fade off of the screen.
+     * @param player The player the titles should be sent to.
+     * @param title The title to be displayed.
+     * @param subtitle The subtitle to be displayed.
+     * @param fadeIn The time it takes for the titles to fade onto the screen.
+     * @param stay The time it takes for the titles to stay on the screen.
+     * @param fadeOut The time it takes for the titles to fade off of the screen.
      *
      * @see .sendTitle
      * @see .sendTitle
@@ -866,9 +866,9 @@ interface TitleManagerAPI {
     /**
      * Sends a title and a subtitle message to the given [Player] where all placeholders are replaced.
      *
-     * @param player    The player the titles should be sent to.
-     * @param title     The title to be displayed.
-     * @param subtitle  The subtitle to be displayed.
+     * @param player The player the titles should be sent to.
+     * @param title The title to be displayed.
+     * @param subtitle The subtitle to be displayed.
      *
      * @see .sendTitle
      * @see .sendTitle
@@ -889,12 +889,12 @@ interface TitleManagerAPI {
      * Sends a title and a subtitle message to the given [Player] where all placeholders are replaced
      * and with the given timings.
      *
-     * @param player    The player the titles should be sent to.
-     * @param title     The title to be displayed.
-     * @param subtitle  The subtitle to be displayed.
-     * @param fadeIn    The time it takes for the titles to fade onto the screen.
-     * @param stay      The time it takes for the titles to stay on the screen.
-     * @param fadeOut   The time it takes for the titles to fade off of the screen.
+     * @param player The player the titles should be sent to.
+     * @param title The title to be displayed.
+     * @param subtitle The subtitle to be displayed.
+     * @param fadeIn The time it takes for the titles to fade onto the screen.
+     * @param stay The time it takes for the titles to stay on the screen.
+     * @param fadeOut The time it takes for the titles to fade off of the screen.
      *
      * @see .sendTitle
      * @see .sendTitle
@@ -915,8 +915,8 @@ interface TitleManagerAPI {
      * Sets the timings for all of the next titles and subtitles sent to the [Player].
      *
      * @param player The player the timings should be set for.
-     * @param fadeIn  The time it takes for all titles sent afterwards to fade onto the screen.
-     * @param stay    The time it takes for all titles sent afterwards to stay on the screen.
+     * @param fadeIn The time it takes for all titles sent afterwards to fade onto the screen.
+     * @param stay The time it takes for all titles sent afterwards to stay on the screen.
      * @param fadeOut The time it takes for all titles sent afterwards to to fade off of the screen.
      *
      * @since 2.0.0
@@ -960,7 +960,7 @@ interface TitleManagerAPI {
      * Sends an actionbar message to the [Player].
      *
      * @param player The player to send the actionbar message.
-     * @param text   The text to be sent.
+     * @param text The text to be sent.
      *
      * @see .sendActionbarWithPlaceholders
      * @since 2.0.0
@@ -971,7 +971,7 @@ interface TitleManagerAPI {
      * Sends an actionbar message to the [Player] where all placeholders are replaced.
      *
      * @param player The player to send the actionbar message.
-     * @param text   The text to be sent.
+     * @param text The text to be sent.
      *
      * @see .sendActionbar
      * @since 2.0.0
@@ -1026,7 +1026,7 @@ interface TitleManagerAPI {
      *
      * @param player The player to get the header from.
      *
-     * @return       The header that is being displayed.
+     * @return The header that is being displayed.
      *
      * @see .setHeader
      * @see .setHeaderWithPlaceholders
@@ -1078,7 +1078,7 @@ interface TitleManagerAPI {
      *
      * @param player The player to get the header from.
      *
-     * @return       The footer that is being displayed.
+     * @return The footer that is being displayed.
      *
      * @see .getHeader
      * @see .setHeader
@@ -1269,7 +1269,7 @@ interface TitleManagerAPI {
      * Removes the text value of the given [Player]'s scoreboardat the given index.
      *
      * @param player The player to remove the text value from.
-     * @param index  The index at which the text value should be removed.
+     * @param index The index at which the text value should be removed.
      *
      * @see .giveScoreboard
      * @see .hasScoreboard

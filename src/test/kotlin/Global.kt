@@ -1,7 +1,7 @@
 import org.bukkit.entity.Player
 import java.lang.reflect.Proxy
 
-val testPlayer = Proxy.newProxyInstance(Player::class.java.classLoader, arrayOf(Player::class.java)) handler@ { _, method, _ ->
+val testPlayer = Proxy.newProxyInstance(Player::class.java.classLoader, arrayOf(Player::class.java)) handler@{ _, method, _ ->
     if (method.name == "isOnline") {
         return@handler true
     }

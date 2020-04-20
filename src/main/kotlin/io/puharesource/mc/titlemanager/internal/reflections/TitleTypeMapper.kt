@@ -1,12 +1,12 @@
 package io.puharesource.mc.titlemanager.internal.reflections
 
 enum class TitleTypeMapper constructor(private val oldIndex: Int = -1, private val newIndex: Int) {
-    TITLE       (0, 0),
-    SUBTITLE    (1, 1),
-    ACTIONBAR  (-1, 2),
-    TIMES       (2, 3),
-    CLEAR       (3, 4),
-    RESET       (4, 5);
+    TITLE(0, 0),
+    SUBTITLE(1, 1),
+    ACTIONBAR(-1, 2),
+    TIMES(2, 3),
+    CLEAR(3, 4),
+    RESET(4, 5);
 
     val handle: Any
         get() {

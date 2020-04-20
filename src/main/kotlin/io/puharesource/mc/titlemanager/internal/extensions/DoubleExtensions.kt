@@ -3,7 +3,7 @@ package io.puharesource.mc.titlemanager.internal.extensions
 import io.puharesource.mc.titlemanager.internal.pluginConfig
 import java.math.BigDecimal
 
-internal fun Double.format() : String {
+internal fun Double.format(): String {
     val numberFormat = pluginConfig.placeholders.numberFormat
 
     if (numberFormat.enabled) {

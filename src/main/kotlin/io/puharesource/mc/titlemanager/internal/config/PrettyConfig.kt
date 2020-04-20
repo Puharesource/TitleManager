@@ -26,11 +26,11 @@ class PrettyConfig(file: File) : YamlConfiguration() {
         load(file)
     }
 
-    fun saveToStringWithComments(currentCommentedData: String) : String {
+    fun saveToStringWithComments(currentCommentedData: String): String {
         val commentlessData = saveToString()
-        val commentMap : MutableMap<String, List<String>> = mutableMapOf()
+        val commentMap: MutableMap<String, List<String>> = mutableMapOf()
 
-        val currentComments : MutableList<String> = mutableListOf()
+        val currentComments: MutableList<String> = mutableListOf()
 
         currentCommentedData.lines().forEachIndexed { _, line ->
             if (line.matches(KEY_PATTERN) && !line.matches(COMMENT_PATTERN)) {

@@ -5,11 +5,11 @@ import java.util.TreeMap
 import java.util.regex.Pattern
 
 object NMSManager {
-    private val VERSION_PATTERN : Pattern = Pattern.compile("(v|)[0-9][_.][0-9]+[_.][R0-9]*")
-    private val supportedVersions : MutableMap<String, Int> = TreeMap(String.CASE_INSENSITIVE_ORDER)
+    private val VERSION_PATTERN: Pattern = Pattern.compile("(v|)[0-9][_.][0-9]+[_.][R0-9]*")
+    private val supportedVersions: MutableMap<String, Int> = TreeMap(String.CASE_INSENSITIVE_ORDER)
 
-    val serverVersion : String
-    val versionIndex : Int
+    val serverVersion: String
+    val versionIndex: Int
 
     init {
         supportedVersions["v1_7_R4"] = 0
@@ -40,18 +40,18 @@ object NMSManager {
         supportedVersions.values.max() ?: -1
     }
 
-    fun getClassProvider() : NMSClassProvider {
+    fun getClassProvider(): NMSClassProvider {
         return when (versionIndex) {
-            0    -> ProviderProtocolHack
-            1    -> Provider18
-            2    -> Provider183
-            3    -> Provider183
-            4    -> Provider110
-            5    -> Provider110
-            6    -> Provider112
-            7    -> Provider113
-            8    -> Provider113
-            9    -> Provider113
+            0 -> ProviderProtocolHack
+            1 -> Provider18
+            2 -> Provider183
+            3 -> Provider183
+            4 -> Provider110
+            5 -> Provider110
+            6 -> Provider112
+            7 -> Provider113
+            8 -> Provider113
+            9 -> Provider113
             else -> Provider113
         }
     }

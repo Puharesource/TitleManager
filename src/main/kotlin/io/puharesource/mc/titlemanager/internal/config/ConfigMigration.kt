@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 
 class ConfigMigration(private val plugin: TitleManagerPlugin) {
+    private val animationsFolder = File(plugin.dataFolder, "animations")
     private val oldAnimationPattern = "(?i)^animation[:](.+)$".toRegex()
     private val oldPlaceholderPattern = "\\{(.+)}".toRegex()
 
@@ -134,8 +135,8 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
                                 .joinToString(separator = "\n")
                                 .replace(oldPlaceholderPattern, transform = { "%{${it.groups[1]!!.value}}" })
 
-                        plugin.animationsFolder.mkdirs()
-                        val file = File(plugin.animationsFolder, "$name.txt")
+                        animationsFolder.mkdirs()
+                        val file = File(animationsFolder, "$name.txt")
 
                         if (!file.exists()) {
                             file.createNewFile()
