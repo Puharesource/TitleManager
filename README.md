@@ -78,7 +78,7 @@ depend: [TitleManager]
 
 If your plugin can run without TitleManager, then add the following line to your plugin.yml file instead
 ```yaml
-soft-depend: [TitleManager]
+softdepend: [TitleManager]
 ```
 
 ### Getting the API instance
