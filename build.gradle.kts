@@ -33,10 +33,14 @@ tasks {
         dependencies {
             include(dependency("org.jetbrains.kotlin:.*"))
             include(dependency("org.jetbrains.kotlinx:.*"))
+            include(dependency("com.google.dagger:.*"))
+            include(dependency("javax.inject:.*"))
         }
 
         relocate("kotlin", "io.puharesource.mc.titlemanager.shaded.kotlin")
         relocate("org.jetbrains", "io.puharesource.mc.titlemanager.shaded.org.jetbrains")
+        relocate("dagger", "io.puharesource.mc.titlemanager.shaded.dagger")
+        relocate("javax.inject", "io.puharesource.mc.titlemanager.shaded.javax.inject")
     }
 
     val dokka by getting(DokkaTask::class) {
@@ -203,6 +207,7 @@ dependencies {
     implementation("com.google.dagger:dagger:2.27")
     kapt("com.google.dagger:dagger-compiler:2.27")
 
+    implementation(group = "javax.inject", name = "javax.inject", version = "1")
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.3.72")
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.3.5")
 
