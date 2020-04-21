@@ -160,13 +160,17 @@ class ListenerServiceSpigot @Inject constructor(
 
     private fun registerCombatLogXTagEvent() {
         listenEventSync<PlayerPreTagEvent>(priority = EventPriority.MONITOR) {
-            scoreboardService.removeScoreboard(it.player)
+            if (playerInfoService.isScoreboardEnabled(it.player)) {
+                scoreboardService.removeScoreboard(it.player)
+            }
         }
     }
 
     private fun registerCombatLogXUntagEvent() {
         listenEventSync<PlayerUntagEvent>(priority = EventPriority.MONITOR) {
-            scoreboardService.giveDefaultScoreboard(it.player)
+            if (playerInfoService.isScoreboardEnabled(it.player)) {
+                scoreboardService.giveDefaultScoreboard(it.player)
+            }
         }
     }
 }
