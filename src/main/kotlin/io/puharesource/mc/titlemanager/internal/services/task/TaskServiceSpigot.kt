@@ -56,7 +56,7 @@ class TaskServiceSpigot @Inject constructor(private val plugin: TitleManagerPlug
     }
 
     private fun startUpdaterTask() {
-        val task = scheduleAsyncTimer(period = 20 * 60 * 10) {
+        val task = scheduleAsyncTimer(period = 20 * 60 * 60 * 5) {
             GlobalScope.launch {
                 debug("Searching for updates...")
 
