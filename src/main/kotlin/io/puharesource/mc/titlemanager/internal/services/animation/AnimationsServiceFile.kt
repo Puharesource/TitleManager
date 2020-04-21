@@ -6,11 +6,12 @@ import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
 import io.puharesource.mc.titlemanager.internal.extensions.color
 import io.puharesource.mc.titlemanager.internal.model.animation.StandardAnimationFrame
+import io.puharesource.mc.titlemanager.internal.services.placeholder.PlaceholderService
 import java.io.File
 import java.util.concurrent.ConcurrentSkipListMap
 import javax.inject.Inject
 
-class AnimationsServiceFile @Inject constructor(private val plugin: TitleManagerPlugin, private val scriptService: ScriptService) : AnimationsService {
+class AnimationsServiceFile @Inject constructor(private val plugin: TitleManagerPlugin, private val scriptService: ScriptService, private val placeholderService: PlaceholderService) : AnimationsService {
     private val animationsFolder = File(plugin.dataFolder, "animations")
     private val textAnimationFramePattern = "^\\[([-]?\\d+);([-]?\\d+);([-]?\\d+)](.+)$".toRegex()
     private val animationPattern = """[$][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()

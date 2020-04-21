@@ -85,7 +85,7 @@ object TitleManagerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideAnimationService(plugin: TitleManagerPlugin, scriptService: ScriptService): AnimationsService = AnimationsServiceFile(plugin, scriptService)
+    fun provideAnimationService(plugin: TitleManagerPlugin, scriptService: ScriptService, placeholderService: PlaceholderService): AnimationsService = AnimationsServiceFile(plugin, scriptService, placeholderService)
 
     @JvmStatic
     @Provides

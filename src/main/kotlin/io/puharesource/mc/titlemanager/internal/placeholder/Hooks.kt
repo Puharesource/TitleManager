@@ -103,4 +103,12 @@ object VaultHook : PluginHook("Vault") {
     }
 }
 
-object CombatLogXHook : PluginHook("CombatLogX")
+object CombatLogXHook : PluginHook("CombatLogX") {
+    fun isCorrectVersion() = try {
+        Class.forName("com.SirBlobman.combatlogx.api.event.PlayerPreTagEvent")
+
+        true
+    } catch (e: NoClassDefFoundError) {
+        false
+    }
+}

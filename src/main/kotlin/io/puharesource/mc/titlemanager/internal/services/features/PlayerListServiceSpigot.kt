@@ -84,9 +84,9 @@ class PlayerListServiceSpigot @Inject constructor(
     }
 
     override fun setProcessedHeader(player: Player, header: String) {
-        val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, header))
+        val parts = animationsService.textToAnimationParts(header)
 
-        createHeaderSendableAnimation(parts, player, withPlaceholders = false).start()
+        createHeaderSendableAnimation(parts, player, withPlaceholders = true).start()
     }
 
     override fun getFooter(player: Player): String {
@@ -114,9 +114,9 @@ class PlayerListServiceSpigot @Inject constructor(
     }
 
     override fun setProcessedFooter(player: Player, footer: String) {
-        val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, footer))
+        val parts = animationsService.textToAnimationParts(footer)
 
-        createFooterSendableAnimation(parts, player, withPlaceholders = false).start()
+        createFooterSendableAnimation(parts, player, withPlaceholders = true).start()
     }
 
     override fun setHeaderAndFooter(player: Player, header: String, footer: String, withPlaceholders: Boolean) {
