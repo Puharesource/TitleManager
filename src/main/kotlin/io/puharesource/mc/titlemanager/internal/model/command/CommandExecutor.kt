@@ -116,9 +116,9 @@ internal fun commandExecutor(plugin: TitleManagerPlugin, cmd: TMSubCommand, send
 
     executor.silent = parameters.containsKey("silent")
 
-    parameters["fadein"]?.let { executor.fadeIn = it.getIntOr(-1) }
-    parameters["stay"]?.let { executor.stay = it.getIntOr(-1) }
-    parameters["fadeout"]?.let { executor.fadeOut = it.getIntOr(-1) }
+    parameters["fadein"]?.let { executor.fadeIn = it.getIntOr(10) }
+    parameters["stay"]?.let { executor.stay = it.getIntOr(40) }
+    parameters["fadeout"]?.let { executor.fadeOut = it.getIntOr(10) }
     parameters["radius"]?.let { executor.radius = it.getDoubleOrNull() }
 
     parameters["world"]?.let { param ->

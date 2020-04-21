@@ -3,7 +3,6 @@ package io.puharesource.mc.titlemanager.internal.services.event
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
 import io.puharesource.mc.titlemanager.internal.model.event.TMEventListener
-import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsService
 import io.puharesource.mc.titlemanager.internal.services.features.ActionbarService
 import io.puharesource.mc.titlemanager.internal.services.features.PlayerListService
 import io.puharesource.mc.titlemanager.internal.services.features.ScoreboardService
@@ -24,7 +23,6 @@ class ListenerServiceSpigot @Inject constructor(
     private val taskService: TaskService,
     private val updateService: UpdateService,
     private val playerInfoService: PlayerInfoService,
-    private val animationsService: AnimationsService,
     private val titleService: TitleService,
     private val actionbarService: ActionbarService,
     private val playerListService: PlayerListService,
@@ -148,14 +146,14 @@ class ListenerServiceSpigot @Inject constructor(
 
             if (!playerInfoService.isScoreboardEnabled(player)) return@listenEventSync
 
-            val title = animationsService.textToAnimationParts(config.scoreboard.title)
-            val lines = config.scoreboard.lines.map { animationsService.textToAnimationParts(it) }
+            val title = config.scoreboard.title
+            val lines = config.scoreboard.lines
 
             scoreboardService.giveScoreboard(player)
-            scoreboardService.createScoreboardTitleSendableAnimation(title, player, true).start()
+            scoreboardService.setProcessedScoreboardTitle(player, title)
 
-            lines.forEachIndexed { index, parts ->
-                scoreboardService.createScoreboardValueSendableAnimation(parts, player, index + 1, true).start()
+            lines.forEachIndexed { index, text ->
+                scoreboardService.setProcessedScoreboardValue(player, index + 1, text)
             }
         }.addTo(listeners)
     }

@@ -21,7 +21,7 @@ class AnnouncerServiceSpigot(
     private var isRunning: Boolean = false
 
     override fun start() {
-        require(isRunning) { "Announcer is already running" }
+        require(!isRunning) { "Announcer is already running" }
 
         isRunning = true
 

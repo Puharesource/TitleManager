@@ -14,9 +14,11 @@ interface ScoreboardService {
 
     fun getScoreboardTitle(player: Player): String?
     fun setScoreboardTitle(player: Player, title: String, withPlaceholders: Boolean = false)
+    fun setProcessedScoreboardTitle(player: Player, title: String)
 
     fun getScoreboardValue(player: Player, index: Int): String?
     fun setScoreboardValue(player: Player, index: Int, value: String, withPlaceholders: Boolean = false)
+    fun setProcessedScoreboardValue(player: Player, index: Int, value: String)
     fun removeScoreboardValue(player: Player, index: Int)
 
     fun createScoreboardTitleSendableAnimation(animation: Animation, player: Player, withPlaceholders: Boolean = false): SendableAnimation

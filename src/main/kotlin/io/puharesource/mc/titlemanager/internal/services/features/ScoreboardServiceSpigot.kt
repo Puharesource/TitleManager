@@ -43,17 +43,16 @@ class ScoreboardServiceSpigot @Inject constructor(
     private val playerScoreboardUpdateTasks: MutableMap<Player, Int> = ConcurrentHashMap()
 
     override fun startPlayerTasks() {
-        val title = animationsService.textToAnimationParts(config.scoreboard.title)
-        val lines = config.scoreboard.lines.map { animationsService.textToAnimationParts(it) }
+        val lines = config.scoreboard.lines
 
         plugin.server.onlinePlayers.forEach {
             if (playerInfoService.isScoreboardEnabled(it)) {
                 giveScoreboard(it)
 
-                createScoreboardTitleSendableAnimation(title, it, true).start()
+                setProcessedScoreboardTitle(it, config.scoreboard.title)
 
-                lines.forEachIndexed { index, parts ->
-                    createScoreboardValueSendableAnimation(parts, it, index + 1, true).start()
+                lines.forEachIndexed { index, line ->
+                    setProcessedScoreboardValue(it, index + 1, line)
                 }
             }
         }
@@ -95,6 +94,13 @@ class ScoreboardServiceSpigot @Inject constructor(
         playerScoreboards[player]?.title = processedTitle
     }
 
+    override fun setProcessedScoreboardTitle(player: Player, title: String) {
+        removeRunningScoreboardTitleAnimation(player)
+        val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, title))
+
+        createScoreboardTitleSendableAnimation(parts, player, withPlaceholders = true).start()
+    }
+
     override fun getScoreboardValue(player: Player, index: Int): String? {
         require(index in 1..15) { "Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index" }
 
@@ -111,6 +117,16 @@ class ScoreboardServiceSpigot @Inject constructor(
         }
 
         playerScoreboards[player]?.set(index, processedValue)
+    }
+
+    override fun setProcessedScoreboardValue(player: Player, index: Int, value: String) {
+        require(index in 1..15) { "Index needs to be in the range of 1 to 15 (1 and 15 inclusive). Index provided: $index" }
+
+        removeRunningScoreboardValueAnimation(player, index)
+
+        val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, value))
+
+        createScoreboardValueSendableAnimation(parts, player, index).start()
     }
 
     override fun removeScoreboardValue(player: Player, index: Int) {
@@ -270,9 +286,7 @@ class ScoreboardServiceSpigot @Inject constructor(
         val fullPath = "running-$path-animation"
 
         if (player.hasMetadata(fullPath)) {
-            val animation = player.getMetadata(fullPath).first().value() as SendableAnimation
-
-            animation.stop()
+            (player.getMetadata(fullPath).first().value() as? SendableAnimation)?.stop()
 
             player.removeMetadata(fullPath, plugin)
         }

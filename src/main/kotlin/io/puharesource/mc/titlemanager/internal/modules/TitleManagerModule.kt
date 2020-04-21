@@ -37,48 +37,59 @@ import io.puharesource.mc.titlemanager.internal.services.task.TaskServiceSpigot
 import io.puharesource.mc.titlemanager.internal.services.update.UpdateService
 import io.puharesource.mc.titlemanager.internal.services.update.UpdateServiceSpigot
 import org.bukkit.Bukkit
+import javax.inject.Singleton
 import javax.script.ScriptEngineManager
 
 @Module
 object TitleManagerModule {
     @JvmStatic
     @Provides
+    @Singleton
     fun providePlugin(): TitleManagerPlugin = Bukkit.getPluginManager().getPlugin("TitleManager") as TitleManagerPlugin
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideConfig(plugin: TitleManagerPlugin): TMConfigMain = plugin.tmConfig
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideUpdateService(plugin: TitleManagerPlugin): UpdateService = UpdateServiceSpigot(plugin)
 
     @JvmStatic
     @Provides
+    @Singleton
     fun providePlayerInfoService(plugin: TitleManagerPlugin): PlayerInfoService = PlayerInfoServiceSqlite(plugin)
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideTitleManagerService(config: TMConfigMain, listenerService: ListenerService, taskService: TaskService, schedulerService: SchedulerService, animationsService: AnimationsService, scriptService: ScriptService, placeholderService: PlaceholderService, playerListService: PlayerListService, scoreboardService: ScoreboardService, bungeeCordService: BungeeCordService, announcerService: AnnouncerService): TitleManagerService = TitleManagerServiceSpigot(config, listenerService, taskService, schedulerService, animationsService, scriptService, placeholderService, playerListService, scoreboardService, bungeeCordService, announcerService)
 
     @JvmStatic
     @Provides
-    fun provideListenerService(config: TMConfigMain, plugin: TitleManagerPlugin, taskService: TaskService, updateService: UpdateService, playerInfoService: PlayerInfoService, animationsService: AnimationsService, titleService: TitleService, actionbarService: ActionbarService, playerListService: PlayerListService, scoreboardService: ScoreboardService): ListenerService = ListenerServiceSpigot(config, plugin, taskService, updateService, playerInfoService, animationsService, titleService, actionbarService, playerListService, scoreboardService)
+    @Singleton
+    fun provideListenerService(config: TMConfigMain, plugin: TitleManagerPlugin, taskService: TaskService, updateService: UpdateService, playerInfoService: PlayerInfoService, titleService: TitleService, actionbarService: ActionbarService, playerListService: PlayerListService, scoreboardService: ScoreboardService): ListenerService = ListenerServiceSpigot(config, plugin, taskService, updateService, playerInfoService, titleService, actionbarService, playerListService, scoreboardService)
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideTaskService(plugin: TitleManagerPlugin, config: TMConfigMain, updateService: UpdateService): TaskService = TaskServiceSpigot(plugin, config, updateService)
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideSchedulerService(): SchedulerService = SchedulerServiceAsync()
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideAnimationService(plugin: TitleManagerPlugin, scriptService: ScriptService): AnimationsService = AnimationsServiceFile(plugin, scriptService)
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideScriptService(plugin: TitleManagerPlugin, placeholderService: PlaceholderService): ScriptService {
         if (Package.getPackage("org.graalvm") != null) {
             return ScriptServiceGraal(plugin, placeholderService)
@@ -93,29 +104,36 @@ object TitleManagerModule {
 
     @JvmStatic
     @Provides
+    @Singleton
     fun providePlaceholderService(plugin: TitleManagerPlugin, config: TMConfigMain, bungeeCordService: BungeeCordService): PlaceholderService = PlaceholderServiceText(plugin, config, bungeeCordService)
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideTitleService(plugin: TitleManagerPlugin, animationsService: AnimationsService, placeholderService: PlaceholderService, schedulerService: SchedulerService): TitleService = TitleServiceSpigot(plugin, animationsService, placeholderService, schedulerService)
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideActionbarService(plugin: TitleManagerPlugin, placeholderService: PlaceholderService, animationsService: AnimationsService, schedulerService: SchedulerService): ActionbarService = ActionbarServiceSpigot(plugin, placeholderService, animationsService, schedulerService)
 
     @JvmStatic
     @Provides
+    @Singleton
     fun providePlayerListService(plugin: TitleManagerPlugin, config: TMConfigMain, placeholderService: PlaceholderService, animationsService: AnimationsService, schedulerService: SchedulerService): PlayerListService = PlayerListServiceSpigot(plugin, config, placeholderService, animationsService, schedulerService)
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideScoreboardService(plugin: TitleManagerPlugin, config: TMConfigMain, placeholderService: PlaceholderService, schedulerService: SchedulerService, animationsService: AnimationsService, playerInfoService: PlayerInfoService): ScoreboardService = ScoreboardServiceSpigot(plugin, config, placeholderService, schedulerService, animationsService, playerInfoService)
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideBungeeCordService(plugin: TitleManagerPlugin, taskService: TaskService): BungeeCordService = BungeeCordServiceSpigot(plugin, taskService)
 
     @JvmStatic
     @Provides
+    @Singleton
     fun provideAnnouncerService(plugin: TitleManagerPlugin, config: TMConfigMain, schedulerService: SchedulerService, titleService: TitleService, actionbarService: ActionbarService): AnnouncerService = AnnouncerServiceSpigot(plugin, config, schedulerService, titleService, actionbarService)
 }

@@ -1,7 +1,6 @@
 package io.puharesource.mc.titlemanager.internal.services.animation
 
 import com.google.common.collect.ImmutableMap
-import com.google.common.io.Resources.getResource
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
@@ -11,7 +10,7 @@ import java.io.File
 import java.util.concurrent.ConcurrentSkipListMap
 import javax.inject.Inject
 
-class AnimationsServiceFile @Inject constructor(plugin: TitleManagerPlugin, private val scriptService: ScriptService) : AnimationsService {
+class AnimationsServiceFile @Inject constructor(private val plugin: TitleManagerPlugin, private val scriptService: ScriptService) : AnimationsService {
     private val animationsFolder = File(plugin.dataFolder, "animations")
     private val textAnimationFramePattern = "^\\[([-]?\\d+);([-]?\\d+);([-]?\\d+)](.+)$".toRegex()
     private val animationPattern = """[$][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
@@ -85,21 +84,6 @@ class AnimationsServiceFile @Inject constructor(plugin: TitleManagerPlugin, priv
 
     override fun textToAnimationParts(text: String): List<AnimationPart<*>> {
         if (containsAnimations(text)) {
-            val result = animationPattern.matchEntire(text)!!
-            val animationName = result.groups[2]!!.value
-            val hasParameter = result.groups.size == 3
-
-            if (hasParameter && scriptService.scriptExists(animationName) == true) {
-                val animationValue = result.groups[3]!!.value.replace("\\}", "}")
-                return listOf(AnimationPart { scriptService.getScriptAnimation(animationName, animationValue, withPlaceholders = true) })
-            } else if (registeredAnimations.containsKey(animationName)) {
-                return listOf(AnimationPart { registeredAnimations[animationName] })
-            } else {
-                listOf(AnimationPart { text })
-            }
-        }
-
-        if (containsAnimations(text)) {
             val list: MutableList<AnimationPart<*>> = mutableListOf()
             val matcher = animationPattern.toPattern().matcher(text)
 
@@ -118,7 +102,7 @@ class AnimationsServiceFile @Inject constructor(plugin: TitleManagerPlugin, priv
                     list.add(AnimationPart { part })
                 }
 
-                if (hasParameter && scriptService?.scriptExists(animation) == true) {
+                if (hasParameter && scriptService.scriptExists(animation)) {
                     val animationValue = matcher.group(3).replace("\\}", "}")
                     list.add(AnimationPart { scriptService.getScriptAnimation(animation, animationValue, withPlaceholders = true) })
                 } else if (registeredAnimations.containsKey(animation)) {
@@ -145,7 +129,7 @@ class AnimationsServiceFile @Inject constructor(plugin: TitleManagerPlugin, priv
     }
 
     private fun saveAnimationResourceToDisk(fileName: String) {
-        getResource("animations/$fileName")?.let { url ->
+        plugin.getResource("animations/$fileName")?.let { url ->
             File(animationsFolder, fileName).writeBytes(url.readBytes())
         }
     }

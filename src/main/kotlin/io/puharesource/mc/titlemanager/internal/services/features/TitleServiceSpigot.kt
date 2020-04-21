@@ -43,7 +43,7 @@ class TitleServiceSpigot @Inject constructor(
         }
 
         if (NMSManager.versionIndex >= 9) {
-            player.sendTitle("", processedSubtitle, fadeIn, stay, fadeOut)
+            player.sendTitle(null, processedSubtitle, fadeIn, stay, fadeOut)
         } else {
             NMSUtil.sendSubtitle(player, processedSubtitle, fadeIn, stay, fadeOut)
         }
@@ -97,7 +97,7 @@ class TitleServiceSpigot @Inject constructor(
     }
 
     override fun sendProcessedTitle(player: Player, text: String, fadeIn: Int, stay: Int, fadeOut: Int) {
-        val parts = animationsService.textToAnimationParts(text)
+        val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, text))
 
         if (parts.size == 1 && parts.first().part is String) {
             sendTitle(player,
@@ -105,16 +105,16 @@ class TitleServiceSpigot @Inject constructor(
                     fadeIn = fadeIn,
                     stay = stay,
                     fadeOut = fadeOut,
-                    withPlaceholders = true)
+                    withPlaceholders = false)
         } else if (parts.size == 1 && parts.first().part is Animation) {
-            createTitleSendableAnimation(parts.first().part as Animation, player, withPlaceholders = true).start()
+            createTitleSendableAnimation(parts.first().part as Animation, player, withPlaceholders = false).start()
         } else if (parts.isNotEmpty()) {
-            createTitleSendableAnimation(parts, player, withPlaceholders = true).start()
+            createTitleSendableAnimation(parts, player, withPlaceholders = false).start()
         }
     }
 
     override fun sendProcessedSubtitle(player: Player, text: String, fadeIn: Int, stay: Int, fadeOut: Int) {
-        val parts = animationsService.textToAnimationParts(text)
+        val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, text))
 
         if (parts.size == 1 && parts.first().part is String) {
             sendSubtitle(player,
@@ -122,11 +122,11 @@ class TitleServiceSpigot @Inject constructor(
                     fadeIn = fadeIn,
                     stay = stay,
                     fadeOut = fadeOut,
-                    withPlaceholders = true)
+                    withPlaceholders = false)
         } else if (parts.size == 1 && parts.first().part is Animation) {
-            createSubtitleSendableAnimation(parts.first().part as Animation, player, withPlaceholders = true).start()
+            createSubtitleSendableAnimation(parts.first().part as Animation, player, withPlaceholders = false).start()
         } else if (parts.isNotEmpty()) {
-            createSubtitleSendableAnimation(parts, player, withPlaceholders = true).start()
+            createSubtitleSendableAnimation(parts, player, withPlaceholders = false).start()
         }
     }
 
