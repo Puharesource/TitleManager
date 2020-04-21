@@ -4,7 +4,7 @@
 
 <p align="center">
     <a href="https://www.spigotmc.org/resources/titlemanager.1049">
-        <img src="https://img.shields.io/badge/Version-2.1.7-green"
+        <img src="https://img.shields.io/badge/Version-2.2.0-green"
              alt="Version">
     </a>
     <a href="https://github.com/Puharesource/TitleManager/actions">
@@ -43,7 +43,7 @@ Example for Gradle:
 ```groovy
 maven {
     name 'puharesource-repo'
-    url 'http://repo.puha.io/repo/'
+    url 'https://repo.puha.io/repo/'
 }
 ```
 
@@ -51,14 +51,14 @@ Example for Maven:
 ```xml
 <repository>
   <id>puha-repo</id>
-  <url>http://repo.puha.io/repo/</url>
+  <url>https://repo.puha.io/repo/</url>
 </repository>
 ```
 
 #### The dependency
 Example for Gradle:
 ```groovy
-compile group: 'io.puharesource.mc', name: 'TitleManager', version: '2.0.0'
+compile group: 'io.puharesource.mc', name: 'TitleManager', version: '2.2.0'
 ```  
 
 Example for Maven
@@ -66,7 +66,7 @@ Example for Maven
 <dependency>
    <groupId>io.puharesource.mc</groupId>
    <artifactId>TitleManager</artifactId>
-   <version>2.0.0</version>
+   <version>2.2.0</version>
 </dependency>
 ```
 
