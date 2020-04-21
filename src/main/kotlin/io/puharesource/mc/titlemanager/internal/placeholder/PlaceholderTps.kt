@@ -15,7 +15,7 @@ object PlaceholderTps {
 
     fun getTps(index: Int? = null): String {
         val output = getOutput()
-        val result = regex.matchEntire(output.substring(29))!!
+        val result = regex.matchEntire(output.substring(29)) ?: return "N/A"
 
         if (index == 1) {
             return result.groups[1]!!.value
