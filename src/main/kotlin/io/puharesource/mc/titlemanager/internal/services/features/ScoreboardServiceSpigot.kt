@@ -44,8 +44,6 @@ class ScoreboardServiceSpigot @Inject constructor(
     private val playerScoreboardUpdateTasks: MutableMap<Player, Int> = ConcurrentHashMap()
 
     override fun startPlayerTasks() {
-        val lines = config.scoreboard.lines
-
         plugin.server.onlinePlayers.forEach {
             if (playerInfoService.isScoreboardEnabled(it)) {
                 toggleScoreboardInWorld(it, it.world)
