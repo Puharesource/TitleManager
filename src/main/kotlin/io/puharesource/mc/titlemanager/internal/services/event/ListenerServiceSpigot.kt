@@ -1,8 +1,11 @@
 package io.puharesource.mc.titlemanager.internal.services.event
 
+import com.SirBlobman.combatlogx.api.event.PlayerPreTagEvent
+import com.SirBlobman.combatlogx.api.event.PlayerUntagEvent
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
 import io.puharesource.mc.titlemanager.internal.model.event.TMEventListener
+import io.puharesource.mc.titlemanager.internal.placeholder.CombatLogXHook
 import io.puharesource.mc.titlemanager.internal.services.features.ActionbarService
 import io.puharesource.mc.titlemanager.internal.services.features.PlayerListService
 import io.puharesource.mc.titlemanager.internal.services.features.ScoreboardService
@@ -53,6 +56,11 @@ class ListenerServiceSpigot @Inject constructor(
 
             if (config.scoreboard.enabled) {
                 registerSetScoreboard()
+            }
+
+            if (CombatLogXHook.isEnabled()) {
+                registerCombatLogXTagEvent()
+                registerCombatLogXUntagEvent()
             }
         }
     }
@@ -146,15 +154,19 @@ class ListenerServiceSpigot @Inject constructor(
 
             if (!playerInfoService.isScoreboardEnabled(player)) return@listenEventSync
 
-            val title = config.scoreboard.title
-            val lines = config.scoreboard.lines
-
-            scoreboardService.giveScoreboard(player)
-            scoreboardService.setProcessedScoreboardTitle(player, title)
-
-            lines.forEachIndexed { index, text ->
-                scoreboardService.setProcessedScoreboardValue(player, index + 1, text)
-            }
+            scoreboardService.giveDefaultScoreboard(player)
         }.addTo(listeners)
+    }
+
+    private fun registerCombatLogXTagEvent() {
+        listenEventSync<PlayerPreTagEvent>(priority = EventPriority.MONITOR) {
+            scoreboardService.removeScoreboard(it.player)
+        }
+    }
+
+    private fun registerCombatLogXUntagEvent() {
+        listenEventSync<PlayerUntagEvent>(priority = EventPriority.MONITOR) {
+            scoreboardService.giveDefaultScoreboard(it.player)
+        }
     }
 }

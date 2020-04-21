@@ -102,3 +102,5 @@ object VaultHook : PluginHook("Vault") {
         return permissions != null
     }
 }
+
+object CombatLogXHook : PluginHook("CombatLogX")
