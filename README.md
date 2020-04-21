@@ -12,7 +12,7 @@
              alt="Actions Status">
     </a>
     <a href="https://tarkan.dev/javadoc/titlemanager/">
-        <img src="https://img.shields.io/badge/JavaDoc-2.1-blue.svg"
+        <img src="https://img.shields.io/badge/JavaDoc-2.2-blue.svg"
              alt="Javadoc">
     </a>
     <a href="https://www.spigotmc.org/resources/titlemanager.1049/updates">
