@@ -99,6 +99,7 @@ data class TMConfigScoreboard(override val section: ConfigurationSection) : TMCo
     val enabled: Boolean = value("enabled")
     val title: String = value<String>("title").color()
     val lines: List<String> = stringList("lines").take(15).map { it.color() }
+    val disabledWorlds: List<String> = stringList("disabled-worlds")
 }
 
 data class TMConfigAnnouncer(override val section: ConfigurationSection) : TMConfig {

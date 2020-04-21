@@ -19,6 +19,7 @@ import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsSer
 import io.puharesource.mc.titlemanager.internal.services.placeholder.PlaceholderService
 import io.puharesource.mc.titlemanager.internal.services.storage.PlayerInfoService
 import io.puharesource.mc.titlemanager.internal.services.task.SchedulerService
+import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
 import java.util.concurrent.ConcurrentHashMap
@@ -47,13 +48,7 @@ class ScoreboardServiceSpigot @Inject constructor(
 
         plugin.server.onlinePlayers.forEach {
             if (playerInfoService.isScoreboardEnabled(it)) {
-                giveScoreboard(it)
-
-                setProcessedScoreboardTitle(it, config.scoreboard.title)
-
-                lines.forEachIndexed { index, line ->
-                    setProcessedScoreboardValue(it, index + 1, line)
-                }
+                toggleScoreboardInWorld(it, it.world)
             }
         }
     }
@@ -169,6 +164,26 @@ class ScoreboardServiceSpigot @Inject constructor(
         return PartBasedSendableAnimation(schedulerService, parts, player, {
             setScoreboardValue(player, index, it.text, withPlaceholders = withPlaceholders)
         }, continuous = true, tickRate = config.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { receiver, animation -> setRunningScoreboardValueAnimation(receiver, index, animation) })
+    }
+
+    override fun isScoreboardDisabledWorld(world: World) = config.scoreboard.disabledWorlds.any { disabledWorldName -> disabledWorldName.equals(world.name, ignoreCase = true) }
+
+    override fun toggleScoreboardInWorld(player: Player, world: World?) {
+        if (!playerInfoService.isScoreboardEnabled(player)) {
+            return
+        }
+
+        if (hasScoreboard(player)) {
+            if (world != null) {
+                if (isScoreboardDisabledWorld(world)) {
+                    removeScoreboard(player)
+                }
+            }
+        } else {
+            if (world == null || !isScoreboardDisabledWorld(world)) {
+                giveDefaultScoreboard(player)
+            }
+        }
     }
 
     private fun sendPacketCreateScoreboardWithName(player: Player, scoreboardName: String) {

@@ -18,6 +18,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.PlayerTeleportEvent
 import javax.inject.Inject
 
 class ListenerServiceSpigot @Inject constructor(
@@ -56,6 +57,10 @@ class ListenerServiceSpigot @Inject constructor(
 
             if (config.scoreboard.enabled) {
                 registerSetScoreboard()
+            }
+
+            if (config.scoreboard.disabledWorlds.isNotEmpty()) {
+                registerToggleScoreboardOnWorldChange()
             }
 
             if (CombatLogXHook.isEnabled()) {
@@ -152,9 +157,7 @@ class ListenerServiceSpigot @Inject constructor(
         listenEventSync<PlayerJoinEvent> {
             val player = it.player
 
-            if (!playerInfoService.isScoreboardEnabled(player)) return@listenEventSync
-
-            scoreboardService.giveDefaultScoreboard(player)
+            scoreboardService.toggleScoreboardInWorld(player, player.world)
         }.addTo(listeners)
     }
 
@@ -163,7 +166,7 @@ class ListenerServiceSpigot @Inject constructor(
             if (playerInfoService.isScoreboardEnabled(it.player)) {
                 scoreboardService.removeScoreboard(it.player)
             }
-        }
+        }.addTo(listeners)
     }
 
     private fun registerCombatLogXUntagEvent() {
@@ -171,6 +174,17 @@ class ListenerServiceSpigot @Inject constructor(
             if (playerInfoService.isScoreboardEnabled(it.player)) {
                 scoreboardService.giveDefaultScoreboard(it.player)
             }
-        }
+        }.addTo(listeners)
+    }
+
+    private fun registerToggleScoreboardOnWorldChange() {
+        listenEventSync<PlayerTeleportEvent>(priority = EventPriority.MONITOR) {
+            val player = it.player
+            val toWorld = it.to?.world
+
+            if (it.from.world != toWorld) {
+                scoreboardService.toggleScoreboardInWorld(player, toWorld)
+            }
+        }.addTo(listeners)
     }
 }

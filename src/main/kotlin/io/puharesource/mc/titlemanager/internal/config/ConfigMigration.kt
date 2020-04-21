@@ -48,6 +48,11 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
             updateTo5()
             plugin.reloadConfig()
         }
+
+        if (version < 6) {
+            updateTo6()
+            plugin.reloadConfig()
+        }
     }
 
     private fun move(path: String, newPath: String? = null, transformer: ((Any) -> Any)? = null) {
@@ -175,6 +180,40 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
                 .forEach { conf.getConfigurationSection("messages")!!.set(it.first, it.second) }
 
         config.set("config-version", 5)
+        config.save(configFile)
+    }
+
+    private fun updateTo6() {
+        debug("Upgrading config from version 5 to version 6")
+
+        val configFile = File(dataFolder, "config.yml")
+        val oldFile = File(dataFolder, "config-old-5.yml")
+
+        configFile.renameTo(oldFile)
+        plugin.saveDefaultConfig()
+
+        val conf = PrettyConfig(configFile)
+        plugin.conf = conf
+
+        val disabledWorlds = conf.get("scoreboard.disabled-worlds")
+        val oldConfig = YamlConfiguration.loadConfiguration(oldFile.reader())
+
+        conf.getKeys(false)
+            .asSequence()
+            .filter { it != "config-version" && it != "messages" }
+            .filter { oldConfig.contains(it) }
+            .map { it to oldConfig[it] }
+            .forEach { conf.set(it.first, it.second) }
+
+        conf.getConfigurationSection("messages")!!.getKeys(false)
+            .asSequence()
+            .filter { oldConfig.contains(it) }
+            .map { it to oldConfig[it] }
+            .forEach { conf.getConfigurationSection("messages")!!.set(it.first, it.second) }
+
+        conf.set("scoreboard.disabled-worlds", disabledWorlds)
+
+        config.set("config-version", 6)
         config.save(configFile)
     }
 }

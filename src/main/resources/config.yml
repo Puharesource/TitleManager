@@ -33,7 +33,7 @@
 ############################################################
 
 # Never change this value
-config-version: 5
+config-version: 6
 
 # Toggles debug mode, which prints additional information when the plugin does something.
 debug: false
@@ -209,6 +209,11 @@ scoreboard:
   - '&b> &3&lServer Time:'
   - '&b%{server-time}'
   - '&b&m----------------------------------&r'
+
+  # A list of worlds that the Scoreboard should not be shown in.
+  disabled-worlds:
+  - 'my-disabled-world'
+  - 'my-disabled-world-nether'
 
 ############################################################
 # +------------------------------------------------------+ #
