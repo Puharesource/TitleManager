@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "io.puharesource.mc"
-version = "2.1.8"
+version = "2.2.0"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"

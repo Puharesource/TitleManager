@@ -138,16 +138,22 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
     override fun sendTitle(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendTitle(player, title, fadeIn, stay, fadeOut, withPlaceholders = false)
     override fun sendTitleWithPlaceholders(player: Player, title: String) = titleManagerComponent.titleService().sendTitle(player, title, withPlaceholders = true)
     override fun sendTitleWithPlaceholders(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendTitle(player, title, fadeIn, stay, fadeOut, withPlaceholders = true)
+    override fun sendProcessedTitle(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendProcessedTitle(player, title, fadeIn, stay, fadeOut)
 
     override fun sendSubtitle(player: Player, subtitle: String) = titleManagerComponent.titleService().sendSubtitle(player, subtitle, withPlaceholders = false)
     override fun sendSubtitle(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendSubtitle(player, subtitle, fadeIn, stay, fadeOut, withPlaceholders = false)
     override fun sendSubtitleWithPlaceholders(player: Player, subtitle: String) = titleManagerComponent.titleService().sendSubtitle(player, subtitle, withPlaceholders = true)
     override fun sendSubtitleWithPlaceholders(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendSubtitle(player, subtitle, fadeIn, stay, fadeOut, withPlaceholders = true)
+    override fun sendProcessedSubtitle(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendProcessedSubtitle(player, subtitle, fadeIn, stay, fadeOut)
 
     override fun sendTitles(player: Player, title: String, subtitle: String) = titleManagerComponent.titleService().sendTitles(player, title, subtitle, withPlaceholders = false)
     override fun sendTitles(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendTitles(player, title, subtitle, fadeIn, stay, fadeOut, withPlaceholders = false)
     override fun sendTitlesWithPlaceholders(player: Player, title: String, subtitle: String) = titleManagerComponent.titleService().sendTitles(player, title, subtitle, withPlaceholders = true)
     override fun sendTitlesWithPlaceholders(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendTitles(player, title, subtitle, fadeIn, stay, fadeOut, withPlaceholders = true)
+    override fun sendProcessedTitles(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) {
+        titleManagerComponent.titleService().sendProcessedTitle(player, title, fadeIn, stay, fadeOut)
+        titleManagerComponent.titleService().sendProcessedSubtitle(player, subtitle, fadeIn, stay, fadeOut)
+    }
 
     override fun sendTimings(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) = titleManagerComponent.titleService().sendTimings(player, fadeIn, stay, fadeOut)
 
@@ -157,29 +163,36 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
     override fun sendActionbar(player: Player, text: String) = titleManagerComponent.actionbarService().sendActionbar(player, text, withPlaceholders = false)
     override fun sendActionbarWithPlaceholders(player: Player, text: String) = titleManagerComponent.actionbarService().sendActionbar(player, text, withPlaceholders = true)
+    override fun sendProcessedActionbar(player: Player, text: String) = titleManagerComponent.actionbarService().sendProcessedActionbar(player, text)
     override fun clearActionbar(player: Player) = titleManagerComponent.actionbarService().clearActionbar(player)
 
     override fun setHeader(player: Player, header: String) = titleManagerComponent.playerListService().setHeader(player, header, withPlaceholders = false)
     override fun setHeaderWithPlaceholders(player: Player, header: String) = titleManagerComponent.playerListService().setHeader(player, header, withPlaceholders = true)
+    override fun setProcessedHeader(player: Player, header: String) = titleManagerComponent.playerListService().setProcessedHeader(player, header)
     override fun getHeader(player: Player) = titleManagerComponent.playerListService().getHeader(player)
 
     override fun setFooter(player: Player, footer: String) = titleManagerComponent.playerListService().setFooter(player, footer, withPlaceholders = false)
     override fun setFooterWithPlaceholders(player: Player, footer: String) = titleManagerComponent.playerListService().setFooter(player, footer, withPlaceholders = true)
+    override fun setProcessedFooter(player: Player, footer: String) = titleManagerComponent.playerListService().setProcessedFooter(player, footer)
     override fun getFooter(player: Player) = titleManagerComponent.playerListService().getFooter(player)
 
     override fun setHeaderAndFooter(player: Player, header: String, footer: String) = titleManagerComponent.playerListService().setHeaderAndFooter(player, header, footer, withPlaceholders = false)
     override fun setHeaderAndFooterWithPlaceholders(player: Player, header: String, footer: String) = titleManagerComponent.playerListService().setHeaderAndFooter(player, header, footer)
+    override fun setProcessedHeaderAndFooter(player: Player, header: String, footer: String) = titleManagerComponent.playerListService().setHeaderAndFooter(player, header, footer)
 
     override fun giveScoreboard(player: Player) = titleManagerComponent.scoreboardService().giveScoreboard(player)
+    override fun giveDefaultScoreboard(player: Player) = titleManagerComponent.scoreboardService().giveDefaultScoreboard(player)
     override fun removeScoreboard(player: Player) = titleManagerComponent.scoreboardService().removeScoreboard(player)
     override fun hasScoreboard(player: Player) = titleManagerComponent.scoreboardService().hasScoreboard(player)
 
     override fun setScoreboardTitle(player: Player, title: String) = titleManagerComponent.scoreboardService().setScoreboardTitle(player, title, withPlaceholders = false)
     override fun setScoreboardTitleWithPlaceholders(player: Player, title: String) = titleManagerComponent.scoreboardService().setScoreboardTitle(player, title, withPlaceholders = true)
+    override fun setProcessedScoreboardTitle(player: Player, title: String) = titleManagerComponent.scoreboardService().setProcessedScoreboardTitle(player, title)
     override fun getScoreboardTitle(player: Player) = titleManagerComponent.scoreboardService().getScoreboardTitle(player)
 
     override fun setScoreboardValue(player: Player, index: Int, value: String) = titleManagerComponent.scoreboardService().setScoreboardValue(player, index, value, withPlaceholders = false)
     override fun setScoreboardValueWithPlaceholders(player: Player, index: Int, value: String) = titleManagerComponent.scoreboardService().setScoreboardValue(player, index, value, withPlaceholders = false)
+    override fun setProcessedScoreboardValue(player: Player, index: Int, value: String) = titleManagerComponent.scoreboardService().setProcessedScoreboardValue(player, index, value)
     override fun getScoreboardValue(player: Player, index: Int) = titleManagerComponent.scoreboardService().getScoreboardValue(player, index)
     override fun removeScoreboardValue(player: Player, index: Int) = titleManagerComponent.scoreboardService().removeScoreboardValue(player, index)
 }

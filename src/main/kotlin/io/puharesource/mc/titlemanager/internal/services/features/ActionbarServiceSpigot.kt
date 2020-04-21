@@ -24,14 +24,14 @@ class ActionbarServiceSpigot @Inject constructor(
     private val schedulerService: SchedulerService
 ) : ActionbarService {
     override fun sendProcessedActionbar(player: Player, text: String) {
-        val parts = animationsService.textToAnimationParts(text)
+        val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, text))
 
         if (parts.size == 1 && parts.first().part is String) {
-            sendActionbar(player, text = parts.first().part as String, withPlaceholders = true)
+            sendActionbar(player, text = parts.first().part as String, withPlaceholders = false)
         } else if (parts.size == 1 && parts.first().part is Animation) {
-            createActionbarSendableAnimation(parts.first().part as Animation, player, withPlaceholders = true).start()
+            createActionbarSendableAnimation(parts.first().part as Animation, player, withPlaceholders = false).start()
         } else if (parts.isNotEmpty()) {
-            createActionbarSendableAnimation(parts, player, withPlaceholders = true).start()
+            createActionbarSendableAnimation(parts, player, withPlaceholders = false).start()
         }
     }
 

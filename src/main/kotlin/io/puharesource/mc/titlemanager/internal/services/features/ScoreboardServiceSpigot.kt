@@ -69,6 +69,18 @@ class ScoreboardServiceSpigot @Inject constructor(
         }
     }
 
+    override fun giveDefaultScoreboard(player: Player) {
+        if (!hasScoreboard(player)) {
+            giveScoreboard(player)
+
+            setProcessedScoreboardTitle(player, config.scoreboard.title)
+
+            config.scoreboard.lines.forEachIndexed { index, line ->
+                setProcessedScoreboardValue(player, index + 1, line)
+            }
+        }
+    }
+
     override fun removeScoreboard(player: Player) {
         playerScoreboards.remove(player)?.let { scoreboard ->
             stopUpdateTask(player)

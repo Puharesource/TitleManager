@@ -10,6 +10,7 @@ interface ScoreboardService {
 
     fun hasScoreboard(player: Player): Boolean
     fun giveScoreboard(player: Player)
+    fun giveDefaultScoreboard(player: Player)
     fun removeScoreboard(player: Player)
 
     fun getScoreboardTitle(player: Player): String?

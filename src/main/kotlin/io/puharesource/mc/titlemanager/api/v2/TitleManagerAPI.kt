@@ -724,6 +724,32 @@ interface TitleManagerAPI {
     fun sendTitleWithPlaceholders(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int)
 
     /**
+     * Sends a title message to the given [Player] with the given timings where all placeholders have been replaced
+     * and with the given timings.
+     * If animations or scripts are available, they will be shown.
+     *
+     * @param player The player the title should be sent to.
+     * @param title The title to be sent to the [Player].
+     * @param fadeIn The time it takes for the title to fade onto the screen.
+     * @param stay The time it takes for the title to stay on the screen.
+     * @param fadeOut The time it takes for the title to fade off of the screen.
+     *
+     * @see .sendTitle
+     * @see .sendTitle
+     * @see .sendTitleWithPlaceholders
+     * @see .sendTitleWithPlaceholders
+     * @see .sendSubtitle
+     * @see .sendSubtitle
+     * @see .sendSubtitleWithPlaceholders
+     * @see .sendTitles
+     * @see .sendTitles
+     * @see .sendTitlesWithPlaceholders
+     * @see .sendTitlesWithPlaceholders
+     * @since 2.2.0
+     */
+    fun sendProcessedTitle(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int)
+
+    /**
      * Sends a subtitle message to the given [Player].
      * This will also use the last sent timings.
      *
@@ -815,6 +841,32 @@ interface TitleManagerAPI {
      * @since 2.0.0
      */
     fun sendSubtitleWithPlaceholders(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int)
+
+    /**
+     * Sends a subtitle message to the given [Player] where all placeholders have been replaced
+     * and with the given timings.
+     * If animations or scripts are available, they will be shown.
+     *
+     * @param player The player the subtitle should be sent to.
+     * @param subtitle The subtitle to be displayed.
+     * @param fadeIn The time it takes for the subtitle to fade onto the screen.
+     * @param stay The time it takes for the subtitle to stay on the screen.
+     * @param fadeOut The time it takes for the subtitle to fade off of the screen.
+     *
+     * @see .sendTitle
+     * @see .sendTitle
+     * @see .sendTitleWithPlaceholders
+     * @see .sendTitleWithPlaceholders
+     * @see .sendSubtitle
+     * @see .sendSubtitleWithPlaceholders
+     * @see .sendSubtitleWithPlaceholders
+     * @see .sendTitles
+     * @see .sendTitles
+     * @see .sendTitlesWithPlaceholders
+     * @see .sendTitlesWithPlaceholders
+     * @since 2.2.0
+     */
+    fun sendProcessedSubtitle(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int)
 
     /**
      * Sends a title and a subtitle message to the given [Player].
@@ -912,6 +964,33 @@ interface TitleManagerAPI {
     fun sendTitlesWithPlaceholders(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int)
 
     /**
+     * Sends a title and a subtitle message to the given [Player] where all placeholders are replaced
+     * and with the given timings.
+     * If animations or scripts are available, they will be shown.
+     *
+     * @param player The player the titles should be sent to.
+     * @param title The title to be displayed.
+     * @param subtitle The subtitle to be displayed.
+     * @param fadeIn The time it takes for the titles to fade onto the screen.
+     * @param stay The time it takes for the titles to stay on the screen.
+     * @param fadeOut The time it takes for the titles to fade off of the screen.
+     *
+     * @see .sendTitle
+     * @see .sendTitle
+     * @see .sendTitleWithPlaceholders
+     * @see .sendTitleWithPlaceholders
+     * @see .sendSubtitle
+     * @see .sendSubtitle
+     * @see .sendSubtitleWithPlaceholders
+     * @see .sendSubtitleWithPlaceholders
+     * @see .sendTitles
+     * @see .sendTitles
+     * @see .sendTitlesWithPlaceholders
+     * @since 2.2.0
+     */
+    fun sendProcessedTitles(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int)
+
+    /**
      * Sets the timings for all of the next titles and subtitles sent to the [Player].
      *
      * @param player The player the timings should be set for.
@@ -979,6 +1058,18 @@ interface TitleManagerAPI {
     fun sendActionbarWithPlaceholders(player: Player, text: String)
 
     /**
+     * Sends an actionbar message to the [Player] where all placeholders are replaced.
+     * If animations or scripts are available, they will be shown.
+     *
+     * @param player The player to send the actionbar message.
+     * @param text The text to be sent.
+     *
+     * @see .sendActionbar
+     * @since 2.2.0
+     */
+    fun sendProcessedActionbar(player: Player, text: String)
+
+    /**
      * Removes an actionbar message that might be on the player's screen.
      *
      * @param player The player to clear.
@@ -1020,6 +1111,24 @@ interface TitleManagerAPI {
      * @since 2.0.0
      */
     fun setHeaderWithPlaceholders(player: Player, header: String)
+
+    /**
+     * Sets the player list header for the given [Player] where all placeholders are replaced.
+     * If animations or scripts are available, they will be shown.
+     *
+     * @param player The player to set the header for.
+     * @param header The header to be displayed.
+     *
+     * @see .getHeader
+     * @see .setHeader
+     * @see .getFooter
+     * @see .setFooter
+     * @see .setFooterWithPlaceholders
+     * @see .setHeaderAndFooter
+     * @see .setHeaderAndFooterWithPlaceholders
+     * @since 2.2.0
+     */
+    fun setProcessedHeader(player: Player, header: String)
 
     /**
      * Gets the player list header that is currently being displayed for the given [Player].
@@ -1072,6 +1181,24 @@ interface TitleManagerAPI {
      * @since 2.0.0
      */
     fun setFooterWithPlaceholders(player: Player, footer: String)
+
+    /**
+     * Sets the player list footer for the given [Player] where all placeholders are replaced.
+     * If animations or scripts are available, they will be shown.
+     *
+     * @param player The player to set the footer for.
+     * @param footer The footer to be displayed.
+     *
+     * @see .getHeader
+     * @see .setHeader
+     * @see .setHeaderWithPlaceholders
+     * @see .getFooter
+     * @see .setFooter
+     * @see .setHeaderAndFooter
+     * @see .setHeaderAndFooterWithPlaceholders
+     * @since 2.2.0
+     */
+    fun setProcessedFooter(player: Player, footer: String)
 
     /**
      * Gets the player list footer that is currently being displayed for the given [Player].
@@ -1128,6 +1255,25 @@ interface TitleManagerAPI {
     fun setHeaderAndFooterWithPlaceholders(player: Player, header: String, footer: String)
 
     /**
+     * Sets the player list header and footer for the given [Player] where all placeholders are replaced.
+     * If animations or scripts are available, they will be shown.
+     *
+     * @param player The player to get and set the footer for.
+     * @param header The header to be displayed.
+     * @param footer The footer to be displayed.
+     *
+     * @see .getHeader
+     * @see .setHeader
+     * @see .setHeaderWithPlaceholders
+     * @see .getFooter
+     * @see .setFooter
+     * @see .setFooterWithPlaceholders
+     * @see .setHeaderAndFooter
+     * @since 2.2.0
+     */
+    fun setProcessedHeaderAndFooter(player: Player, header: String, footer: String)
+
+    /**
      * Gives the [Player] a scoreboard as a sidebar.
      *
      *
@@ -1142,6 +1288,23 @@ interface TitleManagerAPI {
      * @since 2.0.0
      */
     fun giveScoreboard(player: Player)
+
+    /**
+     * Gives the [Player] a scoreboard as a sidebar.
+     *
+     *
+     * Gives you the TitleManager's own Scoreboard found in the config file.
+     *
+     * @param player The player the scoreboard should be given to.
+     *
+     * @see .removeScoreboard
+     * @see .hasScoreboard
+     * @see .setScoreboardValue
+     * @see .setScoreboardValueWithPlaceholders
+     * @see .giveScoreboard
+     * @since 2.2.0
+     */
+    fun giveDefaultScoreboard(player: Player)
 
     /**
      * Removes the scoreboard sidebar from the given player.
@@ -1199,6 +1362,25 @@ interface TitleManagerAPI {
     fun setScoreboardTitleWithPlaceholders(player: Player, title: String)
 
     /**
+     * Sets the title of the given [Player]'s scoreboard, if they have one assigned.
+     *
+     *
+     * If placeholders are available, the title will try to replace them.
+     * If animations or scripts are available, they will be shown.
+     *
+     * @param player The player to set the title for.
+     * @param title The title to be set. (Will be trimmed to a maximum of 32 characters)
+     *
+     * @see .giveScoreboard
+     * @see .hasScoreboard
+     * @see .setScoreboardTitle
+     * @see .setScoreboardTitleWithPlaceholders
+     * @see .getScoreboardTitle
+     * @since 2.2.0
+     */
+    fun setProcessedScoreboardTitle(player: Player, title: String)
+
+    /**
      * Gets the title of the given [Player]'s scoreboard.
      *
      * @param player The player to get the title from.
@@ -1247,6 +1429,27 @@ interface TitleManagerAPI {
      * @since 2.0.0
      */
     fun setScoreboardValueWithPlaceholders(player: Player, index: Int, value: String)
+
+    /**
+     * Sets the text value of the given [Player]'s scoreboard at the given index.
+     *
+     *
+     * If placeholders are available, the value will try to replace them.
+     * If animations or scripts are available, they will be shown.
+     *
+     * @param player The player to set the text value for.
+     * @param index The index at which the text should be set. 1-15 (1 and 15 inclusive)
+     * @param value The text value that should be set.
+     *
+     * @see .giveScoreboard
+     * @see .hasScoreboard
+     * @see .setScoreboardValue
+     * @see .setScoreboardValueWithPlaceholders
+     * @see .getScoreboardValue
+     * @see .removeScoreboardValue
+     * @since 2.2.0
+     */
+    fun setProcessedScoreboardValue(player: Player, index: Int, value: String)
 
     /**
      * Gets the text value of the given [Player]'s scoreboard at the given index.
