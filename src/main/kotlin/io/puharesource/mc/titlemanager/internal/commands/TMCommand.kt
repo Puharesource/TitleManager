@@ -310,27 +310,16 @@ class TMCommand constructor(private val plugin: TitleManagerPlugin) : CommandExe
         val playerInfoService = plugin.titleManagerComponent.playerInfoService()
         val scoreboardService = plugin.titleManagerComponent.scoreboardService()
 
-        playerInfoService.showScoreboard(player, playerInfoService.isScoreboardEnabled(player))
+        playerInfoService.showScoreboard(player, !playerInfoService.isScoreboardEnabled(player))
 
         if (playerInfoService.isScoreboardEnabled(player)) {
+            scoreboardService.toggleScoreboardInWorld(player, player.world)
+
+            commandExecutor.sendConfigMessage("toggled-on")
+        } else {
             scoreboardService.removeScoreboard(player)
 
             commandExecutor.sendConfigMessage("toggled-off")
-        } else {
-            val config = plugin.tmConfig
-            val animationsService = plugin.titleManagerComponent.animationsService()
-
-            val title = animationsService.textToAnimationParts(config.scoreboard.title)
-            val lines = config.scoreboard.lines.map { animationsService.textToAnimationParts(it) }
-
-            scoreboardService.giveScoreboard(player)
-            scoreboardService.createScoreboardTitleSendableAnimation(title, player, true).start()
-
-            lines.forEachIndexed { index, parts ->
-                scoreboardService.createScoreboardValueSendableAnimation(parts, player, index + 1, true).start()
-            }
-
-            commandExecutor.sendConfigMessage("toggled-on")
         }
     }
 

@@ -4,7 +4,7 @@
 
 <p align="center">
     <a href="https://www.spigotmc.org/resources/titlemanager.1049">
-        <img src="https://img.shields.io/badge/Version-2.2.0-green"
+        <img src="https://img.shields.io/badge/Version-2.2.1-green"
              alt="Version">
     </a>
     <a href="https://github.com/Puharesource/TitleManager/actions">
