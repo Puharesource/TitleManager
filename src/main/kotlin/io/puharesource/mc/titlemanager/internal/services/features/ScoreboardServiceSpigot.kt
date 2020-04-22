@@ -107,7 +107,7 @@ class ScoreboardServiceSpigot @Inject constructor(
 
     override fun setProcessedScoreboardTitle(player: Player, title: String) {
         removeRunningScoreboardTitleAnimation(player)
-        val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, title))
+        val parts = animationsService.textToAnimationParts(title)
 
         createScoreboardTitleSendableAnimation(parts, player, withPlaceholders = true).start()
     }
@@ -135,9 +135,9 @@ class ScoreboardServiceSpigot @Inject constructor(
 
         removeRunningScoreboardValueAnimation(player, index)
 
-        val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, value))
+        val parts = animationsService.textToAnimationParts(value)
 
-        createScoreboardValueSendableAnimation(parts, player, index).start()
+        createScoreboardValueSendableAnimation(parts, player, index, withPlaceholders = true).start()
     }
 
     override fun removeScoreboardValue(player: Player, index: Int) {
