@@ -63,7 +63,7 @@ class ListenerServiceSpigot @Inject constructor(
                 }
             }
 
-            if (CombatLogXHook.isEnabled()) {
+            if (CombatLogXHook.isEnabled() && CombatLogXHook.isCorrectVersion()) {
                 registerCombatLogXTagEvent()
                 registerCombatLogXUntagEvent()
             }
