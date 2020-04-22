@@ -66,8 +66,8 @@ class PlaceholderServiceText @Inject constructor(
         addPlaceholder(createPlaceholder("bungeecord-online", "bungeecord-online-players", enabled = { config.usingBungeecord }) { _ -> bungeeCordService.onlinePlayers }.cached(5))
         addPlaceholder(createPlaceholder("server", "server-name", enabled = { config.usingBungeecord }) { _ -> bungeeCordService.currentServer.orEmpty() })
         addPlaceholder(createPlaceholder("safe-online", "safe-online-players", enabled = { VanishHookReplacer.isValid() }) { player -> VanishHookReplacer.value(player) })
-        addPlaceholder(createPlaceholder("balance", "money", enabled = { VaultHook.isEnabled() && VaultHook.isEconomySupported }) { player -> VaultHook.economy!!.getBalance(player).format() })
-        addPlaceholder(createPlaceholder("group", "group-name", enabled = { VaultHook.isEnabled() && VaultHook.hasGroupSupport }) { player -> VaultHook.permissions!!.getPrimaryGroup(player).color() })
+        addPlaceholder(createPlaceholder("balance", "money", enabled = { VaultHook.isEnabled() && VaultHook.isEconomySupported }) { player -> VaultHook.economy?.getBalance(player)?.format() ?: "no-econ" })
+        addPlaceholder(createPlaceholder("group", "group-name", enabled = { VaultHook.isEnabled() && VaultHook.hasGroupSupport }) { player -> VaultHook.permissions?.getPrimaryGroup(player)?.color() ?: "no-perms" })
     }
 
     override fun addPlaceholder(placeholder: Placeholder) {

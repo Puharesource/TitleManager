@@ -17,7 +17,21 @@ class UpdateServiceSpigot @Inject constructor(val plugin: TitleManagerPlugin) : 
         private set
 
     override val isUpdateAvailable: Boolean
-        get() = currentVersion != latestVersion
+        get() {
+            val currentVersionParts = currentVersion.split(".", limit = 3)
+            val latestVersionParts = latestVersion.split(".", limit = 3)
+
+            for (i in currentVersionParts.indices) {
+                val current = currentVersionParts[i].toInt()
+                val latest = latestVersionParts[i].toInt()
+
+                if (latest > current) {
+                    return true
+                }
+            }
+
+            return false
+        }
 
     override suspend fun updateLatestVersionCache() {
         withContext(Dispatchers.IO) {

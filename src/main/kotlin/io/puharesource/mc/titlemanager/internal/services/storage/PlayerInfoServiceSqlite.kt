@@ -3,6 +3,7 @@ package io.puharesource.mc.titlemanager.internal.services.storage
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
 import org.bukkit.entity.Player
 import java.io.File
+import java.lang.Exception
 import java.sql.Connection
 import java.sql.DriverManager
 import java.util.concurrent.locks.Lock
@@ -57,16 +58,20 @@ class PlayerInfoServiceSqlite @Inject constructor(val plugin: TitleManagerPlugin
     }
 
     private fun createDatabaseFile() {
-        val createStatement = plugin.getResource("playerinfo.sql")!!.reader().readText()
+        try {
+            val createStatement = plugin.getResource("playerinfo.sql")!!.reader().readText()
 
-        connectionLock.withLock {
-            if (!databaseFile.exists()) {
-                databaseFile.mkdirs()
-                databaseFile.createNewFile()
+            connectionLock.withLock {
+                if (!databaseFile.exists()) {
+                    databaseFile.mkdirs()
+                    databaseFile.createNewFile()
+                }
+
+                val statement = connection.createStatement()
+                statement.executeUpdate(createStatement)
             }
-
-            val statement = connection.createStatement()
-            statement.executeUpdate(createStatement)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
