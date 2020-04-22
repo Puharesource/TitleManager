@@ -51,7 +51,7 @@ class TitleServiceSpigot @Inject constructor(
 
     override fun sendTitles(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int, withPlaceholders: Boolean) {
         var processedTitle = title
-        var processedSubtitle = title
+        var processedSubtitle = subtitle
 
         if (withPlaceholders) {
             processedTitle = placeholderService.replaceText(player, processedTitle)

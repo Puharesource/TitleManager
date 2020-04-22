@@ -51,6 +51,12 @@ class ScoreboardServiceSpigot @Inject constructor(
         }
     }
 
+    override fun stopPlayerTasks() {
+        plugin.server.onlinePlayers.forEach {
+            removeScoreboard(it)
+        }
+    }
+
     override fun hasScoreboard(player: Player): Boolean {
         return playerScoreboards.containsKey(player)
     }

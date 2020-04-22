@@ -8,6 +8,7 @@ import org.bukkit.entity.Player
 
 interface ScoreboardService {
     fun startPlayerTasks()
+    fun stopPlayerTasks()
 
     fun hasScoreboard(player: Player): Boolean
     fun giveScoreboard(player: Player)

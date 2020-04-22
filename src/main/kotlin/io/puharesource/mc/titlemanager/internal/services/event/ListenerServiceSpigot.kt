@@ -57,10 +57,10 @@ class ListenerServiceSpigot @Inject constructor(
 
             if (config.scoreboard.enabled) {
                 registerSetScoreboard()
-            }
 
-            if (config.scoreboard.disabledWorlds.isNotEmpty()) {
-                registerToggleScoreboardOnWorldChange()
+                if (config.scoreboard.disabledWorlds.isNotEmpty()) {
+                    registerToggleScoreboardOnWorldChange()
+                }
             }
 
             if (CombatLogXHook.isEnabled()) {

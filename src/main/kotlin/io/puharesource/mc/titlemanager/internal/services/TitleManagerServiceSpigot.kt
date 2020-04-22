@@ -65,5 +65,6 @@ class TitleManagerServiceSpigot @Inject constructor(
 
         bungeeCordService.stop()
         announcerService.stop()
+        scoreboardService.stopPlayerTasks()
     }
 }
