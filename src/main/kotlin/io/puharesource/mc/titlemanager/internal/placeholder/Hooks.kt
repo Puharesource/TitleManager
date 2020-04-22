@@ -108,7 +108,7 @@ object CombatLogXHook : PluginHook("CombatLogX") {
         Class.forName("com.SirBlobman.combatlogx.api.event.PlayerPreTagEvent")
 
         true
-    } catch (e: NoClassDefFoundError) {
+    } catch (e: ClassNotFoundException) {
         false
     }
 }

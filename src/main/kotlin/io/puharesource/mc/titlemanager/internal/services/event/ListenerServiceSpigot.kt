@@ -61,11 +61,11 @@ class ListenerServiceSpigot @Inject constructor(
                 if (config.scoreboard.disabledWorlds.isNotEmpty()) {
                     registerToggleScoreboardOnWorldChange()
                 }
-            }
 
-            if (CombatLogXHook.isEnabled() && CombatLogXHook.isCorrectVersion()) {
-                registerCombatLogXTagEvent()
-                registerCombatLogXUntagEvent()
+                if (CombatLogXHook.isEnabled() && CombatLogXHook.isCorrectVersion()) {
+                    registerCombatLogXTagEvent()
+                    registerCombatLogXUntagEvent()
+                }
             }
         }
     }
