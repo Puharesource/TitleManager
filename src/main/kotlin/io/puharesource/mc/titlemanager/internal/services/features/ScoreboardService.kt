@@ -31,5 +31,5 @@ interface ScoreboardService {
     fun createScoreboardValueSendableAnimation(parts: List<AnimationPart<*>>, player: Player, index: Int, withPlaceholders: Boolean = false): SendableAnimation
 
     fun isScoreboardDisabledWorld(world: World): Boolean
-    fun toggleScoreboardInWorld(player: Player, world: World?)
+    fun toggleScoreboardInWorld(player: Player, world: World)
 }

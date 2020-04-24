@@ -175,11 +175,21 @@ class TMCommand constructor(private val plugin: TitleManagerPlugin) : CommandExe
     }
 
     override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): MutableList<String>? {
-        if (args.isNotEmpty()) {
+        if (args.size == 1) {
             return subCommands.keys
+                .asSequence()
+                .filter { it.startsWith(args[0], ignoreCase = true) }
+                .toMutableList()
+        }
+
+        if (args.size == 2) {
+            if (args[1].startsWith("-")) {
+                return arrayOf("silent", "world", "fadein", "stay", "fadeout", "radius")
                     .asSequence()
-                    .filter { it.startsWith(args[args.size - 1], ignoreCase = true) }
+                    .map { "-$it" }
+                    .filter { it.startsWith(args[1], ignoreCase = true) }
                     .toMutableList()
+            }
         }
 
         return null
@@ -274,11 +284,11 @@ class TMCommand constructor(private val plugin: TitleManagerPlugin) : CommandExe
             if (parts[1].isNotBlank()) {
                 if (parts[0].isBlank()) {
                     commandExecutor.sendConfigMessage("subtitle-sent", "player" to player.name, "subtitle" to parts[1])
-                    titleService.sendProcessedSubtitle(player, parts[1])
+                    titleService.sendProcessedSubtitle(player, parts[1], fadeIn = commandExecutor.fadeIn, stay = commandExecutor.stay, fadeOut = commandExecutor.fadeOut)
                 } else {
                     commandExecutor.sendConfigMessage("both-sent", "player" to player.name, "title" to parts[0], "subtitle" to parts[1])
-                    titleService.sendProcessedTitle(player, parts[0])
-                    titleService.sendProcessedSubtitle(player, parts[1])
+                    titleService.sendProcessedTitle(player, parts[0], fadeIn = commandExecutor.fadeIn, stay = commandExecutor.stay, fadeOut = commandExecutor.fadeOut)
+                    titleService.sendProcessedSubtitle(player, parts[1], fadeIn = commandExecutor.fadeIn, stay = commandExecutor.stay, fadeOut = commandExecutor.fadeOut)
                 }
 
                 return
@@ -286,7 +296,7 @@ class TMCommand constructor(private val plugin: TitleManagerPlugin) : CommandExe
         }
 
         commandExecutor.sendConfigMessage("title-sent", "player" to player.name, "title" to message)
-        titleService.sendProcessedTitle(player, message)
+        titleService.sendProcessedTitle(player, message, fadeIn = commandExecutor.fadeIn, stay = commandExecutor.stay, fadeOut = commandExecutor.fadeOut)
     }
 
     private fun executorReload(commandExecutor: io.puharesource.mc.titlemanager.internal.model.command.CommandExecutor) {

@@ -172,21 +172,17 @@ class ScoreboardServiceSpigot @Inject constructor(
 
     override fun isScoreboardDisabledWorld(world: World) = config.scoreboard.disabledWorlds.any { disabledWorldName -> disabledWorldName.equals(world.name, ignoreCase = true) }
 
-    override fun toggleScoreboardInWorld(player: Player, world: World?) {
+    override fun toggleScoreboardInWorld(player: Player, world: World) {
         if (!playerInfoService.isScoreboardEnabled(player)) {
             return
         }
 
-        if (hasScoreboard(player)) {
-            if (world != null) {
-                if (isScoreboardDisabledWorld(world)) {
-                    removeScoreboard(player)
-                }
-            }
-        } else {
-            if (world == null || !isScoreboardDisabledWorld(world)) {
-                giveDefaultScoreboard(player)
-            }
+        val isDisabledWorld = isScoreboardDisabledWorld(world)
+
+        if (isDisabledWorld && hasScoreboard(player)) {
+            removeScoreboard(player)
+        } else if (!isDisabledWorld) {
+            giveDefaultScoreboard(player)
         }
     }
 
