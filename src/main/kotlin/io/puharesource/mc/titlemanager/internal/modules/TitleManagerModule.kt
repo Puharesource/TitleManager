@@ -66,7 +66,7 @@ object TitleManagerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideTitleManagerService(config: TMConfigMain, listenerService: ListenerService, taskService: TaskService, schedulerService: SchedulerService, animationsService: AnimationsService, scriptService: ScriptService, placeholderService: PlaceholderService, playerListService: PlayerListService, scoreboardService: ScoreboardService, bungeeCordService: BungeeCordService, announcerService: AnnouncerService): TitleManagerService = TitleManagerServiceSpigot(config, listenerService, taskService, schedulerService, animationsService, scriptService, placeholderService, playerListService, scoreboardService, bungeeCordService, announcerService)
+    fun provideTitleManagerService(config: TMConfigMain, listenerService: ListenerService, taskService: TaskService, schedulerService: SchedulerService, animationsService: AnimationsService, scriptService: ScriptService, placeholderService: PlaceholderService, playerListService: PlayerListService, scoreboardService: ScoreboardService, bungeeCordService: BungeeCordService, announcerService: AnnouncerService, metrics: Metrics): TitleManagerService = TitleManagerServiceSpigot(config, listenerService, taskService, schedulerService, animationsService, scriptService, placeholderService, playerListService, scoreboardService, bungeeCordService, announcerService, metrics)
 
     @JvmStatic
     @Provides
