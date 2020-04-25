@@ -36,6 +36,7 @@ import io.puharesource.mc.titlemanager.internal.services.task.TaskService
 import io.puharesource.mc.titlemanager.internal.services.task.TaskServiceSpigot
 import io.puharesource.mc.titlemanager.internal.services.update.UpdateService
 import io.puharesource.mc.titlemanager.internal.services.update.UpdateServiceSpigot
+import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import javax.inject.Singleton
 import javax.script.ScriptEngineManager
@@ -136,4 +137,9 @@ object TitleManagerModule {
     @Provides
     @Singleton
     fun provideAnnouncerService(plugin: TitleManagerPlugin, config: TMConfigMain, schedulerService: SchedulerService, titleService: TitleService, actionbarService: ActionbarService): AnnouncerService = AnnouncerServiceSpigot(plugin, config, schedulerService, titleService, actionbarService)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideMetrics(plugin: TitleManagerPlugin) = Metrics(plugin, 7318)
 }

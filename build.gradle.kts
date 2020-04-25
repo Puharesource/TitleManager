@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "io.puharesource.mc"
-version = "2.2.7"
+version = "2.2.8"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -35,12 +35,14 @@ tasks {
             include(dependency("org.jetbrains.kotlinx:.*"))
             include(dependency("com.google.dagger:.*"))
             include(dependency("javax.inject:.*"))
+            include(dependency("org.bstats:.*"))
         }
 
         relocate("kotlin", "io.puharesource.mc.titlemanager.shaded.kotlin")
         relocate("org.jetbrains", "io.puharesource.mc.titlemanager.shaded.org.jetbrains")
         relocate("dagger", "io.puharesource.mc.titlemanager.shaded.dagger")
         relocate("javax.inject", "io.puharesource.mc.titlemanager.shaded.javax.inject")
+        relocate("org.bstats", "io.puharesource.mc.titlemanager.shaded.org.bstats")
     }
 
     val dokka by getting(DokkaTask::class) {
@@ -215,6 +217,7 @@ dependencies {
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.3.72")
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.3.5")
+    implementation(group = "org.bstats", name = "bstats-bukkit", version = "1.7")
 
     implementation(group = "org.spigotmc", name = "spigot-api", version = "1.14-R0.1-SNAPSHOT")
 

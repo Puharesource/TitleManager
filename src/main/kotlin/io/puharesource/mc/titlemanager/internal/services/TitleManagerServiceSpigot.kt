@@ -11,6 +11,7 @@ import io.puharesource.mc.titlemanager.internal.services.features.ScoreboardServ
 import io.puharesource.mc.titlemanager.internal.services.placeholder.PlaceholderService
 import io.puharesource.mc.titlemanager.internal.services.task.SchedulerService
 import io.puharesource.mc.titlemanager.internal.services.task.TaskService
+import org.bstats.bukkit.Metrics
 import javax.inject.Inject
 
 class TitleManagerServiceSpigot @Inject constructor(
@@ -24,7 +25,8 @@ class TitleManagerServiceSpigot @Inject constructor(
     private val playerListService: PlayerListService,
     private val scoreboardService: ScoreboardService,
     private val bungeeCordService: BungeeCordService,
-    private val announcerService: AnnouncerService
+    private val announcerService: AnnouncerService,
+    private val metrics: Metrics
 ) : TitleManagerService {
     override fun start() {
         listenerService.registerListeners()
@@ -38,7 +40,14 @@ class TitleManagerServiceSpigot @Inject constructor(
 
         placeholderService.loadBuiltinPlaceholders()
 
+        metrics.addCustomChart(Metrics.SimplePie("servers_using_config") { config.usingConfig.toString() })
+
         if (config.usingConfig) {
+            metrics.addCustomChart(Metrics.SimplePie("servers_using_player_list") { config.playerList.enabled.toString() })
+            metrics.addCustomChart(Metrics.SimplePie("servers_using_scoreboard") { config.scoreboard.enabled.toString() })
+            metrics.addCustomChart(Metrics.SimplePie("servers_using_bungeecord_features") { config.usingBungeecord.toString() })
+            metrics.addCustomChart(Metrics.SimplePie("servers_using_announcer") { config.announcer.enabled.toString() })
+
             if (config.playerList.enabled) {
                 playerListService.startPlayerTasks()
             }
