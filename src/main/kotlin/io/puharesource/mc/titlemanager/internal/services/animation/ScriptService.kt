@@ -4,6 +4,7 @@ import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import java.io.File
 
 interface ScriptService {
+    val engineName: String
     val scripts: Set<String>
 
     fun loadBuiltinScripts()

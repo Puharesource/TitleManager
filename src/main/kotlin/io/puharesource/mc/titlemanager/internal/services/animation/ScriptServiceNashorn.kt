@@ -15,6 +15,7 @@ import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
 class ScriptServiceNashorn @Inject constructor(private val plugin: TitleManagerPlugin, private val placeholderService: PlaceholderService) : ScriptService {
+    override val engineName: String = "Nashorn"
     private val animationsFolder = File(plugin.dataFolder, "animations")
     private val engine: ScriptEngine = ScriptEngineManager().getEngineByName("nashorn")
     private val registeredScripts: ConcurrentSkipListSet<String> = ConcurrentSkipListSet(String.CASE_INSENSITIVE_ORDER)

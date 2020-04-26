@@ -3,6 +3,7 @@ package io.puharesource.mc.titlemanager.internal.services.animation
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 
 class ScriptServiceNotFound : ScriptService {
+    override val engineName: String = "NotFound"
     override val scripts: Set<String>
         get() = throw NotImplementedError()
 

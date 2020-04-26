@@ -38,6 +38,8 @@ class TitleManagerServiceSpigot @Inject constructor(
         scriptService.loadBuiltinScripts()
         scriptService.loadScripts()
 
+        metrics.addCustomChart(Metrics.SimplePie("script_engine") { scriptService.engineName })
+
         placeholderService.loadBuiltinPlaceholders()
 
         metrics.addCustomChart(Metrics.SimplePie("servers_using_config") { config.usingConfig.toString() })

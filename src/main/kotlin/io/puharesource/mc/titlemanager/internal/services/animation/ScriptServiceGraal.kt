@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 class ScriptServiceGraal @Inject constructor(private val plugin: TitleManagerPlugin, private val placeholderService: PlaceholderService) : ScriptService {
+    override val engineName: String = "GraalVM"
     private val animationsFolder = File(plugin.dataFolder, "animations")
     private val context: Context = Context.newBuilder("js").allowAllAccess(true).build()
     private val registeredScripts: ConcurrentSkipListSet<String> = ConcurrentSkipListSet(String.CASE_INSENSITIVE_ORDER)
