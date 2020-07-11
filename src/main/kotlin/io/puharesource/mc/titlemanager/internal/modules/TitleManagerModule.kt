@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
+import io.puharesource.mc.titlemanager.internal.model.script.BuiltinScripts
 import io.puharesource.mc.titlemanager.internal.services.TitleManagerService
 import io.puharesource.mc.titlemanager.internal.services.TitleManagerServiceSpigot
 import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsService
@@ -91,16 +92,16 @@ object TitleManagerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideScriptService(plugin: TitleManagerPlugin, placeholderService: PlaceholderService): ScriptService {
+    fun provideScriptService(plugin: TitleManagerPlugin, placeholderService: PlaceholderService, builtinScripts: BuiltinScripts): ScriptService {
         if (Package.getPackage("org.graalvm") != null) {
-            return ScriptServiceGraal(plugin, placeholderService)
+            return ScriptServiceGraal(plugin, placeholderService, builtinScripts)
         }
 
         if (ScriptEngineManager().getEngineByName("nashorn") != null) {
-            return ScriptServiceNashorn(plugin, placeholderService)
+            return ScriptServiceNashorn(plugin, placeholderService, builtinScripts)
         }
 
-        return ScriptServiceNotFound()
+        return ScriptServiceNotFound(plugin, placeholderService, builtinScripts)
     }
 
     @JvmStatic
@@ -142,4 +143,9 @@ object TitleManagerModule {
     @Provides
     @Singleton
     fun provideMetrics(plugin: TitleManagerPlugin) = Metrics(plugin, 7318)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun builtinScripts() = BuiltinScripts()
 }

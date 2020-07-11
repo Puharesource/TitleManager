@@ -1,6 +1,7 @@
 package io.puharesource.mc.titlemanager.internal.components
 
 import dagger.Component
+import io.puharesource.mc.titlemanager.internal.model.script.BuiltinScripts
 import io.puharesource.mc.titlemanager.internal.modules.TitleManagerModule
 import io.puharesource.mc.titlemanager.internal.services.TitleManagerService
 import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsService
@@ -66,4 +67,7 @@ interface TitleManagerComponent {
 
     @Singleton
     fun announcerService(): AnnouncerService
+
+    @Singleton
+    fun builtinScripts(): BuiltinScripts
 }

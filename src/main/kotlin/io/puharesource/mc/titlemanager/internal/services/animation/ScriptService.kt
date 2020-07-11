@@ -7,7 +7,6 @@ interface ScriptService {
     val engineName: String
     val scripts: Set<String>
 
-    fun loadBuiltinScripts()
     fun loadScripts()
 
     fun addScript(name: String, script: String)

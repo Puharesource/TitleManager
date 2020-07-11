@@ -29,8 +29,6 @@ interface TitleManagerAPI {
      * @return The input text with all available placeholders replaced.
      * If no placeholders were found the input text will be returned instead.
      *
-     * @see .containsPlaceholders
-     * @see .containsPlaceholder
      * @since 2.0.0
      */
     fun replaceText(player: Player, text: String): String
@@ -44,8 +42,6 @@ interface TitleManagerAPI {
      *
      * @return `true` if the text returned with a match and `false` if it doesn't.
      *
-     * @see .replaceText
-     * @see .containsPlaceholder
      * @since 2.0.0
      */
     fun containsPlaceholders(text: String): Boolean
@@ -59,8 +55,6 @@ interface TitleManagerAPI {
      *
      * @return `true` if the text returned with a match and `false` if it doesn't.
      *
-     * @see .replaceText
-     * @see .containsPlaceholders
      * @since 2.0.0
      */
     fun containsPlaceholder(text: String, placeholder: String): Boolean
@@ -74,13 +68,6 @@ interface TitleManagerAPI {
      *
      * @return `true` if the text returned with a match and `false` if it doesn't.
      *
-     * @see .containsAnimation
-     * @see .addAnimation
-     * @see .removeAnimation
-     * @see .toAnimationPart
-     * @see .toAnimationParts
-     * @see .getRegisteredAnimations
-     * @see .getRegisteredScripts
      * @since 2.0.0
      */
     fun containsAnimations(text: String): Boolean
@@ -94,13 +81,6 @@ interface TitleManagerAPI {
      *
      * @return `true` if the text returned with a match and `false` if it doesn't.
      *
-     * @see .containsAnimations
-     * @see .addAnimation
-     * @see .removeAnimation
-     * @see .toAnimationPart
-     * @see .toAnimationParts
-     * @see .getRegisteredAnimations
-     * @see .getRegisteredScripts
      * @since 2.0.0
      */
     fun containsAnimation(text: String, animation: String): Boolean
@@ -110,13 +90,6 @@ interface TitleManagerAPI {
      *
      * @return Gets the immutable [Map] results.
      *
-     * @see .containsAnimation
-     * @see .containsAnimations
-     * @see .addAnimation
-     * @see .removeAnimation
-     * @see .toAnimationPart
-     * @see .toAnimationParts
-     * @see .getRegisteredScripts
      * @since 2.0.0
      */
     fun getRegisteredAnimations(): Map<String, Animation>
@@ -126,13 +99,6 @@ interface TitleManagerAPI {
      *
      * @return Gets the immutable $[Set] results.
      *
-     * @see .containsAnimation
-     * @see .containsAnimations
-     * @see .addAnimation
-     * @see .removeAnimation
-     * @see .toAnimationPart
-     * @see .toAnimationParts
-     * @see .getRegisteredAnimations
      * @since 2.0.0
      */
     fun getRegisteredScripts(): Set<String>
@@ -143,12 +109,6 @@ interface TitleManagerAPI {
      * @param id The id of the animation (case-insensitive).
      * @param animation The animation to be added.
      *
-     * @see .containsAnimations
-     * @see .removeAnimation
-     * @see .toAnimationPart
-     * @see .toAnimationParts
-     * @see .getRegisteredAnimations
-     * @see .getRegisteredScripts
      * @since 2.0.0
      */
     fun addAnimation(id: String, animation: Animation)
@@ -158,12 +118,6 @@ interface TitleManagerAPI {
      *
      * @param id The id of the animation that should be removed (case-insensitive).
      *
-     * @see .containsAnimations
-     * @see .addAnimation
-     * @see .toAnimationPart
-     * @see .toAnimationParts
-     * @see .getRegisteredAnimations
-     * @see .getRegisteredScripts
      * @since 2.0.0
      */
     fun removeAnimation(id: String)
@@ -178,15 +132,6 @@ interface TitleManagerAPI {
      * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
      * @return The [SendableAnimation] instance associated with the animation.
      *
      * @since 2.0.0
@@ -203,15 +148,6 @@ interface TitleManagerAPI {
      * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
-     * @see .toTitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
      * @return The [SendableAnimation] instance associated with the animation.
      *
      * @since 2.0.0
@@ -228,15 +164,6 @@ interface TitleManagerAPI {
      * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
      * @return The [SendableAnimation] instance associated with the animation.
      *
      * @since 2.0.0
@@ -253,15 +180,6 @@ interface TitleManagerAPI {
      * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toFooterAnimation
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
      * @return The [SendableAnimation] instance associated with the animation.
      *
      * @since 2.0.0
@@ -278,15 +196,6 @@ interface TitleManagerAPI {
      * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
      * @return The [SendableAnimation] instance associated with the animation.
      *
      * @since 2.0.0
@@ -303,9 +212,6 @@ interface TitleManagerAPI {
      * @param player The player the [SendableAnimation] is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
-     * @see .toScoreboardTitleAnimation
-     * @see .toScoreboardValueAnimation
-     * @see .toScoreboardValueAnimation
      * @return The [SendableAnimation] instance associated with the given player.
      *
      * @since 2.0.0
@@ -325,9 +231,6 @@ interface TitleManagerAPI {
      *
      * @return The [SendableAnimation] instance associated with the given player.
      *
-     * @see .toScoreboardTitleAnimation
-     * @see .toScoreboardTitleAnimation
-     * @see .toScoreboardValueAnimation
      * @since 2.0.0
      */
     fun toScoreboardValueAnimation(animation: Animation, player: Player, index: Int, withPlaceholders: Boolean): SendableAnimation
@@ -344,15 +247,6 @@ interface TitleManagerAPI {
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
      * @since 2.0.0
      */
     fun toTitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation
@@ -369,15 +263,6 @@ interface TitleManagerAPI {
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
-     * @see .toTitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
      * @since 2.0.0
      */
     fun toSubtitleAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation
@@ -394,15 +279,6 @@ interface TitleManagerAPI {
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
      * @since 2.0.0
      */
     fun toActionbarAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation
@@ -419,15 +295,6 @@ interface TitleManagerAPI {
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toFooterAnimation
      * @since 2.0.0
      */
     fun toHeaderAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation
@@ -444,15 +311,6 @@ interface TitleManagerAPI {
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
-     * @see .toFooterAnimation
-     * @see .toTitleAnimation
-     * @see .toSubtitleAnimation
-     * @see .toActionbarAnimation
-     * @see .toHeaderAnimation
      * @since 2.0.0
      */
     fun toFooterAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation
@@ -467,9 +325,6 @@ interface TitleManagerAPI {
      * @param player The player the [List] of [AnimationPart]s is associated with.
      * @param withPlaceholders Whether or not placeholders should be replaced.
      *
-     * @see .toScoreboardTitleAnimation
-     * @see .toScoreboardValueAnimation
-     * @see .toScoreboardValueAnimation
      * @return The [List] of [AnimationPart]s associated with the given player.
      *
      * @since 2.0.0
@@ -489,9 +344,6 @@ interface TitleManagerAPI {
      *
      * @return The [SendableAnimation] instance associated with the given player.
      *
-     * @see .toScoreboardTitleAnimation
-     * @see .toScoreboardTitleAnimation
-     * @see .toScoreboardValueAnimation
      * @since 2.0.0
      */
     fun toScoreboardValueAnimation(parts: List<AnimationPart<*>>, player: Player, index: Int, withPlaceholders: Boolean): SendableAnimation
@@ -503,8 +355,6 @@ interface TitleManagerAPI {
      *
      * @return The [AnimationPart] instance associated with the input text.
      *
-     * @see .toAnimationPart
-     * @see .toAnimationParts
      * @since 2.0.0
      */
     fun toAnimationPart(text: String): AnimationPart<String>
@@ -516,8 +366,6 @@ interface TitleManagerAPI {
      *
      * @return The [AnimationPart] instance associated with the input text.
      *
-     * @see .toAnimationPart
-     * @see .toAnimationParts
      * @since 2.0.0
      */
     fun toAnimationPart(animation: Animation): AnimationPart<Animation>
@@ -532,8 +380,6 @@ interface TitleManagerAPI {
      *
      * @return The instance of the immutable list with all of the Animation parts, that were converted from the text.
      *
-     * @see .toAnimationPart
-     * @see .toAnimationPart
      * @since 2.0.0
      */
     fun toAnimationParts(text: String): List<AnimationPart<*>>
@@ -581,8 +427,6 @@ interface TitleManagerAPI {
      *
      * @return The [Animation] generated from the frames.
      *
-     * @see .fromTextFile
-     * @see .fromJavaScript
      * @since 2.0.0
      */
     fun fromText(vararg frames: String): Animation
@@ -609,8 +453,6 @@ interface TitleManagerAPI {
      *
      * @return The [Animation] generated from the frames.
      *
-     * @see .fromText
-     * @see .fromJavaScript
      * @since 2.0.0
      */
     fun fromTextFile(file: File): Animation
@@ -624,8 +466,6 @@ interface TitleManagerAPI {
      *
      * @return The [Animation] generated from the JavaScript.
      *
-     * @see .fromText
-     * @see .fromTextFile
      * @since 2.0.0
      */
     fun fromJavaScript(name: String, input: String): Animation
@@ -637,17 +477,6 @@ interface TitleManagerAPI {
      * @param player The player the title should be sent to.
      * @param title The title to be displayed.
      *
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendTitle(player: Player, title: String)
@@ -661,17 +490,6 @@ interface TitleManagerAPI {
      * @param stay The time it takes for the title to stay on the screen.
      * @param fadeOut The time it takes for the title to fade off of the screen.
      *
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendTitle(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int)
@@ -683,17 +501,6 @@ interface TitleManagerAPI {
      * @param player The player the title should be sent to.
      * @param title The title to be sent to the [Player].
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendTitleWithPlaceholders(player: Player, title: String)
@@ -708,17 +515,6 @@ interface TitleManagerAPI {
      * @param stay The time it takes for the title to stay on the screen.
      * @param fadeOut The time it takes for the title to fade off of the screen.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendTitleWithPlaceholders(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int)
@@ -734,17 +530,6 @@ interface TitleManagerAPI {
      * @param stay The time it takes for the title to stay on the screen.
      * @param fadeOut The time it takes for the title to fade off of the screen.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.2.0
      */
     fun sendProcessedTitle(player: Player, title: String, fadeIn: Int, stay: Int, fadeOut: Int)
@@ -756,17 +541,6 @@ interface TitleManagerAPI {
      * @param player The player the subtitle should be sent to.
      * @param subtitle The subtitle to be displayed.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendSubtitle(player: Player, subtitle: String)
@@ -780,17 +554,6 @@ interface TitleManagerAPI {
      * @param stay The time it takes for the subtitle to stay on the screen.
      * @param fadeOut The time it takes for the subtitle to fade off of the screen.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendSubtitle(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int)
@@ -802,17 +565,6 @@ interface TitleManagerAPI {
      * @param player The player the subtitle should be sent to.
      * @param subtitle The subtitle to be displayed.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendSubtitleWithPlaceholders(player: Player, subtitle: String)
@@ -827,17 +579,6 @@ interface TitleManagerAPI {
      * @param stay The time it takes for the subtitle to stay on the screen.
      * @param fadeOut The time it takes for the subtitle to fade off of the screen.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendSubtitleWithPlaceholders(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int)
@@ -853,17 +594,6 @@ interface TitleManagerAPI {
      * @param stay The time it takes for the subtitle to stay on the screen.
      * @param fadeOut The time it takes for the subtitle to fade off of the screen.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.2.0
      */
     fun sendProcessedSubtitle(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int)
@@ -875,17 +605,6 @@ interface TitleManagerAPI {
      * @param title The title to be displayed.
      * @param subtitle The subtitle to be displayed.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendTitles(player: Player, title: String, subtitle: String)
@@ -900,17 +619,6 @@ interface TitleManagerAPI {
      * @param stay The time it takes for the titles to stay on the screen.
      * @param fadeOut The time it takes for the titles to fade off of the screen.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendTitles(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int)
@@ -922,17 +630,6 @@ interface TitleManagerAPI {
      * @param title The title to be displayed.
      * @param subtitle The subtitle to be displayed.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendTitlesWithPlaceholders(player: Player, title: String, subtitle: String)
@@ -948,17 +645,6 @@ interface TitleManagerAPI {
      * @param stay The time it takes for the titles to stay on the screen.
      * @param fadeOut The time it takes for the titles to fade off of the screen.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
      * @since 2.0.0
      */
     fun sendTitlesWithPlaceholders(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int)
@@ -975,17 +661,6 @@ interface TitleManagerAPI {
      * @param stay The time it takes for the titles to stay on the screen.
      * @param fadeOut The time it takes for the titles to fade off of the screen.
      *
-     * @see .sendTitle
-     * @see .sendTitle
-     * @see .sendTitleWithPlaceholders
-     * @see .sendTitleWithPlaceholders
-     * @see .sendSubtitle
-     * @see .sendSubtitle
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendSubtitleWithPlaceholders
-     * @see .sendTitles
-     * @see .sendTitles
-     * @see .sendTitlesWithPlaceholders
      * @since 2.2.0
      */
     fun sendProcessedTitles(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int)
@@ -1007,8 +682,6 @@ interface TitleManagerAPI {
      *
      * @param player The player to clear.
      *
-     * @see .clearSubtitle
-     * @see .clearTitles
      * @since 2.0.0
      */
     fun clearTitle(player: Player)
@@ -1018,8 +691,6 @@ interface TitleManagerAPI {
      *
      * @param player The player to clear.
      *
-     * @see .clearTitle
-     * @see .clearTitles
      * @since 2.0.0
      */
     fun clearSubtitle(player: Player)
@@ -1029,8 +700,6 @@ interface TitleManagerAPI {
      *
      * @param player The player to clear.
      *
-     * @see .clearTitle
-     * @see .clearSubtitle
      * @since 2.0.0
      */
     fun clearTitles(player: Player)
@@ -1041,7 +710,6 @@ interface TitleManagerAPI {
      * @param player The player to send the actionbar message.
      * @param text The text to be sent.
      *
-     * @see .sendActionbarWithPlaceholders
      * @since 2.0.0
      */
     fun sendActionbar(player: Player, text: String)
@@ -1052,7 +720,6 @@ interface TitleManagerAPI {
      * @param player The player to send the actionbar message.
      * @param text The text to be sent.
      *
-     * @see .sendActionbar
      * @since 2.0.0
      */
     fun sendActionbarWithPlaceholders(player: Player, text: String)
@@ -1064,7 +731,6 @@ interface TitleManagerAPI {
      * @param player The player to send the actionbar message.
      * @param text The text to be sent.
      *
-     * @see .sendActionbar
      * @since 2.2.0
      */
     fun sendProcessedActionbar(player: Player, text: String)
@@ -1084,13 +750,6 @@ interface TitleManagerAPI {
      * @param player The player to set the header for.
      * @param header The header to be displayed.
      *
-     * @see .getHeader
-     * @see .setHeaderWithPlaceholders
-     * @see .getFooter
-     * @see .setFooter
-     * @see .setFooterWithPlaceholders
-     * @see .setHeaderAndFooter
-     * @see .setHeaderAndFooterWithPlaceholders
      * @since 2.0.0
      */
     fun setHeader(player: Player, header: String)
@@ -1101,13 +760,6 @@ interface TitleManagerAPI {
      * @param player The player to set the header for.
      * @param header The header to be displayed.
      *
-     * @see .getHeader
-     * @see .setHeader
-     * @see .getFooter
-     * @see .setFooter
-     * @see .setFooterWithPlaceholders
-     * @see .setHeaderAndFooter
-     * @see .setHeaderAndFooterWithPlaceholders
      * @since 2.0.0
      */
     fun setHeaderWithPlaceholders(player: Player, header: String)
@@ -1119,13 +771,6 @@ interface TitleManagerAPI {
      * @param player The player to set the header for.
      * @param header The header to be displayed.
      *
-     * @see .getHeader
-     * @see .setHeader
-     * @see .getFooter
-     * @see .setFooter
-     * @see .setFooterWithPlaceholders
-     * @see .setHeaderAndFooter
-     * @see .setHeaderAndFooterWithPlaceholders
      * @since 2.2.0
      */
     fun setProcessedHeader(player: Player, header: String)
@@ -1137,13 +782,6 @@ interface TitleManagerAPI {
      *
      * @return The header that is being displayed.
      *
-     * @see .setHeader
-     * @see .setHeaderWithPlaceholders
-     * @see .getFooter
-     * @see .setFooter
-     * @see .setFooterWithPlaceholders
-     * @see .setHeaderAndFooter
-     * @see .setHeaderAndFooterWithPlaceholders
      * @since 2.0.0
      */
     fun getHeader(player: Player): String
@@ -1154,13 +792,6 @@ interface TitleManagerAPI {
      * @param player The player to set the footer for.
      * @param footer The footer to be displayed.
      *
-     * @see .getHeader
-     * @see .setHeader
-     * @see .setHeaderWithPlaceholders
-     * @see .getFooter
-     * @see .setFooterWithPlaceholders
-     * @see .setHeaderAndFooter
-     * @see .setHeaderAndFooterWithPlaceholders
      * @since 2.0.0
      */
     fun setFooter(player: Player, footer: String)
@@ -1171,13 +802,6 @@ interface TitleManagerAPI {
      * @param player The player to set the footer for.
      * @param footer The footer to be displayed.
      *
-     * @see .getHeader
-     * @see .setHeader
-     * @see .setHeaderWithPlaceholders
-     * @see .getFooter
-     * @see .setFooter
-     * @see .setHeaderAndFooter
-     * @see .setHeaderAndFooterWithPlaceholders
      * @since 2.0.0
      */
     fun setFooterWithPlaceholders(player: Player, footer: String)
@@ -1189,13 +813,6 @@ interface TitleManagerAPI {
      * @param player The player to set the footer for.
      * @param footer The footer to be displayed.
      *
-     * @see .getHeader
-     * @see .setHeader
-     * @see .setHeaderWithPlaceholders
-     * @see .getFooter
-     * @see .setFooter
-     * @see .setHeaderAndFooter
-     * @see .setHeaderAndFooterWithPlaceholders
      * @since 2.2.0
      */
     fun setProcessedFooter(player: Player, footer: String)
@@ -1207,13 +824,6 @@ interface TitleManagerAPI {
      *
      * @return The footer that is being displayed.
      *
-     * @see .getHeader
-     * @see .setHeader
-     * @see .setHeaderWithPlaceholders
-     * @see .setFooter
-     * @see .setFooterWithPlaceholders
-     * @see .setHeaderAndFooter
-     * @see .setHeaderAndFooterWithPlaceholders
      * @since 2.0.0
      */
     fun getFooter(player: Player): String
@@ -1225,13 +835,6 @@ interface TitleManagerAPI {
      * @param header The header to be displayed.
      * @param footer The footer to be displayed.
      *
-     * @see .getHeader
-     * @see .setHeader
-     * @see .setHeaderWithPlaceholders
-     * @see .getFooter
-     * @see .setFooter
-     * @see .setFooterWithPlaceholders
-     * @see .setHeaderAndFooterWithPlaceholders
      * @since 2.0.0
      */
     fun setHeaderAndFooter(player: Player, header: String, footer: String)
@@ -1243,13 +846,6 @@ interface TitleManagerAPI {
      * @param header The header to be displayed.
      * @param footer The footer to be displayed.
      *
-     * @see .getHeader
-     * @see .setHeader
-     * @see .setHeaderWithPlaceholders
-     * @see .getFooter
-     * @see .setFooter
-     * @see .setFooterWithPlaceholders
-     * @see .setHeaderAndFooter
      * @since 2.0.0
      */
     fun setHeaderAndFooterWithPlaceholders(player: Player, header: String, footer: String)
@@ -1262,13 +858,6 @@ interface TitleManagerAPI {
      * @param header The header to be displayed.
      * @param footer The footer to be displayed.
      *
-     * @see .getHeader
-     * @see .setHeader
-     * @see .setHeaderWithPlaceholders
-     * @see .getFooter
-     * @see .setFooter
-     * @see .setFooterWithPlaceholders
-     * @see .setHeaderAndFooter
      * @since 2.2.0
      */
     fun setProcessedHeaderAndFooter(player: Player, header: String, footer: String)
@@ -1281,10 +870,6 @@ interface TitleManagerAPI {
      *
      * @param player The player the scoreboard should be given to.
      *
-     * @see .removeScoreboard
-     * @see .hasScoreboard
-     * @see .setScoreboardValue
-     * @see .setScoreboardValueWithPlaceholders
      * @since 2.0.0
      */
     fun giveScoreboard(player: Player)
@@ -1297,11 +882,6 @@ interface TitleManagerAPI {
      *
      * @param player The player the scoreboard should be given to.
      *
-     * @see .removeScoreboard
-     * @see .hasScoreboard
-     * @see .setScoreboardValue
-     * @see .setScoreboardValueWithPlaceholders
-     * @see .giveScoreboard
      * @since 2.2.0
      */
     fun giveDefaultScoreboard(player: Player)
@@ -1311,8 +891,6 @@ interface TitleManagerAPI {
      *
      * @param player The player the scoreboard should be removed from.
      *
-     * @see .giveScoreboard
-     * @see .hasScoreboard
      * @since 2.0.0
      */
     fun removeScoreboard(player: Player)
@@ -1324,8 +902,6 @@ interface TitleManagerAPI {
      *
      * @return Whether or not the player has a scoreboard assigned.
      *
-     * @see .giveScoreboard
-     * @see .removeScoreboard
      * @since 2.0.0.
      */
     fun hasScoreboard(player: Player): Boolean
@@ -1336,10 +912,6 @@ interface TitleManagerAPI {
      * @param player The player to set the title for.
      * @param title The title to be set. (Will be trimmed to a maximum of 32 characters)
      *
-     * @see .giveScoreboard
-     * @see .hasScoreboard
-     * @see .setScoreboardTitleWithPlaceholders
-     * @see .getScoreboardTitle
      * @since 2.0.0
      */
     fun setScoreboardTitle(player: Player, title: String)
@@ -1353,10 +925,6 @@ interface TitleManagerAPI {
      * @param player The player to set the title for.
      * @param title The title to be set. (Will be trimmed to a maximum of 32 characters)
      *
-     * @see .giveScoreboard
-     * @see .hasScoreboard
-     * @see .setScoreboardTitle
-     * @see .getScoreboardTitle
      * @since 2.0.0
      */
     fun setScoreboardTitleWithPlaceholders(player: Player, title: String)
@@ -1371,11 +939,6 @@ interface TitleManagerAPI {
      * @param player The player to set the title for.
      * @param title The title to be set. (Will be trimmed to a maximum of 32 characters)
      *
-     * @see .giveScoreboard
-     * @see .hasScoreboard
-     * @see .setScoreboardTitle
-     * @see .setScoreboardTitleWithPlaceholders
-     * @see .getScoreboardTitle
      * @since 2.2.0
      */
     fun setProcessedScoreboardTitle(player: Player, title: String)
@@ -1387,10 +950,6 @@ interface TitleManagerAPI {
      *
      * @return The title of the player's scoreboard, if no scoreboard is assigned this will return null.
      *
-     * @see .giveScoreboard
-     * @see .hasScoreboard
-     * @see .setScoreboardTitle
-     * @see .setScoreboardTitleWithPlaceholders
      * @since 2.0.0
      */
     fun getScoreboardTitle(player: Player): String?
@@ -1402,11 +961,6 @@ interface TitleManagerAPI {
      * @param index The index at which the text should be set. 1-15 (1 and 15 inclusive)
      * @param value The text value that should be set. (will be trimmed to a maximum of 40 characters)
      *
-     * @see .giveScoreboard
-     * @see .hasScoreboard
-     * @see .setScoreboardValueWithPlaceholders
-     * @see .getScoreboardValue
-     * @see .removeScoreboard
      * @since 2.0.0
      */
     fun setScoreboardValue(player: Player, index: Int, value: String)
@@ -1421,11 +975,6 @@ interface TitleManagerAPI {
      * @param index The index at which the text should be set. 1-15 (1 and 15 inclusive)
      * @param value The text value that should be set.
      *
-     * @see .giveScoreboard
-     * @see .hasScoreboard
-     * @see .setScoreboardValue
-     * @see .getScoreboardValue
-     * @see .removeScoreboardValue
      * @since 2.0.0
      */
     fun setScoreboardValueWithPlaceholders(player: Player, index: Int, value: String)
@@ -1441,12 +990,6 @@ interface TitleManagerAPI {
      * @param index The index at which the text should be set. 1-15 (1 and 15 inclusive)
      * @param value The text value that should be set.
      *
-     * @see .giveScoreboard
-     * @see .hasScoreboard
-     * @see .setScoreboardValue
-     * @see .setScoreboardValueWithPlaceholders
-     * @see .getScoreboardValue
-     * @see .removeScoreboardValue
      * @since 2.2.0
      */
     fun setProcessedScoreboardValue(player: Player, index: Int, value: String)
@@ -1459,11 +1002,6 @@ interface TitleManagerAPI {
      *
      * @return The text value of the given index. If no text value is present, this will return null.
      *
-     * @see .giveScoreboard
-     * @see .hasScoreboard
-     * @see .setScoreboardValue
-     * @see .setScoreboardValueWithPlaceholders
-     * @see .removeScoreboardValue
      * @since 2.0.0
      */
     fun getScoreboardValue(player: Player, index: Int): String?
@@ -1474,11 +1012,6 @@ interface TitleManagerAPI {
      * @param player The player to remove the text value from.
      * @param index The index at which the text value should be removed.
      *
-     * @see .giveScoreboard
-     * @see .hasScoreboard
-     * @see .setScoreboardValue
-     * @see .setScoreboardValueWithPlaceholders
-     * @see .getScoreboardValue
      * @since 2.0.0
      */
     fun removeScoreboardValue(player: Player, index: Int)

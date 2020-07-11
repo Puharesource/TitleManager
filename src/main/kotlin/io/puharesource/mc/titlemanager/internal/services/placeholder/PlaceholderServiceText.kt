@@ -1,6 +1,8 @@
 package io.puharesource.mc.titlemanager.internal.services.placeholder
 
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
+import io.puharesource.mc.titlemanager.internal.color.ChatColorGradient
+import io.puharesource.mc.titlemanager.internal.color.ColorUtil
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
 import io.puharesource.mc.titlemanager.internal.extensions.color
 import io.puharesource.mc.titlemanager.internal.extensions.format
@@ -13,12 +15,15 @@ import io.puharesource.mc.titlemanager.internal.placeholder.PlaceholderAPIHook
 import io.puharesource.mc.titlemanager.internal.placeholder.PlaceholderTps
 import io.puharesource.mc.titlemanager.internal.placeholder.VanishHookReplacer
 import io.puharesource.mc.titlemanager.internal.placeholder.VaultHook
+import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
 import io.puharesource.mc.titlemanager.internal.reflections.getPing
 import io.puharesource.mc.titlemanager.internal.services.bungeecord.BungeeCordService
+import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.Date
 import java.util.concurrent.ConcurrentSkipListMap
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 class PlaceholderServiceText @Inject constructor(
@@ -27,6 +32,7 @@ class PlaceholderServiceText @Inject constructor(
     private val bungeeCordService: BungeeCordService
 ) : PlaceholderService {
     private val variablePattern = """[%][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
+    private val gradientPattern: Pattern = """\[(?<colors>.+)](?<text>.+)""".toRegex().toPattern()
     private val placeholderReplacers: MutableMap<String, Placeholder> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
 
     override fun loadBuiltinPlaceholders() {
@@ -68,6 +74,31 @@ class PlaceholderServiceText @Inject constructor(
         addPlaceholder(createPlaceholder("safe-online", "safe-online-players", enabled = { VanishHookReplacer.isValid() }) { player -> VanishHookReplacer.value(player) })
         addPlaceholder(createPlaceholder("balance", "money", enabled = { VaultHook.isEnabled() && VaultHook.isEconomySupported }) { player -> VaultHook.economy?.getBalance(player)?.format() ?: "no-econ" })
         addPlaceholder(createPlaceholder("group", "group-name", enabled = { VaultHook.isEnabled() && VaultHook.hasGroupSupport }) { player -> VaultHook.permissions?.getPrimaryGroup(player)?.color() ?: "no-perms" })
+        addPlaceholder(createPlaceholder("color", "colour", "c", enabled = { NMSManager.versionIndex >= 10 }) { _, value -> ChatColor.of(value) })
+        addPlaceholder(createPlaceholder("gradient", enabled = { NMSManager.versionIndex >= 10 }) { _, value ->
+            if (value == null) {
+                return@createPlaceholder "N/A"
+            }
+
+            val matcher = gradientPattern.matcher(value)
+            var text: String = value
+            var colors = listOf("#ff0000", "#00ff00").map { ChatColor.of(it) }.toMutableList()
+
+            if (matcher.find()) {
+                text = matcher.group("text")
+                colors = matcher.group("colors").split(",")
+                    .asSequence()
+                    .map { it.trim() }
+                    .map { ChatColor.of(it) }
+                    .toMutableList()
+            }
+
+            if (colors.size == 1) {
+                colors.add(colors.first())
+            }
+
+            ColorUtil.gradientString(text, ChatColorGradient(colors, continuous = false))
+        })
     }
 
     override fun addPlaceholder(placeholder: Placeholder) {

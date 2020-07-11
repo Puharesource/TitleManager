@@ -4,6 +4,7 @@ import io.puharesource.mc.titlemanager.TitleManagerPlugin
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationFrame
 import io.puharesource.mc.titlemanager.internal.model.animation.StandardAnimationFrame
+import io.puharesource.mc.titlemanager.internal.model.script.BuiltinScripts
 import io.puharesource.mc.titlemanager.internal.model.script.ScriptCommandSender
 import io.puharesource.mc.titlemanager.internal.services.placeholder.PlaceholderService
 import org.graalvm.polyglot.Context
@@ -13,17 +14,21 @@ import java.util.concurrent.ConcurrentSkipListSet
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
-class ScriptServiceGraal @Inject constructor(private val plugin: TitleManagerPlugin, private val placeholderService: PlaceholderService) : ScriptService {
-    override val engineName: String = "GraalVM"
+class ScriptServiceGraal @Inject constructor(
+    plugin: TitleManagerPlugin,
+    private val placeholderService: PlaceholderService,
+    private val builtinScripts: BuiltinScripts
+) : ScriptService {
     private val animationsFolder = File(plugin.dataFolder, "animations")
     private val context: Context = Context.newBuilder("js").allowAllAccess(true).build()
     private val registeredScripts: ConcurrentSkipListSet<String> = ConcurrentSkipListSet(String.CASE_INSENSITIVE_ORDER)
-
     private val jsAnimationFileSequence: Sequence<File>
         get() = animationsFolder.listFiles()
                 .asSequence()
                 .filter { it.isFile }
                 .filter { it.extension.equals("js", ignoreCase = true) }
+
+    override val engineName: String = "GraalVM"
 
     override val scripts: Set<String>
         get() = this.registeredScripts.clone()
@@ -31,17 +36,7 @@ class ScriptServiceGraal @Inject constructor(private val plugin: TitleManagerPlu
     init {
         context.polyglotBindings.putMember("ScriptCommandSender", ScriptCommandSender::class.java)
 
-        addResource("titlemanager_engine.js")
-    }
-
-    override fun loadBuiltinScripts() {
-        registerAnimation("count_down")
-        registerAnimation("count_up")
-        registerAnimation("text_delete")
-        registerAnimation("text_write")
-        registerAnimation("shine")
-        registerAnimation("marquee")
-        registerAnimation("repeat")
+        context.eval("js", plugin.getResource("titlemanager_engine.js")!!.bufferedReader().readText())
     }
 
     override fun loadScripts() {
@@ -58,6 +53,12 @@ class ScriptServiceGraal @Inject constructor(private val plugin: TitleManagerPlu
     }
 
     override fun getFrameFromScript(name: String, text: String, index: Int): Array<Value> {
+        val builtinScript = builtinScripts[name]
+
+        if (builtinScript != null) {
+            return builtinScript(text, index).asArray().map { Value.asValue(it) }.toTypedArray()
+        }
+
         val valueArray = context.eval("js", "$name('${text.replace("'", "\\'")}', $index)")
         val convertedArray = arrayOfNulls<Value>(valueArray.arraySize.toInt())
 
@@ -86,14 +87,5 @@ class ScriptServiceGraal @Inject constructor(private val plugin: TitleManagerPlu
         }
     }
 
-    override fun scriptExists(name: String): Boolean = this.registeredScripts.contains(name)
-
-    private fun addResource(name: String) {
-        context.eval("js", plugin.getResource(name)!!.bufferedReader().readText())
-    }
-
-    private fun registerAnimation(name: String) {
-        addResource("animations/$name.js")
-        this.registeredScripts.add(name)
-    }
+    override fun scriptExists(name: String): Boolean = this.registeredScripts.contains(name) || builtinScripts.contains(name)
 }

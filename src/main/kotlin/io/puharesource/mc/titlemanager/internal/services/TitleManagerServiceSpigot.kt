@@ -35,7 +35,6 @@ class TitleManagerServiceSpigot @Inject constructor(
         animationsService.createAnimationsFolderIfNotExists()
         animationsService.loadAnimations()
 
-        scriptService.loadBuiltinScripts()
         scriptService.loadScripts()
 
         metrics.addCustomChart(Metrics.SimplePie("script_engine") { scriptService.engineName })

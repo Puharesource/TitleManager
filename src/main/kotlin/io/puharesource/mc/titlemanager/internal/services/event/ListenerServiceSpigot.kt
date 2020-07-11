@@ -124,9 +124,11 @@ class ListenerServiceSpigot @Inject constructor(
             val welcomeTitle = config.welcomeTitle
 
             if (player.hasPlayedBefore()) {
-                titleService.sendTitles(player, welcomeTitle.title, welcomeTitle.subtitle, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut, withPlaceholders = true)
+                titleService.sendProcessedTitle(player, welcomeTitle.title, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut)
+                titleService.sendProcessedSubtitle(player, welcomeTitle.subtitle, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut)
             } else {
-                titleService.sendTitles(player, welcomeTitle.firstJoin.title, welcomeTitle.firstJoin.subtitle, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut, withPlaceholders = true)
+                titleService.sendProcessedTitle(player, welcomeTitle.firstJoin.title, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut)
+                titleService.sendProcessedSubtitle(player, welcomeTitle.firstJoin.subtitle, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut)
             }
         }.delay(20).addTo(listeners)
     }

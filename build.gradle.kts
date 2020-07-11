@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "io.puharesource.mc"
-version = "2.2.8"
+version = "2.3.0"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -51,11 +51,22 @@ tasks {
 
         configuration {
             jdkVersion = 8
+
+            includeNonPublic = false
+            skipDeprecated = false
+            reportUndocumented = true
+            skipEmptyPackages = true
+
+            targets = listOf("JVM")
             platform = "JVM"
+
+            kotlinTasks {
+                defaultKotlinTasks()
+            }
 
             externalDocumentationLink {
                 url = uri("https://hub.spigotmc.org/javadocs/spigot/").toURL()
-                packageListUrl = uri("https://hub.spigotmc.org/javadocs/spigot/package-list").toURL()
+                packageListUrl = uri("https://hub.spigotmc.org/javadocs/spigot/element-list").toURL()
             }
 
             sourceLink {
@@ -219,7 +230,7 @@ dependencies {
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.3.5")
     implementation(group = "org.bstats", name = "bstats-bukkit", version = "1.7")
 
-    implementation(group = "org.spigotmc", name = "spigot-api", version = "1.14-R0.1-SNAPSHOT")
+    implementation(group = "org.spigotmc", name = "spigot-api", version = "1.16.1-R0.1-SNAPSHOT")
 
     implementation(group = "be.maximvdw", name = "MVdWPlaceholderAPI", version = "3.0.1-SNAPSHOT") { isTransitive = false }
     implementation(group = "me.clip", name = "placeholderapi", version = "2.10.4")
