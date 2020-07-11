@@ -12,9 +12,9 @@ import org.bukkit.entity.Player
 class CommandExecutor(private val plugin: TitleManagerPlugin, val cmd: TMSubCommand, val sender: CommandSender, val args: Array<out String>, val parameters: Map<String, CommandParameter>) {
     var silent: Boolean = false
 
-    var fadeIn: Int = -1
-    var stay: Int = -1
-    var fadeOut: Int = -1
+    var fadeIn: Int = 20
+    var stay: Int = 20
+    var fadeOut: Int = 20
 
     var world: World? = null
     var radius: Double? = null
