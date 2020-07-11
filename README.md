@@ -4,7 +4,7 @@
 
 <p align="center">
     <a href="https://www.spigotmc.org/resources/titlemanager.1049">
-        <img src="https://img.shields.io/badge/Version-2.2.8-green"
+        <img src="https://img.shields.io/badge/Version-2.3.0-green"
              alt="Version">
     </a>
     <a href="https://github.com/Puharesource/TitleManager/actions">
@@ -16,7 +16,7 @@
              alt="Javadoc">
     </a>
     <a href="https://www.spigotmc.org/resources/titlemanager.1049/updates">
-        <img src="https://img.shields.io/badge/Minecraft-1.7%20--%201.15.2-blue"
+        <img src="https://img.shields.io/badge/Minecraft-1.7%20--%201.16.1-blue"
              alt="Minecraft versions">
     </a>
 </p>
