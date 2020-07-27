@@ -6,7 +6,7 @@ import io.puharesource.mc.titlemanager.internal.extensions.stripColor
 import io.puharesource.mc.titlemanager.internal.model.command.AllowedCommandSender
 import io.puharesource.mc.titlemanager.internal.model.command.CommandExecutor
 import io.puharesource.mc.titlemanager.internal.model.command.CommandParameter
-import org.bukkit.ChatColor
+import net.md_5.bungee.api.ChatColor
 import org.bukkit.command.CommandSender
 import java.util.concurrent.Executor
 

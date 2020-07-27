@@ -196,8 +196,6 @@ scoreboard:
   title: '${shine:[0;2;0][0;25;0][0;25;0][&3&l;&b&l]My Server}'
 
   # The lines of the scoreboard (Maximum of 15 lines allowed)
-  # Each line can only have 40 characters (this includes color codes)
-  # Each line must also be unique, a work around would be to put a color code at the end your line, to make it unique.
   lines:
   - '&b&m----------------------------------'
   - '&b> &3&lPlayer Name:'

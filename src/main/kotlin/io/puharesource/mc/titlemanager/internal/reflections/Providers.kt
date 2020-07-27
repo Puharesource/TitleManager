@@ -24,6 +24,7 @@ object ProviderProtocolHack : NMSClassProvider() {
         "PacketPlayOutScoreboardObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardObjective")
         "PacketPlayOutScoreboardDisplayObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardDisplayObjective")
         "PacketPlayOutScoreboardScore".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore")
+        "PacketPlayOutScoreboardTeam".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardTeam")
 
         val protocolInjector = ORG_SPIGOTMC.getReflectionClass("ProtocolInjector")
         val packetTitle = protocolInjector.getInnerReflectionClass("PacketTitle")
@@ -54,6 +55,7 @@ object Provider18 : NMSClassProvider() {
         "PacketPlayOutScoreboardObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardObjective")
         "PacketPlayOutScoreboardDisplayObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardDisplayObjective")
         "PacketPlayOutScoreboardScore".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore")
+        "PacketPlayOutScoreboardTeam".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardTeam")
         "EnumScoreboardHealthDisplay".associate(NET_MINECRAFT_SERVER, "EnumScoreboardHealthDisplay")
         "EnumScoreboardAction".associate(NET_MINECRAFT_SERVER, "EnumScoreboardAction")
     }
@@ -78,6 +80,7 @@ object Provider183 : NMSClassProvider() {
         "PacketPlayOutScoreboardObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardObjective")
         "PacketPlayOutScoreboardDisplayObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardDisplayObjective")
         "PacketPlayOutScoreboardScore".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore")
+        "PacketPlayOutScoreboardTeam".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardTeam")
         "EnumScoreboardHealthDisplay".associate(NET_MINECRAFT_SERVER, "IScoreboardCriteria", "EnumScoreboardHealthDisplay")
         "EnumScoreboardAction".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore", "EnumScoreboardAction")
     }
@@ -88,8 +91,6 @@ object Provider183 : NMSClassProvider() {
  */
 object Provider110 : NMSClassProvider() {
     init {
-        "ChatComponentText".associate(NET_MINECRAFT_SERVER, "ChatComponentText")
-
         "ChatComponentText".associate(NET_MINECRAFT_SERVER, "ChatComponentText")
         "IChatBaseComponent".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent")
         "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
@@ -104,13 +105,14 @@ object Provider110 : NMSClassProvider() {
         "PacketPlayOutScoreboardObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardObjective")
         "PacketPlayOutScoreboardDisplayObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardDisplayObjective")
         "PacketPlayOutScoreboardScore".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore")
+        "PacketPlayOutScoreboardTeam".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardTeam")
         "EnumScoreboardHealthDisplay".associate(NET_MINECRAFT_SERVER, "IScoreboardCriteria", "EnumScoreboardHealthDisplay")
         "EnumScoreboardAction".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore", "EnumScoreboardAction")
     }
 }
 
 /**
- * Provides classes for Minecraft 1.12 <=
+ * Provides classes for Minecraft 1.12
  */
 object Provider112 : NMSClassProvider() {
     init {
@@ -128,13 +130,14 @@ object Provider112 : NMSClassProvider() {
         "PacketPlayOutScoreboardObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardObjective")
         "PacketPlayOutScoreboardDisplayObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardDisplayObjective")
         "PacketPlayOutScoreboardScore".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore")
+        "PacketPlayOutScoreboardTeam".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardTeam")
         "EnumScoreboardHealthDisplay".associate(NET_MINECRAFT_SERVER, "IScoreboardCriteria", "EnumScoreboardHealthDisplay")
         "EnumScoreboardAction".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore", "EnumScoreboardAction")
     }
 }
 
 /**
- * Provides classes for Minecraft 1.13 <=
+ * Provides classes for Minecraft 1.13 - 1.15
  */
 object Provider113 : NMSClassProvider() {
     init {
@@ -152,6 +155,33 @@ object Provider113 : NMSClassProvider() {
         "PacketPlayOutScoreboardObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardObjective")
         "PacketPlayOutScoreboardDisplayObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardDisplayObjective")
         "PacketPlayOutScoreboardScore".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore")
+        "PacketPlayOutScoreboardTeam".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardTeam")
+        "EnumScoreboardHealthDisplay".associate(NET_MINECRAFT_SERVER, "IScoreboardCriteria", "EnumScoreboardHealthDisplay")
+        "EnumScoreboardAction".associate(NET_MINECRAFT_SERVER, "ScoreboardServer", "Action")
+    }
+}
+
+/**
+ * Provides classes for Minecraft 1.16 <=
+ */
+object Provider116 : NMSClassProvider() {
+    init {
+        "ChatComponentText".associate(NET_MINECRAFT_SERVER, "ChatComponentText")
+        "IChatBaseComponent".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent")
+        "ChatSerializer".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent\$ChatSerializer")
+        "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
+        "EntityPlayer".associate(NET_MINECRAFT_SERVER, "EntityPlayer")
+        "PlayerConnection".associate(NET_MINECRAFT_SERVER, "PlayerConnection")
+        "NetworkManager".associate(NET_MINECRAFT_SERVER, "NetworkManager")
+        "Packet".associate(NET_MINECRAFT_SERVER, "Packet")
+        "PacketPlayOutTitle".associate(NET_MINECRAFT_SERVER, "PacketPlayOutTitle")
+        "PacketPlayOutChat".associate(NET_MINECRAFT_SERVER, "PacketPlayOutChat")
+        "PacketPlayOutPlayerListHeaderFooter".associate(NET_MINECRAFT_SERVER, "PacketPlayOutPlayerListHeaderFooter")
+        "EnumTitleAction".associate(NET_MINECRAFT_SERVER, "PacketPlayOutTitle", "EnumTitleAction")
+        "PacketPlayOutScoreboardObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardObjective")
+        "PacketPlayOutScoreboardDisplayObjective".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardDisplayObjective")
+        "PacketPlayOutScoreboardScore".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardScore")
+        "PacketPlayOutScoreboardTeam".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardTeam")
         "EnumScoreboardHealthDisplay".associate(NET_MINECRAFT_SERVER, "IScoreboardCriteria", "EnumScoreboardHealthDisplay")
         "EnumScoreboardAction".associate(NET_MINECRAFT_SERVER, "ScoreboardServer", "Action")
     }

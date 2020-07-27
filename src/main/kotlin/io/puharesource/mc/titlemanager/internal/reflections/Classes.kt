@@ -1,5 +1,10 @@
 package io.puharesource.mc.titlemanager.internal.reflections
 
+import io.puharesource.mc.titlemanager.internal.extensions.modify
+import io.puharesource.mc.titlemanager.internal.extensions.read
+import net.md_5.bungee.api.chat.BaseComponent
+import net.md_5.bungee.api.chat.TextComponent
+import net.md_5.bungee.chat.ComponentSerializer
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 
@@ -96,6 +101,73 @@ class PacketPlayOutChat : NMSClass() {
     }
 }
 
+class PacketPlayOutScoreboardTeam<T> : NMSClass() {
+    companion object {
+        const val MODE_TEAM_CREATE = 0
+        const val MODE_TEAM_REMOVED = 1
+        const val MODE_TEAM_UPDATED = 2
+        const val MODE_PLAYERS_ADDED = 3
+        const val MODE_PLAYERS_REMOVED = 4
+    }
+
+    private val nameField by lazy { clazz.getField("a") }
+    private val prefixField by lazy { clazz.getField("c") }
+    private val suffixField by lazy { clazz.getField("d") }
+    private val playersField by lazy { if (NMSManager.versionIndex > 2) clazz.getField("h") else clazz.getField("g") }
+    private val modeField by lazy { if (NMSManager.versionIndex > 2) clazz.getField("i") else clazz.getField("h") }
+
+    val handle: Any = clazz.getConstructor().newInstance()
+
+    var name: String
+        get() = nameField.read { nameField.get(handle) as String }
+        set(value) = nameField.modify { nameField.set(handle, value) }
+
+    var prefix: T
+        get() = prefixField.read { prefixField.get(handle) as T }
+        set(value) = prefixField.modify { prefixField.set(handle, value) }
+
+    var suffix: T
+        get() = suffixField.read { suffixField.get(handle) as T }
+        set(value) = suffixField.modify { suffixField.set(handle, value) }
+
+    var text: T
+        get() {
+            if (prefix is String) {
+                return (prefix as String + suffix as String) as T
+            }
+
+            return prefix
+        }
+        set(value) {
+            if (value is String && value.length > 16) {
+                prefix = value.substring(0, 16) as T
+                suffix = value.substring(16, value.length.coerceAtMost(32)) as T
+            } else {
+                prefix = value
+            }
+        }
+
+    var players: List<String>
+        get() = playersField.read { playersField.read { playersField.get(handle) as List<String> } }
+        set(value) = playersField.modify { playersField.modify { playersField.set(handle, value) } }
+
+    var mode: Int
+        get() = modeField.read { modeField.getInt(handle) }
+        set(value) = modeField.modify { modeField.setInt(handle, value) }
+}
+
 class ChatComponentText : NMSClass() {
     val constructor = clazz.getConstructor(String::class.java)
+}
+
+object ChatSerializer : NMSClass() {
+    private val deserializeMethod by lazy { clazz.getMethod("a", String::class.java) }
+
+    fun deserializeLegacyText(text: String) = deserialize(*TextComponent.fromLegacyText(text))
+
+    fun deserialize(vararg components: BaseComponent) = deserialize(ComponentSerializer.toString(*components))
+
+    fun deserialize(json: String): Any {
+        return deserializeMethod.invoke(null, json)
+    }
 }

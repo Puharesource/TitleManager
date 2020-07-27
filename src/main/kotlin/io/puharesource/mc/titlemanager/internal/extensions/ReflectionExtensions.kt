@@ -9,3 +9,11 @@ internal inline fun Field.modify(body: Field.() -> Unit) {
 
     body()
 }
+
+internal inline fun <T> Field.read(body: Field.() -> T): T {
+    if (!isAccessible) {
+        isAccessible = true
+    }
+
+    return body()
+}

@@ -44,7 +44,7 @@ class ActionbarServiceSpigot @Inject constructor(
 
         if (NMSManager.versionIndex >= 5) {
             try {
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(processedText))
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(processedText))
             } catch (e: Exception) {
                 error("To use Actionbar messages you need to run Spigot, not CraftBukkit!")
             }

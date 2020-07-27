@@ -4,20 +4,16 @@
 
 <p align="center">
     <a href="https://www.spigotmc.org/resources/titlemanager.1049">
-        <img src="https://img.shields.io/badge/Version-2.3.0-green"
-             alt="Version">
+        <img src="https://img.shields.io/badge/Version-2.3.1-green" alt="Version">
     </a>
     <a href="https://github.com/Puharesource/TitleManager/actions">
-        <img src="https://github.com/Puharesource/TitleManager/workflows/Java%20CI/badge.svg"
-             alt="Actions Status">
+        <img src="https://github.com/Puharesource/TitleManager/workflows/Java%20CI/badge.svg" alt="Actions Status">
     </a>
     <a href="https://tarkan.dev/javadoc/titlemanager/">
-        <img src="https://img.shields.io/badge/JavaDoc-2.2-blue.svg"
-             alt="Javadoc">
+        <img src="https://img.shields.io/badge/JavaDoc-2.2-blue.svg" alt="Javadoc">
     </a>
     <a href="https://www.spigotmc.org/resources/titlemanager.1049/updates">
-        <img src="https://img.shields.io/badge/Minecraft-1.7%20--%201.16.1-blue"
-             alt="Minecraft versions">
+        <img src="https://img.shields.io/badge/Minecraft-1.7%20--%201.16.1-blue" alt="Minecraft versions">
     </a>
 </p>
 

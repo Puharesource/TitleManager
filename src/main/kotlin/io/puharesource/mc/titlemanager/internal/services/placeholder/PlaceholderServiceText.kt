@@ -1,7 +1,6 @@
 package io.puharesource.mc.titlemanager.internal.services.placeholder
 
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
-import io.puharesource.mc.titlemanager.internal.color.ChatColorGradient
 import io.puharesource.mc.titlemanager.internal.color.ColorUtil
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
 import io.puharesource.mc.titlemanager.internal.extensions.color
@@ -21,6 +20,7 @@ import io.puharesource.mc.titlemanager.internal.services.bungeecord.BungeeCordSe
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import java.awt.Color
 import java.util.Date
 import java.util.concurrent.ConcurrentSkipListMap
 import java.util.regex.Pattern
@@ -82,22 +82,47 @@ class PlaceholderServiceText @Inject constructor(
 
             val matcher = gradientPattern.matcher(value)
             var text: String = value
-            var colors = listOf("#ff0000", "#00ff00").map { ChatColor.of(it) }.toMutableList()
+            val colors: List<Color>
+
+            var bold = false
+            var strikethrough = false
+            var underline = false
+            var magic = false
 
             if (matcher.find()) {
                 text = matcher.group("text")
                 colors = matcher.group("colors").split(",")
                     .asSequence()
                     .map { it.trim() }
-                    .map { ChatColor.of(it) }
-                    .toMutableList()
+                    .filter { it.startsWith("#") }
+                    .map { Color.decode(it) }
+                    .toList()
+
+                matcher.group("colors").split(",")
+                    .asSequence()
+                    .map { it.trim() }
+                    .filter { !it.startsWith("#") }
+                    .forEach {
+                        when {
+                            it.equals("bold", ignoreCase = true) -> {
+                                bold = true
+                            }
+                            it.equals("strikethrough", ignoreCase = true) -> {
+                                strikethrough = true
+                            }
+                            it.equals("underline", ignoreCase = true) -> {
+                                underline = true
+                            }
+                            it.equals("magic", ignoreCase = true) -> {
+                                magic = true
+                            }
+                        }
+                    }
+            } else {
+                colors = listOf("#ff0000", "#00ff00").map { Color.decode(it) }.toList()
             }
 
-            if (colors.size == 1) {
-                colors.add(colors.first())
-            }
-
-            ColorUtil.gradientString(text, ChatColorGradient(colors, continuous = false))
+            ColorUtil.gradientString(text, colors, bold = bold, strikethrough = strikethrough, underline = underline, magic = magic)
         })
     }
 

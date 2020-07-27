@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.internal.extensions
 
-import org.bukkit.ChatColor
+import net.md_5.bungee.api.ChatColor
 
 internal fun String.color(): String = ChatColor.translateAlternateColorCodes('&', this)
 

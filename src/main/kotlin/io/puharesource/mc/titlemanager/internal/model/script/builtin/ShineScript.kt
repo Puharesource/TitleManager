@@ -2,7 +2,7 @@ package io.puharesource.mc.titlemanager.internal.model.script.builtin
 
 import io.puharesource.mc.titlemanager.internal.model.animation.StandardAnimationFrame
 import io.puharesource.mc.titlemanager.internal.model.script.AnimationScript
-import org.bukkit.ChatColor
+import net.md_5.bungee.api.ChatColor
 import java.util.regex.Pattern
 
 class ShineScript(text: String, index: Int) : AnimationScript(text, index) {

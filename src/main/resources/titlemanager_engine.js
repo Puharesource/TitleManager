@@ -5,7 +5,7 @@ try {
 } catch (e) {}
 
 var Bukkit = Java.type('org.bukkit.Bukkit');
-var ChatColor = Java.type('org.bukkit.ChatColor');
+var ChatColor = Java.type('net.md_5.bungee.api.ChatColor');
 
 var createCommandSender = function() {
     return ScriptCommandSender.newInstance();

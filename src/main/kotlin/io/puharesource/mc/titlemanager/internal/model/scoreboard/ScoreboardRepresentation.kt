@@ -41,11 +41,7 @@ class ScoreboardRepresentation(title: String = "", private val lines: MutableMap
     fun set(index: Int, text: String) {
         val isNew = lines[index] != text
 
-        if (text.length > 40) {
-            lines[index] = text.substring(0, 40)
-        } else {
-            lines[index] = text
-        }
+        lines[index] = text
 
         if (isNew || !pluginConfig.bandwidth.preventDuplicatePackets) {
             isUpdatePending.set(true)

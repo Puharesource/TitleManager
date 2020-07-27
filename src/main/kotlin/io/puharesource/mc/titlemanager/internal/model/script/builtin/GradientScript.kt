@@ -1,28 +1,29 @@
 package io.puharesource.mc.titlemanager.internal.model.script.builtin
 
-import io.puharesource.mc.titlemanager.internal.color.ChatColorGradient
 import io.puharesource.mc.titlemanager.internal.color.ColorUtil
 import io.puharesource.mc.titlemanager.internal.model.script.AnimationScript
-import net.md_5.bungee.api.ChatColor
+import java.awt.Color
 import java.util.regex.Pattern
 
 class GradientScript(text: String, index: Int) : AnimationScript(text, index, fadeIn = 0, stay = 2, fadeOut = 0) {
     private val pattern: Pattern = """\[(?<colors>.+)](?<text>.+)""".toRegex().toPattern()
+    private var colors = listOf("#ff0000", "#00ff00").map { Color.decode(it) }.toList()
 
-    private var colors: MutableList<ChatColor> = listOf("#ff0000", "#00ff00").map { ChatColor.of(it) }.toMutableList()
-    private val gradient: ChatColorGradient
-        get() = ChatColorGradient(colors)
-
-    private val startColor: ChatColor
-        get() = gradient.getColorAt(text.length, index)
-
-    private val endColor: ChatColor
-        get() = gradient.getColorAt(text.length, index + text.length)
+    private var bold = false
+    private var strikethrough = false
+    private var underline = false
+    private var magic = false
 
     override fun generateFrame() {
-        done = gradient.isOutOfBounds(text.length, index + 1)
-
-        text = ColorUtil.gradientString(text, startColor, endColor)
+        done = index + 1 >= text.length
+        text = ColorUtil.gradientString(text, colors,
+            offset = index,
+            continuous = true,
+            bold = bold,
+            strikethrough = strikethrough,
+            underline = underline,
+            magic = magic
+        )
     }
 
     override fun decode() {
@@ -35,12 +36,30 @@ class GradientScript(text: String, index: Int) : AnimationScript(text, index, fa
             colors = matcher.group("colors").split(",")
                 .asSequence()
                 .map { it.trim() }
-                .map { ChatColor.of(it) }
-                .toMutableList()
-        }
+                .filter { it.startsWith("#") }
+                .map { Color.decode(it) }
+                .toList()
 
-        if (colors.size == 1) {
-            colors.add(colors.first())
+            matcher.group("colors").split(",")
+                .asSequence()
+                .map { it.trim() }
+                .filter { !it.startsWith("#") }
+                .forEach {
+                    when {
+                        it.equals("bold", ignoreCase = true) -> {
+                            bold = true
+                        }
+                        it.equals("strikethrough", ignoreCase = true) -> {
+                            strikethrough = true
+                        }
+                        it.equals("underline", ignoreCase = true) -> {
+                            underline = true
+                        }
+                        it.equals("magic", ignoreCase = true) -> {
+                            magic = true
+                        }
+                    }
+                }
         }
     }
 }

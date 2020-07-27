@@ -6,7 +6,7 @@ import io.puharesource.mc.titlemanager.internal.extensions.sendConfigMessage
 import io.puharesource.mc.titlemanager.internal.model.command.AllowedCommandSender
 import io.puharesource.mc.titlemanager.internal.model.command.CommandParameter
 import io.puharesource.mc.titlemanager.internal.model.command.commandExecutor
-import org.bukkit.ChatColor
+import net.md_5.bungee.api.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender

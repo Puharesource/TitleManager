@@ -13,7 +13,7 @@ import io.puharesource.mc.titlemanager.internal.services.features.TitleService
 import io.puharesource.mc.titlemanager.internal.services.storage.PlayerInfoService
 import io.puharesource.mc.titlemanager.internal.services.task.TaskService
 import io.puharesource.mc.titlemanager.internal.services.update.UpdateService
-import org.bukkit.ChatColor
+import net.md_5.bungee.api.ChatColor
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent

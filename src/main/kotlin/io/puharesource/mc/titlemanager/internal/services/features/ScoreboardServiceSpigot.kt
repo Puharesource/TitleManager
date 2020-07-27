@@ -9,16 +9,20 @@ import io.puharesource.mc.titlemanager.internal.extensions.modify
 import io.puharesource.mc.titlemanager.internal.model.animation.EasySendableAnimation
 import io.puharesource.mc.titlemanager.internal.model.animation.PartBasedSendableAnimation
 import io.puharesource.mc.titlemanager.internal.model.scoreboard.ScoreboardRepresentation
+import io.puharesource.mc.titlemanager.internal.reflections.ChatComponentText
+import io.puharesource.mc.titlemanager.internal.reflections.ChatSerializer
 import io.puharesource.mc.titlemanager.internal.reflections.NMSClassProvider
 import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
 import io.puharesource.mc.titlemanager.internal.reflections.PacketPlayOutScoreboardDisplayObjective
 import io.puharesource.mc.titlemanager.internal.reflections.PacketPlayOutScoreboardObjective
 import io.puharesource.mc.titlemanager.internal.reflections.PacketPlayOutScoreboardScore
+import io.puharesource.mc.titlemanager.internal.reflections.PacketPlayOutScoreboardTeam
 import io.puharesource.mc.titlemanager.internal.reflections.sendNMSPacket
 import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsService
 import io.puharesource.mc.titlemanager.internal.services.placeholder.PlaceholderService
 import io.puharesource.mc.titlemanager.internal.services.storage.PlayerInfoService
 import io.puharesource.mc.titlemanager.internal.services.task.SchedulerService
+import org.bukkit.ChatColor
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
@@ -192,10 +196,26 @@ class ScoreboardServiceSpigot @Inject constructor(
         classPacketPlayOutScoreboardObjective.nameField.modify { set(packet, scoreboardName) }
         classPacketPlayOutScoreboardObjective.modeField.modify { setInt(packet, 0) }
 
-        if (NMSManager.versionIndex > 6) {
-            classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, NMSManager.getClassProvider().getIChatComponent("")) }
-        } else {
-            classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, "") }
+        for (i in 0..15) {
+            val teamPacket = PacketPlayOutScoreboardTeam<Any>()
+
+            teamPacket.name = "tm-sb-$i"
+            teamPacket.players = listOf(ChatColor.COLOR_CHAR.toString() + i.toChar().toLowerCase())
+            teamPacket.mode = PacketPlayOutScoreboardTeam.MODE_TEAM_CREATE
+
+            player.sendNMSPacket(teamPacket.handle)
+        }
+
+        when {
+            NMSManager.versionIndex > 9 -> {
+                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, ChatSerializer.deserializeLegacyText(scoreboardName)) }
+            }
+            NMSManager.versionIndex > 6 -> {
+                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, NMSManager.getClassProvider().getIChatComponent("")) }
+            }
+            else -> {
+                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, "") }
+            }
         }
 
         if (NMSManager.versionIndex > 0) {
@@ -220,16 +240,22 @@ class ScoreboardServiceSpigot @Inject constructor(
         classPacketPlayOutScoreboardObjective.nameField.modify { set(packet, scoreboardName) }
         classPacketPlayOutScoreboardObjective.modeField.modify { setInt(packet, 2) }
 
-        if (NMSManager.versionIndex > 6) {
-            classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, NMSManager.getClassProvider().getIChatComponent(title)) }
-        } else {
-            val modifiedTitle = if (title.length > 32) {
-                title.substring(0, 32)
-            } else {
-                title
+        when {
+            NMSManager.versionIndex > 9 -> {
+                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, ChatSerializer.deserializeLegacyText(title)) }
             }
+            NMSManager.versionIndex > 6 -> {
+                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, NMSManager.getClassProvider().getIChatComponent(title)) }
+            }
+            else -> {
+                val modifiedTitle = if (title.length > 32) {
+                    title.substring(0, 32)
+                } else {
+                    title
+                }
 
-            classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, modifiedTitle) }
+                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, modifiedTitle) }
+            }
         }
 
         if (NMSManager.versionIndex > 0) {
@@ -241,8 +267,20 @@ class ScoreboardServiceSpigot @Inject constructor(
 
     private fun sendPacketSetScoreboardValueWithName(player: Player, index: Int, value: String, scoreboardName: String) {
         val packet = classPacketPlayOutScoreboardScore.createInstance()
+        val teamPacket: PacketPlayOutScoreboardTeam<*>
 
-        classPacketPlayOutScoreboardScore.scoreNameField.modify { set(packet, value) }
+        if (NMSManager.versionIndex > 6) {
+            teamPacket = PacketPlayOutScoreboardTeam<Any>()
+            teamPacket.text = if (NMSManager.versionIndex < 10) ChatComponentText().constructor.newInstance(value) else ChatSerializer.deserializeLegacyText(value)
+        } else {
+            teamPacket = PacketPlayOutScoreboardTeam<String>()
+            teamPacket.text = value
+        }
+
+        teamPacket.name = "tm-sb-$index"
+        teamPacket.mode = PacketPlayOutScoreboardTeam.MODE_TEAM_UPDATED
+
+        classPacketPlayOutScoreboardScore.scoreNameField.modify { set(packet, ChatColor.COLOR_CHAR.toString() + index.toChar().toLowerCase()) }
 
         if (NMSManager.versionIndex > 0) {
             classPacketPlayOutScoreboardScore.actionField.modify { set(packet, provider["EnumScoreboardAction"].handle.enumConstants[0]) }
@@ -253,6 +291,7 @@ class ScoreboardServiceSpigot @Inject constructor(
         classPacketPlayOutScoreboardScore.objectiveNameField.modify { set(packet, scoreboardName) }
         classPacketPlayOutScoreboardScore.valueField.modify { setInt(packet, 15 - index) }
 
+        player.sendNMSPacket(teamPacket.handle)
         player.sendNMSPacket(packet)
     }
 
