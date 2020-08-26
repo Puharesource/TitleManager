@@ -21,7 +21,7 @@
 
 ---
 
-* **[WIKI & Guides](https://tmdocs.tarkan.dev)** – plugin guidelines.
+* **[WIKI & GUIDES](https://tmdocs.tarkan.dev)** – plugin guidelines.
 * **[COMMANDS](https://tmdocs.tarkan.dev/admins/commands)** – command guidelines.
 * **[PERMISSIONS](https://tmdocs.tarkan.dev/admins/permissions)** – command and feature permissions.
 * **[SUPPORT CHAT](https://discord.gg/U3Yyu6G)** - discord support chat and help.
