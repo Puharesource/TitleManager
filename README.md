@@ -21,9 +21,9 @@
 
 ---
 
-* **[WIKI](https://github.com/Puharesource/TitleManager/wiki)** – plugin guidelines.
-* **[COMMANDS](https://github.com/Puharesource/TitleManager/wiki/commands)** – command guidelines.
-* **[PERMISSIONS](https://github.com/Puharesource/TitleManager/wiki/permissions)** – command and feature permissions.
+* **[WIKI & Guides](https://tmdocs.tarkan.dev)** – plugin guidelines.
+* **[COMMANDS](https://tmdocs.tarkan.dev/admins/commands)** – command guidelines.
+* **[PERMISSIONS](https://tmdocs.tarkan.dev/admins/permissions)** – command and feature permissions.
 * **[SUPPORT CHAT](https://discord.gg/U3Yyu6G)** - discord support chat and help.
 
 Sponsors
