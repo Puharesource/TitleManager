@@ -1,6 +1,6 @@
 package io.puharesource.mc.titlemanager.internal.services.event
 
-import com.SirBlobman.combatlogx.api.event.PlayerPreTagEvent
+import com.SirBlobman.combatlogx.api.event.PlayerTagEvent
 import com.SirBlobman.combatlogx.api.event.PlayerUntagEvent
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
@@ -62,7 +62,7 @@ class ListenerServiceSpigot @Inject constructor(
                     registerToggleScoreboardOnWorldChange()
                 }
 
-                if (CombatLogXHook.isEnabled() && CombatLogXHook.isCorrectVersion()) {
+                if (CombatLogXHook.isEnabled() && CombatLogXHook.isCorrectVersion() && config.hooks.combatlogx) {
                     registerCombatLogXTagEvent()
                     registerCombatLogXUntagEvent()
                 }
@@ -164,7 +164,7 @@ class ListenerServiceSpigot @Inject constructor(
     }
 
     private fun registerCombatLogXTagEvent() {
-        listenEventSync<PlayerPreTagEvent>(priority = EventPriority.MONITOR) {
+        listenEventSync<PlayerTagEvent>(priority = EventPriority.MONITOR) {
             if (playerInfoService.isScoreboardEnabled(it.player)) {
                 scoreboardService.removeScoreboard(it.player)
             }
