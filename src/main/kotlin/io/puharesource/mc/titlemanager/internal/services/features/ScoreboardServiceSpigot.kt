@@ -37,7 +37,6 @@ class ScoreboardServiceSpigot @Inject constructor(
     private val animationsService: AnimationsService,
     private val playerInfoService: PlayerInfoService
 ) : ScoreboardService {
-    private val classPacketPlayOutScoreboardObjective = PacketPlayOutScoreboardObjective()
     private val classPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective()
     private val classPacketPlayOutScoreboardScore = PacketPlayOutScoreboardScore()
 
@@ -191,11 +190,6 @@ class ScoreboardServiceSpigot @Inject constructor(
     }
 
     private fun sendPacketCreateScoreboardWithName(player: Player, scoreboardName: String) {
-        val packet = classPacketPlayOutScoreboardObjective.createInstance()
-
-        classPacketPlayOutScoreboardObjective.nameField.modify { set(packet, scoreboardName) }
-        classPacketPlayOutScoreboardObjective.modeField.modify { setInt(packet, 0) }
-
         for (i in 0..15) {
             val teamPacket = PacketPlayOutScoreboardTeam<Any>()
 
@@ -206,23 +200,21 @@ class ScoreboardServiceSpigot @Inject constructor(
             player.sendNMSPacket(teamPacket.handle)
         }
 
-        when {
-            NMSManager.versionIndex > 9 -> {
-                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, ChatSerializer.deserializeLegacyText(scoreboardName)) }
-            }
-            NMSManager.versionIndex > 6 -> {
-                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, NMSManager.getClassProvider().getIChatComponent("")) }
-            }
-            else -> {
-                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, "") }
-            }
+        val packet = PacketPlayOutScoreboardObjective<Number, Any>()
+
+        packet.objectiveName = scoreboardName
+        packet.mode = 0
+        packet.value = when {
+            NMSManager.versionIndex > 9 -> ChatSerializer.deserializeLegacyText(scoreboardName)
+            NMSManager.versionIndex > 6 -> NMSManager.getClassProvider().getIChatComponent("")
+            else -> ""
         }
 
         if (NMSManager.versionIndex > 0) {
-            classPacketPlayOutScoreboardObjective.typeField.modify { set(packet, provider["EnumScoreboardHealthDisplay"].handle.enumConstants[0]) }
+            packet.type = 0
         }
 
-        player.sendNMSPacket(packet)
+        player.sendNMSPacket(packet.handle)
     }
 
     private fun sendPacketDisplayScoreboardWithName(player: Player, scoreboardName: String) {
@@ -235,34 +227,25 @@ class ScoreboardServiceSpigot @Inject constructor(
     }
 
     private fun sendPacketSetScoreboardTitleWithName(player: Player, title: String, scoreboardName: String) {
-        val packet = classPacketPlayOutScoreboardObjective.createInstance()
+        val packet = PacketPlayOutScoreboardObjective<Number, Any>()
 
-        classPacketPlayOutScoreboardObjective.nameField.modify { set(packet, scoreboardName) }
-        classPacketPlayOutScoreboardObjective.modeField.modify { setInt(packet, 2) }
-
-        when {
-            NMSManager.versionIndex > 9 -> {
-                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, ChatSerializer.deserializeLegacyText(title)) }
-            }
-            NMSManager.versionIndex > 6 -> {
-                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, NMSManager.getClassProvider().getIChatComponent(title)) }
-            }
-            else -> {
-                val modifiedTitle = if (title.length > 32) {
-                    title.substring(0, 32)
-                } else {
-                    title
-                }
-
-                classPacketPlayOutScoreboardObjective.valueField.modify { set(packet, modifiedTitle) }
+        packet.objectiveName = scoreboardName
+        packet.mode = 2
+        packet.value = when {
+            NMSManager.versionIndex > 9 -> ChatSerializer.deserializeLegacyText(title)
+            NMSManager.versionIndex > 6 -> NMSManager.getClassProvider().getIChatComponent(title)
+            else -> if (title.length > 32) {
+                title.substring(0, 32)
+            } else {
+                title
             }
         }
 
         if (NMSManager.versionIndex > 0) {
-            classPacketPlayOutScoreboardObjective.typeField.modify { set(packet, provider["EnumScoreboardHealthDisplay"].handle.enumConstants[0]) }
+            packet.type = 0
         }
 
-        player.sendNMSPacket(packet)
+        player.sendNMSPacket(packet.handle)
     }
 
     private fun sendPacketSetScoreboardValueWithName(player: Player, index: Int, value: String, scoreboardName: String) {
@@ -296,12 +279,12 @@ class ScoreboardServiceSpigot @Inject constructor(
     }
 
     private fun removeScoreboardWithName(player: Player, scoreboardName: String) {
-        val packet = classPacketPlayOutScoreboardObjective.createInstance()
+        val packet = PacketPlayOutScoreboardObjective<Number, Any>()
 
-        classPacketPlayOutScoreboardObjective.nameField.modify { set(packet, scoreboardName) }
-        classPacketPlayOutScoreboardObjective.modeField.modify { set(packet, 1) }
+        packet.objectiveName = scoreboardName
+        packet.mode = 1
 
-        player.sendNMSPacket(packet)
+        player.sendNMSPacket(packet.handle)
     }
 
     private fun startUpdateTask(player: Player) {

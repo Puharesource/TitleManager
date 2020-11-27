@@ -22,15 +22,15 @@ class TMCommand constructor(private val plugin: TitleManagerPlugin) : CommandExe
     private val commandSplitPattern = """([<]nl[>])|(\\n)""".toRegex()
 
     init {
-        addSubCommand(createSubCommand(aliases = *arrayOf("abroadcast", "abc"), executor = ::executorActionbarBroadcast))
-        addSubCommand(createSubCommand(aliases = *arrayOf("amessage", "amsg"), executor = ::executorActionbarMessage))
-        addSubCommand(createSubCommand(aliases = *arrayOf("animations"), executor = ::executorAnimations))
-        addSubCommand(createSubCommand(aliases = *arrayOf("broadcast", "bc"), executor = ::executorBroadcast))
-        addSubCommand(createSubCommand(aliases = *arrayOf("message", "msg"), executor = ::executorMessage))
-        addSubCommand(createSubCommand(aliases = *arrayOf("reload"), executor = ::executorReload))
-        addSubCommand(createSubCommand(aliases = *arrayOf("scoreboard", "sb"), allowedSender = AllowedCommandSender.PLAYER, executor = ::executorScoreboard))
-        addSubCommand(createSubCommand(aliases = *arrayOf("scripts"), executor = ::executorScripts))
-        addSubCommand(createSubCommand(aliases = *arrayOf("version"), executor = ::executorVersion))
+        addSubCommand(createSubCommand(aliases = arrayOf("abroadcast", "abc"), executor = ::executorActionbarBroadcast))
+        addSubCommand(createSubCommand(aliases = arrayOf("amessage", "amsg"), executor = ::executorActionbarMessage))
+        addSubCommand(createSubCommand(aliases = arrayOf("animations"), executor = ::executorAnimations))
+        addSubCommand(createSubCommand(aliases = arrayOf("broadcast", "bc"), executor = ::executorBroadcast))
+        addSubCommand(createSubCommand(aliases = arrayOf("message", "msg"), executor = ::executorMessage))
+        addSubCommand(createSubCommand(aliases = arrayOf("reload"), executor = ::executorReload))
+        addSubCommand(createSubCommand(aliases = arrayOf("scoreboard", "sb"), allowedSender = AllowedCommandSender.PLAYER, executor = ::executorScoreboard))
+        addSubCommand(createSubCommand(aliases = arrayOf("scripts"), executor = ::executorScripts))
+        addSubCommand(createSubCommand(aliases = arrayOf("version"), executor = ::executorVersion))
     }
 
     private fun addSubCommand(cmd: TMSubCommand) {

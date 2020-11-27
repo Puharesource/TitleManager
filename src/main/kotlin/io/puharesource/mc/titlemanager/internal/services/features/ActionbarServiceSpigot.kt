@@ -60,7 +60,7 @@ class ActionbarServiceSpigot @Inject constructor(
     override fun createActionbarSendableAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(schedulerService, animation, player, {
             sendActionbar(player, it.text, withPlaceholders = withPlaceholders)
-        }, onStop = Runnable {
+        }, onStop = {
             clearActionbar(player)
         }, fixedOnStop = { removeRunningActionbarAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> setRunningActionbarAnimation(receiver, sendableAnimation) })
     }
@@ -68,7 +68,7 @@ class ActionbarServiceSpigot @Inject constructor(
     override fun createActionbarSendableAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(schedulerService, parts, player, {
             sendActionbar(player, it.text, withPlaceholders = withPlaceholders)
-        }, onStop = Runnable {
+        }, onStop = {
             clearActionbar(player)
         }, fixedOnStop = { removeRunningActionbarAnimation(it) }, fixedOnStart = { receiver, animation -> setRunningActionbarAnimation(receiver, animation) })
     }

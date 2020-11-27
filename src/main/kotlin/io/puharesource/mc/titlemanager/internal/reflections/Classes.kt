@@ -45,11 +45,33 @@ class NetworkManager : NMSClass() {
     fun getVersion(instance: Any) = methodGetVersion.invoke(instance) as Int
 }
 
-class PacketPlayOutScoreboardObjective : NMSClass() {
-    val nameField = clazz.getField("a") // Objective Name | String | (String | A unique name for the objective)
-    val modeField = clazz.getField(if (NMSManager.versionIndex > 0) "d" else "c") // Mode | Byte | (int | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
-    val valueField = clazz.getField("b") // Objective Value | Optional String/IChatComponent | (String | Only if mode is 0 or 2. The text to be displayed for the score)
-    val typeField = clazz.getField("c") // Type | Optional String | (EnumScoreboardHealthDisplay | Only if mode is 0 or 2. “integer” or “hearts”)
+class PacketPlayOutScoreboardObjective<ModeType : Number, ValueType> : NMSClass() {
+    private val nameField by lazy { clazz.getField("a") } // Objective Name | String | (String | A unique name for the objective)
+    private val modeField by lazy { clazz.getField(if (NMSManager.versionIndex > 0) "d" else "c") } // Mode | Byte | (int | 0 to create the scoreboard. 1 to remove the scoreboard. 2 to update the display text.)
+    private val valueField by lazy { clazz.getField("b") } // Objective Value | Optional String/IChatComponent | (String | Only if mode is 0 or 2. The text to be displayed for the score)
+    private val typeField by lazy { clazz.getField("c") } // Type | Optional String | (EnumScoreboardHealthDisplay | Only if mode is 0 or 2. “integer” or “hearts”)
+
+    val handle = createInstance()
+
+    var objectiveName: String
+        get() = nameField.read { get(handle) as String }
+        set(value) = nameField.modify { set(handle, value) }
+
+    var mode: ModeType
+        get() = modeField.read { get(handle) as ModeType }
+        set(value) = nameField.modify { set(handle, value) }
+
+    var value: ValueType
+        get() = valueField.read { get(handle) as ValueType }
+        set(value) = valueField.modify { set(handle, value) }
+
+    private var typeIndex: Int = 0
+    var type: Int
+        get() = typeIndex
+        set(value) {
+            typeIndex = value
+            valueField.modify { set(handle, provider["EnumScoreboardHealthDisplay"].handle.enumConstants[value]) }
+        }
 }
 
 class PacketPlayOutScoreboardDisplayObjective : NMSClass() {

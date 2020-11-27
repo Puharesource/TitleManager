@@ -133,7 +133,7 @@ class TitleServiceSpigot @Inject constructor(
     override fun createTitleSendableAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(schedulerService, parts, player, {
             sendTitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
-        }, onStop = Runnable {
+        }, onStop = {
             clearTitle(player)
         }, fixedOnStop = { deleteRunningTitleAnimation(it) }, fixedOnStart = { receiver, animation -> saveRunningTitleAnimation(receiver, animation) })
     }
@@ -141,7 +141,7 @@ class TitleServiceSpigot @Inject constructor(
     override fun createSubtitleSendableAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return PartBasedSendableAnimation(schedulerService, parts, player, {
             sendSubtitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
-        }, onStop = Runnable {
+        }, onStop = {
             clearSubtitle(player)
         }, fixedOnStop = { deleteRunningSubtitleAnimation(it) }, fixedOnStart = { receiver, animation -> saveRunningSubtitleAnimation(receiver, animation) })
     }
@@ -149,7 +149,7 @@ class TitleServiceSpigot @Inject constructor(
     override fun createTitleSendableAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(schedulerService, animation, player, {
             sendTitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
-        }, onStop = Runnable {
+        }, onStop = {
             clearTitle(player)
         }, fixedOnStop = { deleteRunningTitleAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> saveRunningTitleAnimation(receiver, sendableAnimation) })
     }
@@ -157,7 +157,7 @@ class TitleServiceSpigot @Inject constructor(
     override fun createSubtitleSendableAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
         return EasySendableAnimation(schedulerService, animation, player, {
             sendSubtitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
-        }, onStop = Runnable {
+        }, onStop = {
             clearSubtitle(player)
         }, fixedOnStop = { deleteRunningSubtitleAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> saveRunningSubtitleAnimation(receiver, sendableAnimation) })
     }

@@ -8,8 +8,8 @@ plugins {
     java
     `maven-publish`
 
-    kotlin("jvm") version "1.3.72"
-    kotlin("kapt") version "1.3.72"
+    kotlin("jvm") version "1.4.0"
+    kotlin("kapt") version "1.4.0"
 
     id("com.github.johnrengelman.shadow") version "5.1.0"
     id("org.jetbrains.dokka") version "0.10.0"
@@ -206,18 +206,27 @@ repositories {
     }
 
     maven {
-        name = "cubekrowd-repo"
-        url = uri("https://mavenrepo.cubekrowd.net/artifactory/repo/")
-    }
-
-    maven {
         name = "kitteh-repo"
         url = uri("http://repo.kitteh.org/content/groups/public/")
     }
 
     maven {
         name = "codemc-repo"
-        url = uri("https://repo.codemc.io/repository/maven-public/")
+        url = uri("https://repo.codemc.io/service/rest/repository/browse/maven-public/")
+
+        content {
+            includeGroupByRegex("com\\.SirBlobman.*")
+        }
+    }
+
+    maven {
+        name = "cubekrowd-repo"
+        url = uri("https://mavenrepo.cubekrowd.net/artifactory/repo/")
+
+        content {
+            includeGroupByRegex("org\\.bstats.*")
+            includeGroupByRegex("de\\.myzelyam.*")
+        }
     }
 }
 
@@ -226,8 +235,8 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:2.27")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
-    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.3.72")
-    implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.3.5")
+    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.4.0")
+    implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.3.9")
     implementation(group = "org.bstats", name = "bstats-bukkit", version = "1.7")
 
     implementation(group = "org.spigotmc", name = "spigot-api", version = "1.16.1-R0.1-SNAPSHOT")
@@ -238,7 +247,7 @@ dependencies {
     implementation(group = "net.ess3", name = "EssentialsX", version = "2.17.1") { isTransitive = false }
     implementation(group = "de.myzelyam", name = "SuperVanish", version = "6.1.3") { isTransitive = false }
     implementation(group = "org.kitteh", name = "VanishNoPacket", version = "3.19.1") { isTransitive = false }
-    implementation(group = "com.SirBlobman.combatlogx", name = "CombatLogX-API", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
+    implementation(group = "com.SirBlobman.combatlogx", name = "CombatLogX-API", version = "10.0.0.0") { isTransitive = false }
 
     implementation(group = "org.graalvm.sdk", name = "graal-sdk", version = "19.2.0.1")
 
