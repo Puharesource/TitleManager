@@ -105,7 +105,7 @@ object VaultHook : PluginHook("Vault") {
 
 object CombatLogXHook : PluginHook("CombatLogX") {
     fun isCorrectVersion() = try {
-        Class.forName("com.SirBlobman.combatlogx.api.event.PlayerPreTagEvent")
+        Class.forName("com.SirBlobman.combatlogx.api.event.PlayerTagEvent")
 
         true
     } catch (e: ClassNotFoundException) {

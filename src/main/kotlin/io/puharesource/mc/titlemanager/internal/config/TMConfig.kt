@@ -45,6 +45,7 @@ data class TMConfigMain(override val section: ConfigurationSection) : TMConfig {
     val welcomeActionbar by lazy { TMConfigWelcomeActionbar(section.getConfigurationSection("welcome-actionbar")!!) }
     val placeholders by lazy { TMConfigPlaceholders(section.getConfigurationSection("placeholders")!!) }
     val scoreboard by lazy { TMConfigScoreboard(section.getConfigurationSection("scoreboard")!!) }
+    val hooks by lazy { TMConfigHooks(section.getConfigurationSection("hooks")!!) }
     val announcer by lazy { TMConfigAnnouncer(section.getConfigurationSection("announcer")!!) }
     val bandwidth by lazy { TMConfigBandwidth(section.getConfigurationSection("bandwidth")!!) }
     val messages by lazy { TMConfigMessages(section.getConfigurationSection("messages")!!) }
@@ -100,6 +101,10 @@ data class TMConfigScoreboard(override val section: ConfigurationSection) : TMCo
     val title: String = value<String>("title").color()
     val lines: List<String> = stringList("lines").take(15).map { it.color() }
     val disabledWorlds: List<String> = stringList("disabled-worlds")
+}
+
+data class TMConfigHooks(override val section: ConfigurationSection) : TMConfig {
+    val combatlogx: Boolean = value("combatlogx")
 }
 
 data class TMConfigAnnouncer(override val section: ConfigurationSection) : TMConfig {

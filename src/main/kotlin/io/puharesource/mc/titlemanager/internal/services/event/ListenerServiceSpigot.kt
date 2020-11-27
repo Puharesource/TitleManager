@@ -1,7 +1,9 @@
 package io.puharesource.mc.titlemanager.internal.services.event
 
-import com.SirBlobman.combatlogx.api.event.PlayerPreTagEvent
+import com.SirBlobman.combatlogx.api.ICombatLogX
+import com.SirBlobman.combatlogx.api.event.PlayerTagEvent
 import com.SirBlobman.combatlogx.api.event.PlayerUntagEvent
+import com.SirBlobman.combatlogx.api.expansion.Expansion
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
 import io.puharesource.mc.titlemanager.internal.model.event.TMEventListener
@@ -14,11 +16,13 @@ import io.puharesource.mc.titlemanager.internal.services.storage.PlayerInfoServi
 import io.puharesource.mc.titlemanager.internal.services.task.TaskService
 import io.puharesource.mc.titlemanager.internal.services.update.UpdateService
 import net.md_5.bungee.api.ChatColor
+import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerTeleportEvent
+import java.util.Optional
 import javax.inject.Inject
 
 class ListenerServiceSpigot @Inject constructor(
@@ -62,11 +66,23 @@ class ListenerServiceSpigot @Inject constructor(
                     registerToggleScoreboardOnWorldChange()
                 }
 
-                if (CombatLogXHook.isEnabled() && CombatLogXHook.isCorrectVersion()) {
-                    registerCombatLogXTagEvent()
-                    registerCombatLogXUntagEvent()
-                }
+                checkCombatLogXHook()
             }
+        }
+    }
+
+    private fun checkCombatLogXHook() {
+        if (CombatLogXHook.isEnabled() && CombatLogXHook.isCorrectVersion() && config.hooks.combatlogx) {
+            val combatlogx: ICombatLogX = Bukkit.getPluginManager().getPlugin("CombatLogX") as ICombatLogX
+            val optionalExpansion: Optional<Expansion> = combatlogx.expansionManager.getExpansionByName<Expansion>("Notifier")
+            if (optionalExpansion.isPresent) {
+                val expansion = optionalExpansion.get()
+                val scoreboardConfig = expansion.getConfig("scoreboard.yml")
+                if (!scoreboardConfig.getBoolean("enabled")) return
+            }
+
+            registerCombatLogXTagEvent()
+            registerCombatLogXUntagEvent()
         }
     }
 
@@ -164,7 +180,7 @@ class ListenerServiceSpigot @Inject constructor(
     }
 
     private fun registerCombatLogXTagEvent() {
-        listenEventSync<PlayerPreTagEvent>(priority = EventPriority.MONITOR) {
+        listenEventSync<PlayerTagEvent>(priority = EventPriority.MONITOR) {
             if (playerInfoService.isScoreboardEnabled(it.player)) {
                 scoreboardService.removeScoreboard(it.player)
             }

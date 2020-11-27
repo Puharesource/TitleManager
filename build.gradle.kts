@@ -239,6 +239,7 @@ dependencies {
     implementation(group = "de.myzelyam", name = "SuperVanish", version = "6.1.3") { isTransitive = false }
     implementation(group = "org.kitteh", name = "VanishNoPacket", version = "3.19.1") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx", name = "CombatLogX-API", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
+    implementation(group = "com.SirBlobman.combatlogx.expansions", name = "Notifier", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
 
     implementation(group = "org.graalvm.sdk", name = "graal-sdk", version = "19.2.0.1")
 
