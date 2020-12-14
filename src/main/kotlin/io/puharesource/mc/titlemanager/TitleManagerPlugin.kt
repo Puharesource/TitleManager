@@ -10,7 +10,6 @@ import io.puharesource.mc.titlemanager.internal.config.ConfigMigration
 import io.puharesource.mc.titlemanager.internal.config.PrettyConfig
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
 import io.puharesource.mc.titlemanager.internal.debug
-import io.puharesource.mc.titlemanager.internal.info
 import io.puharesource.mc.titlemanager.internal.model.animation.StandardAnimationFrame
 import io.puharesource.mc.titlemanager.internal.placeholder.CombatLogXHook
 import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
@@ -36,9 +35,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
         titleManagerService.start()
 
-        if (CombatLogXHook.isEnabled() && !CombatLogXHook.isCorrectVersion()) {
-            info("Invalid version of CombatLogX minimum required version is version 10.X.X.X")
-        }
+        CombatLogXHook.infoLog()
 
         debug("Registering commands")
         registerCommands()

@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "io.puharesource.mc"
-version = "2.3.1"
+version = "2.3.2"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -212,21 +212,12 @@ repositories {
 
     maven {
         name = "codemc-repo"
-        url = uri("https://repo.codemc.io/service/rest/repository/browse/maven-public/")
-
-        content {
-            includeGroupByRegex("com\\.SirBlobman.*")
-        }
+        url = uri("https://repo.codemc.io/repository/maven-public/")
     }
 
     maven {
         name = "cubekrowd-repo"
         url = uri("https://mavenrepo.cubekrowd.net/artifactory/repo/")
-
-        content {
-            includeGroupByRegex("org\\.bstats.*")
-            includeGroupByRegex("de\\.myzelyam.*")
-        }
     }
 }
 
@@ -247,7 +238,8 @@ dependencies {
     implementation(group = "net.ess3", name = "EssentialsX", version = "2.17.1") { isTransitive = false }
     implementation(group = "de.myzelyam", name = "SuperVanish", version = "6.1.3") { isTransitive = false }
     implementation(group = "org.kitteh", name = "VanishNoPacket", version = "3.19.1") { isTransitive = false }
-    implementation(group = "com.SirBlobman.combatlogx", name = "CombatLogX-API", version = "10.0.0.0") { isTransitive = false }
+    implementation(group = "com.SirBlobman.combatlogx", name = "CombatLogX-API", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
+    implementation(group = "com.SirBlobman.combatlogx.expansions", name = "Notifier", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
 
     implementation(group = "org.graalvm.sdk", name = "graal-sdk", version = "19.2.0.1")
 

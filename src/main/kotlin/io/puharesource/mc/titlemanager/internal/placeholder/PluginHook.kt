@@ -11,6 +11,9 @@ abstract class PluginHook constructor(private val pluginName: String) {
         }
     }
 
+    open fun infoLog() {
+    }
+
     fun isEnabled(): Boolean = Bukkit.getPluginManager().isPluginEnabled(pluginName)
 
     fun getPlugin(): Plugin = Bukkit.getPluginManager().getPlugin(pluginName)!!

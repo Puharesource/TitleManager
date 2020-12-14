@@ -3,6 +3,7 @@ package io.puharesource.mc.titlemanager.internal.placeholder
 import com.earth2me.essentials.Essentials
 import de.myzelyam.api.vanish.VanishAPI
 import io.puharesource.mc.titlemanager.internal.debug
+import io.puharesource.mc.titlemanager.internal.info
 import net.milkbowl.vault.economy.Economy
 import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
@@ -105,10 +106,16 @@ object VaultHook : PluginHook("Vault") {
 
 object CombatLogXHook : PluginHook("CombatLogX") {
     fun isCorrectVersion() = try {
-        Class.forName("com.SirBlobman.combatlogx.api.event.PlayerPreTagEvent")
+        Class.forName("com.SirBlobman.combatlogx.api.event.PlayerTagEvent")
 
         true
     } catch (e: ClassNotFoundException) {
         false
+    }
+
+    override fun infoLog() {
+        if (isEnabled() && !isCorrectVersion()) {
+            info("Invalid version of CombatLogX minimum required version is version 10.X.X.X")
+        }
     }
 }

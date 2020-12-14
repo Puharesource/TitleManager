@@ -11,7 +11,7 @@ data class AnimationSendablePart(
     private val isContinuous: Boolean
 ) : SendablePart {
     private var currentText = ""
-    private var iterator = part.part.iterator(player)
+    private var iterator = part.getPart().iterator(player)
     private var nextUpdateTick = 0
 
     override fun getCurrentText() = currentText
@@ -21,7 +21,7 @@ data class AnimationSendablePart(
         if (!iterator.hasNext() && !isContinuous) return
 
         if (!iterator.hasNext() && isContinuous) {
-            iterator = part.part.iterator(player)
+            iterator = part.getPart().iterator(player)
         }
 
         val frame = iterator.next()
