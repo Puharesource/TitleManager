@@ -181,7 +181,7 @@ class TitleManagerPlugin : JavaPlugin(), TitleManagerAPI {
 
     override fun setHeaderAndFooter(player: Player, header: String, footer: String) = titleManagerComponent.playerListService().setHeaderAndFooter(player, header, footer, withPlaceholders = false)
     override fun setHeaderAndFooterWithPlaceholders(player: Player, header: String, footer: String) = titleManagerComponent.playerListService().setHeaderAndFooter(player, header, footer)
-    override fun setProcessedHeaderAndFooter(player: Player, header: String, footer: String) = titleManagerComponent.playerListService().setHeaderAndFooter(player, header, footer)
+    override fun setProcessedHeaderAndFooter(player: Player, header: String, footer: String) = titleManagerComponent.playerListService().setProcessedHeaderAndFooter(player, header, footer)
 
     override fun giveScoreboard(player: Player) = titleManagerComponent.scoreboardService().giveScoreboard(player)
     override fun giveDefaultScoreboard(player: Player) = titleManagerComponent.scoreboardService().giveDefaultScoreboard(player)
