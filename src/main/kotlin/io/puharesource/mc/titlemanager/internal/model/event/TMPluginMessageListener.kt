@@ -5,16 +5,14 @@ import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.messaging.PluginMessageListener
 
 class TMPluginMessageListener(private val plugin: Plugin, val body: (PluginMessageReceivedItem) -> Unit) {
-    private val listener: PluginMessageListener
+    private val listener: PluginMessageListener = PluginMessageListener { channel, player, message ->
+        try {
+            body(PluginMessageReceivedItem(channel, player, message))
+        } catch (e: Exception) {
+        }
+    }
 
     init {
-        listener = PluginMessageListener { channel, player, message ->
-            try {
-                body(PluginMessageReceivedItem(channel, player, message))
-            } catch (e: Exception) {
-            }
-        }
-
         plugin.server.messenger.registerIncomingPluginChannel(plugin, "BungeeCord", listener)
 
         onPluginDisable { invalidate() }

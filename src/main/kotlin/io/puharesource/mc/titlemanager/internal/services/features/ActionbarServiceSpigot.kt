@@ -26,10 +26,10 @@ class ActionbarServiceSpigot @Inject constructor(
     override fun sendProcessedActionbar(player: Player, text: String) {
         val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, text))
 
-        if (parts.size == 1 && parts.first().part is String) {
-            sendActionbar(player, text = parts.first().part as String, withPlaceholders = false)
-        } else if (parts.size == 1 && parts.first().part is Animation) {
-            createActionbarSendableAnimation(parts.first().part as Animation, player, withPlaceholders = false).start()
+        if (parts.size == 1 && parts.first().getPart() is String) {
+            sendActionbar(player, text = parts.first().getPart() as String, withPlaceholders = false)
+        } else if (parts.size == 1 && parts.first().getPart() is Animation) {
+            createActionbarSendableAnimation(parts.first().getPart() as Animation, player, withPlaceholders = false).start()
         } else if (parts.isNotEmpty()) {
             createActionbarSendableAnimation(parts, player, withPlaceholders = false).start()
         }
@@ -58,19 +58,43 @@ class ActionbarServiceSpigot @Inject constructor(
     }
 
     override fun createActionbarSendableAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return EasySendableAnimation(schedulerService, animation, player, {
-            sendActionbar(player, it.text, withPlaceholders = withPlaceholders)
-        }, onStop = {
-            clearActionbar(player)
-        }, fixedOnStop = { removeRunningActionbarAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> setRunningActionbarAnimation(receiver, sendableAnimation) })
+        return EasySendableAnimation(
+            schedulerService,
+            animation,
+            player,
+            {
+                sendActionbar(player, it.text, withPlaceholders = withPlaceholders)
+            },
+            onStop = {
+                clearActionbar(player)
+            },
+            fixedOnStop = {
+                removeRunningActionbarAnimation(it)
+            },
+            fixedOnStart = { receiver, sendableAnimation ->
+                setRunningActionbarAnimation(receiver, sendableAnimation)
+            }
+        )
     }
 
     override fun createActionbarSendableAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return PartBasedSendableAnimation(schedulerService, parts, player, {
-            sendActionbar(player, it.text, withPlaceholders = withPlaceholders)
-        }, onStop = {
-            clearActionbar(player)
-        }, fixedOnStop = { removeRunningActionbarAnimation(it) }, fixedOnStart = { receiver, animation -> setRunningActionbarAnimation(receiver, animation) })
+        return PartBasedSendableAnimation(
+            schedulerService,
+            parts,
+            player,
+            {
+                sendActionbar(player, it.text, withPlaceholders = withPlaceholders)
+            },
+            onStop = {
+                clearActionbar(player)
+            },
+            fixedOnStop = {
+                removeRunningActionbarAnimation(it)
+            },
+            fixedOnStart = { receiver, animation ->
+                setRunningActionbarAnimation(receiver, animation)
+            }
+        )
     }
 
     private fun setRunningActionbarAnimation(player: Player, animation: SendableAnimation) {

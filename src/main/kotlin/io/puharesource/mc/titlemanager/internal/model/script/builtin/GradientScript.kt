@@ -6,7 +6,8 @@ import java.awt.Color
 import java.util.regex.Pattern
 
 class GradientScript(text: String, index: Int) : AnimationScript(text, index, fadeIn = 0, stay = 2, fadeOut = 0) {
-    private val pattern: Pattern = """\[(?<colors>.+)](?<text>.+)""".toRegex().toPattern()
+    private val pattern: Pattern =
+        """\[(?<colors>.+)](?<text>.+)""".toRegex().toPattern()
     private var colors = listOf("#ff0000", "#00ff00").map { Color.decode(it) }.toList()
 
     private var bold = false
@@ -16,7 +17,9 @@ class GradientScript(text: String, index: Int) : AnimationScript(text, index, fa
 
     override fun generateFrame() {
         done = index + 1 >= text.length
-        text = ColorUtil.gradientString(text, colors,
+        text = ColorUtil.gradientString(
+            text,
+            colors,
             offset = index,
             continuous = true,
             bold = bold,

@@ -17,9 +17,12 @@ import java.util.TreeSet
 
 class TMCommand constructor(private val plugin: TitleManagerPlugin) : CommandExecutor, TabCompleter {
     private val subCommands: MutableMap<String, TMSubCommand> = TreeMap(String.CASE_INSENSITIVE_ORDER)
-    private val parameterPattern = """(?i)^[-](silent|world|fadein|stay|fadeout|radius)$""".toRegex()
-    private val parameterPatternWithValue = """(?i)^[-](silent|world|fadein|stay|fadeout|radius)[=]([^ ]+)$""".toRegex()
-    private val commandSplitPattern = """([<]nl[>])|(\\n)""".toRegex()
+    private val parameterPattern =
+        """(?i)^[-](silent|world|fadein|stay|fadeout|radius)$""".toRegex()
+    private val parameterPatternWithValue =
+        """(?i)^[-](silent|world|fadein|stay|fadeout|radius)[=]([^ ]+)$""".toRegex()
+    private val commandSplitPattern =
+        """([<]nl[>])|(\\n)""".toRegex()
 
     init {
         addSubCommand(createSubCommand(aliases = arrayOf("abroadcast", "abc"), executor = ::executorActionbarBroadcast))
@@ -228,9 +231,7 @@ class TMCommand constructor(private val plugin: TitleManagerPlugin) : CommandExe
         val animations = plugin.titleManagerComponent.animationsService().animations.keys
         val separator = plugin.config.getString("messages.command-animations.separator").orEmpty().color()
 
-        commandExecutor.sendConfigMessage("format",
-                "count" to animations.size.toString(),
-                "animations" to animations.joinToString(separator = separator))
+        commandExecutor.sendConfigMessage("format", "count" to animations.size.toString(), "animations" to animations.joinToString(separator = separator))
     }
 
     private fun executorBroadcast(commandExecutor: io.puharesource.mc.titlemanager.internal.model.command.CommandExecutor) {
@@ -336,9 +337,7 @@ class TMCommand constructor(private val plugin: TitleManagerPlugin) : CommandExe
     private fun executorScripts(commandExecutor: io.puharesource.mc.titlemanager.internal.model.command.CommandExecutor) {
         val scripts = plugin.getRegisteredScripts()
 
-        commandExecutor.sendConfigMessage("format",
-                "count" to scripts.size.toString(),
-                "scripts" to scripts.joinToString(separator = plugin.config.getString("messages.command-scripts.separator").orEmpty().color()))
+        commandExecutor.sendConfigMessage("format", "count" to scripts.size.toString(), "scripts" to scripts.joinToString(separator = plugin.config.getString("messages.command-scripts.separator").orEmpty().color()))
     }
 
     private fun executorVersion(commandExecutor: io.puharesource.mc.titlemanager.internal.model.command.CommandExecutor) {

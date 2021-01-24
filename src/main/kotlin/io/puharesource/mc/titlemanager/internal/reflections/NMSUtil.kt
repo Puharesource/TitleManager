@@ -26,10 +26,13 @@ object NMSUtil {
         sendTimings(player, fadeIn, stay, fadeOut)
 
         val packet = packetConstructor
-                .newInstance(
-                        TitleTypeMapper.TITLE.handle,
-                        provider.getIChatComponent(title),
-                        fadeIn, stay, fadeOut)
+            .newInstance(
+                TitleTypeMapper.TITLE.handle,
+                provider.getIChatComponent(title),
+                fadeIn,
+                stay,
+                fadeOut
+            )
 
         player.sendNMSPacket(packet)
     }
@@ -39,10 +42,13 @@ object NMSUtil {
         val packetConstructor = classPacketTitle.constructor
 
         val packet = packetConstructor
-                .newInstance(
-                        TitleTypeMapper.SUBTITLE.handle,
-                        provider.getIChatComponent(subtitle),
-                        fadeIn, stay, fadeOut)
+            .newInstance(
+                TitleTypeMapper.SUBTITLE.handle,
+                provider.getIChatComponent(subtitle),
+                fadeIn,
+                stay,
+                fadeOut
+            )
 
         player.sendNMSPacket(packet)
     }
@@ -50,7 +56,7 @@ object NMSUtil {
     fun sendActionbar(player: Player, text: String) {
         val provider = NMSManager.getClassProvider()
 
-        if (NMSManager.versionIndex == 0)
+        if (NMSManager.versionIndex == 0) {
             try {
                 val packet = classPacketPlayOutChat.constructor.newInstance(provider.getIChatComponent(text), 2)
 
@@ -58,7 +64,7 @@ object NMSUtil {
             } catch (e: NoSuchMethodException) {
                 error("(If you're using Spigot #1649) Your version of Spigot #1649 doesn't support actionbar messages. Please find that spigot version from another source!")
             }
-        else {
+        } else {
             val packet = classPacketPlayOutChat.constructor.newInstance(provider.getIChatComponent(text), 2.toByte())
 
             player.sendNMSPacket(packet)

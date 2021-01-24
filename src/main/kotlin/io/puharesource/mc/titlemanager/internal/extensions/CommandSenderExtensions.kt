@@ -5,9 +5,9 @@ import org.bukkit.command.CommandSender
 
 internal fun CommandSender.sendConfigMessage(path: String, vararg replace: Pair<String, String>) {
     var replacedMessage = pluginInstance.config.getString("messages.$path")
-            .orEmpty()
-            .color()
-            .replace("\\n", "\n")
+        .orEmpty()
+        .color()
+        .replace("\\n", "\n")
 
     val replaceMap = mapOf(*replace)
 

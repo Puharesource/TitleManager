@@ -11,5 +11,5 @@ fun interface AnimationPart<T> {
     /**
      * The part that should be displayed.
      */
-     fun getPart(): T
+    fun getPart(): T
 }

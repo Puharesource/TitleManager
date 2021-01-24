@@ -6,7 +6,8 @@ import net.md_5.bungee.api.ChatColor
 import java.util.regex.Pattern
 
 class ShineScript(text: String, index: Int) : AnimationScript(text, index) {
-    private val pattern: Pattern = """\[(?<mainColor>.+);(?<secondaryColor>.+)](?<text>.+)""".toRegex().toPattern()
+    private val pattern: Pattern =
+        """\[(?<mainColor>.+);(?<secondaryColor>.+)](?<text>.+)""".toRegex().toPattern()
 
     private var mainColor = ChatColor.GOLD.toString()
     private var secondaryColor = ChatColor.YELLOW.toString()

@@ -4,7 +4,8 @@ import io.puharesource.mc.titlemanager.internal.model.script.AnimationScript
 import java.util.regex.Pattern
 
 class MarqueeScript(text: String, index: Int) : AnimationScript(text, index, fadeIn = 0, stay = 5, fadeOut = 0) {
-    private val pattern: Pattern = """\[(?<width>\d+)](?<text>.+)""".toRegex().toPattern()
+    private val pattern: Pattern =
+        """\[(?<width>\d+)](?<text>.+)""".toRegex().toPattern()
 
     private var width: Int = text.length
 

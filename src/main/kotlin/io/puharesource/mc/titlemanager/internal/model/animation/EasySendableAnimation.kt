@@ -11,18 +11,19 @@ class EasySendableAnimation(
     private val animation: Animation,
     private val player: Player,
     private val onUpdate: (AnimationFrame) -> Unit,
-    private var continuous: Boolean = false,
+    override var isContinuous: Boolean = false,
     private var onStop: Runnable? = null,
     private val tickRate: Long = 50,
     private val fixedOnStop: ((Player) -> Unit)? = null,
     private val fixedOnStart: ((Player, SendableAnimation) -> Unit)? = null
 ) : SendableAnimation {
     private var iterator = animation.iterator(player)
-    private var running: Boolean = false
+    override var isRunning = false
+        private set
 
     override fun start() {
-        if (!running && player.isOnline) {
-            running = true
+        if (!isRunning && player.isOnline) {
+            isRunning = true
 
             fixedOnStart?.invoke(player, this)
 
@@ -31,8 +32,8 @@ class EasySendableAnimation(
     }
 
     override fun stop() {
-        if (running) {
-            running = false
+        if (isRunning) {
+            isRunning = false
 
             if (player.isOnline) {
                 onStop?.run()
@@ -41,13 +42,22 @@ class EasySendableAnimation(
         }
     }
 
-    override fun update(frame: AnimationFrame) {
-        if (!player.isOnline) stop()
-        if (!running) return
+    override fun update(frame: AnimationFrame?) {
+        if (!isRunning) return
+
+        if (frame == null) {
+            stop()
+            return
+        }
+
+        if (!player.isOnline) {
+            stop()
+            return
+        }
 
         onUpdate(frame)
 
-        if (!iterator.hasNext() && continuous) {
+        if (!iterator.hasNext() && isContinuous) {
             iterator = animation.iterator(player)
         }
 
@@ -58,15 +68,7 @@ class EasySendableAnimation(
         }
     }
 
-    override fun onStop(onStop: Runnable) {
-        this.onStop = onStop
+    override fun onStop(runnable: Runnable?) {
+        this.onStop = runnable
     }
-
-    override fun setContinuous(continuous: Boolean) {
-        this.continuous = continuous
-    }
-
-    override fun isContinuous() = continuous
-
-    override fun isRunning() = running
 }

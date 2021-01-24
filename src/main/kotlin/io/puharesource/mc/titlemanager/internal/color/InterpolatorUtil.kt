@@ -20,10 +20,12 @@ object InterpolatorUtil {
         val greenInterpolator = createRgbInterpolator(start.green, end.green)
         val blueInterpolator = createRgbInterpolator(start.blue, end.blue)
 
-        return createInterpolator { percentage -> Color(
-            redInterpolator.interpolate(percentage).toInt(),
-            greenInterpolator.interpolate(percentage).toInt(),
-            blueInterpolator.interpolate(percentage).toInt())
+        return createInterpolator { percentage ->
+            Color(
+                redInterpolator.interpolate(percentage).toInt(),
+                greenInterpolator.interpolate(percentage).toInt(),
+                blueInterpolator.interpolate(percentage).toInt()
+            )
         }
     }
 
@@ -90,10 +92,12 @@ object InterpolatorUtil {
         val saturationInterpolator = createNoGammaInterpolator(start.saturation, end.saturation)
         val lightnessInterpolator = createNoGammaInterpolator(start.lightness, end.lightness)
 
-        return createInterpolator { percentage -> HslColor(
-            hueInterpolator.interpolate(percentage),
-            saturationInterpolator.interpolate(percentage),
-            lightnessInterpolator.interpolate(percentage))
+        return createInterpolator { percentage ->
+            HslColor(
+                hueInterpolator.interpolate(percentage),
+                saturationInterpolator.interpolate(percentage),
+                lightnessInterpolator.interpolate(percentage)
+            )
         }
     }
 
@@ -127,7 +131,5 @@ object InterpolatorUtil {
         }
     }
 
-    private inline fun <T> createInterpolator(crossinline interpolator: (Float) -> T): Interpolator<T> = object : Interpolator<T> {
-        override fun interpolate(percentage: Float): T = interpolator(percentage)
-    }
+    private inline fun <T> createInterpolator(crossinline interpolator: (Float) -> T): Interpolator<T> = Interpolator { percentage -> interpolator(percentage) }
 }

@@ -12,7 +12,7 @@ class PartBasedSendableAnimation(
     parts: List<AnimationPart<*>>,
     private val player: Player,
     private val onUpdate: (AnimationFrame) -> Unit,
-    private var continuous: Boolean = false,
+    override var isContinuous: Boolean = false,
     private var onStop: Runnable? = null,
     private val tickRate: Long = 50,
     private val fixedOnStop: ((Player) -> Unit)? = null,
@@ -20,7 +20,9 @@ class PartBasedSendableAnimation(
 ) : SendableAnimation {
     private var sendableParts: List<SendablePart>
 
-    private var running: Boolean = false
+    override var isRunning = false
+        private set
+
     private var ticksRun: Int = 0
 
     init {
@@ -28,7 +30,7 @@ class PartBasedSendableAnimation(
     }
 
     private fun animationPartToSendablePart(animationPart: AnimationPart<*>): SendablePart? {
-        return when (animationPart.part) {
+        return when (animationPart.getPart()) {
             is Animation -> AnimationSendablePart(player = player, part = animationPart as AnimationPart<Animation>, isContinuous = isContinuous)
             is String -> StringSendablePart(animationPart as AnimationPart<String>, isContinuous = isContinuous)
             else -> null
@@ -37,21 +39,21 @@ class PartBasedSendableAnimation(
 
     private fun getCurrentFrameText(): AnimationFrame {
         val textParts = sendableParts
-                .map {
-                    if (it is AnimationSendablePart && it.isDone()) {
-                        ""
-                    } else {
-                        it.updateText(ticksRun)
-                        it.getCurrentText()
-                    }
-                }.toTypedArray()
+            .map {
+                if (it is AnimationSendablePart && it.isDone()) {
+                    ""
+                } else {
+                    it.updateText(ticksRun)
+                    it.getCurrentText()
+                }
+            }.toTypedArray()
 
         return StandardAnimationFrame(textParts.joinToString(separator = ""), 0, 2, 0)
     }
 
     override fun start() {
-        if (!running && player.isOnline) {
-            running = true
+        if (!isRunning && player.isOnline) {
+            isRunning = true
 
             fixedOnStart?.invoke(player, this)
 
@@ -60,8 +62,8 @@ class PartBasedSendableAnimation(
     }
 
     override fun stop() {
-        if (running) {
-            running = false
+        if (isRunning) {
+            isRunning = false
 
             if (player.isOnline) {
                 onStop?.run()
@@ -70,13 +72,18 @@ class PartBasedSendableAnimation(
         }
     }
 
-    override fun update(frame: AnimationFrame) {
-        if (!player.isOnline) {
+    override fun update(frame: AnimationFrame?) {
+        if (!isRunning) return
+
+        if (frame == null) {
             stop()
             return
         }
 
-        if (!running) return
+        if (!player.isOnline) {
+            stop()
+            return
+        }
 
         ticksRun++
 
@@ -91,15 +98,7 @@ class PartBasedSendableAnimation(
         }
     }
 
-    override fun onStop(onStop: Runnable) {
-        this.onStop = onStop
+    override fun onStop(runnable: Runnable?) {
+        this.onStop = runnable
     }
-
-    override fun setContinuous(continuous: Boolean) {
-        this.continuous = continuous
-    }
-
-    override fun isContinuous() = continuous
-
-    override fun isRunning() = running
 }

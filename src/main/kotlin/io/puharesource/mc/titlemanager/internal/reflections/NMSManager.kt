@@ -38,7 +38,7 @@ object NMSManager {
     }
 
     private fun getVersionIndex(version: String) = supportedVersions.getOrElse(version) {
-        supportedVersions.values.max() ?: -1
+        supportedVersions.values.maxOrNull() ?: -1
     }
 
     fun getClassProvider(): NMSClassProvider {

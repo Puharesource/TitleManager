@@ -13,12 +13,12 @@ data class Announcement(
     companion object {
         fun fromConfig(configurationSection: ConfigurationSection): Announcement {
             return Announcement(
-                    interval = configurationSection.getInt("interval", 60),
-                    fadeIn = configurationSection.getInt("timings.fade-in", 20),
-                    stay = configurationSection.getInt("timings.stay", 40),
-                    fadeOut = configurationSection.getInt("timings.fade-out", 20),
-                    titles = configurationSection.getStringList("titles"),
-                    actionbarTitles = configurationSection.getStringList("actionbar")
+                interval = configurationSection.getInt("interval", 60),
+                fadeIn = configurationSection.getInt("timings.fade-in", 20),
+                stay = configurationSection.getInt("timings.stay", 40),
+                fadeOut = configurationSection.getInt("timings.fade-out", 20),
+                titles = configurationSection.getStringList("titles"),
+                actionbarTitles = configurationSection.getStringList("actionbar")
             )
         }
     }

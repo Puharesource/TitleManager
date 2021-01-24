@@ -38,10 +38,13 @@ class BungeeCordServiceSpigot @Inject constructor(private val plugin: TitleManag
     }
 
     override fun start() {
-        tasks.add(taskService.scheduleAsyncTimer(period = 200) {
-            sendNetworkMessage(BungeeCordMessages.GET_SERVERS.message)
-            sendNetworkMessage(BungeeCordMessages.GET_SERVER.message)
-        })
+        tasks.add(
+            taskService.scheduleAsyncTimer(period = 200) {
+                sendNetworkMessage(BungeeCordMessages.GET_SERVERS.message)
+                sendNetworkMessage(BungeeCordMessages.GET_SERVER.message)
+            }
+        )
+
         listener = TMPluginMessageListener(plugin) {
             if (it.channel != BungeeCordChannels.BUNGEECORD.channel) return@TMPluginMessageListener
 
@@ -68,10 +71,14 @@ class BungeeCordServiceSpigot @Inject constructor(private val plugin: TitleManag
         val newServers = input.readUTF().split(", ").toSet()
 
         servers
-                .filterKeys { !newServers.contains(it) }
-                .forEach { servers.remove(it.key) }
+            .filterKeys { !newServers.contains(it) }
+            .forEach { servers.remove(it.key) }
 
-        newServers.filter { !servers.containsKey(it) }.forEach { servers[it] = BungeeCordServerInfo(it, 0, -1) }
+        newServers
+            .filter { !servers.containsKey(it) }
+            .forEach {
+                servers[it] = BungeeCordServerInfo(it, 0, -1)
+            }
 
         servers.values.forEach { it.update(this) }
     }

@@ -4,7 +4,8 @@ import io.puharesource.mc.titlemanager.internal.model.script.AnimationScript
 import java.util.regex.Pattern
 
 class RepeatScript(text: String, index: Int) : AnimationScript(text, index, fadeIn = 0, stay = 20, fadeOut = 0) {
-    private val pattern: Pattern = """\[(?<totalStay>\d+)](?<text>.+)""".toRegex().toPattern()
+    private val pattern: Pattern =
+        """\[(?<totalStay>\d+)](?<text>.+)""".toRegex().toPattern()
 
     private var totalStay = 60
 

@@ -7,8 +7,10 @@ import java.io.File
 
 class PrettyConfig(file: File) : YamlConfiguration() {
     companion object {
-        private val KEY_PATTERN = """^([ ]*)([^'"]+)[:].*$""".toRegex()
-        private val COMMENT_PATTERN = """^([ ]*[#].*)|[ ]*$""".toRegex()
+        private val KEY_PATTERN =
+            """^([ ]*)([^'"]+)[:].*$""".toRegex()
+        private val COMMENT_PATTERN =
+            """^([ ]*[#].*)|[ ]*$""".toRegex()
     }
 
     init {

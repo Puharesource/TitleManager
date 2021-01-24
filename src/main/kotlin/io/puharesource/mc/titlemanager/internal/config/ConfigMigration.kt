@@ -91,24 +91,32 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
         move("updater.check-automatically", "check-for-updates")
 
         move("tabmenu.enabled", "player-list.enabled")
-        move("tabmenu.header", "player-list.header", transformer = {
-            val header = it as String
+        move(
+            "tabmenu.header",
+            "player-list.header",
+            transformer = {
+                val header = it as String
 
-            if (header.contains("\\n")) {
-                header.split("\\n")
-            } else {
-                header
+                if (header.contains("\\n")) {
+                    header.split("\\n")
+                } else {
+                    header
+                }
             }
-        })
-        move("tabmenu.footer", "player-list.footer", transformer = {
-            val footer = it as String
+        )
+        move(
+            "tabmenu.footer",
+            "player-list.footer",
+            transformer = {
+                val footer = it as String
 
-            if (footer.contains("\\n")) {
-                footer.split("\\n")
-            } else {
-                footer
+                if (footer.contains("\\n")) {
+                    footer.split("\\n")
+                } else {
+                    footer
+                }
             }
-        })
+        )
 
         move("welcome_message.enabled", "welcome-title.enabled")
         move("welcome_message.title", "welcome-title.title")
@@ -133,21 +141,21 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
             val oldAnimationsConfig = YamlConfiguration.loadConfiguration(oldAnimationFile)
 
             oldAnimationsConfig.getKeys(false)
-                    .map { it to oldAnimationsConfig.getStringList("$it.frames") }
-                    .forEach { entry ->
-                        val name = entry.first
-                        val frames = entry.second
-                                .joinToString(separator = "\n")
-                                .replace(oldPlaceholderPattern, transform = { "%{${it.groups[1]!!.value}}" })
+                .map { it to oldAnimationsConfig.getStringList("$it.frames") }
+                .forEach { entry ->
+                    val name = entry.first
+                    val frames = entry.second
+                        .joinToString(separator = "\n")
+                        .replace(oldPlaceholderPattern, transform = { "%{${it.groups[1]!!.value}}" })
 
-                        animationsFolder.mkdirs()
-                        val file = File(animationsFolder, "$name.txt")
+                    animationsFolder.mkdirs()
+                    val file = File(animationsFolder, "$name.txt")
 
-                        if (!file.exists()) {
-                            file.createNewFile()
-                            file.writeText(frames)
-                        }
+                    if (!file.exists()) {
+                        file.createNewFile()
+                        file.writeText(frames)
                     }
+                }
 
             oldAnimationFile.renameTo(File(dataFolder, "animations-old.yml"))
         }
@@ -167,17 +175,17 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
         val oldConfig = YamlConfiguration.loadConfiguration(oldFile.reader())
 
         conf.getKeys(false)
-                .asSequence()
-                .filter { it != "config-version" && it != "messages" }
-                .filter { oldConfig.contains(it) }
-                .map { it to oldConfig[it] }
-                .forEach { conf.set(it.first, it.second) }
+            .asSequence()
+            .filter { it != "config-version" && it != "messages" }
+            .filter { oldConfig.contains(it) }
+            .map { it to oldConfig[it] }
+            .forEach { conf.set(it.first, it.second) }
 
         conf.getConfigurationSection("messages")!!.getKeys(false)
-                .asSequence()
-                .filter { oldConfig.contains(it) }
-                .map { it to oldConfig[it] }
-                .forEach { conf.getConfigurationSection("messages")!!.set(it.first, it.second) }
+            .asSequence()
+            .filter { oldConfig.contains(it) }
+            .map { it to oldConfig[it] }
+            .forEach { conf.getConfigurationSection("messages")!!.set(it.first, it.second) }
 
         config.set("config-version", 5)
         config.save(configFile)

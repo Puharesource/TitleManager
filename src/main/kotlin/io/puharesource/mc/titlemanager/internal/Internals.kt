@@ -27,11 +27,18 @@ internal fun onPluginDisable(body: () -> Unit) {
     val pluginManager = Bukkit.getPluginManager()
     val listener = object : Listener {}
 
-    pluginManager.registerEvent(PluginDisableEvent::class.java, listener, EventPriority.MONITOR, { _, event ->
-        val disableEvent = event as PluginDisableEvent
+    pluginManager.registerEvent(
+        PluginDisableEvent::class.java,
+        listener,
+        EventPriority.MONITOR,
+        { _, event ->
+            val disableEvent = event as PluginDisableEvent
 
-        if (disableEvent.plugin == pluginInstance) {
-            body()
-        }
-    }, pluginInstance, false)
+            if (disableEvent.plugin == pluginInstance) {
+                body()
+            }
+        },
+        pluginInstance,
+        false
+    )
 }

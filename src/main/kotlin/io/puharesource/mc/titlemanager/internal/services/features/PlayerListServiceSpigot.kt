@@ -36,27 +36,79 @@ class PlayerListServiceSpigot @Inject constructor(
     }
 
     override fun createHeaderSendableAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return EasySendableAnimation(schedulerService, animation, player, {
-            setHeader(player, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = config.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> setRunningHeaderAnimation(receiver, sendableAnimation) })
+        return EasySendableAnimation(
+            schedulerService,
+            animation,
+            player,
+            {
+                setHeader(player, it.text, withPlaceholders = withPlaceholders)
+            },
+            isContinuous = true,
+            tickRate = config.bandwidth.playerListMsPerTick,
+            fixedOnStop = {
+                removeRunningHeaderAnimation(it)
+            },
+            fixedOnStart = { receiver, sendableAnimation ->
+                setRunningHeaderAnimation(receiver, sendableAnimation)
+            }
+        )
     }
 
     override fun createFooterSendableAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return EasySendableAnimation(schedulerService, animation, player, {
-            setFooter(player, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = config.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> setRunningFooterAnimation(receiver, sendableAnimation) })
+        return EasySendableAnimation(
+            schedulerService,
+            animation,
+            player,
+            {
+                setFooter(player, it.text, withPlaceholders = withPlaceholders)
+            },
+            isContinuous = true,
+            tickRate = config.bandwidth.playerListMsPerTick,
+            fixedOnStop = {
+                removeRunningFooterAnimation(it)
+            },
+            fixedOnStart = { receiver, sendableAnimation ->
+                setRunningFooterAnimation(receiver, sendableAnimation)
+            }
+        )
     }
 
     override fun createHeaderSendableAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return PartBasedSendableAnimation(schedulerService, parts, player, {
-            setHeader(player, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = config.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningHeaderAnimation(it) }, fixedOnStart = { receiver, animation -> setRunningHeaderAnimation(receiver, animation) })
+        return PartBasedSendableAnimation(
+            schedulerService,
+            parts,
+            player,
+            {
+                setHeader(player, it.text, withPlaceholders = withPlaceholders)
+            },
+            isContinuous = true,
+            tickRate = config.bandwidth.playerListMsPerTick,
+            fixedOnStop = {
+                removeRunningHeaderAnimation(it)
+            },
+            fixedOnStart = { receiver, animation ->
+                setRunningHeaderAnimation(receiver, animation)
+            }
+        )
     }
 
     override fun createFooterSendableAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return PartBasedSendableAnimation(schedulerService, parts, player, {
-            setFooter(player, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = config.bandwidth.playerListMsPerTick, fixedOnStop = { removeRunningFooterAnimation(it) }, fixedOnStart = { receiver, animation -> setRunningFooterAnimation(receiver, animation) })
+        return PartBasedSendableAnimation(
+            schedulerService,
+            parts,
+            player,
+            {
+                setFooter(player, it.text, withPlaceholders = withPlaceholders)
+            },
+            isContinuous = true,
+            tickRate = config.bandwidth.playerListMsPerTick,
+            fixedOnStop = {
+                removeRunningFooterAnimation(it)
+            },
+            fixedOnStart = { receiver, animation ->
+                setRunningFooterAnimation(receiver, animation)
+            }
+        )
     }
 
     override fun getHeader(player: Player): String {

@@ -29,9 +29,9 @@ class AnnouncerServiceSpigot(
         if (!config.announcer.enabled) return
 
         config.announcer.announcements
-                .map { Announcement.fromConfig(it) }
-                .filter { !it.isEmpty }
-                .forEach { scheduleAnnouncement(it) }
+            .map { Announcement.fromConfig(it) }
+            .filter { !it.isEmpty }
+            .forEach { scheduleAnnouncement(it) }
     }
 
     override fun stop() {
@@ -42,26 +42,31 @@ class AnnouncerServiceSpigot(
     private fun scheduleAnnouncement(announcement: Announcement) {
         val index = AtomicInteger(0)
 
-        schedulerService.scheduleRaw({
-            val i = index.andIncrement % announcement.size
+        schedulerService.scheduleRaw(
+            {
+                val i = index.andIncrement % announcement.size
 
-            plugin.server.onlinePlayers.forEach { player ->
-                if (i < announcement.titles.size) {
-                    val titlePair = announcement.titles[i].color().split("\\n", limit = 2)
+                plugin.server.onlinePlayers.forEach { player ->
+                    if (i < announcement.titles.size) {
+                        val titlePair = announcement.titles[i].color().split("\\n", limit = 2)
 
-                    if (titlePair.first().isNotEmpty()) {
-                        titleService.sendProcessedTitle(player, titlePair.first(), announcement.fadeIn, announcement.stay, announcement.fadeOut)
+                        if (titlePair.first().isNotEmpty()) {
+                            titleService.sendProcessedTitle(player, titlePair.first(), announcement.fadeIn, announcement.stay, announcement.fadeOut)
+                        }
+
+                        if (titlePair.size > 1 && titlePair[1].isNotEmpty()) {
+                            titleService.sendProcessedSubtitle(player, titlePair[1], announcement.fadeIn, announcement.stay, announcement.fadeOut)
+                        }
                     }
 
-                    if (titlePair.size > 1 && titlePair[1].isNotEmpty()) {
-                        titleService.sendProcessedSubtitle(player, titlePair[1], announcement.fadeIn, announcement.stay, announcement.fadeOut)
+                    if (i < announcement.actionbarTitles.size) {
+                        actionbarService.sendProcessedActionbar(player, announcement.actionbarTitles[i].color())
                     }
                 }
-
-                if (i < announcement.actionbarTitles.size) {
-                    actionbarService.sendProcessedActionbar(player, announcement.actionbarTitles[i].color())
-                }
-            }
-        }, announcement.interval, announcement.interval, TimeUnit.SECONDS)
+            },
+            announcement.interval,
+            announcement.interval,
+            TimeUnit.SECONDS
+        )
     }
 }

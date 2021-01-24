@@ -26,9 +26,9 @@ class ScriptServiceNashorn @Inject constructor(
 
     private val jsAnimationFileSequence: Sequence<File>
         get() = animationsFolder.listFiles()
-                .asSequence()
-                .filter { it.isFile }
-                .filter { it.extension.equals("js", ignoreCase = true) }
+            .asSequence()
+            .filter { it.isFile }
+            .filter { it.extension.equals("js", ignoreCase = true) }
 
     override val engineName: String = "Nashorn"
 

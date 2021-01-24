@@ -8,7 +8,8 @@ import java.awt.Color
 import java.util.regex.Pattern
 
 class GradientColorScript(text: String, index: Int) : AnimationScript(text, index, fadeIn = 0, stay = 1, fadeOut = 0) {
-    private val pattern: Pattern = """\[(?<colors>.+)](?<precision>\d+)""".toRegex().toPattern()
+    private val pattern: Pattern =
+        """\[(?<colors>.+)](?<precision>\d+)""".toRegex().toPattern()
     private var colors = listOf("#ff0000", "#00ff00").map { Color.decode(it) }.toList()
 
     private var precision: Float = 20.0f

@@ -31,8 +31,10 @@ class PlaceholderServiceText @Inject constructor(
     private val config: TMConfigMain,
     private val bungeeCordService: BungeeCordService
 ) : PlaceholderService {
-    private val variablePattern = """[%][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
-    private val gradientPattern: Pattern = """\[(?<colors>.+)](?<text>.+)""".toRegex().toPattern()
+    private val variablePattern =
+        """[%][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
+    private val gradientPattern: Pattern =
+        """\[(?<colors>.+)](?<text>.+)""".toRegex().toPattern()
     private val placeholderReplacers: MutableMap<String, Placeholder> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
 
     override fun loadBuiltinPlaceholders() {
@@ -43,31 +45,35 @@ class PlaceholderServiceText @Inject constructor(
         addPlaceholder(createPlaceholder("world-time") { player -> player.world.time })
         addPlaceholder(createPlaceholder("24h-world-time") { player -> player.world.getFormattedTime(true) })
         addPlaceholder(createPlaceholder("12h-world-time") { player -> player.world.getFormattedTime(false) })
-        addPlaceholder(createPlaceholder("online", "online-players") { _, value ->
-            if (value == null || !config.usingBungeecord) {
-                return@createPlaceholder plugin.server.onlinePlayers.size
-            }
+        addPlaceholder(
+            createPlaceholder("online", "online-players") { _, value ->
+                if (value == null || !config.usingBungeecord) {
+                    return@createPlaceholder plugin.server.onlinePlayers.size
+                }
 
-            if (value.contains(",")) {
-                return@createPlaceholder value.split(",").asSequence().mapNotNull { bungeeCordService.servers[value]?.playerCount }.sum().toString()
-            }
+                if (value.contains(",")) {
+                    return@createPlaceholder value.split(",").asSequence().mapNotNull { bungeeCordService.servers[value]?.playerCount }.sum().toString()
+                }
 
-            return@createPlaceholder bungeeCordService.servers[value]?.playerCount?.toString() ?: ""
-        })
+                return@createPlaceholder bungeeCordService.servers[value]?.playerCount?.toString() ?: ""
+            }
+        )
         addPlaceholder(createPlaceholder("max", "max-players") { _ -> Bukkit.getServer().maxPlayers })
         addPlaceholder(createPlaceholder("world-players", "world-online") { player -> player.world.players.size })
         addPlaceholder(createPlaceholder("ping") { player -> player.getPing() })
-        addPlaceholder(createPlaceholder("tps") { _, value ->
-            if (value == null) {
-                return@createPlaceholder PlaceholderTps.getTps(1)
-            }
+        addPlaceholder(
+            createPlaceholder("tps") { _, value ->
+                if (value == null) {
+                    return@createPlaceholder PlaceholderTps.getTps(1)
+                }
 
-            if (value.isInt()) {
-                return@createPlaceholder PlaceholderTps.getTps(value.toInt())
-            }
+                if (value.isInt()) {
+                    return@createPlaceholder PlaceholderTps.getTps(value.toInt())
+                }
 
-            return@createPlaceholder PlaceholderTps.getTps(value)
-        }.cached(30))
+                return@createPlaceholder PlaceholderTps.getTps(value)
+            }.cached(30)
+        )
         addPlaceholder(createPlaceholder("server-time") { _ -> config.placeholders.dateFormat.format(Date(System.currentTimeMillis())) })
         addPlaceholder(createPlaceholder("bungeecord-online", "bungeecord-online-players", enabled = { config.usingBungeecord }) { _ -> bungeeCordService.onlinePlayers }.cached(5))
         addPlaceholder(createPlaceholder("server", "server-name", enabled = { config.usingBungeecord }) { _ -> bungeeCordService.currentServer.orEmpty() })
@@ -75,55 +81,57 @@ class PlaceholderServiceText @Inject constructor(
         addPlaceholder(createPlaceholder("balance", "money", enabled = { VaultHook.isEnabled() && VaultHook.isEconomySupported }) { player -> VaultHook.economy?.getBalance(player)?.format() ?: "no-econ" })
         addPlaceholder(createPlaceholder("group", "group-name", enabled = { VaultHook.isEnabled() && VaultHook.hasGroupSupport }) { player -> VaultHook.permissions?.getPrimaryGroup(player)?.color() ?: "no-perms" })
         addPlaceholder(createPlaceholder("color", "colour", "c", enabled = { NMSManager.versionIndex >= 10 }) { _, value -> ChatColor.of(value) })
-        addPlaceholder(createPlaceholder("gradient", enabled = { NMSManager.versionIndex >= 10 }) { _, value ->
-            if (value == null) {
-                return@createPlaceholder "N/A"
-            }
+        addPlaceholder(
+            createPlaceholder("gradient", enabled = { NMSManager.versionIndex >= 10 }) { _, value ->
+                if (value == null) {
+                    return@createPlaceholder "N/A"
+                }
 
-            val matcher = gradientPattern.matcher(value)
-            var text: String = value
-            val colors: List<Color>
+                val matcher = gradientPattern.matcher(value)
+                var text: String = value
+                val colors: List<Color>
 
-            var bold = false
-            var strikethrough = false
-            var underline = false
-            var magic = false
+                var bold = false
+                var strikethrough = false
+                var underline = false
+                var magic = false
 
-            if (matcher.find()) {
-                text = matcher.group("text")
-                colors = matcher.group("colors").split(",")
-                    .asSequence()
-                    .map { it.trim() }
-                    .filter { it.startsWith("#") }
-                    .map { Color.decode(it) }
-                    .toList()
+                if (matcher.find()) {
+                    text = matcher.group("text")
+                    colors = matcher.group("colors").split(",")
+                        .asSequence()
+                        .map { it.trim() }
+                        .filter { it.startsWith("#") }
+                        .map { Color.decode(it) }
+                        .toList()
 
-                matcher.group("colors").split(",")
-                    .asSequence()
-                    .map { it.trim() }
-                    .filter { !it.startsWith("#") }
-                    .forEach {
-                        when {
-                            it.equals("bold", ignoreCase = true) -> {
-                                bold = true
-                            }
-                            it.equals("strikethrough", ignoreCase = true) -> {
-                                strikethrough = true
-                            }
-                            it.equals("underline", ignoreCase = true) -> {
-                                underline = true
-                            }
-                            it.equals("magic", ignoreCase = true) -> {
-                                magic = true
+                    matcher.group("colors").split(",")
+                        .asSequence()
+                        .map { it.trim() }
+                        .filter { !it.startsWith("#") }
+                        .forEach {
+                            when {
+                                it.equals("bold", ignoreCase = true) -> {
+                                    bold = true
+                                }
+                                it.equals("strikethrough", ignoreCase = true) -> {
+                                    strikethrough = true
+                                }
+                                it.equals("underline", ignoreCase = true) -> {
+                                    underline = true
+                                }
+                                it.equals("magic", ignoreCase = true) -> {
+                                    magic = true
+                                }
                             }
                         }
-                    }
-            } else {
-                colors = listOf("#ff0000", "#00ff00").map { Color.decode(it) }.toList()
-            }
+                } else {
+                    colors = listOf("#ff0000", "#00ff00").map { Color.decode(it) }.toList()
+                }
 
-            ColorUtil.gradientString(text, colors, bold = bold, strikethrough = strikethrough, underline = underline, magic = magic)
-        })
+                ColorUtil.gradientString(text, colors, bold = bold, strikethrough = strikethrough, underline = underline, magic = magic)
+            }
+        )
     }
 
     override fun addPlaceholder(placeholder: Placeholder) {

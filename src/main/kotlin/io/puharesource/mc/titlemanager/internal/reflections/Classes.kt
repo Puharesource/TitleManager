@@ -96,20 +96,29 @@ class PacketTabHeader : NMSClass(if (NMSManager.versionIndex == 0) "PacketTabHea
 class PacketTitle : NMSClass(if (NMSManager.versionIndex == 0) "PacketTitle" else "PacketPlayOutTitle") {
     val constructor: Constructor<*> = if (NMSManager.versionIndex == 0) {
         clazz.getConstructor(
-                provider["Action"].handle,
-                provider["IChatBaseComponent"].handle,
-                Integer.TYPE, Integer.TYPE, Integer.TYPE)
+            provider["Action"].handle,
+            provider["IChatBaseComponent"].handle,
+            Integer.TYPE,
+            Integer.TYPE,
+            Integer.TYPE
+        )
     } else {
         clazz.getConstructor(
-                provider["EnumTitleAction"].handle,
-                provider["IChatBaseComponent"].handle,
-                Integer.TYPE, Integer.TYPE, Integer.TYPE)
+            provider["EnumTitleAction"].handle,
+            provider["IChatBaseComponent"].handle,
+            Integer.TYPE,
+            Integer.TYPE,
+            Integer.TYPE
+        )
     }
 
     val timingsConstructor: Constructor<*> = if (NMSManager.versionIndex == 0) {
         clazz.getConstructor(
-                provider["Action"].handle,
-                Integer.TYPE, Integer.TYPE, Integer.TYPE)
+            provider["Action"].handle,
+            Integer.TYPE,
+            Integer.TYPE,
+            Integer.TYPE
+        )
     } else {
         this.constructor
     }

@@ -99,15 +99,17 @@ class TitleServiceSpigot @Inject constructor(
     override fun sendProcessedTitle(player: Player, text: String, fadeIn: Int, stay: Int, fadeOut: Int) {
         val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, text))
 
-        if (parts.size == 1 && parts.first().part is String) {
-            sendTitle(player,
-                    title = parts.first().part as String,
-                    fadeIn = fadeIn,
-                    stay = stay,
-                    fadeOut = fadeOut,
-                    withPlaceholders = false)
-        } else if (parts.size == 1 && parts.first().part is Animation) {
-            createTitleSendableAnimation(parts.first().part as Animation, player, withPlaceholders = false).start()
+        if (parts.size == 1 && parts.first().getPart() is String) {
+            sendTitle(
+                player,
+                title = parts.first().getPart() as String,
+                fadeIn = fadeIn,
+                stay = stay,
+                fadeOut = fadeOut,
+                withPlaceholders = false
+            )
+        } else if (parts.size == 1 && parts.first().getPart() is Animation) {
+            createTitleSendableAnimation(parts.first().getPart() as Animation, player, withPlaceholders = false).start()
         } else if (parts.isNotEmpty()) {
             createTitleSendableAnimation(parts, player, withPlaceholders = false).start()
         }
@@ -116,50 +118,100 @@ class TitleServiceSpigot @Inject constructor(
     override fun sendProcessedSubtitle(player: Player, text: String, fadeIn: Int, stay: Int, fadeOut: Int) {
         val parts = animationsService.textToAnimationParts(placeholderService.replaceText(player, text))
 
-        if (parts.size == 1 && parts.first().part is String) {
-            sendSubtitle(player,
-                    subtitle = parts.first().part as String,
-                    fadeIn = fadeIn,
-                    stay = stay,
-                    fadeOut = fadeOut,
-                    withPlaceholders = false)
-        } else if (parts.size == 1 && parts.first().part is Animation) {
-            createSubtitleSendableAnimation(parts.first().part as Animation, player, withPlaceholders = false).start()
+        if (parts.size == 1 && parts.first().getPart() is String) {
+            sendSubtitle(
+                player,
+                subtitle = parts.first().getPart() as String,
+                fadeIn = fadeIn,
+                stay = stay,
+                fadeOut = fadeOut,
+                withPlaceholders = false
+            )
+        } else if (parts.size == 1 && parts.first().getPart() is Animation) {
+            createSubtitleSendableAnimation(parts.first().getPart() as Animation, player, withPlaceholders = false).start()
         } else if (parts.isNotEmpty()) {
             createSubtitleSendableAnimation(parts, player, withPlaceholders = false).start()
         }
     }
 
     override fun createTitleSendableAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return PartBasedSendableAnimation(schedulerService, parts, player, {
-            sendTitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
-        }, onStop = {
-            clearTitle(player)
-        }, fixedOnStop = { deleteRunningTitleAnimation(it) }, fixedOnStart = { receiver, animation -> saveRunningTitleAnimation(receiver, animation) })
+        return PartBasedSendableAnimation(
+            schedulerService,
+            parts,
+            player,
+            {
+                sendTitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
+            },
+            onStop = {
+                clearTitle(player)
+            },
+            fixedOnStop = {
+                deleteRunningTitleAnimation(it)
+            },
+            fixedOnStart = { receiver, animation ->
+                saveRunningTitleAnimation(receiver, animation)
+            }
+        )
     }
 
     override fun createSubtitleSendableAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return PartBasedSendableAnimation(schedulerService, parts, player, {
-            sendSubtitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
-        }, onStop = {
-            clearSubtitle(player)
-        }, fixedOnStop = { deleteRunningSubtitleAnimation(it) }, fixedOnStart = { receiver, animation -> saveRunningSubtitleAnimation(receiver, animation) })
+        return PartBasedSendableAnimation(
+            schedulerService,
+            parts,
+            player,
+            {
+                sendSubtitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
+            },
+            onStop = {
+                clearSubtitle(player)
+            },
+            fixedOnStop = {
+                deleteRunningSubtitleAnimation(it)
+            },
+            fixedOnStart = { receiver, animation ->
+                saveRunningSubtitleAnimation(receiver, animation)
+            }
+        )
     }
 
     override fun createTitleSendableAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return EasySendableAnimation(schedulerService, animation, player, {
-            sendTitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
-        }, onStop = {
-            clearTitle(player)
-        }, fixedOnStop = { deleteRunningTitleAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> saveRunningTitleAnimation(receiver, sendableAnimation) })
+        return EasySendableAnimation(
+            schedulerService,
+            animation,
+            player,
+            {
+                sendTitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
+            },
+            onStop = {
+                clearTitle(player)
+            },
+            fixedOnStop = {
+                deleteRunningTitleAnimation(it)
+            },
+            fixedOnStart = { receiver, sendableAnimation ->
+                saveRunningTitleAnimation(receiver, sendableAnimation)
+            }
+        )
     }
 
     override fun createSubtitleSendableAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return EasySendableAnimation(schedulerService, animation, player, {
-            sendSubtitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
-        }, onStop = {
-            clearSubtitle(player)
-        }, fixedOnStop = { deleteRunningSubtitleAnimation(it) }, fixedOnStart = { receiver, sendableAnimation -> saveRunningSubtitleAnimation(receiver, sendableAnimation) })
+        return EasySendableAnimation(
+            schedulerService,
+            animation,
+            player,
+            {
+                sendSubtitle(player, it.text, fadeIn = it.fadeIn, stay = it.stay + 1, fadeOut = it.fadeOut, withPlaceholders = withPlaceholders)
+            },
+            onStop = {
+                clearSubtitle(player)
+            },
+            fixedOnStop = {
+                deleteRunningSubtitleAnimation(it)
+            },
+            fixedOnStart = { receiver, sendableAnimation ->
+                saveRunningSubtitleAnimation(receiver, sendableAnimation)
+            }
+        )
     }
 
     private fun saveRunningAnimation(player: Player, path: String, animation: SendableAnimation) {

@@ -14,7 +14,8 @@ import javax.inject.Inject
 class AnimationsServiceFile @Inject constructor(private val plugin: TitleManagerPlugin, private val scriptService: ScriptService, private val placeholderService: PlaceholderService) : AnimationsService {
     private val animationsFolder = File(plugin.dataFolder, "animations")
     private val textAnimationFramePattern = "^\\[([-]?\\d+);([-]?\\d+);([-]?\\d+)](.+)$".toRegex()
-    private val animationPattern = """[$][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
+    private val animationPattern =
+        """[$][{](([^}:]+\b)(?:[:]((?:(?>[^}\\]+)|\\.)+))?)[}]""".toRegex()
     private val registeredAnimations: MutableMap<String, Animation> = ConcurrentSkipListMap(String.CASE_INSENSITIVE_ORDER)
 
     override val animations: Map<String, Animation>
@@ -22,9 +23,9 @@ class AnimationsServiceFile @Inject constructor(private val plugin: TitleManager
 
     private val textAnimationFileSequence: Sequence<File>
         get() = animationsFolder.listFiles()
-                .asSequence()
-                .filter { it.isFile }
-                .filter { it.extension.equals("txt", ignoreCase = true) }
+            .asSequence()
+            .filter { it.isFile }
+            .filter { it.extension.equals("txt", ignoreCase = true) }
 
     override fun createAnimationsFolderIfNotExists() {
         if (animationsFolder.exists()) return
@@ -49,20 +50,20 @@ class AnimationsServiceFile @Inject constructor(private val plugin: TitleManager
 
     override fun createAnimationFromTextLines(vararg lines: String): Animation {
         val animationFrames = lines
-                .map {
-                    val matcher = textAnimationFramePattern.toPattern().matcher(it)
+            .map {
+                val matcher = textAnimationFramePattern.toPattern().matcher(it)
 
-                    if (matcher.matches()) {
-                        val fadeIn = matcher.group(1).toInt()
-                        val stay = matcher.group(2).toInt()
-                        val fadeOut = matcher.group(3).toInt()
-                        val text = matcher.group(4).color().replace("\\n", "\n")
+                if (matcher.matches()) {
+                    val fadeIn = matcher.group(1).toInt()
+                    val stay = matcher.group(2).toInt()
+                    val fadeOut = matcher.group(3).toInt()
+                    val text = matcher.group(4).color().replace("\\n", "\n")
 
-                        StandardAnimationFrame(text, fadeIn, stay, fadeOut)
-                    } else {
-                        StandardAnimationFrame(it.color())
-                    }
+                    StandardAnimationFrame(text, fadeIn, stay, fadeOut)
+                } else {
+                    StandardAnimationFrame(it.color())
                 }
+            }
 
         return Animation { animationFrames.iterator() }
     }

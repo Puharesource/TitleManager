@@ -15,10 +15,14 @@ class SchedulerServiceAsync : SchedulerService {
     override fun schedule(body: () -> Unit, delay: Int): Int {
         val id = ids.incrementAndGet()
 
-        scheduled[id] = scheduler.schedule({
-            scheduled.remove(id)
-            body()
-        }, delay * 50L, TimeUnit.MILLISECONDS)
+        scheduled[id] = scheduler.schedule(
+            {
+                scheduled.remove(id)
+                body()
+            },
+            delay * 50L,
+            TimeUnit.MILLISECONDS
+        )
 
         return id
     }
@@ -34,10 +38,14 @@ class SchedulerServiceAsync : SchedulerService {
     override fun scheduleRaw(body: () -> Unit, delay: Long, unit: TimeUnit): Int {
         val id = ids.incrementAndGet()
 
-        scheduled[id] = scheduler.schedule({
-            scheduled.remove(id)
-            body()
-        }, delay, unit)
+        scheduled[id] = scheduler.schedule(
+            {
+                scheduled.remove(id)
+                body()
+            },
+            delay,
+            unit
+        )
 
         return id
     }

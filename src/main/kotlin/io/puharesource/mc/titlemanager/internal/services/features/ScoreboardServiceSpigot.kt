@@ -150,27 +150,79 @@ class ScoreboardServiceSpigot @Inject constructor(
     }
 
     override fun createScoreboardTitleSendableAnimation(animation: Animation, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return EasySendableAnimation(schedulerService, animation, player, {
-            setScoreboardTitle(player, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = config.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { receiver, sendableAnimation -> setRunningScoreboardTitleAnimation(receiver, sendableAnimation) })
+        return EasySendableAnimation(
+            schedulerService,
+            animation,
+            player,
+            {
+                setScoreboardTitle(player, it.text, withPlaceholders = withPlaceholders)
+            },
+            isContinuous = true,
+            tickRate = config.bandwidth.scoreboardMsPerTick,
+            fixedOnStop = {
+                removeRunningScoreboardTitleAnimation(player)
+            },
+            fixedOnStart = { receiver, sendableAnimation ->
+                setRunningScoreboardTitleAnimation(receiver, sendableAnimation)
+            }
+        )
     }
 
     override fun createScoreboardValueSendableAnimation(animation: Animation, player: Player, index: Int, withPlaceholders: Boolean): SendableAnimation {
-        return EasySendableAnimation(schedulerService, animation, player, {
-            setScoreboardValue(player, index, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = config.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { receiver, sendableAnimation -> setRunningScoreboardValueAnimation(receiver, index, sendableAnimation) })
+        return EasySendableAnimation(
+            schedulerService,
+            animation,
+            player,
+            {
+                setScoreboardValue(player, index, it.text, withPlaceholders = withPlaceholders)
+            },
+            isContinuous = true,
+            tickRate = config.bandwidth.scoreboardMsPerTick,
+            fixedOnStop = {
+                removeRunningScoreboardTitleAnimation(player)
+            },
+            fixedOnStart = { receiver, sendableAnimation ->
+                setRunningScoreboardValueAnimation(receiver, index, sendableAnimation)
+            }
+        )
     }
 
     override fun createScoreboardTitleSendableAnimation(parts: List<AnimationPart<*>>, player: Player, withPlaceholders: Boolean): SendableAnimation {
-        return PartBasedSendableAnimation(schedulerService, parts, player, {
-            setScoreboardTitle(player, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = config.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { receiver, animation -> setRunningScoreboardTitleAnimation(receiver, animation) })
+        return PartBasedSendableAnimation(
+            schedulerService,
+            parts,
+            player,
+            {
+                setScoreboardTitle(player, it.text, withPlaceholders = withPlaceholders)
+            },
+            isContinuous = true,
+            tickRate = config.bandwidth.scoreboardMsPerTick,
+            fixedOnStop = {
+                removeRunningScoreboardTitleAnimation(player)
+            },
+            fixedOnStart = { receiver, animation ->
+                setRunningScoreboardTitleAnimation(receiver, animation)
+            }
+        )
     }
 
     override fun createScoreboardValueSendableAnimation(parts: List<AnimationPart<*>>, player: Player, index: Int, withPlaceholders: Boolean): SendableAnimation {
-        return PartBasedSendableAnimation(schedulerService, parts, player, {
-            setScoreboardValue(player, index, it.text, withPlaceholders = withPlaceholders)
-        }, continuous = true, tickRate = config.bandwidth.scoreboardMsPerTick, fixedOnStop = { removeRunningScoreboardTitleAnimation(player) }, fixedOnStart = { receiver, animation -> setRunningScoreboardValueAnimation(receiver, index, animation) })
+        return PartBasedSendableAnimation(
+            schedulerService,
+            parts,
+            player,
+            {
+                setScoreboardValue(player, index, it.text, withPlaceholders = withPlaceholders)
+            },
+            isContinuous = true,
+            tickRate = config.bandwidth.scoreboardMsPerTick,
+            fixedOnStop = {
+                removeRunningScoreboardTitleAnimation(player)
+            },
+            fixedOnStart = { receiver, animation ->
+                setRunningScoreboardValueAnimation(receiver, index, animation)
+            }
+        )
     }
 
     override fun isScoreboardDisabledWorld(world: World) = config.scoreboard.disabledWorlds.any { disabledWorldName -> disabledWorldName.equals(world.name, ignoreCase = true) }
@@ -232,13 +284,16 @@ class ScoreboardServiceSpigot @Inject constructor(
         packet.objectiveName = scoreboardName
         packet.mode = 2
         packet.value = when {
-            NMSManager.versionIndex > 9 -> ChatSerializer.deserializeLegacyText(title)
-            NMSManager.versionIndex > 6 -> NMSManager.getClassProvider().getIChatComponent(title)
-            else -> if (title.length > 32) {
-                title.substring(0, 32)
-            } else {
-                title
-            }
+            NMSManager.versionIndex > 9 ->
+                ChatSerializer.deserializeLegacyText(title)
+            NMSManager.versionIndex > 6 ->
+                NMSManager.getClassProvider().getIChatComponent(title)
+            else ->
+                if (title.length > 32) {
+                    title.substring(0, 32)
+                } else {
+                    title
+                }
         }
 
         if (NMSManager.versionIndex > 0) {
@@ -289,35 +344,39 @@ class ScoreboardServiceSpigot @Inject constructor(
 
     private fun startUpdateTask(player: Player) {
         if (playerScoreboards.containsKey(player) && !playerScoreboardUpdateTasks.containsKey(player)) {
-            playerScoreboardUpdateTasks[player] = schedulerService.schedule({
-                val scoreboard = playerScoreboards[player]
+            playerScoreboardUpdateTasks[player] = schedulerService.schedule(
+                {
+                    val scoreboard = playerScoreboards[player]
 
-                if (scoreboard == null) {
-                    stopUpdateTask(player)
-                    return@schedule
-                }
+                    if (scoreboard == null) {
+                        stopUpdateTask(player)
+                        return@schedule
+                    }
 
-                if (!scoreboard.isUpdatePending.get()) {
-                    return@schedule
-                }
+                    if (!scoreboard.isUpdatePending.get()) {
+                        return@schedule
+                    }
 
-                val currentScoreboardName = scoreboard.name
+                    val currentScoreboardName = scoreboard.name
 
-                scoreboard.generateNewScoreboardName()
-                val newScoreboardName = scoreboard.name
+                    scoreboard.generateNewScoreboardName()
+                    val newScoreboardName = scoreboard.name
 
-                sendPacketCreateScoreboardWithName(player, newScoreboardName)
-                sendPacketSetScoreboardTitleWithName(player, scoreboard.title, newScoreboardName)
+                    sendPacketCreateScoreboardWithName(player, newScoreboardName)
+                    sendPacketSetScoreboardTitleWithName(player, scoreboard.title, newScoreboardName)
 
-                (1..15).mapNotNull { scoreboard.get(it) }.forEachIndexed { index, text ->
-                    sendPacketSetScoreboardValueWithName(player, index + (15 - scoreboard.size) + 1, text, newScoreboardName)
-                }
+                    (1..15).mapNotNull { scoreboard.get(it) }.forEachIndexed { index, text ->
+                        sendPacketSetScoreboardValueWithName(player, index + (15 - scoreboard.size) + 1, text, newScoreboardName)
+                    }
 
-                scoreboard.isUpdatePending.set(false)
+                    scoreboard.isUpdatePending.set(false)
 
-                sendPacketDisplayScoreboardWithName(player, newScoreboardName)
-                removeScoreboardWithName(player, currentScoreboardName)
-            }, 1, 1)
+                    sendPacketDisplayScoreboardWithName(player, newScoreboardName)
+                    removeScoreboardWithName(player, currentScoreboardName)
+                },
+                1,
+                1
+            )
         }
     }
 

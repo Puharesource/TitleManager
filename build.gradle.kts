@@ -8,13 +8,13 @@ plugins {
     java
     `maven-publish`
 
-    kotlin("jvm") version "1.4.0"
-    kotlin("kapt") version "1.4.0"
+    kotlin("jvm") version "1.4.21"
+    kotlin("kapt") version "1.4.21"
 
     id("com.github.johnrengelman.shadow") version "5.1.0"
     id("org.jetbrains.dokka") version "0.10.0"
     id("net.saliman.properties") version "1.5.1"
-    id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
+    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
 }
 
 group = "io.puharesource.mc"
@@ -219,6 +219,7 @@ repositories {
         name = "cubekrowd-repo"
         url = uri("https://mavenrepo.cubekrowd.net/artifactory/repo/")
     }
+    maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
 dependencies {
@@ -245,4 +246,13 @@ dependencies {
 
     testImplementation(group = "junit", name = "junit", version = "4.12")
     testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.3.50")
+    implementation(kotlin("stdlib-jdk8"))
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
 }

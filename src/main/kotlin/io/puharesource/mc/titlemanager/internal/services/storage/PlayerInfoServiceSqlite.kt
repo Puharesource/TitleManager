@@ -76,7 +76,7 @@ class PlayerInfoServiceSqlite @Inject constructor(val plugin: TitleManagerPlugin
     }
 
     private fun playerExists(player: Player): Boolean {
-        var exists = false
+        var exists: Boolean
 
         connection.prepareStatement("SELECT * FROM playerinfo WHERE uuid = ?;").use { statement ->
             statement.setString(1, player.uniqueId.toString())

@@ -26,10 +26,10 @@ class CommandExecutor(private val plugin: TitleManagerPlugin, val cmd: TMSubComm
         get() {
             if (sender is Player && radius != null) {
                 val players = sender.getNearbyEntities(radius!!, radius!!, radius!!)
-                        .asSequence()
-                        .filter { it is Player }
-                        .map { it as Player }
-                        .toMutableSet()
+                    .asSequence()
+                    .filter { it is Player }
+                    .map { it as Player }
+                    .toMutableSet()
 
                 players.add(sender)
                 return players
@@ -75,7 +75,7 @@ class CommandExecutor(private val plugin: TitleManagerPlugin, val cmd: TMSubComm
     fun sendTitleAndSubtitle(title: String, subtitle: String) {
         if (!silent && sender is Player) {
             plugin.titleManagerComponent.titleService().sendProcessedTitle(sender, title, fadeIn, stay, fadeOut)
-            plugin.titleManagerComponent.titleService().sendProcessedSubtitle(sender, title, fadeIn, stay, fadeOut)
+            plugin.titleManagerComponent.titleService().sendProcessedSubtitle(sender, subtitle, fadeIn, stay, fadeOut)
         }
     }
 

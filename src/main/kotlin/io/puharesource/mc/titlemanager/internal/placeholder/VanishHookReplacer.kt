@@ -9,27 +9,29 @@ object VanishHookReplacer : HookReplacer() {
     }
 
     override fun value(player: Player): String {
-        return Bukkit.getOnlinePlayers().asSequence()
-                .filterNot { EssentialsHook.isPlayerVanished(it) }
-                .filterNot { VanishNoPacketHook.isPlayerVanished(it) }
-                .filterNot {
-                    try {
-                        return@filterNot PremiumVanishHook.isPlayerVanished(it)
-                    } catch (e: IllegalStateException) {
-                        e.printStackTrace()
-                    }
-
-                    return@filterNot false
+        return Bukkit.getOnlinePlayers()
+            .asSequence()
+            .filterNot { EssentialsHook.isPlayerVanished(it) }
+            .filterNot { VanishNoPacketHook.isPlayerVanished(it) }
+            .filterNot {
+                try {
+                    return@filterNot PremiumVanishHook.isPlayerVanished(it)
+                } catch (e: IllegalStateException) {
+                    e.printStackTrace()
                 }
-                .filterNot {
-                    try {
-                        return@filterNot SuperVanishHook.isPlayerVanished(it)
-                    } catch (e: IllegalStateException) {
-                        e.printStackTrace()
-                    }
 
-                    return@filterNot false
+                return@filterNot false
+            }
+            .filterNot {
+                try {
+                    return@filterNot SuperVanishHook.isPlayerVanished(it)
+                } catch (e: IllegalStateException) {
+                    e.printStackTrace()
                 }
-                .count().toString()
+
+                return@filterNot false
+            }
+            .count()
+            .toString()
     }
 }

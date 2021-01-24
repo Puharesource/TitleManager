@@ -4,7 +4,8 @@ import io.puharesource.mc.titlemanager.internal.model.script.ScriptCommandSender
 import org.bukkit.Bukkit
 
 object PlaceholderTps {
-    private val regex = """([§][a-f0-9].+), ([§][a-f0-9].+), ([§][a-f0-9].+)""".toRegex()
+    private val regex =
+        """([§][a-f0-9].+), ([§][a-f0-9].+), ([§][a-f0-9].+)""".toRegex()
 
     private fun getOutput(): String {
         val sender = ScriptCommandSender()
