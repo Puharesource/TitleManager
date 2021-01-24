@@ -26,11 +26,6 @@
 * **[PERMISSIONS](https://tmdocs.tarkan.dev/admins/permissions)** – command and feature permissions.
 * **[SUPPORT CHAT](https://discord.gg/U3Yyu6G)** - discord support chat and help.
 
-Sponsors
---------
-
-<a href="https://mineacademy.org/invite?rl=epqj"><img src="https://i.imgur.com/uIAi9Lx.png"></a>
-
 For Developers
 --------------
 
