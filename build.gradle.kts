@@ -244,7 +244,7 @@ dependencies {
 
     implementation(group = "org.graalvm.sdk", name = "graal-sdk", version = "19.2.0.1")
 
-    testImplementation(group = "junit", name = "junit", version = "4.12")
+    testImplementation(group = "junit", name = "junit", version = "4.13.1")
     testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.3.50")
     implementation(kotlin("stdlib-jdk8"))
 }
