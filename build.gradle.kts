@@ -12,7 +12,7 @@ plugins {
     kotlin("kapt") version "1.4.30"
 
     id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("org.jetbrains.dokka") version "0.10.0"
+    id("org.jetbrains.dokka") version "1.4.20"
     id("net.saliman.properties") version "1.5.1"
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
 }
@@ -227,7 +227,7 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:2.31.2")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
-    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.4.30")
+    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.4.0")
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.4.2-native-mt")
     implementation(group = "org.bstats", name = "bstats-bukkit", version = "1.7")
 
