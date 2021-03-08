@@ -4,16 +4,22 @@
 
 <p align="center">
     <a href="https://www.spigotmc.org/resources/titlemanager.1049">
-        <img src="https://img.shields.io/badge/Version-2.3.1-green" alt="Version">
+        <img src="https://img.shields.io/badge/Version-2.3.1-blue?style=for-the-badge" alt="Version">
     </a>
     <a href="https://github.com/Puharesource/TitleManager/actions">
-        <img src="https://github.com/Puharesource/TitleManager/workflows/Java%20CI/badge.svg" alt="Actions Status">
+        <img src="https://img.shields.io/github/workflow/status/Puharesource/TitleManager/Java%20CI?logo=github&style=for-the-badge&logoColor=fff" alt="Actions Status">
     </a>
     <a href="https://tarkan.dev/javadoc/titlemanager/">
-        <img src="https://img.shields.io/badge/JavaDoc-2.2-blue.svg" alt="Javadoc">
+        <img src="https://img.shields.io/badge/JavaDoc-2.2-blue.svg?style=for-the-badge&logo=Read-the-Docs&logoColor=fff" alt="Javadoc">
     </a>
     <a href="https://www.spigotmc.org/resources/titlemanager.1049/updates">
-        <img src="https://img.shields.io/badge/Minecraft-1.7%20--%201.16.1-blue" alt="Minecraft versions">
+        <img src="https://img.shields.io/badge/Minecraft-1.7%20--%201.16.1-blue?style=for-the-badge&logo=Hack-the-Box&logoColor=fff" alt="Minecraft versions">
+    </a>
+    <a href="https://bstats.org/plugin/bukkit/TitleManager/7318">
+        <img src="https://img.shields.io/bstats/players/7318?style=for-the-badge" alt="Players currently experiencing TitleManager">
+    </a>
+    <a href="https://bstats.org/plugin/bukkit/TitleManager/7318">
+        <img src="https://img.shields.io/bstats/servers/7318?style=for-the-badge" alt="Servers currenty running TitleManager">
     </a>
 </p>
 
