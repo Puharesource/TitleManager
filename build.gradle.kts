@@ -1,6 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.apache.tools.ant.filters.ReplaceTokens
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -45,44 +44,42 @@ tasks {
         relocate("org.bstats", "io.puharesource.mc.titlemanager.shaded.org.bstats")
     }
 
-    val dokka by getting(DokkaTask::class) {
-        outputFormat = "javadoc"
-        outputDirectory = "$buildDir/docs/javadoc/"
+    dokkaJavadoc {
+        outputDirectory.set(buildDir.resolve("docs/javadoc"))
 
-        configuration {
-            jdkVersion = 8
+        dokkaSourceSets {
+            configureEach {
+                jdkVersion.set(8)
 
-            includeNonPublic = false
-            skipDeprecated = false
-            reportUndocumented = true
-            skipEmptyPackages = true
+                includeNonPublic.set(false)
+                skipDeprecated.set(false)
+                reportUndocumented.set(true)
+                skipEmptyPackages.set(true)
 
-            targets = listOf("JVM")
-            platform = "JVM"
+                platform.set(org.jetbrains.dokka.Platform.jvm)
 
-            kotlinTasks {
-                defaultKotlinTasks()
-            }
+                sourceRoot(file("src/main/kotlin"))
 
-            externalDocumentationLink {
-                url = uri("https://hub.spigotmc.org/javadocs/spigot/").toURL()
-                packageListUrl = uri("https://hub.spigotmc.org/javadocs/spigot/element-list").toURL()
-            }
+                externalDocumentationLink {
+                    url.set(uri("https://hub.spigotmc.org/javadocs/spigot/").toURL())
+                    packageListUrl.set(uri("https://hub.spigotmc.org/javadocs/spigot/element-list").toURL())
+                }
 
-            sourceLink {
-                path = "src/main/kotlin"
-                url = "https://github.com/Puharesource/TitleManager/tree/master/src/main/kotlin"
-                lineSuffix = "#L"
-            }
+                sourceLink {
+                    localDirectory.set(file("src/main/kotlin"))
+                    remoteUrl.set(uri("https://github.com/Puharesource/TitleManager/tree/master/src/main/kotlin").toURL())
+                    remoteLineSuffix.set("#L")
+                }
 
-            perPackageOption {
-                prefix = "io.puharesource.mc.titlemanager.api.v2"
-                suppress = false
-            }
+                perPackageOption {
+                    matchingRegex.set("io.puharesource.mc.titlemanager.api.v2.*")
+                    suppress.set(false)
+                }
 
-            perPackageOption {
-                prefix = "io.puharesource.mc.titlemanager"
-                suppress = true
+                perPackageOption {
+                    matchingRegex.set("io.puharesource.mc.titlemanager.*")
+                    suppress.set(true)
+                }
             }
         }
     }
@@ -90,8 +87,8 @@ tasks {
     val javadocJar by creating(Jar::class) {
         archiveClassifier.set("javadoc")
 
-        dependsOn.add(dokka)
-        from(dokka.outputDirectory)
+        dependsOn.add(dokkaJavadoc)
+        from(dokkaJavadoc.get().outputDirectory)
     }
 
     val apiJar by creating(Jar::class) {
