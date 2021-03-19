@@ -221,7 +221,7 @@ dependencies {
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.4.31")
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.4.2-native-mt")
-    implementation(group = "org.bstats", name = "bstats-bukkit", version = "1.7")
+    implementation(group = "org.bstats", name = "bstats-bukkit", version = "2.2.1")
 
     implementation(group = "org.spigotmc", name = "spigot-api", version = "1.16.1-R0.1-SNAPSHOT")
 
