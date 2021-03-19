@@ -206,11 +206,6 @@ repositories {
     }
 
     maven {
-        name = "kitteh-repo"
-        url = uri("http://repo.kitteh.org/content/groups/public/")
-    }
-
-    maven {
         name = "codemc-repo"
         url = uri("https://repo.codemc.io/repository/maven-public/")
     }
@@ -238,7 +233,6 @@ dependencies {
     implementation(group = "net.milkbowl.vault", name = "VaultAPI", version = "1.7") { isTransitive = false }
     implementation(group = "net.ess3", name = "EssentialsX", version = "2.17.1") { isTransitive = false }
     implementation(group = "de.myzelyam", name = "SuperVanish", version = "6.1.3") { isTransitive = false }
-    implementation(group = "org.kitteh", name = "VanishNoPacket", version = "3.19.1") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx", name = "CombatLogX-API", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx.expansions", name = "Notifier", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
 

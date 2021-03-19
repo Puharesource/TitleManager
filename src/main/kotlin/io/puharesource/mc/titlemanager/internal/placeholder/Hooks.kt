@@ -8,7 +8,7 @@ import net.milkbowl.vault.economy.Economy
 import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import org.kitteh.vanish.VanishPlugin
+import java.util.concurrent.Callable
 import be.maximvdw.placeholderapi.PlaceholderAPI as MvdwPlaceholderApi
 import me.clip.placeholderapi.PlaceholderAPI as ClipsPlaceholderApi
 
@@ -58,7 +58,14 @@ object PremiumVanishHook : PluginHook("PremiumVanish") {
 
 object VanishNoPacketHook : PluginHook("VanishNoPacket") {
     fun isPlayerVanished(player: Player): Boolean {
-        return isEnabled() && (getPlugin() as VanishPlugin).manager.isVanished(player)
+        if (!isEnabled()) {
+            return false
+        }
+
+        val callable = player.getMetadata("vanished")
+            .find { it.owningPlugin == getPlugin() }?.value() as? Callable<Boolean>
+
+        return isEnabled() && callable?.call() ?: false
     }
 }
 
