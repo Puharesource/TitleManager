@@ -12,6 +12,7 @@ import io.puharesource.mc.titlemanager.internal.services.placeholder.Placeholder
 import io.puharesource.mc.titlemanager.internal.services.task.SchedulerService
 import io.puharesource.mc.titlemanager.internal.services.task.TaskService
 import org.bstats.bukkit.Metrics
+import org.bstats.charts.SimplePie
 import javax.inject.Inject
 
 class TitleManagerServiceSpigot @Inject constructor(
@@ -37,17 +38,17 @@ class TitleManagerServiceSpigot @Inject constructor(
 
         scriptService.loadScripts()
 
-        metrics.addCustomChart(Metrics.SimplePie("script_engine") { scriptService.engineName })
+        metrics.addCustomChart(SimplePie("script_engine") { scriptService.engineName })
 
         placeholderService.loadBuiltinPlaceholders()
 
-        metrics.addCustomChart(Metrics.SimplePie("servers_using_config") { config.usingConfig.toString() })
+        metrics.addCustomChart(SimplePie("servers_using_config") { config.usingConfig.toString() })
 
         if (config.usingConfig) {
-            metrics.addCustomChart(Metrics.SimplePie("servers_using_player_list") { config.playerList.enabled.toString() })
-            metrics.addCustomChart(Metrics.SimplePie("servers_using_scoreboard") { config.scoreboard.enabled.toString() })
-            metrics.addCustomChart(Metrics.SimplePie("servers_using_bungeecord_features") { config.usingBungeecord.toString() })
-            metrics.addCustomChart(Metrics.SimplePie("servers_using_announcer") { config.announcer.enabled.toString() })
+            metrics.addCustomChart(SimplePie("servers_using_player_list") { config.playerList.enabled.toString() })
+            metrics.addCustomChart(SimplePie("servers_using_scoreboard") { config.scoreboard.enabled.toString() })
+            metrics.addCustomChart(SimplePie("servers_using_bungeecord_features") { config.usingBungeecord.toString() })
+            metrics.addCustomChart(SimplePie("servers_using_announcer") { config.announcer.enabled.toString() })
 
             if (config.playerList.enabled) {
                 playerListService.startPlayerTasks()
