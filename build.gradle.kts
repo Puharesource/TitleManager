@@ -14,7 +14,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("org.jetbrains.dokka") version "0.10.0"
     id("net.saliman.properties") version "1.5.1"
-    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
+    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
 group = "io.puharesource.mc"
@@ -224,7 +224,7 @@ repositories {
 
 dependencies {
     implementation("com.google.dagger:dagger:2.32")
-    kapt("com.google.dagger:dagger-compiler:2.32")
+    kapt("com.google.dagger:dagger-compiler:2.33")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.4.30")
