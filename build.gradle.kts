@@ -12,7 +12,7 @@ plugins {
     kotlin("kapt") version "1.4.30"
 
     id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("org.jetbrains.dokka") version "0.10.0"
+    id("org.jetbrains.dokka") version "1.4.30"
     id("net.saliman.properties") version "1.5.1"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
