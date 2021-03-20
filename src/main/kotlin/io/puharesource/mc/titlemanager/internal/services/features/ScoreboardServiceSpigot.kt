@@ -22,6 +22,7 @@ import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsSer
 import io.puharesource.mc.titlemanager.internal.services.placeholder.PlaceholderService
 import io.puharesource.mc.titlemanager.internal.services.storage.PlayerInfoService
 import io.puharesource.mc.titlemanager.internal.services.task.SchedulerService
+import org.apache.commons.lang.RandomStringUtils
 import org.bukkit.ChatColor
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -45,6 +46,7 @@ class ScoreboardServiceSpigot @Inject constructor(
 
     private val playerScoreboards: MutableMap<Player, ScoreboardRepresentation> = ConcurrentHashMap()
     private val playerScoreboardUpdateTasks: MutableMap<Player, Int> = ConcurrentHashMap()
+    private val playerTeamCache: MutableMap<Player, Array<String>> = ConcurrentHashMap()
 
     override fun startPlayerTasks() {
         plugin.server.onlinePlayers.forEach {
@@ -65,6 +67,8 @@ class ScoreboardServiceSpigot @Inject constructor(
     }
 
     override fun giveScoreboard(player: Player) {
+        sendPacketCreateScoreboardTeams(player)
+
         if (!hasScoreboard(player)) {
             playerScoreboards[player] = ScoreboardRepresentation()
             startUpdateTask(player)
@@ -84,6 +88,9 @@ class ScoreboardServiceSpigot @Inject constructor(
     }
 
     override fun removeScoreboard(player: Player) {
+        sendPacketRemoveScoreboardTeams(player)
+        clearTeamCache(player)
+
         playerScoreboards.remove(player)?.let { scoreboard ->
             stopUpdateTask(player)
 
@@ -241,17 +248,55 @@ class ScoreboardServiceSpigot @Inject constructor(
         }
     }
 
-    private fun sendPacketCreateScoreboardWithName(player: Player, scoreboardName: String) {
-        for (i in 0..15) {
-            val teamPacket = PacketPlayOutScoreboardTeam<Any>()
-
-            teamPacket.name = "tm-sb-$i"
-            teamPacket.players = listOf(ChatColor.COLOR_CHAR.toString() + i.toChar().toLowerCase())
-            teamPacket.mode = PacketPlayOutScoreboardTeam.MODE_TEAM_CREATE
-
-            player.sendNMSPacket(teamPacket.handle)
+    override fun populateTeamCache(player: Player) {
+        val array = arrayOfNulls<String>(16)
+        for (i in array.indices) {
+            array[i] = RandomStringUtils.randomAlphanumeric(16)
         }
 
+        playerTeamCache[player] = array as Array<String>
+    }
+
+    override fun clearTeamCache(player: Player) {
+        playerTeamCache.remove(player)
+    }
+
+    override fun getTeamCache(player: Player): Array<String> {
+        if (!playerTeamCache.containsKey(player)) {
+            populateTeamCache(player)
+        }
+
+        return playerTeamCache[player]!!
+    }
+
+    private fun sendPacketCreateScoreboardTeams(player: Player) {
+        val teamNameCache = getTeamCache(player)
+
+        for (i in teamNameCache.indices) {
+            val teamCreatePacket = PacketPlayOutScoreboardTeam<Any>()
+
+            teamCreatePacket.name = teamNameCache[i]
+            teamCreatePacket.players = listOf(ChatColor.COLOR_CHAR.toString() + i.toChar().toLowerCase())
+            teamCreatePacket.mode = PacketPlayOutScoreboardTeam.MODE_TEAM_CREATE
+
+            player.sendNMSPacket(teamCreatePacket.handle)
+        }
+    }
+
+    private fun sendPacketRemoveScoreboardTeams(player: Player) {
+        val teamNameCache = getTeamCache(player)
+
+        for (i in teamNameCache.indices) {
+            val teamRemovePacket = PacketPlayOutScoreboardTeam<Any>()
+
+            teamRemovePacket.name = teamNameCache[i]
+            teamRemovePacket.mode = PacketPlayOutScoreboardTeam.MODE_TEAM_REMOVED
+
+            player.sendNMSPacket(teamRemovePacket.handle)
+        }
+    }
+
+    private fun sendPacketCreateScoreboardWithName(player: Player, scoreboardName: String) {
         val packet = PacketPlayOutScoreboardObjective<Number, Any>()
 
         packet.objectiveName = scoreboardName
@@ -315,7 +360,9 @@ class ScoreboardServiceSpigot @Inject constructor(
             teamPacket.text = value
         }
 
-        teamPacket.name = "tm-sb-$index"
+        val teamNameCache = getTeamCache(player)
+
+        teamPacket.name = teamNameCache[index]
         teamPacket.mode = PacketPlayOutScoreboardTeam.MODE_TEAM_UPDATED
 
         classPacketPlayOutScoreboardScore.scoreNameField.modify { set(packet, ChatColor.COLOR_CHAR.toString() + index.toChar().toLowerCase()) }

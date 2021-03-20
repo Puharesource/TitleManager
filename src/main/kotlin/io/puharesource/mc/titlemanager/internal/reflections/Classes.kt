@@ -59,7 +59,7 @@ class PacketPlayOutScoreboardObjective<ModeType : Number, ValueType> : NMSClass(
 
     var mode: ModeType
         get() = modeField.read { get(handle) as ModeType }
-        set(value) = nameField.modify { set(handle, value) }
+        set(value) = modeField.modify { set(handle, value) }
 
     var value: ValueType
         get() = valueField.read { get(handle) as ValueType }
@@ -70,7 +70,7 @@ class PacketPlayOutScoreboardObjective<ModeType : Number, ValueType> : NMSClass(
         get() = typeIndex
         set(value) {
             typeIndex = value
-            valueField.modify { set(handle, provider["EnumScoreboardHealthDisplay"].handle.enumConstants[value]) }
+            typeField.modify { set(handle, provider["EnumScoreboardHealthDisplay"].handle.enumConstants[value]) }
         }
 }
 

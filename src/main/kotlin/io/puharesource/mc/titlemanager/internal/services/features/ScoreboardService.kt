@@ -32,4 +32,8 @@ interface ScoreboardService {
 
     fun isScoreboardDisabledWorld(world: World): Boolean
     fun toggleScoreboardInWorld(player: Player, world: World)
+
+    fun populateTeamCache(player: Player)
+    fun clearTeamCache(player: Player)
+    fun getTeamCache(player: Player): Array<String>
 }
