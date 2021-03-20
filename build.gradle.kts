@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "io.puharesource.mc"
-version = "2.3.2"
+version = "2.3.3"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -173,16 +173,6 @@ repositories {
     jcenter()
 
     maven {
-        name = "Spigot"
-        url = uri("https://hub.spigotmc.org/nexus/content/groups/public/")
-    }
-
-    maven {
-        name = "BungeeCord"
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-    }
-
-    maven {
         name = "Vault"
         url = uri("http://nexus.hc.to/content/repositories/pub_releases")
     }
@@ -211,6 +201,12 @@ repositories {
         name = "cubekrowd-repo"
         url = uri("https://mavenrepo.cubekrowd.net/artifactory/repo/")
     }
+
+    maven {
+        name = "paper"
+        url = uri("https://papermc.io/repo/repository/maven-public/")
+    }
+
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
@@ -223,7 +219,7 @@ dependencies {
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.4.2-native-mt")
     implementation(group = "org.bstats", name = "bstats-bukkit", version = "2.2.1")
 
-    implementation(group = "org.spigotmc", name = "spigot-api", version = "1.16.1-R0.1-SNAPSHOT")
+    implementation(group = "com.destroystokyo.paper", name = "paper-api", version = "1.16.5-R0.1-SNAPSHOT")
 
     implementation(group = "be.maximvdw", name = "MVdWPlaceholderAPI", version = "3.0.1-SNAPSHOT") { isTransitive = false }
     implementation(group = "me.clip", name = "placeholderapi", version = "2.10.4")
