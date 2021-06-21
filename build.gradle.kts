@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "io.puharesource.mc"
-version = "2.3.3"
+version = "2.3.4"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -232,7 +232,7 @@ dependencies {
     implementation(group = "org.graalvm.sdk", name = "graal-sdk", version = "21.0.0.2")
 
     testImplementation(group = "junit", name = "junit", version = "4.13.2")
-    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.4.32")
+    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.5.10")
     implementation(kotlin("stdlib-jdk8"))
 }
 val compileKotlin: KotlinCompile by tasks
