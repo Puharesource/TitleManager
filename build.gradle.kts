@@ -8,7 +8,7 @@ plugins {
     `maven-publish`
 
     kotlin("jvm") version "1.4.32"
-    kotlin("kapt") version "1.4.32"
+    kotlin("kapt") version "1.5.10"
 
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("org.jetbrains.dokka") version "1.4.30"
@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "io.puharesource.mc"
-version = "2.3.3"
+version = "2.3.4"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
