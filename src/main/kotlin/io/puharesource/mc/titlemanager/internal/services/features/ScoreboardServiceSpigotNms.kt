@@ -276,7 +276,7 @@ class ScoreboardServiceSpigotNms @Inject constructor(
             val teamCreatePacket = PacketPlayOutScoreboardTeam<Any>()
 
             teamCreatePacket.name = teamNameCache[i]
-            teamCreatePacket.players = listOf(ChatColor.COLOR_CHAR.toString() + i.toChar().toLowerCase())
+            teamCreatePacket.players = listOf(ChatColor.COLOR_CHAR.toString() + i.toChar().lowercase())
             teamCreatePacket.mode = PacketPlayOutScoreboardTeam.MODE_TEAM_CREATE
 
             player.sendNMSPacket(teamCreatePacket.handle)
@@ -365,7 +365,7 @@ class ScoreboardServiceSpigotNms @Inject constructor(
         teamPacket.name = teamNameCache[index]
         teamPacket.mode = PacketPlayOutScoreboardTeam.MODE_TEAM_UPDATED
 
-        classPacketPlayOutScoreboardScore.scoreNameField.modify { set(packet, ChatColor.COLOR_CHAR.toString() + index.toChar().toLowerCase()) }
+        classPacketPlayOutScoreboardScore.scoreNameField.modify { set(packet, ChatColor.COLOR_CHAR.toString() + index.toChar().lowercase()) }
 
         if (NMSManager.versionIndex > 0) {
             classPacketPlayOutScoreboardScore.actionField.modify { set(packet, provider["EnumScoreboardAction"].handle.enumConstants[0]) }

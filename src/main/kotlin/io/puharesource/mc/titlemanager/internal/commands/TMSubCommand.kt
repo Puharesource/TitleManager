@@ -29,19 +29,20 @@ class TMSubCommand constructor(
     fun syntaxError(sender: CommandSender) {
         sender.sendMessage("${ChatColor.RED}Wrong usage! Correct usage:")
 
-        val sb = StringBuilder("${ChatColor.RED}").append("    /tm ").append(name.toLowerCase())
+        sender.sendMessage(
+            buildString {
+                append("${ChatColor.RED}").append("    /tm ").append(name.lowercase())
 
-        // If a usage is specified, add the usage to the message.
-        if (usage.isNotBlank()) {
-            sb.append(" ").append(usage)
-        }
+                if (usage.isNotBlank()) {
+                    append(" ").append(usage)
+                }
 
-        // If a description is specified, add the description to the message.
-        if (description.isNotBlank()) {
-            sb.append("${ChatColor.GRAY}").append(" - ").append(description)
-        }
-
-        sender.sendMessage(sb.toString())
+                // If a description is specified, add the description to the message.
+                if (description.isNotBlank()) {
+                    append("${ChatColor.GRAY}").append(" - ").append(description)
+                }
+            }
+        )
     }
 
     val permission: String

@@ -88,23 +88,17 @@ class TMCommand constructor(private val plugin: TitleManagerPlugin) : CommandExe
      * @param secondaryColor The secondary color to be used.
      * @return The line
      */
-    private fun formatCommandListString(subCommand: TMSubCommand, primaryColor: ChatColor, secondaryColor: ChatColor): String {
-        // Create the string builder, to build the message.
-        val sb = StringBuilder("$primaryColor").append("    /tm")
+    private fun formatCommandListString(subCommand: TMSubCommand, primaryColor: ChatColor, secondaryColor: ChatColor) = buildString {
+        append("$primaryColor").append("    /tm")
+        append(" ").append(subCommand.name.lowercase())
 
-        sb.append(" ").append(subCommand.name.toLowerCase())
-
-        // If a usage is specified, add the usage to the message.
         if (subCommand.usage.isNotBlank()) {
-            sb.append(" ").append(subCommand.usage)
+            append(" ").append(subCommand.usage)
         }
 
-        // If a description is specified, add the description to the message.
         if (subCommand.description.isNotBlank()) {
-            sb.append("$secondaryColor").append(" - ").append(subCommand.description)
+            append("$secondaryColor").append(" - ").append(subCommand.description)
         }
-
-        return sb.toString()
     }
 
     private fun syntaxError(sender: CommandSender) {

@@ -198,7 +198,7 @@ class ListenerServiceSpigot @Inject constructor(
     private fun registerToggleScoreboardOnWorldChange() {
         listenEventSync<PlayerTeleportEvent>(priority = EventPriority.MONITOR) {
             val player = it.player
-            val toWorld = it.to?.world ?: return@listenEventSync
+            val toWorld = it.to.world ?: return@listenEventSync
 
             if (it.from.world != toWorld) {
                 scoreboardService.toggleScoreboardInWorld(player, toWorld)
