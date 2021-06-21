@@ -7,8 +7,8 @@ plugins {
     java
     `maven-publish`
 
-    kotlin("jvm") version "1.4.32"
-    kotlin("kapt") version "1.4.32"
+    kotlin("jvm") version "1.5.10"
+    kotlin("kapt") version "1.5.10"
 
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("org.jetbrains.dokka") version "1.4.30"
@@ -215,7 +215,7 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:2.33")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
-    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.4.32")
+    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.5.10")
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.5.0-native-mt")
     implementation(group = "org.bstats", name = "bstats-bukkit", version = "2.2.1")
 

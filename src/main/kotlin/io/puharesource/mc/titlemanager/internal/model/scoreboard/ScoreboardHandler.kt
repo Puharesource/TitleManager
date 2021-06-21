@@ -1,7 +1,6 @@
 package io.puharesource.mc.titlemanager.internal.model.scoreboard
 
 import io.puharesource.mc.titlemanager.internal.pluginConfig
-import io.puharesource.mc.titlemanager.internal.reflections.ChatComponentText
 import io.puharesource.mc.titlemanager.internal.reflections.ChatSerializer
 import org.bukkit.ChatColor
 import org.bukkit.scoreboard.DisplaySlot
