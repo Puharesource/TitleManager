@@ -231,8 +231,6 @@ dependencies {
     implementation(group = "com.SirBlobman.combatlogx", name = "CombatLogX-API", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx.expansions", name = "Notifier", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
 
-    implementation(group = "org.graalvm.sdk", name = "graal-sdk", version = "21.0.0.2")
-
     testImplementation(group = "junit", name = "junit", version = "4.13.2")
     testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.4.32")
     implementation(kotlin("stdlib-jdk8"))

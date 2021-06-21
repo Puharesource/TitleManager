@@ -11,7 +11,6 @@ import io.puharesource.mc.titlemanager.internal.services.TitleManagerServiceSpig
 import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsService
 import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsServiceFile
 import io.puharesource.mc.titlemanager.internal.services.animation.ScriptService
-import io.puharesource.mc.titlemanager.internal.services.animation.ScriptServiceGraal
 import io.puharesource.mc.titlemanager.internal.services.animation.ScriptServiceNashorn
 import io.puharesource.mc.titlemanager.internal.services.animation.ScriptServiceNotFound
 import io.puharesource.mc.titlemanager.internal.services.announcer.AnnouncerService
@@ -95,10 +94,6 @@ object TitleManagerModule {
     @Provides
     @Singleton
     fun provideScriptService(plugin: TitleManagerPlugin, placeholderService: PlaceholderService, builtinScripts: BuiltinScripts): ScriptService {
-        if (Package.getPackage("org.graalvm") != null) {
-            return ScriptServiceGraal(plugin, placeholderService, builtinScripts)
-        }
-
         if (ScriptEngineManager().getEngineByName("nashorn") != null) {
             return ScriptServiceNashorn(plugin, placeholderService, builtinScripts)
         }
