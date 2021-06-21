@@ -146,7 +146,7 @@ class ListenerServiceSpigot @Inject constructor(
                 titleService.sendProcessedTitle(player, welcomeTitle.firstJoin.title, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut)
                 titleService.sendProcessedSubtitle(player, welcomeTitle.firstJoin.subtitle, welcomeTitle.fadeIn, welcomeTitle.stay, welcomeTitle.fadeOut)
             }
-        }.delay(20).addTo(listeners)
+        }.delay(config.welcomeTitle.delay).addTo(listeners)
     }
 
     private fun registerOnWelcomeActionbarMessage() {
@@ -160,7 +160,7 @@ class ListenerServiceSpigot @Inject constructor(
             } else {
                 actionbarService.sendProcessedActionbar(player, config.welcomeActionbar.firstJoin)
             }
-        }.delay(20).addTo(listeners)
+        }.delay(config.welcomeActionbar.delay).addTo(listeners)
     }
 
     private fun registerSetHeaderAndFooter() {

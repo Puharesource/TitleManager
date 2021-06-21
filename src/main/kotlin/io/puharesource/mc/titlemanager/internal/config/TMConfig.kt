@@ -66,6 +66,7 @@ data class TMConfigWelcomeTitle(override val section: ConfigurationSection) : TM
     val fadeIn: Int = value("fade-in")
     val stay: Int = value("stay")
     val fadeOut: Int = value("fade-out")
+    val delay: Long = value("delay")
 
     val firstJoin by lazy { TMConfigWelcomeTitleFirstJoin(section.getConfigurationSection("first-join")!!) }
 }
@@ -80,6 +81,7 @@ data class TMConfigWelcomeActionbar(override val section: ConfigurationSection) 
 
     val title: String = value<String>("title").color()
     val firstJoin: String = value<String>("first-join").color()
+    val delay: Long = value("delay")
 }
 
 data class TMConfigPlaceholders(override val section: ConfigurationSection) : TMConfig {

@@ -49,8 +49,17 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
             plugin.reloadConfig()
         }
 
+        version = config.getInt("config-version")
+
         if (version < 6) {
             updateTo6()
+            plugin.reloadConfig()
+        }
+
+        version = config.getInt("config-version")
+
+        if (version < 7) {
+            updateTo7()
             plugin.reloadConfig()
         }
     }
@@ -222,6 +231,45 @@ class ConfigMigration(private val plugin: TitleManagerPlugin) {
         conf.set("scoreboard.disabled-worlds", disabledWorlds)
 
         config.set("config-version", 6)
+        config.save(configFile)
+    }
+
+    private fun updateTo7() {
+        debug("Upgrading config from version 6 to version 7")
+
+        val configFile = File(dataFolder, "config.yml")
+        val oldFile = File(dataFolder, "config-old-6.yml")
+
+        configFile.renameTo(oldFile)
+        plugin.saveDefaultConfig()
+
+        val conf = PrettyConfig(configFile)
+        plugin.conf = conf
+
+        val titleDelay = conf.getLong("welcome-title.delay")
+        val actionbarDelay = conf.getLong("welcome-actionbar.delay")
+        val oldConfig = YamlConfiguration.loadConfiguration(oldFile.reader())
+
+        val hooks = oldConfig.get("hooks") ?: conf.get("hooks")
+
+        conf.getKeys(false)
+            .asSequence()
+            .filter { it != "config-version" && it != "messages" }
+            .filter { oldConfig.contains(it) }
+            .map { it to oldConfig[it] }
+            .forEach { conf.set(it.first, it.second) }
+
+        conf.getConfigurationSection("messages")!!.getKeys(false)
+            .asSequence()
+            .filter { oldConfig.contains(it) }
+            .map { it to oldConfig[it] }
+            .forEach { conf.getConfigurationSection("messages")!!.set(it.first, it.second) }
+
+        conf.set("welcome-title.delay", titleDelay)
+        conf.set("welcome-actionbar.delay", actionbarDelay)
+        conf.set("hooks", hooks)
+
+        config.set("config-version", 7)
         config.save(configFile)
     }
 }

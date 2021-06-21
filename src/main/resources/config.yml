@@ -33,7 +33,7 @@
 ############################################################
 
 # Never change this value
-config-version: 6
+config-version: 7
 
 # Toggles debug mode, which prints additional information when the plugin does something.
 debug: false
@@ -127,6 +127,9 @@ welcome-title:
   # The time it takes for the title to fade out of the screen. (In ticks)
   fade-out: 20
 
+  # The time it takes for the titles to appear. (In ticks)
+  delay: 20
+
   # The title shown when the player joins the server for the first time.
   first-join:
 
@@ -151,6 +154,9 @@ welcome-actionbar:
 
   # The message shown.
   title: 'Welcome to My Server'
+
+  # The time it takes for the message to appear. (In ticks)
+  delay: 20
 
   # The message shown when the player joins the server for the first time.
   first-join: 'Welcome to My Server, this is your first time!'
