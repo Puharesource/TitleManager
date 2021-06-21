@@ -18,7 +18,6 @@ class ScriptServiceNotFound(
         get() = throw NotImplementedError()
 
     override fun loadScripts() {
-        plugin.logger.warning("No script engine found. Consider adding Nashorn to be able to create custom animation scripts. (This warning can be ignored)")
     }
 
     override fun addScript(name: String, script: String) {
