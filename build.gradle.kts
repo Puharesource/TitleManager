@@ -7,8 +7,8 @@ plugins {
     java
     `maven-publish`
 
-    kotlin("jvm") version "1.4.31"
-    kotlin("kapt") version "1.4.31"
+    kotlin("jvm") version "1.4.32"
+    kotlin("kapt") version "1.4.32"
 
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("org.jetbrains.dokka") version "1.4.30"
@@ -215,7 +215,7 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:2.33")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
-    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.4.31")
+    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.4.32")
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.4.2-native-mt")
     implementation(group = "org.bstats", name = "bstats-bukkit", version = "2.2.1")
 
@@ -232,7 +232,7 @@ dependencies {
     implementation(group = "org.graalvm.sdk", name = "graal-sdk", version = "21.0.0.2")
 
     testImplementation(group = "junit", name = "junit", version = "4.13.2")
-    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.4.31")
+    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.4.32")
     implementation(kotlin("stdlib-jdk8"))
 }
 val compileKotlin: KotlinCompile by tasks
