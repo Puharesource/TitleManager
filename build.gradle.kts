@@ -11,7 +11,7 @@ plugins {
     kotlin("kapt") version "1.5.10"
 
     id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("org.jetbrains.dokka") version "1.4.30"
+    id("org.jetbrains.dokka") version "1.4.32"
     id("net.saliman.properties") version "1.5.1"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
@@ -154,6 +154,8 @@ publishing {
 }
 
 (tasks.getByName("processResources") as ProcessResources).apply {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
     from("src/main/resources") {
         include("**/*.yml")
         filter<ReplaceTokens>("tokens" to mapOf("VERSION" to project.version))
@@ -170,11 +172,11 @@ idea {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 
     maven {
         name = "Vault"
-        url = uri("http://nexus.hc.to/content/repositories/pub_releases")
+        url = uri("https://nexus.hc.to/content/repositories/pub_releases")
     }
 
     maven {
@@ -184,12 +186,12 @@ repositories {
 
     maven {
         name = "placeholderapi"
-        url = uri("http://repo.extendedclip.com/content/repositories/placeholderapi/")
+        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     }
 
     maven {
         name = "mvdw-software"
-        url = uri("http://repo.mvdw-software.com/content/groups/public/")
+        url = uri("https://repo.mvdw-software.com/content/groups/public/")
     }
 
     maven {
@@ -212,7 +214,7 @@ repositories {
 
 dependencies {
     implementation("com.google.dagger:dagger:2.37")
-    kapt("com.google.dagger:dagger-compiler:2.33")
+    kapt("com.google.dagger:dagger-compiler:2.37")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.5.10")
