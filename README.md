@@ -4,7 +4,7 @@
 
 <p align="center">
     <a href="https://www.spigotmc.org/resources/titlemanager.1049">
-        <img src="https://img.shields.io/badge/Version-2.3.3-blue?style=for-the-badge" alt="Version">
+        <img src="https://img.shields.io/badge/Version-2.3.4-blue?style=for-the-badge" alt="Version">
     </a>
     <a href="https://github.com/Puharesource/TitleManager/actions">
         <img src="https://img.shields.io/github/workflow/status/Puharesource/TitleManager/Java%20CI?logo=github&style=for-the-badge&logoColor=fff" alt="Actions Status">
@@ -13,7 +13,7 @@
         <img src="https://img.shields.io/badge/JavaDoc-2.2-blue.svg?style=for-the-badge&logo=Read-the-Docs&logoColor=fff" alt="Javadoc">
     </a>
     <a href="https://www.spigotmc.org/resources/titlemanager.1049/updates">
-        <img src="https://img.shields.io/badge/Minecraft-1.7%20--%201.16.5-blue?style=for-the-badge&logo=Hack-the-Box&logoColor=fff" alt="Minecraft versions">
+        <img src="https://img.shields.io/badge/Minecraft-1.7%20--%201.17-blue?style=for-the-badge&logo=Hack-the-Box&logoColor=fff" alt="Minecraft versions">
     </a>
     <a href="https://bstats.org/plugin/bukkit/TitleManager/7318">
         <img src="https://img.shields.io/bstats/players/7318?style=for-the-badge" alt="Players currently experiencing TitleManager">

@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.internal.reflections
 
+import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 
 class ReflectionClass(private val path: String) {
@@ -10,6 +11,14 @@ class ReflectionClass(private val path: String) {
 
     fun getConstructor(vararg params: Class<*>) = handle.getDeclaredConstructor(*params)
         ?: throw NoSuchMethodException("Couldn't find constructor for ${handle.name}")
+
+    fun getConstructorByParameterLength(parameterCount: Int): Constructor<*> {
+        val constructor = handle.declaredConstructors.firstOrNull { it.parameterCount == parameterCount } ?: throw NoSuchMethodException("Couldn't find constructor for ${handle.name}")
+
+        constructor.isAccessible = true
+
+        return constructor
+    }
 
     fun createInstance(vararg objects: Any): Any {
         val classes: Array<Class<*>> = objects.map { it.javaClass }.toTypedArray()

@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.internal.reflections
 
+import io.puharesource.mc.titlemanager.internal.reflections.NMSType.NET_MINECRAFT_NETWORK
 import io.puharesource.mc.titlemanager.internal.reflections.NMSType.NET_MINECRAFT_SERVER
 import io.puharesource.mc.titlemanager.internal.reflections.NMSType.ORG_BUKKIT_CRAFTBUKKIT
 import io.puharesource.mc.titlemanager.internal.reflections.NMSType.ORG_SPIGOTMC
@@ -162,7 +163,7 @@ object Provider113 : NMSClassProvider() {
 }
 
 /**
- * Provides classes for Minecraft 1.16 <=
+ * Provides classes for Minecraft 1.16
  */
 object Provider116 : NMSClassProvider() {
     init {
@@ -184,5 +185,23 @@ object Provider116 : NMSClassProvider() {
         "PacketPlayOutScoreboardTeam".associate(NET_MINECRAFT_SERVER, "PacketPlayOutScoreboardTeam")
         "EnumScoreboardHealthDisplay".associate(NET_MINECRAFT_SERVER, "IScoreboardCriteria", "EnumScoreboardHealthDisplay")
         "EnumScoreboardAction".associate(NET_MINECRAFT_SERVER, "ScoreboardServer", "Action")
+    }
+}
+
+/**
+ * Provides classes for Minecraft 1.17 <=
+ */
+object Provider117 : NMSClassProvider() {
+    init {
+        "ChatComponentText".associate(NET_MINECRAFT_NETWORK, "chat.ChatComponentText")
+        "IChatBaseComponent".associate(NET_MINECRAFT_NETWORK, "chat.IChatBaseComponent")
+        "ChatSerializer".associate(NET_MINECRAFT_NETWORK, "chat.IChatBaseComponent\$ChatSerializer")
+        "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
+        "EntityPlayer".associate(NET_MINECRAFT_SERVER, "level.EntityPlayer")
+        "PlayerConnection".associate(NET_MINECRAFT_SERVER, "network.PlayerConnection")
+        "NetworkManager".associate(NET_MINECRAFT_NETWORK, "NetworkManager")
+        "Packet".associate(NET_MINECRAFT_NETWORK, "protocol.Packet")
+        "PacketPlayOutChat".associate(NET_MINECRAFT_NETWORK, "protocol.game.PacketPlayOutChat")
+        "PacketPlayOutPlayerListHeaderFooter".associate(NET_MINECRAFT_NETWORK, "protocol.game.PacketPlayOutPlayerListHeaderFooter")
     }
 }

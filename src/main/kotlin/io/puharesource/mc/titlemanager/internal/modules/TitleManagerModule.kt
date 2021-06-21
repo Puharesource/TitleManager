@@ -5,6 +5,7 @@ import dagger.Provides
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
 import io.puharesource.mc.titlemanager.internal.model.script.BuiltinScripts
+import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
 import io.puharesource.mc.titlemanager.internal.services.TitleManagerService
 import io.puharesource.mc.titlemanager.internal.services.TitleManagerServiceSpigot
 import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsService
@@ -24,6 +25,7 @@ import io.puharesource.mc.titlemanager.internal.services.features.ActionbarServi
 import io.puharesource.mc.titlemanager.internal.services.features.PlayerListService
 import io.puharesource.mc.titlemanager.internal.services.features.PlayerListServiceSpigot
 import io.puharesource.mc.titlemanager.internal.services.features.ScoreboardService
+import io.puharesource.mc.titlemanager.internal.services.features.ScoreboardServiceSpigotNms
 import io.puharesource.mc.titlemanager.internal.services.features.ScoreboardServiceSpigot
 import io.puharesource.mc.titlemanager.internal.services.features.TitleService
 import io.puharesource.mc.titlemanager.internal.services.features.TitleServiceSpigot
@@ -127,7 +129,11 @@ object TitleManagerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideScoreboardService(plugin: TitleManagerPlugin, config: TMConfigMain, placeholderService: PlaceholderService, schedulerService: SchedulerService, animationsService: AnimationsService, playerInfoService: PlayerInfoService): ScoreboardService = ScoreboardServiceSpigot(plugin, config, placeholderService, schedulerService, animationsService, playerInfoService)
+    fun provideScoreboardService(plugin: TitleManagerPlugin, config: TMConfigMain, placeholderService: PlaceholderService, schedulerService: SchedulerService, animationsService: AnimationsService, playerInfoService: PlayerInfoService): ScoreboardService = if (NMSManager.versionIndex >= 11) {
+        ScoreboardServiceSpigot(plugin, config, placeholderService, schedulerService, animationsService, playerInfoService)
+    } else {
+        ScoreboardServiceSpigotNms(plugin, config, placeholderService, schedulerService, animationsService, playerInfoService)
+    }
 
     @JvmStatic
     @Provides

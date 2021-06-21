@@ -8,8 +8,8 @@ abstract class NMSClassProvider {
 
     protected fun put(path: String, clazz: ReflectionClass) = classes.put(path, clazz)
 
-    protected fun String.associate(type: NMSType, path: String, vararg inners: String) {
-        var clazz = type.getReflectionClass(path)
+    protected fun String.associate(type: NMSType? = null, path: String, vararg inners: String) {
+        var clazz = type?.getReflectionClass(path) ?: ReflectionClass(path)
 
         inners.forEach {
             clazz = clazz.getInnerReflectionClass(it)

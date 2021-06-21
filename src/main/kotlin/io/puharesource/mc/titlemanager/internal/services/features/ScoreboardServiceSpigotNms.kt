@@ -5,23 +5,32 @@ import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
 import io.puharesource.mc.titlemanager.api.v2.animation.SendableAnimation
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
+import io.puharesource.mc.titlemanager.internal.extensions.modify
 import io.puharesource.mc.titlemanager.internal.model.animation.EasySendableAnimation
 import io.puharesource.mc.titlemanager.internal.model.animation.PartBasedSendableAnimation
-import io.puharesource.mc.titlemanager.internal.model.scoreboard.ScoreboardHandler
+import io.puharesource.mc.titlemanager.internal.model.scoreboard.ScoreboardRepresentation
+import io.puharesource.mc.titlemanager.internal.reflections.ChatComponentText
+import io.puharesource.mc.titlemanager.internal.reflections.ChatSerializer
+import io.puharesource.mc.titlemanager.internal.reflections.NMSClassProvider
+import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
+import io.puharesource.mc.titlemanager.internal.reflections.PacketPlayOutScoreboardDisplayObjective
+import io.puharesource.mc.titlemanager.internal.reflections.PacketPlayOutScoreboardObjective
+import io.puharesource.mc.titlemanager.internal.reflections.PacketPlayOutScoreboardScore
+import io.puharesource.mc.titlemanager.internal.reflections.PacketPlayOutScoreboardTeam
+import io.puharesource.mc.titlemanager.internal.reflections.sendNMSPacket
 import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsService
 import io.puharesource.mc.titlemanager.internal.services.placeholder.PlaceholderService
 import io.puharesource.mc.titlemanager.internal.services.storage.PlayerInfoService
 import io.puharesource.mc.titlemanager.internal.services.task.SchedulerService
 import org.apache.commons.lang.RandomStringUtils
-import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.metadata.FixedMetadataValue
-import org.bukkit.scoreboard.Objective
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
-class ScoreboardServiceSpigot @Inject constructor(
+class ScoreboardServiceSpigotNms @Inject constructor(
     private val plugin: TitleManagerPlugin,
     private val config: TMConfigMain,
     private val placeholderService: PlaceholderService,
@@ -29,7 +38,13 @@ class ScoreboardServiceSpigot @Inject constructor(
     private val animationsService: AnimationsService,
     private val playerInfoService: PlayerInfoService
 ) : ScoreboardService {
-    private val playerScoreboards: MutableMap<Player, ScoreboardHandler> = ConcurrentHashMap()
+    private val classPacketPlayOutScoreboardDisplayObjective = PacketPlayOutScoreboardDisplayObjective()
+    private val classPacketPlayOutScoreboardScore = PacketPlayOutScoreboardScore()
+
+    private val provider: NMSClassProvider
+        get() = NMSManager.getClassProvider()
+
+    private val playerScoreboards: MutableMap<Player, ScoreboardRepresentation> = ConcurrentHashMap()
     private val playerScoreboardUpdateTasks: MutableMap<Player, Int> = ConcurrentHashMap()
     private val playerTeamCache: MutableMap<Player, Array<String>> = ConcurrentHashMap()
 
@@ -48,17 +63,14 @@ class ScoreboardServiceSpigot @Inject constructor(
     }
 
     override fun hasScoreboard(player: Player): Boolean {
-        val scoreboardRepresentation = playerScoreboards[player] ?: return false
-
-        return player.scoreboard == scoreboardRepresentation.scoreboard
+        return playerScoreboards.containsKey(player)
     }
 
     override fun giveScoreboard(player: Player) {
-        if (!hasScoreboard(player)) {
-            val scoreboard = Bukkit.getScoreboardManager().newScoreboard
+        sendPacketCreateScoreboardTeams(player)
 
-            player.scoreboard = scoreboard
-            playerScoreboards[player] = ScoreboardHandler(scoreboard)
+        if (!hasScoreboard(player)) {
+            playerScoreboards[player] = ScoreboardRepresentation()
             startUpdateTask(player)
         }
     }
@@ -76,15 +88,16 @@ class ScoreboardServiceSpigot @Inject constructor(
     }
 
     override fun removeScoreboard(player: Player) {
+        sendPacketRemoveScoreboardTeams(player)
         clearTeamCache(player)
 
-        playerScoreboards.remove(player)?.let { scoreboardRepresentation ->
+        playerScoreboards.remove(player)?.let { scoreboard ->
             stopUpdateTask(player)
 
             removeRunningScoreboardTitleAnimation(player)
             (1..15).forEach { removeRunningScoreboardValueAnimation(player, it) }
 
-            scoreboardRepresentation.scoreboard.objectives.forEach(Objective::unregister)
+            removeScoreboardWithName(player, scoreboard.name)
         }
     }
 
@@ -256,17 +269,157 @@ class ScoreboardServiceSpigot @Inject constructor(
         return playerTeamCache[player]!!
     }
 
+    private fun sendPacketCreateScoreboardTeams(player: Player) {
+        val teamNameCache = getTeamCache(player)
+
+        for (i in teamNameCache.indices) {
+            val teamCreatePacket = PacketPlayOutScoreboardTeam<Any>()
+
+            teamCreatePacket.name = teamNameCache[i]
+            teamCreatePacket.players = listOf(ChatColor.COLOR_CHAR.toString() + i.toChar().toLowerCase())
+            teamCreatePacket.mode = PacketPlayOutScoreboardTeam.MODE_TEAM_CREATE
+
+            player.sendNMSPacket(teamCreatePacket.handle)
+        }
+    }
+
+    private fun sendPacketRemoveScoreboardTeams(player: Player) {
+        val teamNameCache = getTeamCache(player)
+
+        for (i in teamNameCache.indices) {
+            val teamRemovePacket = PacketPlayOutScoreboardTeam<Any>()
+
+            teamRemovePacket.name = teamNameCache[i]
+            teamRemovePacket.mode = PacketPlayOutScoreboardTeam.MODE_TEAM_REMOVED
+
+            player.sendNMSPacket(teamRemovePacket.handle)
+        }
+    }
+
+    private fun sendPacketCreateScoreboardWithName(player: Player, scoreboardName: String) {
+        val packet = PacketPlayOutScoreboardObjective<Number, Any>()
+
+        packet.objectiveName = scoreboardName
+        packet.mode = 0
+        packet.value = when {
+            NMSManager.versionIndex > 9 -> ChatSerializer.deserializeLegacyText(scoreboardName)
+            NMSManager.versionIndex > 6 -> NMSManager.getClassProvider().getIChatComponent("")
+            else -> ""
+        }
+
+        if (NMSManager.versionIndex > 0) {
+            packet.type = 0
+        }
+
+        player.sendNMSPacket(packet.handle)
+    }
+
+    private fun sendPacketDisplayScoreboardWithName(player: Player, scoreboardName: String) {
+        val packet = classPacketPlayOutScoreboardDisplayObjective.createInstance()
+
+        classPacketPlayOutScoreboardDisplayObjective.positionField.modify { setInt(packet, 1) }
+        classPacketPlayOutScoreboardDisplayObjective.nameField.modify { set(packet, scoreboardName) }
+
+        player.sendNMSPacket(packet)
+    }
+
+    private fun sendPacketSetScoreboardTitleWithName(player: Player, title: String, scoreboardName: String) {
+        val packet = PacketPlayOutScoreboardObjective<Number, Any>()
+
+        packet.objectiveName = scoreboardName
+        packet.mode = 2
+        packet.value = when {
+            NMSManager.versionIndex > 9 ->
+                ChatSerializer.deserializeLegacyText(title)
+            NMSManager.versionIndex > 6 ->
+                NMSManager.getClassProvider().getIChatComponent(title)
+            else ->
+                if (title.length > 32) {
+                    title.substring(0, 32)
+                } else {
+                    title
+                }
+        }
+
+        if (NMSManager.versionIndex > 0) {
+            packet.type = 0
+        }
+
+        player.sendNMSPacket(packet.handle)
+    }
+
+    private fun sendPacketSetScoreboardValueWithName(player: Player, index: Int, value: String, scoreboardName: String) {
+        val packet = classPacketPlayOutScoreboardScore.createInstance()
+        val teamPacket: PacketPlayOutScoreboardTeam<*>
+
+        if (NMSManager.versionIndex > 6) {
+            teamPacket = PacketPlayOutScoreboardTeam<Any>()
+            teamPacket.text = if (NMSManager.versionIndex < 10) ChatComponentText().constructor.newInstance(value) else ChatSerializer.deserializeLegacyText(value)
+        } else {
+            teamPacket = PacketPlayOutScoreboardTeam<String>()
+            teamPacket.text = value
+        }
+
+        val teamNameCache = getTeamCache(player)
+
+        teamPacket.name = teamNameCache[index]
+        teamPacket.mode = PacketPlayOutScoreboardTeam.MODE_TEAM_UPDATED
+
+        classPacketPlayOutScoreboardScore.scoreNameField.modify { set(packet, ChatColor.COLOR_CHAR.toString() + index.toChar().toLowerCase()) }
+
+        if (NMSManager.versionIndex > 0) {
+            classPacketPlayOutScoreboardScore.actionField.modify { set(packet, provider["EnumScoreboardAction"].handle.enumConstants[0]) }
+        } else {
+            classPacketPlayOutScoreboardScore.actionField.modify { set(packet, 0) }
+        }
+
+        classPacketPlayOutScoreboardScore.objectiveNameField.modify { set(packet, scoreboardName) }
+        classPacketPlayOutScoreboardScore.valueField.modify { setInt(packet, 15 - index) }
+
+        player.sendNMSPacket(teamPacket.handle)
+        player.sendNMSPacket(packet)
+    }
+
+    private fun removeScoreboardWithName(player: Player, scoreboardName: String) {
+        val packet = PacketPlayOutScoreboardObjective<Number, Any>()
+
+        packet.objectiveName = scoreboardName
+        packet.mode = 1
+
+        player.sendNMSPacket(packet.handle)
+    }
+
     private fun startUpdateTask(player: Player) {
         if (playerScoreboards.containsKey(player) && !playerScoreboardUpdateTasks.containsKey(player)) {
             playerScoreboardUpdateTasks[player] = schedulerService.schedule(
                 {
-                    val scoreboardHandler = playerScoreboards[player]
-                    if (scoreboardHandler == null) {
+                    val scoreboard = playerScoreboards[player]
+
+                    if (scoreboard == null) {
                         stopUpdateTask(player)
                         return@schedule
                     }
 
-                    scoreboardHandler.update()
+                    if (!scoreboard.isUpdatePending.get()) {
+                        return@schedule
+                    }
+
+                    val currentScoreboardName = scoreboard.name
+
+                    scoreboard.generateNewScoreboardName()
+                    val newScoreboardName = scoreboard.name
+
+                    sendPacketCreateScoreboardWithName(player, newScoreboardName)
+                    sendPacketSetScoreboardTitleWithName(player, scoreboard.title, newScoreboardName)
+
+                    (1..15).mapNotNull { scoreboard.get(it) }.forEachIndexed { index, text ->
+                        sendPacketSetScoreboardValueWithName(player, index + (15 - scoreboard.size) + 1, text, newScoreboardName)
+                    }
+
+                    scoreboard.isUpdatePending.set(false)
+
+                    sendPacketDisplayScoreboardWithName(player, newScoreboardName)
+                    removeScoreboardWithName(player, currentScoreboardName)
                 },
                 1,
                 1

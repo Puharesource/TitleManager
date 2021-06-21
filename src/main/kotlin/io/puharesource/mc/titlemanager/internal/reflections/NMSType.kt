@@ -1,12 +1,14 @@
 package io.puharesource.mc.titlemanager.internal.reflections
 
-enum class NMSType(private val path: String) {
-    NET_MINECRAFT_SERVER("net.minecraft.server"),
-    ORG_BUKKIT_CRAFTBUKKIT("org.bukkit.craftbukkit"),
+enum class NMSType(private val path: String, private val usesVersion: Boolean = false) {
+    NET_MINECRAFT_SERVER("net.minecraft.server", usesVersion = NMSManager.versionIndex < 11),
+    NET_MINECRAFT_NETWORK("net.minecraft.network"),
+    NET_MINECRAFT_WORLD("net.minecraft.world"),
+    ORG_BUKKIT_CRAFTBUKKIT("org.bukkit.craftbukkit", usesVersion = true),
     ORG_SPIGOTMC("org.spigotmc");
 
     fun getReflectionClass(path: String): ReflectionClass {
-        if (this != ORG_SPIGOTMC) {
+        if (usesVersion) {
             val version = NMSManager.serverVersion
             return ReflectionClass("${this.path}.$version.$path")
         }
