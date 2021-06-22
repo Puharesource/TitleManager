@@ -223,7 +223,7 @@ dependencies {
 
     implementation(group = "com.destroystokyo.paper", name = "paper-api", version = "1.16.5-R0.1-SNAPSHOT")
 
-    implementation(group = "be.maximvdw", name = "MVdWPlaceholderAPI", version = "3.0.1-SNAPSHOT") { isTransitive = false }
+    implementation(group = "be.maximvdw", name = "MVdWPlaceholderAPI", version = "3.1.1") { isTransitive = false }
     implementation(group = "me.clip", name = "placeholderapi", version = "2.10.4")
     implementation(group = "net.milkbowl.vault", name = "VaultAPI", version = "1.7") { isTransitive = false }
     implementation(group = "net.ess3", name = "EssentialsX", version = "2.17.1") { isTransitive = false }
