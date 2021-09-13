@@ -13,7 +13,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("org.jetbrains.dokka") version "1.4.32"
     id("net.saliman.properties") version "1.5.1"
-    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
 }
 
 group = "io.puharesource.mc"
