@@ -7,7 +7,7 @@ plugins {
     java
     `maven-publish`
 
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.6.0"
     kotlin("kapt") version "1.6.0"
 
     id("com.github.johnrengelman.shadow") version "6.1.0"
