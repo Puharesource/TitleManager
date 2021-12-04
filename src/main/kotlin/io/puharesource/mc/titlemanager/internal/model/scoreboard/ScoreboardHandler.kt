@@ -2,6 +2,7 @@ package io.puharesource.mc.titlemanager.internal.model.scoreboard
 
 import io.puharesource.mc.titlemanager.internal.pluginConfig
 import io.puharesource.mc.titlemanager.internal.reflections.ChatSerializer
+import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
 import org.bukkit.ChatColor
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
@@ -100,8 +101,9 @@ class ScoreboardHandler(val scoreboard: Scoreboard, title: String = "TitleManage
     private fun setTitleWithoutLimit(title: String) {
         val craftObjectiveField = objective::class.java.getDeclaredField("objective")
         craftObjectiveField.isAccessible = true
-
         val craftObjective = craftObjectiveField.get(objective)
-        craftObjective::class.java.declaredMethods.first { it.name == "setDisplayName" }.invoke(craftObjective, ChatSerializer.deserializeLegacyText(title))
+        craftObjective::class.java.declaredMethods.first {
+            it.name == "setDisplayName" || (it.name == "a" && it.parameterTypes.contentEquals((arrayOf(NMSManager.getClassProvider()["IChatBaseComponent"].handle))))
+        }.invoke(craftObjective, ChatSerializer.deserializeLegacyText(title))
     }
 }
