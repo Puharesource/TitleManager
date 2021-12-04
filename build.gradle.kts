@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     idea
-    java
     `maven-publish`
 
     kotlin("jvm") version "1.6.0"
