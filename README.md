@@ -9,7 +9,7 @@
     <a href="https://github.com/Puharesource/TitleManager/actions">
         <img src="https://img.shields.io/github/workflow/status/Puharesource/TitleManager/Java%20CI?logo=github&style=for-the-badge&logoColor=fff" alt="Actions Status">
     </a>
-    <a href="https://tarkan.dev/javadoc/titlemanager/">
+    <a href="https://titlemanager.tarkan.dev/javadoc/">
         <img src="https://img.shields.io/badge/JavaDoc-2.2-blue.svg?style=for-the-badge&logo=Read-the-Docs&logoColor=fff" alt="Javadoc">
     </a>
     <a href="https://www.spigotmc.org/resources/titlemanager.1049/updates">
