@@ -13,7 +13,7 @@
         <img src="https://img.shields.io/badge/JavaDoc-2.2-blue.svg?style=for-the-badge&logo=Read-the-Docs&logoColor=fff" alt="Javadoc">
     </a>
     <a href="https://www.spigotmc.org/resources/titlemanager.1049/updates">
-        <img src="https://img.shields.io/badge/Minecraft-1.7%20--%201.18-blue?style=for-the-badge&logo=Hack-the-Box&logoColor=fff" alt="Minecraft versions">
+        <img src="https://img.shields.io/badge/Minecraft-1.8%20--%201.18-blue?style=for-the-badge&logo=Hack-the-Box&logoColor=fff" alt="Minecraft versions">
     </a>
     <a href="https://bstats.org/plugin/bukkit/TitleManager/7318">
         <img src="https://img.shields.io/bstats/players/7318?style=for-the-badge" alt="Players currently experiencing TitleManager">
