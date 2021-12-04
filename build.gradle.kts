@@ -8,12 +8,12 @@ plugins {
     `maven-publish`
 
     kotlin("jvm") version "1.5.10"
-    kotlin("kapt") version "1.5.10"
+    kotlin("kapt") version "1.6.0"
 
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("org.jetbrains.dokka") version "1.4.32"
     id("net.saliman.properties") version "1.5.1"
-    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
 }
 
 group = "io.puharesource.mc"
@@ -213,7 +213,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.google.dagger:dagger:2.37")
+    implementation("com.google.dagger:dagger:2.40.4")
     kapt("com.google.dagger:dagger-compiler:2.37")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
