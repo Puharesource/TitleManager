@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "io.puharesource.mc"
-version = "2.3.4"
+version = "2.3.5"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -173,6 +173,7 @@ idea {
 
 repositories {
     mavenCentral()
+    google()
 
     maven {
         name = "Vault"
@@ -208,8 +209,6 @@ repositories {
         name = "paper"
         url = uri("https://papermc.io/repo/repository/maven-public/")
     }
-
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
 dependencies {
@@ -217,7 +216,7 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:2.40.4")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
-    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = "1.6.0")
+    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8")
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.5.2-native-mt")
     implementation(group = "org.bstats", name = "bstats-bukkit", version = "2.2.1")
 
@@ -233,7 +232,6 @@ dependencies {
 
     testImplementation(group = "junit", name = "junit", version = "4.13.2")
     testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.6.0")
-    implementation(kotlin("stdlib-jdk8"))
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
