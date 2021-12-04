@@ -3,6 +3,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    java
     idea
     `maven-publish`
 
@@ -121,6 +122,11 @@ tasks {
                 }
             }
         }
+    }
+
+    val generateDocs by creating(Task::class) {
+        dependsOn(dokkaHtml, dokkaJavadoc)
+        group = "documentation"
     }
 
     val javadocJar by creating(Jar::class) {
