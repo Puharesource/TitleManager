@@ -7,11 +7,11 @@ plugins {
     java
     `maven-publish`
 
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.6.0"
     kotlin("kapt") version "1.6.0"
 
     id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("org.jetbrains.dokka") version "1.4.32"
+    id("org.jetbrains.dokka") version "1.6.0"
     id("net.saliman.properties") version "1.5.1"
     id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
 }
@@ -232,7 +232,7 @@ dependencies {
     implementation(group = "com.SirBlobman.combatlogx.expansions", name = "Notifier", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
 
     testImplementation(group = "junit", name = "junit", version = "4.13.2")
-    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.4.32")
+    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.6.0")
     implementation(kotlin("stdlib-jdk8"))
 }
 val compileKotlin: KotlinCompile by tasks

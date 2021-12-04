@@ -26,6 +26,7 @@ object NMSManager {
         supportedVersions["v1_14_R1"] = 9
         supportedVersions["v1_16_R1"] = 10
         supportedVersions["v1_17_R1"] = 11
+        supportedVersions["v1_18_R1"] = 12
 
         val pkg: String = Bukkit.getServer().javaClass.`package`.name
         var version = pkg.substring(pkg.lastIndexOf(".") + 1)
@@ -56,6 +57,7 @@ object NMSManager {
             9 -> Provider113
             10 -> Provider116
             11 -> Provider117
+            12 -> Provider117
             else -> Provider117
         }
     }
