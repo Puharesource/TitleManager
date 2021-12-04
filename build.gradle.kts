@@ -43,6 +43,46 @@ tasks {
         relocate("org.bstats", "io.puharesource.mc.titlemanager.shaded.org.bstats")
     }
 
+    dokkaHtml {
+        outputDirectory.set(buildDir.resolve("docs"))
+
+        dokkaSourceSets {
+            configureEach {
+                jdkVersion.set(8)
+
+                includeNonPublic.set(false)
+                skipDeprecated.set(false)
+                reportUndocumented.set(true)
+                skipEmptyPackages.set(true)
+
+                platform.set(org.jetbrains.dokka.Platform.jvm)
+
+                sourceRoot(file("src/main/kotlin"))
+
+                externalDocumentationLink {
+                    url.set(uri("https://hub.spigotmc.org/javadocs/spigot/").toURL())
+                    packageListUrl.set(uri("https://hub.spigotmc.org/javadocs/spigot/element-list").toURL())
+                }
+
+                sourceLink {
+                    localDirectory.set(file("src/main/kotlin"))
+                    remoteUrl.set(uri("https://github.com/Puharesource/TitleManager/tree/master/src/main/kotlin").toURL())
+                    remoteLineSuffix.set("#L")
+                }
+
+                perPackageOption {
+                    matchingRegex.set("io.puharesource.mc.titlemanager.api.v2.*")
+                    suppress.set(false)
+                }
+
+                perPackageOption {
+                    matchingRegex.set("io.puharesource.mc.titlemanager.*")
+                    suppress.set(true)
+                }
+            }
+        }
+    }
+
     dokkaJavadoc {
         outputDirectory.set(buildDir.resolve("docs/javadoc"))
 
