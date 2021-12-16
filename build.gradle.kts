@@ -1,7 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.apache.tools.ant.filters.ReplaceTokens
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     java
     idea
@@ -19,16 +15,21 @@ plugins {
 group = "io.puharesource.mc"
 version = "2.3.5"
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-tasks.withType<KotlinCompile> {
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
 tasks {
-    val fatJar by named("shadowJar", ShadowJar::class) {
+    val fatJar by named("shadowJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class) {
         dependencies {
             include(dependency("org.jetbrains.kotlin:.*"))
             include(dependency("org.jetbrains.kotlinx:.*"))
@@ -163,6 +164,10 @@ tasks {
         add("archives", javadocJar)
         add("archives", sourcesJar)
     }
+
+    test {
+        useJUnitPlatform()
+    }
 }
 
 publishing {
@@ -203,7 +208,7 @@ publishing {
 
     from("src/main/resources") {
         include("**/*.yml")
-        filter<ReplaceTokens>("tokens" to mapOf("VERSION" to project.version))
+        filter<org.apache.tools.ant.filters.ReplaceTokens>("tokens" to mapOf("VERSION" to project.version))
     }
     filesMatching("application.properties") {
         expand(project.properties)
@@ -218,7 +223,6 @@ idea {
 
 repositories {
     mavenCentral()
-    google()
 
     maven {
         name = "Vault"
@@ -249,6 +253,8 @@ repositories {
         name = "paper"
         url = uri("https://papermc.io/repo/repository/maven-public/")
     }
+
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
@@ -256,7 +262,7 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:2.40.5")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
-    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8")
+    implementation(kotlin("stdlib-jdk8"))
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.5.2-native-mt")
     implementation(group = "org.bstats", name = "bstats-bukkit", version = "2.2.1")
 
@@ -266,18 +272,13 @@ dependencies {
     implementation(group = "me.clip", name = "placeholderapi", version = "2.10.4")
     implementation(group = "net.milkbowl.vault", name = "VaultAPI", version = "1.7") { isTransitive = false }
     implementation(group = "net.ess3", name = "EssentialsX", version = "2.17.1") { isTransitive = false }
-    implementation(group = "de.myzelyam", name = "SuperVanish", version = "6.1.3") { isTransitive = false }
+    implementation(group = "com.github.LeonMangler", name = "SuperVanish", version = "6.2.6-2") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx", name = "CombatLogX-API", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx.expansions", name = "Notifier", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
 
-    testImplementation(group = "junit", name = "junit", version = "4.13.2")
-    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.6.10")
+    testImplementation(kotlin("test"))
 }
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+
+tasks.getByName<Test>("test") {
+    useJUnitPlatform()
 }
