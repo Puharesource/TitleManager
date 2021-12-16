@@ -9,7 +9,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.1"
     id("org.jetbrains.dokka") version "1.6.0"
     id("net.saliman.properties") version "1.5.1"
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
+    id("org.jmailen.kotlinter") version "3.7.0"
 }
 
 group = "io.puharesource.mc"
@@ -20,15 +20,23 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+kotlinter {
+    ignoreFailures = false
+    indentSize = 4
+    reporters = arrayOf("checkstyle", "plain")
+    experimentalRules = false
+    disabledRules = arrayOf("import-ordering")
 }
 
 tasks {
+    withType<JavaCompile> {
+        options.encoding = "UTF-8"
+    }
+
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
     val fatJar by named("shadowJar", com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class) {
         dependencies {
             include(dependency("org.jetbrains.kotlin:.*"))
@@ -167,6 +175,10 @@ tasks {
 
     test {
         useJUnitPlatform()
+    }
+
+    check {
+        dependsOn("installKotlinterPrePushHook")
     }
 }
 
