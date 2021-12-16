@@ -276,7 +276,7 @@ dependencies {
     implementation(group = "com.SirBlobman.combatlogx.expansions", name = "Notifier", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
 
     testImplementation(group = "junit", name = "junit", version = "4.13.2")
-    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.6.0")
+    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version = "1.6.10")
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
