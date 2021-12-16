@@ -246,11 +246,6 @@ repositories {
     }
 
     maven {
-        name = "cubekrowd-repo"
-        url = uri("https://mavenrepo.cubekrowd.net/artifactory/repo/")
-    }
-
-    maven {
         name = "paper"
         url = uri("https://papermc.io/repo/repository/maven-public/")
     }
