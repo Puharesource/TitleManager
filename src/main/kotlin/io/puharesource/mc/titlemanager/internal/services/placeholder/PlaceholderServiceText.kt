@@ -15,7 +15,7 @@ import io.puharesource.mc.titlemanager.internal.placeholder.PlaceholderTps
 import io.puharesource.mc.titlemanager.internal.placeholder.VanishHookReplacer
 import io.puharesource.mc.titlemanager.internal.placeholder.VaultHook
 import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
-import io.puharesource.mc.titlemanager.internal.reflections.getPing
+import io.puharesource.mc.titlemanager.internal.reflections.getPingWithFallback
 import io.puharesource.mc.titlemanager.internal.services.bungeecord.BungeeCordService
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
@@ -60,7 +60,7 @@ class PlaceholderServiceText @Inject constructor(
         )
         addPlaceholder(createPlaceholder("max", "max-players") { _ -> Bukkit.getServer().maxPlayers })
         addPlaceholder(createPlaceholder("world-players", "world-online") { player -> player.world.players.size })
-        addPlaceholder(createPlaceholder("ping") { player -> player.getPing() })
+        addPlaceholder(createPlaceholder("ping") { player -> player.getPingWithFallback() })
         addPlaceholder(
             createPlaceholder("tps") { _, value ->
                 if (value == null) {

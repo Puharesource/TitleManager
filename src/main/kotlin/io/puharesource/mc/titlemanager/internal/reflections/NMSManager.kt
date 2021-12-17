@@ -24,6 +24,7 @@ object NMSManager {
         supportedVersions["v1_13_R1"] = 7
         supportedVersions["v1_13_R2"] = 8
         supportedVersions["v1_14_R1"] = 9
+        supportedVersions["v1_15_R1"] = 9
         supportedVersions["v1_16_R1"] = 10
         supportedVersions["v1_17_R1"] = 11
         supportedVersions["v1_18_R1"] = 12

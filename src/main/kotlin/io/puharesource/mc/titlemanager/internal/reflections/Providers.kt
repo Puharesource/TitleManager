@@ -4,6 +4,8 @@ import io.puharesource.mc.titlemanager.internal.reflections.NMSType.NET_MINECRAF
 import io.puharesource.mc.titlemanager.internal.reflections.NMSType.NET_MINECRAFT_SERVER
 import io.puharesource.mc.titlemanager.internal.reflections.NMSType.ORG_BUKKIT_CRAFTBUKKIT
 import io.puharesource.mc.titlemanager.internal.reflections.NMSType.ORG_SPIGOTMC
+import io.puharesource.mc.titlemanager.internal.reflections.Provider113.associate
+import io.puharesource.mc.titlemanager.internal.reflections.Provider116.associate
 
 /**
  * Provides classes for Minecraft 1.7 - 1.8 Protocol Hack
@@ -44,6 +46,7 @@ object Provider18 : NMSClassProvider() {
     init {
         "ChatComponentText".associate(NET_MINECRAFT_SERVER, "ChatComponentText")
         "IChatBaseComponent".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent")
+        "ChatSerializer".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent\$ChatSerializer")
         "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
         "EntityPlayer".associate(NET_MINECRAFT_SERVER, "EntityPlayer")
         "PlayerConnection".associate(NET_MINECRAFT_SERVER, "PlayerConnection")
@@ -69,6 +72,7 @@ object Provider183 : NMSClassProvider() {
     init {
         "ChatComponentText".associate(NET_MINECRAFT_SERVER, "ChatComponentText")
         "IChatBaseComponent".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent")
+        "ChatSerializer".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent\$ChatSerializer")
         "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
         "EntityPlayer".associate(NET_MINECRAFT_SERVER, "EntityPlayer")
         "PlayerConnection".associate(NET_MINECRAFT_SERVER, "PlayerConnection")
@@ -94,6 +98,7 @@ object Provider110 : NMSClassProvider() {
     init {
         "ChatComponentText".associate(NET_MINECRAFT_SERVER, "ChatComponentText")
         "IChatBaseComponent".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent")
+        "ChatSerializer".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent\$ChatSerializer")
         "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
         "EntityPlayer".associate(NET_MINECRAFT_SERVER, "EntityPlayer")
         "PlayerConnection".associate(NET_MINECRAFT_SERVER, "PlayerConnection")
@@ -119,6 +124,7 @@ object Provider112 : NMSClassProvider() {
     init {
         "ChatComponentText".associate(NET_MINECRAFT_SERVER, "ChatComponentText")
         "IChatBaseComponent".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent")
+        "ChatSerializer".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent\$ChatSerializer")
         "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
         "EntityPlayer".associate(NET_MINECRAFT_SERVER, "EntityPlayer")
         "PlayerConnection".associate(NET_MINECRAFT_SERVER, "PlayerConnection")
@@ -144,6 +150,7 @@ object Provider113 : NMSClassProvider() {
     init {
         "ChatComponentText".associate(NET_MINECRAFT_SERVER, "ChatComponentText")
         "IChatBaseComponent".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent")
+        "ChatSerializer".associate(NET_MINECRAFT_SERVER, "IChatBaseComponent\$ChatSerializer")
         "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
         "EntityPlayer".associate(NET_MINECRAFT_SERVER, "EntityPlayer")
         "PlayerConnection".associate(NET_MINECRAFT_SERVER, "PlayerConnection")
