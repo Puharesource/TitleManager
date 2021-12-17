@@ -48,22 +48,22 @@ object TitleManagerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun providePlugin(): io.puharesource.mc.titlemanager.TitleManagerPlugin = Bukkit.getPluginManager().getPlugin("TitleManager") as io.puharesource.mc.titlemanager.TitleManagerPlugin
+    fun providePlugin(): TitleManagerPlugin = Bukkit.getPluginManager().getPlugin("TitleManager") as TitleManagerPlugin
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideConfig(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin): TMConfigMain = plugin.tmConfig
+    fun provideConfig(plugin: TitleManagerPlugin): TMConfigMain = plugin.tmConfig
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideUpdateService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin): UpdateService = UpdateServiceSpigot(plugin)
+    fun provideUpdateService(plugin: TitleManagerPlugin): UpdateService = UpdateServiceSpigot(plugin)
 
     @JvmStatic
     @Provides
     @Singleton
-    fun providePlayerInfoService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin): PlayerInfoService = PlayerInfoServiceSqlite(plugin)
+    fun providePlayerInfoService(plugin: TitleManagerPlugin): PlayerInfoService = PlayerInfoServiceSqlite(plugin)
 
     @JvmStatic
     @Provides
@@ -73,12 +73,12 @@ object TitleManagerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideListenerService(config: TMConfigMain, plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin, taskService: TaskService, updateService: UpdateService, playerInfoService: PlayerInfoService, titleService: TitleService, actionbarService: ActionbarService, playerListService: PlayerListService, scoreboardService: ScoreboardService): ListenerService = ListenerServiceSpigot(config, plugin, taskService, updateService, playerInfoService, titleService, actionbarService, playerListService, scoreboardService)
+    fun provideListenerService(config: TMConfigMain, plugin: TitleManagerPlugin, taskService: TaskService, updateService: UpdateService, playerInfoService: PlayerInfoService, titleService: TitleService, actionbarService: ActionbarService, playerListService: PlayerListService, scoreboardService: ScoreboardService): ListenerService = ListenerServiceSpigot(config, plugin, taskService, updateService, playerInfoService, titleService, actionbarService, playerListService, scoreboardService)
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideTaskService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin, config: TMConfigMain, updateService: UpdateService): TaskService = TaskServiceSpigot(plugin, config, updateService)
+    fun provideTaskService(plugin: TitleManagerPlugin, config: TMConfigMain, updateService: UpdateService): TaskService = TaskServiceSpigot(plugin, config, updateService)
 
     @JvmStatic
     @Provides
@@ -88,12 +88,12 @@ object TitleManagerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideAnimationService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin, scriptService: ScriptService, placeholderService: PlaceholderService): AnimationsService = AnimationsServiceFile(plugin, scriptService, placeholderService)
+    fun provideAnimationService(plugin: TitleManagerPlugin, scriptService: ScriptService, placeholderService: PlaceholderService): AnimationsService = AnimationsServiceFile(plugin, scriptService, placeholderService)
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideScriptService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin, placeholderService: PlaceholderService, builtinScripts: BuiltinScripts): ScriptService {
+    fun provideScriptService(plugin: TitleManagerPlugin, placeholderService: PlaceholderService, builtinScripts: BuiltinScripts): ScriptService {
         if (ScriptEngineManager().getEngineByName("nashorn") != null) {
             return ScriptServiceNashorn(plugin, placeholderService, builtinScripts)
         }
@@ -104,27 +104,27 @@ object TitleManagerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun providePlaceholderService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin, config: TMConfigMain, bungeeCordService: BungeeCordService): PlaceholderService = PlaceholderServiceText(plugin, config, bungeeCordService)
+    fun providePlaceholderService(plugin: TitleManagerPlugin, config: TMConfigMain, bungeeCordService: BungeeCordService): PlaceholderService = PlaceholderServiceText(plugin, config, bungeeCordService)
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideTitleService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin, animationsService: AnimationsService, placeholderService: PlaceholderService, schedulerService: SchedulerService): TitleService = TitleServiceSpigot(plugin, animationsService, placeholderService, schedulerService)
+    fun provideTitleService(plugin: TitleManagerPlugin, animationsService: AnimationsService, placeholderService: PlaceholderService, schedulerService: SchedulerService): TitleService = TitleServiceSpigot(plugin, animationsService, placeholderService, schedulerService)
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideActionbarService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin, placeholderService: PlaceholderService, animationsService: AnimationsService, schedulerService: SchedulerService): ActionbarService = ActionbarServiceSpigot(plugin, placeholderService, animationsService, schedulerService)
+    fun provideActionbarService(plugin: TitleManagerPlugin, placeholderService: PlaceholderService, animationsService: AnimationsService, schedulerService: SchedulerService): ActionbarService = ActionbarServiceSpigot(plugin, placeholderService, animationsService, schedulerService)
 
     @JvmStatic
     @Provides
     @Singleton
-    fun providePlayerListService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin, config: TMConfigMain, placeholderService: PlaceholderService, animationsService: AnimationsService, schedulerService: SchedulerService): PlayerListService = PlayerListServiceSpigot(plugin, config, placeholderService, animationsService, schedulerService)
+    fun providePlayerListService(plugin: TitleManagerPlugin, config: TMConfigMain, placeholderService: PlaceholderService, animationsService: AnimationsService, schedulerService: SchedulerService): PlayerListService = PlayerListServiceSpigot(plugin, config, placeholderService, animationsService, schedulerService)
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideScoreboardService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin, config: TMConfigMain, placeholderService: PlaceholderService, schedulerService: SchedulerService, animationsService: AnimationsService, playerInfoService: PlayerInfoService): ScoreboardService = if (NMSManager.versionIndex >= 11) {
+    fun provideScoreboardService(plugin: TitleManagerPlugin, config: TMConfigMain, placeholderService: PlaceholderService, schedulerService: SchedulerService, animationsService: AnimationsService, playerInfoService: PlayerInfoService): ScoreboardService = if (NMSManager.versionIndex >= 11) {
         ScoreboardServiceSpigot(plugin, config, placeholderService, schedulerService, animationsService, playerInfoService)
     } else {
         ScoreboardServiceSpigotNms(plugin, config, placeholderService, schedulerService, animationsService, playerInfoService)
@@ -133,17 +133,17 @@ object TitleManagerModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideBungeeCordService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin, taskService: TaskService): BungeeCordService = BungeeCordServiceSpigot(plugin, taskService)
+    fun provideBungeeCordService(plugin: TitleManagerPlugin, taskService: TaskService): BungeeCordService = BungeeCordServiceSpigot(plugin, taskService)
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideAnnouncerService(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin, config: TMConfigMain, schedulerService: SchedulerService, titleService: TitleService, actionbarService: ActionbarService): AnnouncerService = AnnouncerServiceSpigot(plugin, config, schedulerService, titleService, actionbarService)
+    fun provideAnnouncerService(plugin: TitleManagerPlugin, config: TMConfigMain, schedulerService: SchedulerService, titleService: TitleService, actionbarService: ActionbarService): AnnouncerService = AnnouncerServiceSpigot(plugin, config, schedulerService, titleService, actionbarService)
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideMetrics(plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin) = Metrics(plugin, 7318)
+    fun provideMetrics(plugin: TitleManagerPlugin) = Metrics(plugin, 7318)
 
     @JvmStatic
     @Provides

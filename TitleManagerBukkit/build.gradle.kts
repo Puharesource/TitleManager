@@ -12,8 +12,11 @@ plugins {
     id("org.jmailen.kotlinter") version "3.7.0"
 }
 
+subprojects {
+    group = "io.puharesource.mc"
+}
+
 group = "io.puharesource.mc"
-version = "3.0.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
