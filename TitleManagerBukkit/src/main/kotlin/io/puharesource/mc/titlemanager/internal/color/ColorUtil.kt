@@ -1,7 +1,9 @@
 package io.puharesource.mc.titlemanager.internal.color
 
+import dev.tarkan.titlemanager.lib.color.Color
+import dev.tarkan.titlemanager.lib.color.InterpolatorUtil
+import io.puharesource.mc.titlemanager.api.v3.toChatColor
 import net.md_5.bungee.api.ChatColor
-import java.awt.Color
 
 object ColorUtil {
     fun gradientString(text: String, gradient: List<Color>, offset: Int = 0, continuous: Boolean = false, bold: Boolean = false, strikethrough: Boolean = false, underline: Boolean = false, magic: Boolean = false): String {
@@ -36,12 +38,4 @@ object ColorUtil {
 
         return sb.toString()
     }
-
-    private fun ChatColor.toColor(): Color {
-        if (!this.name.startsWith("#")) throw IllegalArgumentException()
-
-        return Color.decode(this.name)
-    }
-
-    private fun Color.toChatColor(): ChatColor = ChatColor.of(this)
 }

@@ -1,6 +1,8 @@
-import io.puharesource.mc.titlemanager.internal.color.HslColor
-import io.puharesource.mc.titlemanager.internal.color.Interpolator
-import io.puharesource.mc.titlemanager.internal.color.InterpolatorUtil
+import dev.tarkan.titlemanager.lib.color.HslColor
+import dev.tarkan.titlemanager.lib.color.Interpolator
+import dev.tarkan.titlemanager.lib.color.InterpolatorUtil
+import io.puharesource.mc.titlemanager.api.v3.toJavaColor
+import io.puharesource.mc.titlemanager.api.v3.toTitleManagerColor
 import java.awt.Color
 import java.awt.Font
 import java.awt.RenderingHints
@@ -14,9 +16,9 @@ fun main() {
 
 fun testColors() {
     val text = "My HEX color string"
-    val interpolator = InterpolatorUtil.createHslGradientInterpolator(listOf(Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255)).map { HslColor.fromColor(it) })
+    val interpolator = InterpolatorUtil.createHslGradientInterpolator(listOf(Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255)).map { HslColor.fromColor(it.toTitleManagerColor()) })
 
-    listOf(Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255)).map { HslColor.fromColor(it) }.map { it.toColor() }
+    listOf(Color(255, 0, 0), Color(0, 255, 0), Color(0, 0, 255)).map { HslColor.fromColor(it.toTitleManagerColor()) }.map { it.toColor() }
 
     var squareText = ""
     for (i in text.indices) {
@@ -62,7 +64,7 @@ fun createImage(path: String, text: String, interpolator: Interpolator<HslColor>
 
         val x = if (i == 0) 0 else metrics.stringWidth(text.substring(0, i))
 
-        graphics.color = interpolator.interpolate(percentage).toColor()
+        graphics.color = interpolator.interpolate(percentage).toColor().toJavaColor()
         graphics.drawString(text[i].toString(), x, metrics.ascent)
     }
 

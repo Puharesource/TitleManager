@@ -1,6 +1,5 @@
-package io.puharesource.mc.titlemanager.internal.color
+package dev.tarkan.titlemanager.lib.color
 
-import java.awt.Color
 import kotlin.math.floor
 import kotlin.math.round
 
@@ -9,10 +8,10 @@ object InterpolatorUtil {
     fun createConstantHslInterpolator(hslColor: HslColor) = createInterpolator { hslColor }
     fun createConstantRgbInterpolator(color: Color) = createInterpolator { color }
 
-    fun createRgbInterpolator(start: Int, end: Int) = createRgbInterpolator(start.toFloat(), end.toFloat())
+    fun createRgbInterpolator(start: ColorByte, end: ColorByte) = createRgbInterpolator(start.toColorFloat(), end.toColorFloat())
 
-    fun createRgbInterpolator(start: Float, end: Float) = createInterpolator { percentage ->
-        floor(start * (1.0f - percentage) + end * percentage)
+    fun createRgbInterpolator(start: ColorFloat, end: ColorFloat) = createInterpolator { percentage ->
+        start * (ColorFloat.max - percentage) + end * percentage
     }
 
     fun createRgbInterpolator(start: Color, end: Color): Interpolator<Color> {
@@ -22,9 +21,9 @@ object InterpolatorUtil {
 
         return createInterpolator { percentage ->
             Color(
-                redInterpolator.interpolate(percentage).toInt(),
-                greenInterpolator.interpolate(percentage).toInt(),
-                blueInterpolator.interpolate(percentage).toInt()
+                redInterpolator.interpolate(percentage),
+                greenInterpolator.interpolate(percentage),
+                blueInterpolator.interpolate(percentage)
             )
         }
     }

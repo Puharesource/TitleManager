@@ -1,5 +1,6 @@
 package io.puharesource.mc.titlemanager.internal.model.script.builtin
 
+import io.puharesource.mc.titlemanager.api.v3.toTitleManagerColor
 import io.puharesource.mc.titlemanager.internal.color.ColorUtil
 import io.puharesource.mc.titlemanager.internal.model.script.AnimationScript
 import java.awt.Color
@@ -8,7 +9,7 @@ import java.util.regex.Pattern
 class GradientScript(text: String, index: Int) : AnimationScript(text, index, fadeIn = 0, stay = 2, fadeOut = 0) {
     private val pattern: Pattern =
         """\[(?<colors>.+)](?<text>.+)""".toRegex().toPattern()
-    private var colors = listOf("#ff0000", "#00ff00").map { Color.decode(it) }.toList()
+    private var colors = listOf("#ff0000", "#00ff00").map { Color.decode(it).toTitleManagerColor() }.toList()
 
     private var bold = false
     private var strikethrough = false
@@ -40,7 +41,7 @@ class GradientScript(text: String, index: Int) : AnimationScript(text, index, fa
                 .asSequence()
                 .map { it.trim() }
                 .filter { it.startsWith("#") }
-                .map { Color.decode(it) }
+                .map { Color.decode(it).toTitleManagerColor() }
                 .toList()
 
             matcher.group("colors").split(",")

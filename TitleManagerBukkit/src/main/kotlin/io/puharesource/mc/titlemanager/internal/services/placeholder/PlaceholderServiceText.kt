@@ -1,6 +1,7 @@
 package io.puharesource.mc.titlemanager.internal.services.placeholder
 
 import io.puharesource.mc.titlemanager.TitleManagerPlugin
+import io.puharesource.mc.titlemanager.api.v3.toTitleManagerColor
 import io.puharesource.mc.titlemanager.internal.color.ColorUtil
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
 import io.puharesource.mc.titlemanager.internal.extensions.color
@@ -89,7 +90,7 @@ class PlaceholderServiceText @Inject constructor(
 
                 val matcher = gradientPattern.matcher(value)
                 var text: String = value
-                val colors: List<Color>
+                val colors: List<dev.tarkan.titlemanager.lib.color.Color>
 
                 var bold = false
                 var strikethrough = false
@@ -102,7 +103,7 @@ class PlaceholderServiceText @Inject constructor(
                         .asSequence()
                         .map { it.trim() }
                         .filter { it.startsWith("#") }
-                        .map { Color.decode(it) }
+                        .map { Color.decode(it).toTitleManagerColor() }
                         .toList()
 
                     matcher.group("colors").split(",")
@@ -126,7 +127,7 @@ class PlaceholderServiceText @Inject constructor(
                             }
                         }
                 } else {
-                    colors = listOf("#ff0000", "#00ff00").map { Color.decode(it) }.toList()
+                    colors = listOf("#ff0000", "#00ff00").map { Color.decode(it).toTitleManagerColor() }.toList()
                 }
 
                 ColorUtil.gradientString(text, colors, bold = bold, strikethrough = strikethrough, underline = underline, magic = magic)

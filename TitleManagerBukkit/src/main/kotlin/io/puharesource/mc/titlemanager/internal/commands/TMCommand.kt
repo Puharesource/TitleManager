@@ -15,7 +15,7 @@ import org.bukkit.entity.Player
 import java.util.TreeMap
 import java.util.TreeSet
 
-class TMCommand constructor(private val plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin) : CommandExecutor, TabCompleter {
+class TMCommand constructor(private val plugin: TitleManagerPlugin) : CommandExecutor, TabCompleter {
     private val subCommands: MutableMap<String, TMSubCommand> = TreeMap(String.CASE_INSENSITIVE_ORDER)
     private val parameterPattern =
         """(?i)^[-](silent|world|fadein|stay|fadeout|radius)$""".toRegex()

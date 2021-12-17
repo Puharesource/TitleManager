@@ -1,21 +1,17 @@
-package io.puharesource.mc.titlemanager.internal.color
+package dev.tarkan.titlemanager.lib.color
 
-import net.md_5.bungee.api.ChatColor
-import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.round
 
 data class HslColor(var hue: Float, var saturation: Float, var lightness: Float) {
     companion object {
-        fun fromChatColor(chatColor: ChatColor) = fromColor(Color.decode(chatColor.name))
-
         fun fromColor(color: Color) = fromRgb(color.red, color.green, color.blue)
 
-        fun fromRgb(red: Int, green: Int, blue: Int) = fromRgb(red / 255.0f, green / 255.0f, blue / 255.0f)
+        fun fromRgb(red: ColorByte, green: ColorByte, blue: ColorByte) = fromRgb(red.toColorFloat(), green.toColorFloat(), blue.toColorFloat())
 
-        fun fromRgb(red: Float, green: Float, blue: Float): HslColor {
-            val max = red.coerceAtLeast(green.coerceAtLeast(blue))
-            val min = red.coerceAtMost(green.coerceAtMost(blue))
+        fun fromRgb(red: ColorFloat, green: ColorFloat, blue: ColorFloat): HslColor {
+            val max = red.value.coerceAtLeast(green.value.coerceAtLeast(blue.value))
+            val min = red.value.coerceAtMost(green.value.coerceAtMost(blue.value))
             val delta = max - min
 
             var hue = 0.0f
@@ -24,14 +20,14 @@ data class HslColor(var hue: Float, var saturation: Float, var lightness: Float)
 
             if (max != min) {
                 hue = when (max) {
-                    red -> {
-                        ((green - blue) / delta) % 6.0f
+                    red.value -> {
+                        ((green.value - blue.value) / delta) % 6.0f
                     }
-                    green -> {
-                        (blue - red) / delta + 2.0f
+                    green.value -> {
+                        (blue.value - red.value) / delta + 2.0f
                     }
                     else -> {
-                        (red - green) / delta + 4.0f
+                        (red.value - green.value) / delta + 4.0f
                     }
                 }
 
@@ -95,12 +91,10 @@ data class HslColor(var hue: Float, var saturation: Float, var lightness: Float)
             }
         }
 
-        red = red.coerceIn(0, 255)
-        green = green.coerceIn(0, 255)
-        blue = blue.coerceIn(0, 255)
+        val redValue = ColorByte(red.coerceIn(0, 255).toUByte())
+        val greenValue = ColorByte(green.coerceIn(0, 255).toUByte())
+        val blueValue = ColorByte(blue.coerceIn(0, 255).toUByte())
 
-        return Color(red, green, blue)
+        return Color(redValue, greenValue, blueValue)
     }
-
-    fun toChatColor() = ChatColor.of(toColor())
 }
