@@ -1,13 +1,11 @@
 package io.puharesource.mc.titlemanager.internal.services.features
 
-import io.puharesource.mc.titlemanager.TitleManagerPlugin
 import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
 import io.puharesource.mc.titlemanager.api.v2.animation.SendableAnimation
+import io.puharesource.mc.titlemanager.internal.extensions.getTitleManagerPlayer
 import io.puharesource.mc.titlemanager.internal.model.animation.EasySendableAnimation
 import io.puharesource.mc.titlemanager.internal.model.animation.PartBasedSendableAnimation
-import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
-import io.puharesource.mc.titlemanager.internal.reflections.NMSUtil
 import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsService
 import io.puharesource.mc.titlemanager.internal.services.placeholder.PlaceholderService
 import io.puharesource.mc.titlemanager.internal.services.task.SchedulerService
@@ -28,11 +26,7 @@ class TitleServiceSpigot @Inject constructor(
             processedTitle = placeholderService.replaceText(player, processedTitle)
         }
 
-        if (NMSManager.versionIndex >= 9) {
-            player.sendTitle(processedTitle, null, fadeIn, stay, fadeOut)
-        } else {
-            NMSUtil.sendTitle(player, processedTitle, fadeIn, stay, fadeOut)
-        }
+        player.getTitleManagerPlayer().sendTitle(processedTitle, fadeIn, stay, fadeOut)
     }
 
     override fun sendSubtitle(player: Player, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int, withPlaceholders: Boolean) {
@@ -42,11 +36,7 @@ class TitleServiceSpigot @Inject constructor(
             processedSubtitle = placeholderService.replaceText(player, processedSubtitle)
         }
 
-        if (NMSManager.versionIndex >= 9) {
-            player.sendTitle(null, processedSubtitle, fadeIn, stay, fadeOut)
-        } else {
-            NMSUtil.sendSubtitle(player, processedSubtitle, fadeIn, stay, fadeOut)
-        }
+        player.getTitleManagerPlayer().sendSubtitle(processedSubtitle, fadeIn, stay, fadeOut)
     }
 
     override fun sendTitles(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int, withPlaceholders: Boolean) {
@@ -58,24 +48,11 @@ class TitleServiceSpigot @Inject constructor(
             processedSubtitle = placeholderService.replaceText(player, processedSubtitle)
         }
 
-        if (NMSManager.versionIndex >= 9) {
-            player.sendTitle(processedTitle, processedSubtitle, fadeIn, stay, fadeOut)
-
-            return
-        }
-
-        NMSUtil.sendTitle(player, processedTitle, fadeIn, stay, fadeOut)
-        NMSUtil.sendSubtitle(player, processedSubtitle, fadeIn, stay, fadeOut)
+        player.getTitleManagerPlayer().sendTitles(processedTitle, processedSubtitle, fadeIn, stay, fadeOut)
     }
 
     override fun sendTimings(player: Player, fadeIn: Int, stay: Int, fadeOut: Int) {
-        if (NMSManager.versionIndex >= 9) {
-            player.sendTitle(null, null, fadeIn, stay, fadeOut)
-
-            return
-        }
-
-        NMSUtil.sendTimings(player, fadeIn, stay, fadeOut)
+        player.getTitleManagerPlayer().sendTitleTimings(fadeIn, stay, fadeOut)
     }
 
     override fun clearTitle(player: Player) {
@@ -87,13 +64,7 @@ class TitleServiceSpigot @Inject constructor(
     }
 
     override fun clearTitles(player: Player) {
-        if (NMSManager.versionIndex >= 9) {
-            player.resetTitle()
-
-            return
-        }
-
-        sendTitles(player, " ", " ") // TODO: Make this actually use the "Clear" enum.
+        player.getTitleManagerPlayer().resetTitle()
     }
 
     override fun sendProcessedTitle(player: Player, text: String, fadeIn: Int, stay: Int, fadeOut: Int) {

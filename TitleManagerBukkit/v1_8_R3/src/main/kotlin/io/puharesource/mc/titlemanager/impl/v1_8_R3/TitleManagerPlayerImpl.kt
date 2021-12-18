@@ -10,6 +10,7 @@ import net.minecraft.server.v1_8_R3.ChatComponentText
 import net.minecraft.server.v1_8_R3.PacketDataSerializer
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import java.util.UUID
 
@@ -44,6 +45,31 @@ class TitleManagerPlayerImpl(player: CraftPlayer) : TitleManagerPlayer<CraftPlay
         val packet = PacketPlayOutChat(component)
 
         handle.handle.playerConnection.sendPacket(packet)
+    }
+
+    override fun sendTitle(message: String, fadeIn: Int, stay: Int, fadeOut: Int) {
+        sendTitleTimings(fadeIn, stay, fadeOut)
+        handle.sendTitle(message, null)
+    }
+
+    override fun sendSubtitle(message: String, fadeIn: Int, stay: Int, fadeOut: Int) {
+        sendTitleTimings(fadeIn, stay, fadeOut)
+        handle.sendTitle(null, message)
+    }
+
+    override fun sendTitles(title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int) {
+        sendTitleTimings(fadeIn, stay, fadeOut)
+        handle.sendTitle(title, subtitle)
+    }
+
+    override fun sendTitleTimings(fadeIn: Int, stay: Int, fadeOut: Int) {
+        val packet = PacketPlayOutTitle(fadeIn, stay, fadeOut)
+
+        handle.handle.playerConnection.sendPacket(packet)
+    }
+
+    override fun resetTitle() {
+        handle.resetTitle()
     }
 
     private fun sendTabHeaderPacket(header: String, footer: String) {
