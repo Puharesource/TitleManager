@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 class ListenerServiceSpigot @Inject constructor(
     private val config: TMConfigMain,
-    private val plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin,
+    private val plugin: TitleManagerPlugin,
     private val taskService: TaskService,
     private val updateService: UpdateService,
     private val playerInfoService: PlayerInfoService,
@@ -43,7 +43,6 @@ class ListenerServiceSpigot @Inject constructor(
             registerOnJoinUpdate()
         }
 
-        registerOnQuitPlayerListCacheCleanup()
         registerOnQuitPlayerScoreboardCacheCleanup()
 
         if (config.usingConfig) {
@@ -115,10 +114,6 @@ class ListenerServiceSpigot @Inject constructor(
             player.sendMessage("${ChatColor.YELLOW}You're currently on version ${updateService.currentVersion} while ${updateService.latestVersion} is available.")
             player.sendMessage("${ChatColor.YELLOW}Download it here:${ChatColor.GOLD}${ChatColor.UNDERLINE} http://www.spigotmc.org/resources/titlemanager.1049")
         }.addTo(listeners)
-    }
-
-    private fun registerOnQuitPlayerListCacheCleanup() {
-        listenEventSync<PlayerQuitEvent> { playerListService.clearHeaderAndFooterCache(it.player) }.addTo(listeners)
     }
 
     private fun registerOnQuitPlayerScoreboardCacheCleanup() {

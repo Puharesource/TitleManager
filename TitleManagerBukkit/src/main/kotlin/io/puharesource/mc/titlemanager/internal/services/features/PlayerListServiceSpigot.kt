@@ -5,13 +5,9 @@ import io.puharesource.mc.titlemanager.api.v2.animation.Animation
 import io.puharesource.mc.titlemanager.api.v2.animation.AnimationPart
 import io.puharesource.mc.titlemanager.api.v2.animation.SendableAnimation
 import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
-import io.puharesource.mc.titlemanager.internal.extensions.getTitleManagerMetadata
-import io.puharesource.mc.titlemanager.internal.extensions.removeTitleManagerMetadata
-import io.puharesource.mc.titlemanager.internal.extensions.setTitleManagerMetadata
+import io.puharesource.mc.titlemanager.internal.extensions.getTitleManagerPlayer
 import io.puharesource.mc.titlemanager.internal.model.animation.EasySendableAnimation
 import io.puharesource.mc.titlemanager.internal.model.animation.PartBasedSendableAnimation
-import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
-import io.puharesource.mc.titlemanager.internal.reflections.NMSUtil
 import io.puharesource.mc.titlemanager.internal.services.animation.AnimationsService
 import io.puharesource.mc.titlemanager.internal.services.placeholder.PlaceholderService
 import io.puharesource.mc.titlemanager.internal.services.task.SchedulerService
@@ -20,15 +16,12 @@ import org.bukkit.metadata.FixedMetadataValue
 import javax.inject.Inject
 
 class PlayerListServiceSpigot @Inject constructor(
-    private val plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin,
+    private val plugin: TitleManagerPlugin,
     private val config: TMConfigMain,
     private val placeholderService: PlaceholderService,
     private val animationsService: AnimationsService,
     private val schedulerService: SchedulerService
 ) : PlayerListService {
-    private val headerMetadataKey = "TM-HEADER"
-    private val footerMetadataKey = "TM-FOOTER"
-
     override fun startPlayerTasks() {
         plugin.server.onlinePlayers.forEach {
             setProcessedHeaderAndFooter(it, config.playerList.header, config.playerList.footer)
@@ -112,11 +105,7 @@ class PlayerListServiceSpigot @Inject constructor(
     }
 
     override fun getHeader(player: Player): String {
-        if (NMSManager.versionIndex >= 9) {
-            return player.playerListHeader.orEmpty()
-        }
-
-        return player.getTitleManagerMetadata(headerMetadataKey)?.asString().orEmpty()
+        return player.getTitleManagerPlayer().playerListHeader
     }
 
     override fun setHeader(player: Player, header: String, withPlaceholders: Boolean) {
@@ -126,13 +115,7 @@ class PlayerListServiceSpigot @Inject constructor(
             processedHeader = placeholderService.replaceText(player, header)
         }
 
-        if (NMSManager.versionIndex >= 9) {
-            player.playerListHeader = processedHeader
-
-            return
-        }
-
-        setHeaderAndFooter(player, processedHeader, getFooter(player))
+        player.getTitleManagerPlayer().playerListHeader = processedHeader
     }
 
     override fun setProcessedHeader(player: Player, header: String) {
@@ -142,11 +125,7 @@ class PlayerListServiceSpigot @Inject constructor(
     }
 
     override fun getFooter(player: Player): String {
-        if (NMSManager.versionIndex >= 9) {
-            return player.playerListFooter.orEmpty()
-        }
-
-        return player.getTitleManagerMetadata(footerMetadataKey)?.asString().orEmpty()
+        return player.getTitleManagerPlayer().playerListFooter
     }
 
     override fun setFooter(player: Player, footer: String, withPlaceholders: Boolean) {
@@ -156,13 +135,7 @@ class PlayerListServiceSpigot @Inject constructor(
             processedFooter = placeholderService.replaceText(player, footer)
         }
 
-        if (NMSManager.versionIndex >= 9) {
-            player.playerListFooter = processedFooter
-
-            return
-        }
-
-        setHeaderAndFooter(player, getHeader(player), processedFooter)
+        player.getTitleManagerPlayer().playerListHeader = processedFooter
     }
 
     override fun setProcessedFooter(player: Player, footer: String) {
@@ -172,35 +145,15 @@ class PlayerListServiceSpigot @Inject constructor(
     }
 
     override fun setHeaderAndFooter(player: Player, header: String, footer: String, withPlaceholders: Boolean) {
-        if (config.bandwidth.preventDuplicatePackets) {
-            val cachedHeader = getHeader(player)
-            val cachedFooter = getFooter(player)
-
-            if (header == cachedHeader && footer == cachedFooter) {
-                return
-            }
-
-            if (NMSManager.versionIndex < 9) {
-                player.setTitleManagerMetadata(headerMetadataKey, header)
-                player.setTitleManagerMetadata(footerMetadataKey, footer)
-            }
-        }
-
-        if (NMSManager.versionIndex >= 9) {
-            player.setPlayerListHeaderFooter(header, footer)
-        } else {
-            NMSUtil.setHeaderAndFooter(player, header, footer)
+        player.getTitleManagerPlayer().let { titleManagerPlayer ->
+            titleManagerPlayer.playerListHeader = header
+            titleManagerPlayer.playerListFooter = footer
         }
     }
 
     override fun setProcessedHeaderAndFooter(player: Player, header: String, footer: String) {
         setProcessedHeader(player, header)
         setProcessedFooter(player, footer)
-    }
-
-    override fun clearHeaderAndFooterCache(player: Player) {
-        player.removeTitleManagerMetadata(headerMetadataKey)
-        player.removeTitleManagerMetadata(footerMetadataKey)
     }
 
     private fun setRunningAnimation(player: Player, path: String, animation: SendableAnimation) {

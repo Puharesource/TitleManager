@@ -15,6 +15,18 @@ class TitleManagerPlayerImpl(player: CraftPlayer) : TitleManagerPlayer<CraftPlay
     override val ping: Int
         get() = handle.handle.ping
 
+    override var playerListHeader: String
+        get() = handle.playerListHeader.orEmpty()
+        set(value) {
+            handle.playerListHeader = value
+        }
+
+    override var playerListFooter: String
+        get() = handle.playerListFooter.orEmpty()
+        set(value) {
+            handle.playerListFooter = value
+        }
+
     override fun sendActionbarMessage(message: String) {
         handle.spigot().sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(message))
     }

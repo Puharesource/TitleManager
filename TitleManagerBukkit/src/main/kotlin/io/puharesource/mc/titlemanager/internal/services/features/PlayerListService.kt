@@ -24,6 +24,4 @@ interface PlayerListService {
 
     fun setHeaderAndFooter(player: Player, header: String, footer: String, withPlaceholders: Boolean = false)
     fun setProcessedHeaderAndFooter(player: Player, header: String, footer: String)
-
-    fun clearHeaderAndFooterCache(player: Player)
 }
