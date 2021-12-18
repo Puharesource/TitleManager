@@ -22,8 +22,8 @@ class CraftPlayer : NMSClass() {
 }
 
 class EntityPlayer : NMSClass() {
-    val playerConnection = clazz.getField("playerConnection")
-    val ping = clazz.getField("ping")
+    val playerConnection = clazz.getField(if (NMSManager.versionIndex > 10) "b" else "playerConnection")
+    val ping = clazz.getField(if (NMSManager.versionIndex > 10) "e" else "ping")
 }
 
 class PlayerConnection : NMSClass() {
