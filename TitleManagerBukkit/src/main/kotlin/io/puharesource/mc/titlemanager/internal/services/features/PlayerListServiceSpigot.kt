@@ -135,7 +135,7 @@ class PlayerListServiceSpigot @Inject constructor(
             processedFooter = placeholderService.replaceText(player, footer)
         }
 
-        player.getTitleManagerPlayer().playerListHeader = processedFooter
+        player.getTitleManagerPlayer().playerListFooter = processedFooter
     }
 
     override fun setProcessedFooter(player: Player, footer: String) {
