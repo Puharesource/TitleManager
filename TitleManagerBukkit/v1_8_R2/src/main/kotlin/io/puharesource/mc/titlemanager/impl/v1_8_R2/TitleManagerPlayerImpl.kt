@@ -2,6 +2,8 @@ package io.puharesource.mc.titlemanager.impl.v1_8_R2
 
 import io.puharesource.mc.common.NmsImplementation
 import io.puharesource.mc.common.TitleManagerPlayer
+import net.minecraft.server.v1_8_R2.ChatComponentText
+import net.minecraft.server.v1_8_R2.PacketPlayOutChat
 import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer
 import java.util.UUID
 
@@ -12,4 +14,11 @@ class TitleManagerPlayerImpl(player: CraftPlayer) : TitleManagerPlayer<CraftPlay
 
     override val ping: Int
         get() = handle.handle.ping
+
+    override fun sendActionbarMessage(message: String) {
+        val component = ChatComponentText(message)
+        val packet = PacketPlayOutChat(component)
+
+        handle.handle.playerConnection.sendPacket(packet)
+    }
 }

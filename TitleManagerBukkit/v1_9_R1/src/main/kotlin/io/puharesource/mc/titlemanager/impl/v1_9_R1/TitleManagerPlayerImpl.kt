@@ -2,6 +2,8 @@ package io.puharesource.mc.titlemanager.impl.v1_9_R1
 
 import io.puharesource.mc.common.NmsImplementation
 import io.puharesource.mc.common.TitleManagerPlayer
+import net.md_5.bungee.api.ChatMessageType
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer
 import java.util.UUID
 
@@ -12,4 +14,8 @@ class TitleManagerPlayerImpl(player: CraftPlayer) : TitleManagerPlayer<CraftPlay
 
     override val ping: Int
         get() = handle.handle.ping
+
+    override fun sendActionbarMessage(message: String) {
+        handle.spigot().sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(message))
+    }
 }
