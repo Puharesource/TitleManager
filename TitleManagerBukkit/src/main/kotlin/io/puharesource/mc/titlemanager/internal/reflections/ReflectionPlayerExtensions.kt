@@ -7,14 +7,6 @@ private val classEntityPlayer = EntityPlayer()
 private val classPlayerConnection = PlayerConnection()
 private val classNetworkManager = NetworkManager()
 
-internal fun Player.getPingWithFallback(): Int {
-    if (this::class.java.declaredMethods.any { it.name == "getPing" }) {
-        return ping
-    }
-
-    return classEntityPlayer.ping.getInt(getEntityPlayer())
-}
-
 /**
  * Checks if the player is on 1.7 on the Protocol Hack version of Spigot
  */

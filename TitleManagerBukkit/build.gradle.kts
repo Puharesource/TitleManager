@@ -47,6 +47,10 @@ tasks {
             include(dependency("com.google.dagger:.*"))
             include(dependency("javax.inject:.*"))
             include(dependency("org.bstats:.*"))
+
+            for (sub in subprojects) {
+                include(dependency(sub))
+            }
         }
 
         relocate("kotlin", "io.puharesource.mc.titlemanager.shaded.kotlin")
@@ -275,6 +279,7 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:2.40.5")
 
     implementation(project(":TitleManagerLib"))
+    implementation(project(":TitleManagerBukkit:common"))
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
     implementation(kotlin("stdlib-jdk8"))
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.5.2-native-mt")
@@ -289,6 +294,32 @@ dependencies {
     implementation(group = "com.github.LeonMangler", name = "SuperVanish", version = "6.2.6-2") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx", name = "CombatLogX-API", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx.expansions", name = "Notifier", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
+
+    fun dependOnVersions(vararg versions: String) {
+        for (version in versions) {
+            implementation(project(":TitleManagerBukkit:${version}")) { isTransitive = false }
+        }
+    }
+
+    dependOnVersions(
+        "v1_8_R1",
+        "v1_8_R2",
+        "v1_8_R3",
+        "v1_9_R1",
+        "v1_9_R2",
+        "v1_10_R1",
+        "v1_11_R1",
+        "v1_12_R1",
+        "v1_13_R1",
+        "v1_13_R2",
+        "v1_14_R1",
+        "v1_15_R1",
+        "v1_16_R1",
+        "v1_16_R2",
+        "v1_16_R3",
+        "v1_17_R1",
+        "v1_18_R1"
+    )
 
     testImplementation(kotlin("test"))
 }

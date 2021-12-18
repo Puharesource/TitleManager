@@ -10,6 +10,7 @@ object NMSManager {
 
     val serverVersion: String
     val versionIndex: Int
+    val registry: TitleManagerNmsRegistry
 
     init {
         supportedVersions["v1_7_R4"] = 0
@@ -38,10 +39,7 @@ object NMSManager {
 
         serverVersion = version
         versionIndex = getVersionIndex(version)
-    }
-
-    private fun getVersionIndex(version: String) = supportedVersions.getOrElse(version) {
-        supportedVersions.values.maxOrNull() ?: -1
+        registry = TitleManagerNmsRegistry(version)
     }
 
     fun getClassProvider(): NMSClassProvider {
@@ -61,5 +59,9 @@ object NMSManager {
             12 -> Provider117
             else -> Provider117
         }
+    }
+
+    private fun getVersionIndex(version: String) = supportedVersions.getOrElse(version) {
+        supportedVersions.values.maxOrNull() ?: -1
     }
 }

@@ -7,6 +7,7 @@ import io.puharesource.mc.titlemanager.internal.config.TMConfigMain
 import io.puharesource.mc.titlemanager.internal.extensions.color
 import io.puharesource.mc.titlemanager.internal.extensions.format
 import io.puharesource.mc.titlemanager.internal.extensions.getFormattedTime
+import io.puharesource.mc.titlemanager.internal.extensions.getTitleManagerPlayer
 import io.puharesource.mc.titlemanager.internal.extensions.isInt
 import io.puharesource.mc.titlemanager.internal.extensions.stripColor
 import io.puharesource.mc.titlemanager.internal.placeholder.MvdwPlaceholderAPIHook
@@ -16,7 +17,6 @@ import io.puharesource.mc.titlemanager.internal.placeholder.PlaceholderTps
 import io.puharesource.mc.titlemanager.internal.placeholder.VanishHookReplacer
 import io.puharesource.mc.titlemanager.internal.placeholder.VaultHook
 import io.puharesource.mc.titlemanager.internal.reflections.NMSManager
-import io.puharesource.mc.titlemanager.internal.reflections.getPingWithFallback
 import io.puharesource.mc.titlemanager.internal.services.bungeecord.BungeeCordService
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
@@ -61,7 +61,7 @@ class PlaceholderServiceText @Inject constructor(
         )
         addPlaceholder(createPlaceholder("max", "max-players") { _ -> Bukkit.getServer().maxPlayers })
         addPlaceholder(createPlaceholder("world-players", "world-online") { player -> player.world.players.size })
-        addPlaceholder(createPlaceholder("ping") { player -> player.getPingWithFallback() })
+        addPlaceholder(createPlaceholder("ping") { player -> player.getTitleManagerPlayer().ping })
         addPlaceholder(
             createPlaceholder("tps") { _, value ->
                 if (value == null) {
