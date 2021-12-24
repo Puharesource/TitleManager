@@ -1,0 +1,118 @@
+@font-face {
+  font-family: 'minecraft';
+  src: local('minecraft'), url('/fonts/minecraft.woff') format('woff'), url('/fonts/minecraft.woff2') format('woff2');
+}
+
+.mc-font {
+  font-family: 'minecraft', serif !important;
+}
+
+.mc-format {
+
+}
+
+.mc-format-a input, .mc-format-a {
+  color: #55FF55 !important;
+  text-shadow: 0.1em 0.1em #153F15;
+}
+
+.mc-format-b input, .mc-format-b {
+  color: #55FFFF !important;
+  text-shadow: 0.1em 0.1em #153F3F;
+}
+
+.mc-format-c input, .mc-format-c {
+  color: #FF5555 !important;
+  text-shadow: 0.1em 0.1em #3F1515;
+}
+
+.mc-format-d input, .mc-format-d {
+  color: #FF55FF !important;
+  text-shadow: 0.1em 0.1em #3F153F;
+}
+
+.mc-format-e input, .mc-format-e {
+  color: #FFFF55 !important;
+  text-shadow: 0.1em 0.1em #3F3F15;
+}
+
+.mc-format-f input, .mc-format-f {
+  color: #FFFFFF !important;
+  text-shadow: 0.1em 0.1em #3F3F3F;
+}
+
+.mc-format-0 input, .mc-format-0 {
+  color: #000000 !important;
+  text-shadow: 0.1em 0.1em #000000;
+}
+
+.mc-format-1 input, .mc-format-1 {
+  color: #0000AA !important;
+  text-shadow: 0.1em 0.1em #00002A;
+}
+
+.mc-format-2 input, .mc-format-2 {
+  color: #00AA00 !important;
+  text-shadow: 0.1em 0.1em #002A00;
+}
+
+.mc-format-3 input, .mc-format-3 {
+  color: #00AAAA !important;
+  text-shadow: 0.1em 0.1em #002A2A;
+}
+
+.mc-format-4 input, .mc-format-4 {
+  color: #AA0000 !important;
+  text-shadow: 0.1em 0.1em #2A0000;
+}
+
+.mc-format-5 input, .mc-format-5 {
+  color: #AA00AA !important;
+  text-shadow: 0.1em 0.1em #2A002A;
+}
+
+.mc-format-6 input, .mc-format-6 {
+  color: #FFAA00 !important;
+  text-shadow: 0.1em 0.1em #2A2A00;
+}
+
+.mc-format-7 input, .mc-format-7 {
+  color: #AAAAAA !important;
+  text-shadow: 0.1em 0.1em #2A2A2A;
+}
+
+.mc-format-8 input, .mc-format-8 {
+  color: #555555 !important;
+  text-shadow: 0.1em 0.1em #151515;
+}
+
+.mc-format-9 input, .mc-format-9 {
+  color: #5555FF !important;
+  text-shadow: 0.1em 0.1em #15153F;
+}
+
+.mc-format-k input, .mc-format-k {
+
+}
+
+.mc-format-l input, .mc-format-l {
+  font-weight: bold !important;
+}
+
+.mc-format-m input, .mc-format-m {
+  text-decoration: line-through !important;
+  text-decoration-skip: spaces !important;
+}
+
+.mc-format-n input, .mc-format-n {
+  text-decoration: underline !important;
+  text-decoration-skip: spaces !important;
+}
+
+.mc-format-o input, .mc-format-o {
+  font-style: italic !important;
+}
+
+.mc-format-r input, .mc-format-r {
+
+}

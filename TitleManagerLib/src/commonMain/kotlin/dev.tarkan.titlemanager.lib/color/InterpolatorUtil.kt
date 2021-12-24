@@ -1,19 +1,27 @@
 package dev.tarkan.titlemanager.lib.color
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.js.JsName
 import kotlin.math.floor
 import kotlin.math.round
 
+@JsExport
+@ExperimentalJsExport
 object InterpolatorUtil {
     fun createConstantInterpolator(value: Float) = createInterpolator { value }
     fun createConstantHslInterpolator(hslColor: HslColor) = createInterpolator { hslColor }
     fun createConstantRgbInterpolator(color: Color) = createInterpolator { color }
 
+    @JsName("createRgbInterpolatorByte")
     fun createRgbInterpolator(start: ColorByte, end: ColorByte) = createRgbInterpolator(start.toColorFloat(), end.toColorFloat())
 
+    @JsName("createRgbInterpolatorFloat")
     fun createRgbInterpolator(start: ColorFloat, end: ColorFloat) = createInterpolator { percentage ->
         start * (ColorFloat.max - percentage) + end * percentage
     }
 
+    @JsName("createRgbInterpolator")
     fun createRgbInterpolator(start: Color, end: Color): Interpolator<Color> {
         val redInterpolator = createRgbInterpolator(start.red, end.red)
         val greenInterpolator = createRgbInterpolator(start.green, end.green)

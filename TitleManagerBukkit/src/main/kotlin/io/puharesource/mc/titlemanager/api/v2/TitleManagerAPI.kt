@@ -95,7 +95,7 @@ interface TitleManagerAPI {
     fun getRegisteredAnimations(): Map<String, Animation>
 
     /**
-     * Gets an immutable [Set] of all of the Script names registered.
+     * Gets an immutable [Set] of all the Script names registered.
      *
      * @return Gets the immutable $[Set] results.
      *
@@ -130,7 +130,7 @@ interface TitleManagerAPI {
      *
      * @param animation The animation to be used.
      * @param player The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
@@ -146,7 +146,7 @@ interface TitleManagerAPI {
      *
      * @param animation The animation to be used.
      * @param player The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
@@ -162,7 +162,7 @@ interface TitleManagerAPI {
      *
      * @param animation The animation to be used.
      * @param player The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
@@ -178,7 +178,7 @@ interface TitleManagerAPI {
      *
      * @param animation The animation to be used.
      * @param player The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
@@ -194,7 +194,7 @@ interface TitleManagerAPI {
      *
      * @param animation The animation to be used.
      * @param player The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
@@ -210,7 +210,7 @@ interface TitleManagerAPI {
      *
      * @param animation The animation to be used.
      * @param player The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the given player.
      *
@@ -227,7 +227,7 @@ interface TitleManagerAPI {
      * @param animation The animation to be used.
      * @param player The player the [SendableAnimation] is associated with.
      * @param index The index the text value should be set to.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the given player.
      *
@@ -243,7 +243,7 @@ interface TitleManagerAPI {
      *
      * @param parts The parts of the animation the [SendableAnimation] will be made off of.
      * @param player The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
@@ -259,7 +259,7 @@ interface TitleManagerAPI {
      *
      * @param parts The parts of the animation the [SendableAnimation] will be made off of.
      * @param player The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
@@ -275,7 +275,7 @@ interface TitleManagerAPI {
      *
      * @param parts The parts of the animation the [SendableAnimation] will be made off of.
      * @param player The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
@@ -291,7 +291,7 @@ interface TitleManagerAPI {
      *
      * @param parts The parts of the animation the [SendableAnimation] will be made off of.
      * @param player The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
@@ -307,7 +307,7 @@ interface TitleManagerAPI {
      *
      * @param parts The parts of the animation the [SendableAnimation] will be made off of.
      * @param player The player the [SendableAnimation] is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the animation.
      *
@@ -323,7 +323,7 @@ interface TitleManagerAPI {
      *
      * @param parts The animation parts to be used.
      * @param player The player the [List] of [AnimationPart]s is associated with.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [List] of [AnimationPart]s associated with the given player.
      *
@@ -340,7 +340,7 @@ interface TitleManagerAPI {
      * @param parts The animation to be used.
      * @param player The player the [SendableAnimation] is associated with.
      * @param index The index the text value should be set to.
-     * @param withPlaceholders Whether or not placeholders should be replaced.
+     * @param withPlaceholders Whether placeholders should be replaced.
      *
      * @return The [SendableAnimation] instance associated with the given player.
      *
@@ -378,7 +378,7 @@ interface TitleManagerAPI {
      *
      * @param text The text to be converted.
      *
-     * @return The instance of the immutable list with all of the Animation parts, that were converted from the text.
+     * @return The instance of the immutable list with all the Animation parts, that were converted from the text.
      *
      * @since 2.0.0
      */
@@ -666,12 +666,12 @@ interface TitleManagerAPI {
     fun sendProcessedTitles(player: Player, title: String, subtitle: String, fadeIn: Int, stay: Int, fadeOut: Int)
 
     /**
-     * Sets the timings for all of the next titles and subtitles sent to the [Player].
+     * Sets the timings for all the next titles and subtitles sent to the [Player].
      *
      * @param player The player the timings should be set for.
      * @param fadeIn The time it takes for all titles sent afterwards to fade onto the screen.
      * @param stay The time it takes for all titles sent afterwards to stay on the screen.
-     * @param fadeOut The time it takes for all titles sent afterwards to to fade off of the screen.
+     * @param fadeOut The time it takes for all titles sent afterwards to fade off of the screen.
      *
      * @since 2.0.0
      */
@@ -865,7 +865,6 @@ interface TitleManagerAPI {
     /**
      * Gives the [Player] a scoreboard as a sidebar.
      *
-     *
      * The scoreboard won't be displayed until at least one value has been added.
      *
      * @param player The player the scoreboard should be given to.
@@ -876,7 +875,6 @@ interface TitleManagerAPI {
 
     /**
      * Gives the [Player] a scoreboard as a sidebar.
-     *
      *
      * Gives you the TitleManager's own Scoreboard found in the config file.
      *
@@ -896,7 +894,7 @@ interface TitleManagerAPI {
     fun removeScoreboard(player: Player)
 
     /**
-     * Checks whether or not the given [Player] has a scoreboard assigned.
+     * Checks whether the given [Player] has a scoreboard assigned.
      *
      * @param player The player to check for.
      *
@@ -919,7 +917,6 @@ interface TitleManagerAPI {
     /**
      * Sets the title of the given [Player]'s scoreboard, if they have one assigned.
      *
-     *
      * If placeholders are available, the title will try to replace them.
      *
      * @param player The player to set the title for.
@@ -931,7 +928,6 @@ interface TitleManagerAPI {
 
     /**
      * Sets the title of the given [Player]'s scoreboard, if they have one assigned.
-     *
      *
      * If placeholders are available, the title will try to replace them.
      * If animations or scripts are available, they will be shown.
@@ -968,7 +964,6 @@ interface TitleManagerAPI {
     /**
      * Sets the text value of the given [Player]'s scoreboard at the given index.
      *
-     *
      * If placeholders are available, the value will try to replace them.
      *
      * @param player The player to set the text value for.
@@ -981,7 +976,6 @@ interface TitleManagerAPI {
 
     /**
      * Sets the text value of the given [Player]'s scoreboard at the given index.
-     *
      *
      * If placeholders are available, the value will try to replace them.
      * If animations or scripts are available, they will be shown.

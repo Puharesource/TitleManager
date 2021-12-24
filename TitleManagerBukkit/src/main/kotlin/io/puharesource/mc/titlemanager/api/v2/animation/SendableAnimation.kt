@@ -59,7 +59,7 @@ interface SendableAnimation {
     var isContinuous: Boolean
 
     /**
-     * Checks whether or not the animation is currently running.
+     * Checks whether the animation is currently running.
      *
      * If `true` the animation is running and scheduling sending of the frames.
      * If `false` the animation isn't running.

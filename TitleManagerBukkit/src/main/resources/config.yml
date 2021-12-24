@@ -98,6 +98,7 @@ player-list:
   - '&7Server time: &b%{server-time}'
   - ''
   - '${right-to-left} &b%{online}&7/&b%{max} &7Online Players ${left-to-right}'
+  - ''
 
 ############################################################
 # +------------------------------------------------------+ #

@@ -1,14 +1,21 @@
 package dev.tarkan.titlemanager.lib.color
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.js.JsName
 import kotlin.math.abs
 import kotlin.math.round
 
+@JsExport
+@ExperimentalJsExport
 data class HslColor(var hue: Float, var saturation: Float, var lightness: Float) {
     companion object {
         fun fromColor(color: Color) = fromRgb(color.red, color.green, color.blue)
 
+        @JsName("fromRgbByte")
         fun fromRgb(red: ColorByte, green: ColorByte, blue: ColorByte) = fromRgb(red.toColorFloat(), green.toColorFloat(), blue.toColorFloat())
 
+        @JsName("fromRgbFloat")
         fun fromRgb(red: ColorFloat, green: ColorFloat, blue: ColorFloat): HslColor {
             val max = red.value.coerceAtLeast(green.value.coerceAtLeast(blue.value))
             val min = red.value.coerceAtMost(green.value.coerceAtMost(blue.value))

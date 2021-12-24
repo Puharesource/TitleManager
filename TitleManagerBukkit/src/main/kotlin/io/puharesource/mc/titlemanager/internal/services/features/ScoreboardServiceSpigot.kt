@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 class ScoreboardServiceSpigot @Inject constructor(
-    private val plugin: io.puharesource.mc.titlemanager.TitleManagerPlugin,
+    private val plugin: TitleManagerPlugin,
     private val config: TMConfigMain,
     private val placeholderService: PlaceholderService,
     private val schedulerService: SchedulerService,

@@ -1,0 +1,33 @@
+.monospace {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.underline-item {
+  @apply select-none;
+
+  cursor: pointer;
+  position: relative;
+}
+
+.underline-item::after {
+  height: 2px;
+  width: 2rem;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #ff8457;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.25s;
+  content: '';
+}
+
+.underline-item:hover::after {
+  transform: scaleX(1);
+}
+
+.router-link-active:not(.exact).underline-item::after,
+.router-link-exact-active.exact.underline-item::after,
+.active.underline-item::after {
+  transform: scaleX(1);
+}

@@ -1,5 +1,10 @@
 package dev.tarkan.titlemanager.lib.sequences
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+
+@JsExport
+@ExperimentalJsExport
 abstract class TitleManagerSequence(val isLooping: Boolean) {
     var isDone: Boolean = false
 
@@ -24,5 +29,5 @@ abstract class TitleManagerSequence(val isLooping: Boolean) {
         }
     }
 
-    abstract fun createSequence(): Sequence<String>
+    protected abstract fun createSequence(): Sequence<String>
 }

@@ -1,5 +1,10 @@
 package dev.tarkan.titlemanager.lib.sequences
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+
+@JsExport
+@ExperimentalJsExport
 class MarqueeSequence(private val text: String, private val width: Int = text.length, isLooping: Boolean = true) : TitleManagerSequence(isLooping) {
     override fun createSequence() = sequence {
         val chars = text.toCharArray()
