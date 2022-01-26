@@ -276,7 +276,7 @@ dependencies {
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
     implementation(kotlin("stdlib-jdk8"))
     implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.6.0-native-mt")
-    implementation(group = "org.bstats", name = "bstats-bukkit", version = "2.2.1")
+    implementation(group = "org.bstats", name = "bstats-bukkit", version = "3.0.0")
 
     implementation(group = "com.destroystokyo.paper", name = "paper-api", version = "1.16.5-R0.1-SNAPSHOT")
 
