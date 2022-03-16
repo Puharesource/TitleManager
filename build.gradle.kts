@@ -284,7 +284,7 @@ dependencies {
     implementation(group = "me.clip", name = "placeholderapi", version = "2.11.1")
     implementation(group = "net.milkbowl.vault", name = "VaultAPI", version = "1.7") { isTransitive = false }
     implementation(group = "net.ess3", name = "EssentialsX", version = "2.17.1") { isTransitive = false }
-    implementation(group = "com.github.LeonMangler", name = "SuperVanish", version = "6.2.6-2") { isTransitive = false }
+    implementation(group = "com.github.LeonMangler", name = "SuperVanish", version = "6.2.7") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx", name = "CombatLogX-API", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx.expansions", name = "Notifier", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
 
