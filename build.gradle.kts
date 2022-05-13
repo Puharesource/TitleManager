@@ -3,17 +3,17 @@ plugins {
     idea
     `maven-publish`
 
-    kotlin("jvm") version "1.6.10"
-    kotlin("kapt") version "1.6.10"
+    kotlin("jvm") version "1.6.21"
+    kotlin("kapt") version "1.6.21"
 
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("org.jetbrains.dokka") version "1.6.10"
-    id("net.saliman.properties") version "1.5.1"
-    id("org.jmailen.kotlinter") version "3.8.0"
+    id("org.jetbrains.dokka") version "1.6.21"
+    id("net.saliman.properties") version "1.5.2"
+    id("org.jmailen.kotlinter") version "3.10.0"
 }
 
 group = "io.puharesource.mc"
-version = "2.3.6"
+version = "2.3.7"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -22,7 +22,6 @@ java {
 
 kotlinter {
     ignoreFailures = false
-    indentSize = 4
     reporters = arrayOf("checkstyle", "plain")
     experimentalRules = false
     disabledRules = arrayOf("import-ordering")
@@ -243,7 +242,7 @@ repositories {
 
     maven {
         name = "ess-repo"
-        url = uri("https://ci.ender.zone/plugin/repository/everything/")
+        url = uri("https://repo.essentialsx.net/releases/")
     }
 
     maven {
@@ -270,21 +269,21 @@ repositories {
 }
 
 dependencies {
-    implementation("com.google.dagger:dagger:2.40.5")
-    kapt("com.google.dagger:dagger-compiler:2.40.5")
+    implementation("com.google.dagger:dagger:2.42")
+    kapt("com.google.dagger:dagger-compiler:2.42")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
     implementation(kotlin("stdlib-jdk8"))
-    implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.6.0-native-mt")
-    implementation(group = "org.bstats", name = "bstats-bukkit", version = "2.2.1")
+    implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.6.1-native-mt")
+    implementation(group = "org.bstats", name = "bstats-bukkit", version = "3.0.0")
 
     implementation(group = "com.destroystokyo.paper", name = "paper-api", version = "1.16.5-R0.1-SNAPSHOT")
 
-    implementation(group = "be.maximvdw", name = "MVdWPlaceholderAPI", version = "3.0.1-SNAPSHOT") { isTransitive = false }
+    implementation(group = "be.maximvdw", name = "MVdWPlaceholderAPI", version = "3.1.1-SNAPSHOT") { isTransitive = false }
     implementation(group = "me.clip", name = "placeholderapi", version = "2.11.1")
     implementation(group = "net.milkbowl.vault", name = "VaultAPI", version = "1.7") { isTransitive = false }
-    implementation(group = "net.ess3", name = "EssentialsX", version = "2.17.1") { isTransitive = false }
-    implementation(group = "com.github.LeonMangler", name = "SuperVanish", version = "6.2.6-2") { isTransitive = false }
+    implementation(group = "net.essentialsx", name = "EssentialsX", version = "2.19.4") { isTransitive = false }
+    implementation(group = "com.github.LeonMangler", name = "SuperVanish", version = "6.2.7") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx", name = "CombatLogX-API", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
     implementation(group = "com.SirBlobman.combatlogx.expansions", name = "Notifier", version = "10.0.0.0-SNAPSHOT") { isTransitive = false }
 

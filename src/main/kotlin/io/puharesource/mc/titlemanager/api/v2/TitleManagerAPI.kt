@@ -671,7 +671,7 @@ interface TitleManagerAPI {
      * @param player The player the timings should be set for.
      * @param fadeIn The time it takes for all titles sent afterwards to fade onto the screen.
      * @param stay The time it takes for all titles sent afterwards to stay on the screen.
-     * @param fadeOut The time it takes for all titles sent afterwards to to fade off of the screen.
+     * @param fadeOut The time it takes for all titles sent afterwards to fade off of the screen.
      *
      * @since 2.0.0
      */

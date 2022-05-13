@@ -28,6 +28,7 @@ object NMSManager {
         supportedVersions["v1_16_R1"] = 10
         supportedVersions["v1_17_R1"] = 11
         supportedVersions["v1_18_R1"] = 12
+        supportedVersions["v1_18_R2"] = 13
 
         val pkg: String = Bukkit.getServer().javaClass.`package`.name
         var version = pkg.substring(pkg.lastIndexOf(".") + 1)
