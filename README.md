@@ -36,34 +36,43 @@ For Developers
 --------------
 
 #### The Repository
+Example for Gradle .kts:
+```kotlin
+maven("https://repo.tarkan.dev")
+```
+
 Example for Gradle:
 ```groovy
 maven {
-    name 'puharesource-repo'
-    url 'https://repo.puha.io/repo/'
+    url 'https://repo.tarkan.dev'
 }
 ```
 
 Example for Maven:
 ```xml
 <repository>
-  <id>puha-repo</id>
-  <url>https://repo.puha.io/repo/</url>
+  <id>tarkan-repo</id>
+  <url>https://repo.tarkan.dev</url>
 </repository>
 ```
 
 #### The dependency
+Example for Gradle .kts:
+```kotlin
+implementation('io.puharesource.mc:TitleManager:2.3.1')
+```  
+
 Example for Gradle:
 ```groovy
-compile group: 'io.puharesource.mc', name: 'TitleManager', version: '2.2.0'
-```  
+compile group: 'io.puharesource.mc', name: 'TitleManager', version: '2.3.1'
+```
 
 Example for Maven
 ```xml
 <dependency>
    <groupId>io.puharesource.mc</groupId>
    <artifactId>TitleManager</artifactId>
-   <version>2.2.0</version>
+   <version>2.3.1</version>
 </dependency>
 ```
 
