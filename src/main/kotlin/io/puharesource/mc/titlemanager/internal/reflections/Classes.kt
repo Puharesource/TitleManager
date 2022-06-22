@@ -30,7 +30,7 @@ class PlayerConnection : NMSClass() {
     private val classPacket: Class<*> = provider["Packet"].handle
     private val methodSendPacket: Method by lazy { clazz.getMethod("sendPacket", classPacket) }
 
-    val networkManager = clazz.getField("networkManager")
+    val networkManager = clazz.getField(if (NMSManager.versionIndex == 11) "a" else if (NMSManager.versionIndex == 12) "a" else if (NMSManager.versionIndex == 13) "b" else "networkManager")
 
     fun sendPacket(instance: Any, packet: Any): Any? = methodSendPacket.invoke(instance, packet) // NMSVersionIndex <= 2
 }
