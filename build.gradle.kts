@@ -271,7 +271,7 @@ repositories {
 
 dependencies {
     implementation("com.google.dagger:dagger:2.40.5")
-    kapt("com.google.dagger:dagger-compiler:2.40.5")
+    kapt("com.google.dagger:dagger-compiler:2.42")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
     implementation(kotlin("stdlib-jdk8"))
