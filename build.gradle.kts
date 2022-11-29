@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 
     kotlin("jvm") version "1.6.10"
-    kotlin("kapt") version "1.6.10"
+    kotlin("kapt") version "1.7.22"
 
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("org.jetbrains.dokka") version "1.6.10"
