@@ -196,7 +196,7 @@ object Provider116 : NMSClassProvider() {
 }
 
 /**
- * Provides classes for Minecraft 1.17 <=
+ * Provides classes for Minecraft 1.17 - 1.18
  */
 object Provider117 : NMSClassProvider() {
     init {
@@ -209,6 +209,24 @@ object Provider117 : NMSClassProvider() {
         "NetworkManager".associate(NET_MINECRAFT_NETWORK, "NetworkManager")
         "Packet".associate(NET_MINECRAFT_NETWORK, "protocol.Packet")
         "PacketPlayOutChat".associate(NET_MINECRAFT_NETWORK, "protocol.game.PacketPlayOutChat")
+        "PacketPlayOutPlayerListHeaderFooter".associate(NET_MINECRAFT_NETWORK, "protocol.game.PacketPlayOutPlayerListHeaderFooter")
+    }
+}
+
+/**
+ * Provides classes for Minecraft 1.19 <=
+ */
+object Provider119 : NMSClassProvider() {
+    init {
+        "ChatComponentText".associate(NET_MINECRAFT_NETWORK, "chat.IChatMutableComponent")
+        "IChatBaseComponent".associate(NET_MINECRAFT_NETWORK, "chat.IChatBaseComponent")
+        "ChatSerializer".associate(NET_MINECRAFT_NETWORK, "chat.IChatBaseComponent\$ChatSerializer")
+        "CraftPlayer".associate(ORG_BUKKIT_CRAFTBUKKIT, "entity.CraftPlayer")
+        "EntityPlayer".associate(NET_MINECRAFT_SERVER, "level.EntityPlayer")
+        "PlayerConnection".associate(NET_MINECRAFT_SERVER, "network.PlayerConnection")
+        "NetworkManager".associate(NET_MINECRAFT_NETWORK, "NetworkManager")
+        "Packet".associate(NET_MINECRAFT_NETWORK, "protocol.Packet")
+        "PacketPlayOutChat".associate(NET_MINECRAFT_NETWORK, "protocol.game.ClientboundSystemChatPacket")
         "PacketPlayOutPlayerListHeaderFooter".associate(NET_MINECRAFT_NETWORK, "protocol.game.PacketPlayOutPlayerListHeaderFooter")
     }
 }
