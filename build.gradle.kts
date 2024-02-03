@@ -9,7 +9,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("org.jetbrains.dokka") version "1.6.10"
     id("net.saliman.properties") version "1.5.1"
-    id("org.jmailen.kotlinter") version "3.8.0"
+    id("org.jmailen.kotlinter") version "3.14.0"
 }
 
 group = "io.puharesource.mc"
