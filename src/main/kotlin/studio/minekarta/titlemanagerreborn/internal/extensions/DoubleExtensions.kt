@@ -1,0 +1,16 @@
+package studio.minekarta.titlemanagerreborn.internal.extensions
+
+import studio.minekarta.titlemanagerreborn.internal.pluginConfig
+import java.math.BigDecimal
+
+internal fun Double.format(): String {
+    val numberFormat = pluginConfig.placeholders.numberFormat
+
+    if (numberFormat.enabled) {
+        val decimal = BigDecimal(this)
+
+        return numberFormat.format.format(decimal)
+    }
+
+    return toString()
+}

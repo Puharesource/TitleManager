@@ -3,17 +3,17 @@ plugins {
     idea
     `maven-publish`
 
-    kotlin("jvm") version "1.6.10"
-    kotlin("kapt") version "1.6.10"
+    kotlin("jvm") version "1.9.23"
+    kotlin("kapt") version "1.9.23"
 
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("org.jetbrains.dokka") version "1.6.10"
+    id("org.jetbrains.dokka") version "1.9.20"
     id("net.saliman.properties") version "1.5.1"
     id("org.jmailen.kotlinter") version "3.8.0"
 }
 
-group = "io.puharesource.mc"
-version = "2.3.6"
+group = "studio.minekarta"
+version = "1.0.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -46,11 +46,11 @@ tasks {
             include(dependency("org.bstats:.*"))
         }
 
-        relocate("kotlin", "io.puharesource.mc.titlemanager.shaded.kotlin")
-        relocate("org.jetbrains", "io.puharesource.mc.titlemanager.shaded.org.jetbrains")
-        relocate("dagger", "io.puharesource.mc.titlemanager.shaded.dagger")
-        relocate("javax.inject", "io.puharesource.mc.titlemanager.shaded.javax.inject")
-        relocate("org.bstats", "io.puharesource.mc.titlemanager.shaded.org.bstats")
+        relocate("kotlin", "studio.minekarta.titlemanagerreborn.shaded.kotlin")
+        relocate("org.jetbrains", "studio.minekarta.titlemanagerreborn.shaded.org.jetbrains")
+        relocate("dagger", "studio.minekarta.titlemanagerreborn.shaded.dagger")
+        relocate("javax.inject", "studio.minekarta.titlemanagerreborn.shaded.javax.inject")
+        relocate("org.bstats", "studio.minekarta.titlemanagerreborn.shaded.org.bstats")
     }
 
     dokkaHtml {
@@ -76,17 +76,17 @@ tasks {
 
                 sourceLink {
                     localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(uri("https://github.com/Puharesource/TitleManager/tree/master/src/main/kotlin").toURL())
+                    remoteUrl.set(uri("https://github.com/MinekartaStudio/TitleManagerReborn/tree/master/src/main/kotlin").toURL())
                     remoteLineSuffix.set("#L")
                 }
 
                 perPackageOption {
-                    matchingRegex.set("io.puharesource.mc.titlemanager.api.v2.*")
+                    matchingRegex.set("studio.minekarta.titlemanagerreborn.api.v2.*")
                     suppress.set(false)
                 }
 
                 perPackageOption {
-                    matchingRegex.set("io.puharesource.mc.titlemanager.*")
+                    matchingRegex.set("studio.minekarta.titlemanagerreborn.*")
                     suppress.set(true)
                 }
             }
@@ -116,17 +116,17 @@ tasks {
 
                 sourceLink {
                     localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(uri("https://github.com/Puharesource/TitleManager/tree/master/src/main/kotlin").toURL())
+                    remoteUrl.set(uri("https://github.com/MinekartaStudio/TitleManagerReborn/tree/master/src/main/kotlin").toURL())
                     remoteLineSuffix.set("#L")
                 }
 
                 perPackageOption {
-                    matchingRegex.set("io.puharesource.mc.titlemanager.api.v2.*")
+                    matchingRegex.set("studio.minekarta.titlemanagerreborn.api.v2.*")
                     suppress.set(false)
                 }
 
                 perPackageOption {
-                    matchingRegex.set("io.puharesource.mc.titlemanager.*")
+                    matchingRegex.set("studio.minekarta.titlemanagerreborn.*")
                     suppress.set(true)
                 }
             }
@@ -149,14 +149,14 @@ tasks {
         archiveClassifier.set("api")
 
         from(sourceSets.main.get().output.classesDirs)
-        include("io/puharesource/mc/titlemanager/api/v2/**")
+        include("studio/minekarta/titlemanagerreborn/api/v2/**")
     }
 
     val publishJar by creating(Jar::class) {
         archiveClassifier.set(null as String?)
 
         from(sourceSets.main.get().output.classesDirs)
-        include("io/puharesource/mc/titlemanager/api/v2/**")
+        include("studio/minekarta/titlemanagerreborn/api/v2/**")
     }
 
     val sourcesJar by creating(Jar::class) {
@@ -182,11 +182,12 @@ tasks {
     }
 }
 
+
 publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Puharesource/TitleManager")
+            url = uri("https://maven.pkg.github.com/MinekartaStudio/TitleManagerReborn")
 
             credentials {
                 username = (findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME")) as? String
@@ -200,10 +201,10 @@ publishing {
             pom {
                 developers {
                     developer {
-                        id.set("pmtn")
-                        name.set("Tarkan Nielsen")
-                        email.set("pmtarkan@gmail.com")
-                        url.set("https://tarkan.dev")
+                        id.set("MinekartaStudio")
+                        name.set("MinekartaStudio")
+                        email.set("support@minekarta.com")
+                        url.set("https://minekarta.com")
                     }
                 }
             }
@@ -246,10 +247,6 @@ repositories {
         url = uri("https://ci.ender.zone/plugin/repository/everything/")
     }
 
-    maven {
-        name = "placeholderapi"
-        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-    }
 
     maven {
         name = "mvdw-software"
@@ -263,15 +260,15 @@ repositories {
 
     maven {
         name = "paper"
-        url = uri("https://papermc.io/repo/repository/maven-public/")
+        url = uri("https://repo.papermc.io/repository/maven-public/")
     }
 
     maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
-    implementation("com.google.dagger:dagger:2.40.5")
-    kapt("com.google.dagger:dagger-compiler:2.40.5")
+    implementation("com.google.dagger:dagger:2.51.1")
+    kapt("com.google.dagger:dagger-compiler:2.51.1")
 
     implementation(group = "javax.inject", name = "javax.inject", version = "1")
     implementation(kotlin("stdlib-jdk8"))
@@ -281,7 +278,7 @@ dependencies {
     implementation(group = "com.destroystokyo.paper", name = "paper-api", version = "1.16.5-R0.1-SNAPSHOT")
 
     implementation(group = "be.maximvdw", name = "MVdWPlaceholderAPI", version = "3.0.1-SNAPSHOT") { isTransitive = false }
-    implementation(group = "me.clip", name = "placeholderapi", version = "2.11.1")
+    implementation(group = "com.github.PlaceholderAPI", name = "placeholderapi", version = "2.11.1")
     implementation(group = "net.milkbowl.vault", name = "VaultAPI", version = "1.7") { isTransitive = false }
     implementation(group = "net.ess3", name = "EssentialsX", version = "2.17.1") { isTransitive = false }
     implementation(group = "com.github.LeonMangler", name = "SuperVanish", version = "6.2.6-2") { isTransitive = false }

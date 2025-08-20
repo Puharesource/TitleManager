@@ -1,6 +1,6 @@
-import io.puharesource.mc.titlemanager.internal.color.HslColor
-import io.puharesource.mc.titlemanager.internal.color.Interpolator
-import io.puharesource.mc.titlemanager.internal.color.InterpolatorUtil
+import studio.minekarta.titlemanagerreborn.internal.color.HslColor
+import studio.minekarta.titlemanagerreborn.internal.color.Interpolator
+import studio.minekarta.titlemanagerreborn.internal.color.InterpolatorUtil
 import java.awt.Color
 import java.awt.Font
 import java.awt.RenderingHints

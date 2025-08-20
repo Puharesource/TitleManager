@@ -1,9 +1,9 @@
-name: TitleManager
-version: @VERSION@
-author: Puharesource
+name: TitleManagerReborn
+version: 1.0.0
+author: MinekartaStudio
 api-version: 1.13
 
-main: io.puharesource.mc.titlemanager.TitleManagerPlugin
+main: studio.minekarta.titlemanagerreborn.TitleManagerReborn
 softdepend: [Vault, Essentials, VanishNoPacket, PlaceholderAPI, SuperVanish, PremiumVanish, MVdWPlaceholderAPI, CombatLogX]
 
 commands:

@@ -1,1 +1,1 @@
-rootProject.name = "TitleManager"
+rootProject.name = "TitleManagerReborn"
