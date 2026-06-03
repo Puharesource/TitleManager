@@ -167,13 +167,14 @@ class TitleManagerPluginDiagnosticsTest : TitleManagerPluginMockBukkitTestSuppor
         val server = MockBukkit.mock()
 
         try {
-            MockBukkit.load(TitleManagerPlugin::class.java)
+            val plugin = MockBukkit.load(TitleManagerPlugin::class.java)
+            val pluginVersion = plugin.pluginVersion
 
             server.executeConsole("titlemanager", "diagnostics").apply {
                 assertTrue(hasSucceeded())
                 assertEquals("TitleManager diagnostics", sender.nextMessage())
                 assertEquals("Mode: normal", sender.nextMessage())
-                assertEquals("Plugin version: 3.0.0-SNAPSHOT", sender.nextMessage())
+                assertEquals("Plugin version: $pluginVersion", sender.nextMessage())
                 assertTrue(sender.nextMessage()!!.startsWith("Server: "))
                 assertTrue(sender.nextMessage()!!.startsWith("Bukkit API:"))
                 assertTrue(sender.nextMessage()!!.startsWith("Version module: bukkit-api"))
@@ -218,13 +219,14 @@ class TitleManagerPluginDiagnosticsTest : TitleManagerPluginMockBukkitTestSuppor
                 VersionModuleSelector(listOf(ThreadRecordingRuntimeModuleFactory(module)))
             }
 
-            MockBukkit.load(TitleManagerPlugin::class.java)
+            val plugin = MockBukkit.load(TitleManagerPlugin::class.java)
+            val pluginVersion = plugin.pluginVersion
 
             server.executeConsole("titlemanager", "diagnostics").apply {
                 assertTrue(hasSucceeded())
                 assertEquals("TitleManager diagnostics", sender.nextMessage())
                 assertEquals("Mode: normal", sender.nextMessage())
-                assertEquals("Plugin version: 3.0.0-SNAPSHOT", sender.nextMessage())
+                assertEquals("Plugin version: $pluginVersion", sender.nextMessage())
                 assertTrue(sender.nextMessage()!!.startsWith("Server: "))
                 assertTrue(sender.nextMessage()!!.startsWith("Bukkit API:"))
                 assertEquals("Version module: thread-recording-test", sender.nextMessage())

@@ -165,6 +165,7 @@ class TitleManagerPluginSafeModeTest : TitleManagerPluginMockBukkitTestSupport()
 
         try {
             val plugin = server.pluginManager.loadPlugin(TitleManagerPlugin::class.java, emptyArray()) as TitleManagerPlugin
+            val pluginVersion = plugin.pluginVersion
             writeInvalidAdvancedConfig(plugin.dataFolder.toPath().resolve("advanced.yml"))
 
             server.pluginManager.enablePlugin(plugin)
@@ -185,7 +186,7 @@ class TitleManagerPluginSafeModeTest : TitleManagerPluginMockBukkitTestSupport()
                 assertTrue(hasSucceeded())
                 assertEquals("TitleManager diagnostics", sender.nextMessage())
                 assertEquals("Mode: safe-mode", sender.nextMessage())
-                assertEquals("Plugin version: 3.0.0-SNAPSHOT", sender.nextMessage())
+                assertEquals("Plugin version: $pluginVersion", sender.nextMessage())
                 assertTrue(sender.nextMessage()!!.startsWith("Server: "))
                 assertTrue(sender.nextMessage()!!.startsWith("Bukkit API:"))
                 assertEquals("Version module: unavailable (runtime not started)", sender.nextMessage())
@@ -202,7 +203,7 @@ class TitleManagerPluginSafeModeTest : TitleManagerPluginMockBukkitTestSupport()
 
             server.executeConsole("titlemanager", "version").apply {
                 assertTrue(hasSucceeded())
-                assertEquals("TitleManager v3.0.0-SNAPSHOT is running in safe mode.", sender.nextMessage())
+                assertEquals("TitleManager v$pluginVersion is running in safe mode.", sender.nextMessage())
                 assertNull(sender.nextMessage())
             }
         } finally {
@@ -295,6 +296,7 @@ class TitleManagerPluginSafeModeTest : TitleManagerPluginMockBukkitTestSupport()
 
         try {
             val plugin = server.pluginManager.loadPlugin(TitleManagerPlugin::class.java, emptyArray()) as TitleManagerPlugin
+            val pluginVersion = plugin.pluginVersion
             val advancedConfigFile = plugin.dataFolder.toPath().resolve("advanced.yml")
             writeInvalidAdvancedConfig(advancedConfigFile)
 
@@ -325,7 +327,7 @@ class TitleManagerPluginSafeModeTest : TitleManagerPluginMockBukkitTestSupport()
                 assertTrue(hasSucceeded())
                 val versionMessage = sender.nextMessage()!!
                 assertTrue(versionMessage.contains("Running TitleManager"))
-                assertTrue(versionMessage.contains("v3.0.0-SNAPSHOT"))
+                assertTrue(versionMessage.contains("v$pluginVersion"))
                 assertNull(sender.nextMessage())
             }
 
@@ -349,6 +351,7 @@ class TitleManagerPluginSafeModeTest : TitleManagerPluginMockBukkitTestSupport()
 
         try {
             val plugin = server.pluginManager.loadPlugin(TitleManagerPlugin::class.java, emptyArray()) as TitleManagerPlugin
+            val pluginVersion = plugin.pluginVersion
             writeInvalidAdvancedConfig(plugin.dataFolder.toPath().resolve("advanced.yml"))
 
             server.pluginManager.enablePlugin(plugin)
@@ -364,7 +367,7 @@ class TitleManagerPluginSafeModeTest : TitleManagerPluginMockBukkitTestSupport()
 
             server.executeConsole("titlemanager", "version").apply {
                 assertTrue(hasSucceeded())
-                assertEquals("TitleManager v3.0.0-SNAPSHOT is running in safe mode.", sender.nextMessage())
+                assertEquals("TitleManager v$pluginVersion is running in safe mode.", sender.nextMessage())
                 assertNull(sender.nextMessage())
             }
         } finally {
