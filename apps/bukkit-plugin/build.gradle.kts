@@ -1,5 +1,6 @@
 import io.papermc.hangarpublishplugin.model.Platforms
 import org.gradle.api.file.DuplicatesStrategy
+import java.util.zip.ZipFile
 
 plugins {
     kotlin("jvm")
@@ -145,28 +146,40 @@ tasks {
                 .matching { include("dev/tarkan/titlemanager/shaded/net/thauvin/erik/urlencoder/UrlEncoderUtil.class") }
                 .files
                 .isNotEmpty()
-            val unrelocatedShadedLibraries = archiveEntries
-                .matching {
-                    include("_COROUTINE/**")
-                    include("com/charleskorn/kaml/**")
-                    include("dagger/**")
-                    include("de/comahe/i18n4k/**")
-                    include("it/krzeminski/**")
-                    include("javax/inject/**")
-                    include("kotlin/**")
-                    include("kotlinx/**")
-                    include("okio/**")
-                    include("org/apache/commons/**")
-                    include("org/bstats/**")
-                    include("org/jetbrains/**")
-                    include("org/koin/**")
-                    include("org/slf4j/**")
-                    include("org/snakeyaml/**")
-                    include("org/sqlite/**")
-                    include("net/kyori/**")
+            val classEntries = ZipFile(archive).use { zipFile ->
+                zipFile.entries().asSequence()
+                    .map { it.name }
+                    .filter { it.endsWith(".class") }
+                    .toList()
+            }
+            val unexpectedClassEntries = classEntries
+                .filterNot { entry ->
+                    entry.startsWith("dev/tarkan/titlemanager/") ||
+                        (entry.startsWith("META-INF/versions/") && "/dev/tarkan/titlemanager/" in entry)
                 }
-                .files
-                .map { it.path.substringAfter("${archive.name}!") }
+                .sorted()
+            val unrelocatedShadedLibraries = classEntries
+                .filter { entry ->
+                    listOf(
+                        "_COROUTINE/",
+                        "com/charleskorn/kaml/",
+                        "dagger/",
+                        "de/comahe/i18n4k/",
+                        "it/krzeminski/",
+                        "javax/inject/",
+                        "kotlin/",
+                        "kotlinx/",
+                        "okio/",
+                        "org/apache/commons/",
+                        "org/bstats/",
+                        "org/jetbrains/",
+                        "org/koin/",
+                        "org/slf4j/",
+                        "org/snakeyaml/",
+                        "org/sqlite/",
+                        "net/kyori/"
+                    ).any(entry::startsWith)
+                }
                 .sorted()
 
             val containsPaperweightNmsModuleClasses = paperweightNmsModules.associate { (nmsVersion, _) ->
@@ -242,6 +255,9 @@ tasks {
             }
             check(containsLegacySpigotRuntimeClass) {
                 "Shadow jar does not contain legacy Spigot runtime fallback classes"
+            }
+            check(unexpectedClassEntries.isEmpty()) {
+                "Shadow jar contains classes outside dev.tarkan.titlemanager packages: ${unexpectedClassEntries.take(20)}"
             }
             check(containsLegacySpigotTitleRuntimeClass) {
                 "Shadow jar does not contain title-only legacy Spigot runtime fallback classes"
