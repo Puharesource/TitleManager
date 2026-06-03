@@ -73,11 +73,6 @@ jobs:
           -PtitleManagerJvmVersion=${{ steps.context.outputs.gradle_version }}
           -PtitleManagerCoreVersion=${{ steps.context.outputs.gradle_version }}
 
-      - name: Migrate legacy Maven artifacts
-        env:
-          LEGACY_MAVEN_REPOSITORY_URL: ${{ vars.LEGACY_MAVEN_REPOSITORY_URL || 'https://repo.tarkan.dev/' }}
-        run: node .github/scripts/migrate-legacy-maven-repo.mjs
-
       - name: Add Maven repository index
         run: python3 .github/scripts/write-maven-index.py
 
