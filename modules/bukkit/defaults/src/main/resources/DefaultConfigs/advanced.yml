@@ -1,0 +1,7 @@
+threadPoolSize: 4
+debug: false
+usingConfig: true
+usingBungeeCord: false
+checkForUpdates: false
+preventDuplicatePackets: true
+databaseConnectionString: "username"

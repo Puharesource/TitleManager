@@ -1,0 +1,28 @@
+---
+id: broadcast-title-command
+title: Broadcast Title Command
+---
+
+Broadcasts a title message to all players on the server. You can include `<nl>`, `{nl}`, or `%\nl%` in the message to
+add a subtitle.
+
+## Syntax
+
+```
+/tm bc [parameters] <message>
+/tm broadcast [parameters] <message>
+```
+
+## Arguments
+
+- **`[parameters]`**: Optional parameters to modify the broadcast behavior.
+- **`<message>`**: The main message to be displayed as the title.
+
+## Supported Parameters
+
+- **`-silent`**: Suppresses any response text from the command.
+- **`-fadein=ticks`, `-fade-in=ticks`**: Specifies the duration in ticks for the title to fade onto the screen. Example: `-fadein=20` sets the fade-in time to 20 ticks (1 second).
+- **`-stay=ticks`**: Specifies the duration in ticks for the title to remain visible. Example: `-stay=40` sets the stay time to 40 ticks (2 seconds).
+- **`-fadeout=ticks`, `-fade-out=ticks`**: Specifies the duration in ticks for the title to fade off the screen. Example: `-fadeout=20` sets the fade-out time to 20 ticks (1 second).
+- **`-world`, `-world=WorldName`**: Restricts the broadcast to a specific world. `-world` uses the sender's current world when the sender is a player. `-world=world_nether` targets that named world.
+- **`-radius=distance`**: Restricts the broadcast to players within a radius in blocks of the sender. Decimal distances are supported. Example: `-radius=10.5`.

@@ -1,0 +1,38 @@
+{
+  "name": "titlemanager-docs-site",
+  "version": "3.0.0-SNAPSHOT",
+  "private": true,
+  "scripts": {
+    "generate:defaults": "node scripts/generate-default-docs.mjs",
+    "prepare:core": "node scripts/copy-core.mjs",
+    "start": "npm run generate:defaults && npm run prepare:core && docusaurus start --host 127.0.0.1",
+    "build": "npm run generate:defaults && npm run prepare:core && docusaurus build",
+    "serve": "docusaurus serve --host 127.0.0.1",
+    "clear": "docusaurus clear",
+    "build:vite": "npm run prepare:core && vite build",
+    "dev:vite": "npm run prepare:core && vite --host 127.0.0.1",
+    "check": "npm run build && npm run build:vite",
+    "vp:check": "vp check"
+  },
+  "dependencies": {
+    "@docusaurus/core": "3.10.1",
+    "@docusaurus/preset-classic": "3.10.1",
+    "@mdx-js/react": "3.1.1",
+    "clsx": "2.1.1",
+    "prism-react-renderer": "2.4.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.10.1",
+    "@docusaurus/tsconfig": "3.10.1",
+    "@docusaurus/types": "3.10.1",
+    "@vitejs/plugin-react": "5.1.1",
+    "typescript": "6.0.3",
+    "vite": "npm:rolldown-vite@7.3.1",
+    "vite-plus": "0.1.24"
+  },
+  "overrides": {
+    "vite": "npm:rolldown-vite@7.3.1"
+  }
+}

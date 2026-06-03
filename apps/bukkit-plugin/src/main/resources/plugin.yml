@@ -1,0 +1,56 @@
+name: TitleManager
+version: ${version}
+author: Puharesource
+api-version: 1.13
+
+main: dev.tarkan.titlemanager.bukkit.plugin.TitleManagerPlugin
+softdepend: [PlaceholderAPI, Vault, CombatLogX]
+
+commands:
+  titlemanager:
+    description: 'The TitleManager commands.'
+    aliases: 'tm'
+
+permissions:
+  titlemanager.command.version:
+    description: 'Allows checking the TitleManager version.'
+    default: op
+  titlemanager.command.reload:
+    description: 'Allows reloading TitleManager configuration.'
+    default: op
+  titlemanager.command.animations:
+    description: 'Allows listing registered TitleManager animations.'
+    default: op
+  titlemanager.command.scripts:
+    description: 'Allows checking legacy TitleManager script support.'
+    default: op
+  titlemanager.command.diagnostics:
+    description: 'Allows viewing TitleManager runtime diagnostics.'
+    default: op
+  titlemanager.command.sidebar.toggle:
+    description: 'Allows toggling your TitleManager sidebar.'
+    default: op
+  titlemanager.command.playerlist.toggle:
+    description: 'Allows toggling your TitleManager player list.'
+    default: op
+  titlemanager.command.title.broadcast:
+    description: 'Allows broadcasting TitleManager titles.'
+    default: op
+  titlemanager.command.title.message:
+    description: 'Allows sending TitleManager titles to players.'
+    default: op
+  titlemanager.command.title.toggle:
+    description: 'Allows toggling your TitleManager welcome title.'
+    default: op
+  titlemanager.command.actionbar.broadcast:
+    description: 'Allows broadcasting TitleManager actionbars.'
+    default: op
+  titlemanager.command.actionbar.message:
+    description: 'Allows sending TitleManager actionbars to players.'
+    default: op
+  titlemanager.command.actionbar.toggle:
+    description: 'Allows toggling your TitleManager welcome actionbar.'
+    default: op
+  titlemanager.update.notify:
+    description: 'Allows receiving TitleManager update notifications.'
+    default: op

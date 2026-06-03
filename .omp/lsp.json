@@ -1,0 +1,16 @@
+{
+  "idleTimeoutMs": 300000,
+  "kotlin-lsp": {
+    "command": "kotlin-lsp",
+    "fileTypes": [".kt", ".kts"],
+    "rootMarkers": ["settings.gradle.kts", "build.gradle.kts", "gradle.properties", ".git"],
+    "warmupTimeoutMs": 120000
+  },
+  "typescript-language-server": {
+    "command": "apps/web-viewer/node_modules/.bin/typescript-language-server",
+    "args": ["--stdio"],
+    "fileTypes": [".ts", ".tsx", ".js", ".jsx"],
+    "rootMarkers": ["apps/web-viewer/tsconfig.json", "apps/web-viewer/package.json", ".git"],
+    "warmupTimeoutMs": 30000
+  }
+}

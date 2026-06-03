@@ -1,0 +1,269 @@
+:root {
+  color: #e5eefb;
+  background: #111827;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.viewer {
+  box-sizing: border-box;
+  min-height: 100vh;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #38bdf8;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  line-height: 1;
+}
+
+.intro {
+  max-width: 760px;
+  color: #b6c2d3;
+  line-height: 1.6;
+}
+
+.editor-label {
+  display: block;
+  margin: 32px 0 8px;
+  font-weight: 700;
+}
+
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 180px;
+  resize: vertical;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 16px;
+  color: #e5eefb;
+  background: #020617;
+  font: 1rem/1.5 "SFMono-Regular", Consolas, monospace;
+}
+
+.timing-scale-label {
+  display: grid;
+  gap: 6px;
+  max-width: 360px;
+  margin: 16px 0 0;
+  color: #b6c2d3;
+  font-weight: 700;
+}
+
+.timing-scale-label span {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.timing-scale-label input {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: #e5eefb;
+  background: #020617;
+  font: inherit;
+}
+
+.limits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 16px 0 0;
+  border: 1px solid #1f2a44;
+  border-radius: 16px;
+  padding: 16px;
+  background: #0b1220;
+}
+
+.limits legend {
+  padding: 0 8px;
+  color: #b6c2d3;
+  font-weight: 700;
+}
+
+.limits label {
+  display: grid;
+  gap: 6px;
+  color: #b6c2d3;
+  font-size: 0.9rem;
+}
+
+.limits input {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: #e5eefb;
+  background: #020617;
+  font: inherit;
+}
+
+.summary {
+  margin: 16px 0;
+  color: #7dd3fc;
+  white-space: pre-wrap;
+}
+
+.summary.error {
+  color: #fca5a5;
+}
+
+.preview-card {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0;
+  border: 1px solid #1f2a44;
+  border-radius: 18px;
+  padding: 18px;
+  background: linear-gradient(135deg, #0b1220, #111827);
+}
+
+.preview-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.preview-toolbar label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: #b6c2d3;
+  font-weight: 700;
+}
+
+.preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.preview-toolbar button {
+  border: 1px solid #38bdf8;
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: #e5eefb;
+  background: rgba(56, 189, 248, 0.12);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.preview-toolbar button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.preview-output {
+  min-height: 74px;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 20px;
+  background: #020617;
+  font-size: clamp(1.4rem, 4vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: pre-wrap;
+}
+
+.preview-seek-label {
+  display: grid;
+  gap: 8px;
+  color: #b6c2d3;
+  font-weight: 700;
+}
+
+.preview-seek-label span {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.preview-seek-label input {
+  width: 100%;
+  accent-color: #38bdf8;
+}
+
+.preview-seek-label input:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.preview-status {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.share-status {
+  margin: -8px 0 0;
+  color: #7dd3fc;
+  font-size: 0.9rem;
+}
+
+.timeline {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline li {
+  display: grid;
+  grid-template-columns: minmax(120px, 180px) 1fr;
+  gap: 16px;
+  align-items: baseline;
+  border: 1px solid #1f2a44;
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #0f172a;
+}
+
+.time {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.text {
+  white-space: pre-wrap;
+}
+
+.obfuscated {
+  filter: blur(1px);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

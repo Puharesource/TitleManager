@@ -1,0 +1,113 @@
+---
+id: built-in-animation-examples
+title: Built-in Animation Examples
+---
+
+import AnimationPreview from "@site/src/components/AnimationPreview";
+
+These examples render locally in Docusaurus using the same TitleManager Kotlin/JS web library used by the web viewer. They do not embed an external site.
+
+The examples use the default `sunset` gradient from `gradients.yml` where a named gradient is required.
+
+## `shine`
+
+```text
+${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}
+```
+
+<AnimationPreview
+  title={"shine"}
+  text={"${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}"}
+  scale={50}
+/>
+
+## `marquee`
+
+```text
+${marquee:[0;2;0][20]Scrolling text}
+```
+
+<AnimationPreview title={"marquee"} text={"${marquee:[0;2;0][20]Scrolling text}"} scale={50} />
+
+## `text_write`
+
+```text
+${text_write:Typed text}
+```
+
+<AnimationPreview title={"text_write"} text={"${text_write:Typed text}"} scale={50} />
+
+## `text_delete`
+
+```text
+${text_delete:Deleted text}
+```
+
+<AnimationPreview title={"text_delete"} text={"${text_delete:Deleted text}"} scale={50} />
+
+## `countdown`
+
+```text
+${countdown:10}
+```
+
+<AnimationPreview title={"countdown"} text={"${countdown:10}"} scale={50} />
+
+## `cycle`
+
+```text
+${cycle:sunset}&m----------------------------------
+```
+
+<AnimationPreview
+  title={"cycle"}
+  kind={"cycle"}
+  label={"----------------------------------"}
+  gradient={"#833AB4,#FD1D1D,#FCB045"}
+/>
+
+## `gradient`
+
+```text
+${gradient:[sunset]Gradient text}
+```
+
+<AnimationPreview
+  title={"gradient"}
+  text={"Gradient text"}
+  kind={"gradient"}
+  gradient={"#833AB4,#FD1D1D,#FCB045"}
+/>
+
+## `cgradient`
+
+```text
+${cgradient:[sunset]Clamped gradient text}
+```
+
+<AnimationPreview
+  title={"cgradient"}
+  text={"Clamped gradient text"}
+  kind={"cgradient"}
+  gradient={"#833AB4,#FD1D1D,#FCB045"}
+/>
+
+## Default animation files
+
+Fresh installs also include file-backed placeholders for the player-list footer.
+
+### `left-to-right`
+
+```text
+${left-to-right}
+```
+
+<AnimationPreview title={"left-to-right"} preset={"left-to-right"} scale={50} />
+
+### `right-to-left`
+
+```text
+${right-to-left}
+```
+
+<AnimationPreview title={"right-to-left"} preset={"right-to-left"} scale={50} />

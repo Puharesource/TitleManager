@@ -1,0 +1,66 @@
+---
+id: actionbar-messages
+title: Actionbar Messages
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Actionbar messages are displayed above the hotbar. TitleManager returns a session for each API-sent actionbar.
+
+## Sending an actionbar message
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+TitleManagerSession session = api.sendActionbar(player, "Quest complete!");
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val session = api.sendActionbar(player, "Quest complete!")
+```
+
+</TabItem>
+</Tabs>
+
+## Clearing the actionbar
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+api.clearActionbar(player);
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+api.clearActionbar(player)
+```
+
+</TabItem>
+</Tabs>
+
+You can also close the returned session:
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+session.close();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+session.close()
+```
+
+</TabItem>
+</Tabs>

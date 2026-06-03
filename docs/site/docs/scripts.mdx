@@ -1,0 +1,67 @@
+---
+id: scripts
+title: Animation Placeholders
+---
+
+import AnimationPreview from "@site/src/components/AnimationPreview";
+
+TitleManager Next does not execute legacy script files. Arbitrary scripting is disabled, and servers with legacy files in `plugins/TitleManager/scripts/` enter safe mode until those files are removed or migrated manually.
+
+Use registered animation placeholders instead. They work in titles, actionbars, player-list text, sidebars, and animation files.
+
+## Core placeholders
+
+```text
+${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}
+${marquee:[0;2;0][20]Scrolling text}
+${text_write:Typed text}
+${text_delete:Deleted text}
+${countdown:10}
+```
+
+<AnimationPreview
+  title={"core placeholders"}
+  text={"${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}"}
+  scale={50}
+/>
+
+## Gradient placeholders
+
+Gradient placeholders use names from `gradients.yml`.
+
+```text
+${cycle:sunset}
+${gradient:[sunset]Gradient text}
+${cgradient:[sunset]Clamped gradient text}
+```
+
+<AnimationPreview
+  title={"cycle"}
+  kind={"cycle"}
+  label={"\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588"}
+  gradient={"#833AB4,#FD1D1D,#FCB045"}
+/>
+
+<AnimationPreview
+  title={"gradient"}
+  text={"Gradient text"}
+  kind={"gradient"}
+  gradient={"#833AB4,#FD1D1D,#FCB045"}
+/>
+
+<AnimationPreview
+  title={"cgradient"}
+  text={"Clamped gradient text"}
+  kind={"cgradient"}
+  gradient={"#833AB4,#FD1D1D,#FCB045"}
+/>
+
+`cycle` produces a changing color from the selected gradient. `gradient` and `cgradient` apply a gradient across the supplied text.
+
+## File-backed placeholders
+
+Every `plugins/TitleManager/animations/<name>.txt` file registers `${name}`. Fresh installs include `${left-to-right}` and `${right-to-left}`.
+
+<AnimationPreview title={"left-to-right"} preset={"left-to-right"} scale={50} />
+
+<AnimationPreview title={"right-to-left"} preset={"right-to-left"} scale={50} />

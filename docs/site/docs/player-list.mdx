@@ -1,0 +1,57 @@
+---
+id: player-list
+title: Player List
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The player-list header and footer are displayed above and below the <kbd>TAB</kbd> player list.
+
+## Setting the header and footer
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+TitleManagerSession session = api.setPlayerListHeaderAndFooter(
+                player,
+                "My Server",
+                "Online: %{online}/%{max}"
+            );
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val session = api.setPlayerListHeaderAndFooter(
+                player,
+                header = "My Server",
+                footer = "Online: %{online}/%{max}"
+            )
+```
+
+</TabItem>
+</Tabs>
+
+## Clearing the header and footer
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+api.clearPlayerListHeaderAndFooter(player);
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+api.clearPlayerListHeaderAndFooter(player)
+```
+
+</TabItem>
+</Tabs>
+
+Closing the returned session clears the player-list text if that session is still active.

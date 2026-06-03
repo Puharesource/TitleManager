@@ -1,0 +1,31 @@
+---
+id: api-reference
+title: API Reference
+---
+
+# API Reference
+
+TitleManager publishes local API reference sites as part of the Docusaurus build.
+
+- <a href="/api/javadoc/index.html">JavaDoc reference</a> uses Dokka's JavaDoc publication for
+  Java-oriented Bukkit plugin integrations.
+- <a href="/api/kotlin/index.html">Dokka Kotlin reference</a> uses Dokka's HTML publication for
+  Kotlin-oriented Bukkit plugin integrations.
+- <a href="/api/kotlin/titlemanager-core/index.html">Dokka Kotlin core reference</a> documents the
+  shared `titlemanager-core` artifact used by the Bukkit API and browser previews.
+
+The references are generated from `titlemanager-bukkit-api` and `titlemanager-core`, then copied into `docs/site/static/api/` by `./gradlew buildDocsSite`.
+
+## Build locally
+
+```bash
+./gradlew syncApiReferenceDocs buildDocsSite
+```
+
+The generated static routes are:
+
+| Reference         | Route                                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| JavaDoc           | <a href="/api/javadoc/index.html">`/api/javadoc/index.html`</a>                                   |
+| Dokka Kotlin      | <a href="/api/kotlin/index.html">`/api/kotlin/index.html`</a>                                     |
+| Dokka Kotlin Core | <a href="/api/kotlin/titlemanager-core/index.html">`/api/kotlin/titlemanager-core/index.html`</a> |

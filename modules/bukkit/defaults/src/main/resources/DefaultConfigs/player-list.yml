@@ -1,0 +1,52 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                     Player list                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Toggles this feature.
+enabled: true
+
+# Minimum delay between animated player-list updates in milliseconds.
+updateIntervalMilliseconds: 50
+
+# Sets the header of the player list.
+header: |-
+  
+  ${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}
+  &r
+
+# Sets the footer of the player list.
+footer: |-
+  
+  &7World time: &b%{12h-world-time}
+  &7Server time: &b%{server-time}
+  
+  
+  ${right-to-left} &b%{online}&7/&b%{max} &7Online Players ${left-to-right}
+
+############################################################
+# +------------------------------------------------------+ #
+# |             World specific configuration             | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Each key under "worlds" is the name of the world that you want to the specific header/footer in.
+# Setting enabled to false, will disable the header and footer in the given world.
+# Otherwise, the configuration is the exact same as before, just specific to the world you're configuring.
+worlds:
+  "world_nether":
+    enabled: true
+    updateIntervalMilliseconds: 50
+    header: |-
+      
+      ${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}
+      &r
+
+    footer: |-
+      
+      &7World time: &b%{12h-world-time}
+      &7Server time: &b%{server-time}
+      
+      
+      ${right-to-left} &b%{online}&7/&b%{max} &7Online Players ${left-to-right}

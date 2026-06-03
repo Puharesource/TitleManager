@@ -1,0 +1,120 @@
+---
+id: getting-started
+title: Getting started
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Use the Bukkit service API when another plugin needs to send TitleManager-managed output.
+
+## Dependency
+
+The API module is `dev.tarkan.titlemanager:modules:bukkit:api:3.0.0-SNAPSHOT`. Add it as a compile-only dependency and make your plugin depend on or soft-depend on TitleManager.
+
+<Tabs>
+<TabItem value="gradle-kotlin-dsl" label="Gradle Kotlin DSL">
+
+```kotlin
+dependencies {
+                compileOnly("dev.tarkan.titlemanager:modules:bukkit:api:3.0.0-SNAPSHOT")
+            }
+```
+
+</TabItem>
+<TabItem value="gradle-groovy-dsl" label="Gradle Groovy DSL">
+
+```groovy
+dependencies {
+                compileOnly 'dev.tarkan.titlemanager:modules:bukkit:api:3.0.0-SNAPSHOT'
+            }
+```
+
+</TabItem>
+<TabItem value="maven" label="Maven">
+
+```xml
+            <dependency>
+                <groupId>dev.tarkan.titlemanager</groupId>
+                <artifactId>titlemanager-bukkit-api</artifactId>
+                <version>3.0.0-SNAPSHOT</version>
+                <scope>provided</scope>
+            </dependency>
+
+```
+
+</TabItem>
+</Tabs>
+
+Use the repository where your build publishes TitleManager artifacts. Do not shade the API into your plugin.
+
+## `plugin.yml`
+
+Use `depend` if your plugin requires TitleManager to start:
+
+```yaml
+depend: [TitleManager]
+```
+
+Use `softdepend` if your plugin can run without TitleManager:
+
+```yaml
+softdepend: [TitleManager]
+```
+
+## Accessing the API
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+import dev.tarkan.titlemanager.bukkit.api.TitleManagerApi;
+            import dev.tarkan.titlemanager.bukkit.api.TitleManagerServices;
+
+            TitleManagerApi api = TitleManagerServices.get(this);
+            if (api != null) {
+                api.sendActionbar(player, "Hello from my plugin");
+            }
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+import dev.tarkan.titlemanager.bukkit.api.TitleManagerServices
+
+            val api = TitleManagerServices.get(this)
+            api?.sendActionbar(player, "Hello from my plugin")
+```
+
+</TabItem>
+</Tabs>
+
+Use `TitleManagerServices.require(plugin)` when TitleManager is a hard dependency and absence should fail immediately.
+
+## Sessions
+
+Methods that apply visible output return a `TitleManagerSession`. Closing the session clears that output if it is still the active session for the player.
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+TitleManagerSession session = api.setSidebar(
+                player,
+                "Stats",
+                List.of("Kills: 10", "Coins: 25")
+            );
+            session.close();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val session = api.setSidebar(player, "Stats", listOf("Kills: 10", "Coins: 25"))
+            session.close()
+```
+
+</TabItem>
+</Tabs>

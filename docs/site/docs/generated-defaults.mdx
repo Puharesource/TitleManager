@@ -1,0 +1,349 @@
+---
+id: generated-defaults
+title: Generated Default Files
+---
+
+# Generated Default Files
+
+This page is generated from `modules/bukkit/defaults/src/main/resources` so the documentation stays aligned with the files shipped in the plugin jar.
+
+## `DefaultConfigs/advanced.yml`
+
+```yaml
+threadPoolSize: 4
+debug: false
+usingConfig: true
+usingBungeeCord: false
+checkForUpdates: false
+preventDuplicatePackets: true
+databaseConnectionString: "username"
+```
+
+## `DefaultConfigs/player-list.yml`
+
+```yaml
+############################################################
+# +------------------------------------------------------+ #
+# |                     Player list                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Toggles this feature.
+enabled: true
+
+# Minimum delay between animated player-list updates in milliseconds.
+updateIntervalMilliseconds: 50
+
+# Sets the header of the player list.
+header: |-
+  
+  ${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}
+  &r
+
+# Sets the footer of the player list.
+footer: |-
+  
+  &7World time: &b%{12h-world-time}
+  &7Server time: &b%{server-time}
+  
+  
+  ${right-to-left} &b%{online}&7/&b%{max} &7Online Players ${left-to-right}
+
+############################################################
+# +------------------------------------------------------+ #
+# |             World specific configuration             | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Each key under "worlds" is the name of the world that you want to the specific header/footer in.
+# Setting enabled to false, will disable the header and footer in the given world.
+# Otherwise, the configuration is the exact same as before, just specific to the world you're configuring.
+worlds:
+  "world_nether":
+    enabled: true
+    updateIntervalMilliseconds: 50
+    header: |-
+      
+      ${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}
+      &r
+
+    footer: |-
+      
+      &7World time: &b%{12h-world-time}
+      &7Server time: &b%{server-time}
+      
+      
+      ${right-to-left} &b%{online}&7/&b%{max} &7Online Players ${left-to-right}
+```
+
+## `DefaultConfigs/welcome-title.yml`
+
+```yaml
+enabled: true
+delayMilliseconds: 1000
+title: "Welcome to My Server"
+subtitle: "Hope you enjoy your stay"
+fadeIn: 20
+stay: 40
+fadeOut: 20
+firstJoin:
+  enabled: true
+  delayMilliseconds: 1000
+  title: "Welcome to My Server"
+  subtitle: "Hope you enjoy your stay"
+  fadeIn: 20
+  stay: 40
+  fadeOut: 20
+worlds:
+  "world_nether":
+    enabled: true
+    delayMilliseconds: 1000
+    title: "${shine:[0;2;0][&4;&c]Welcome to My Server}"
+    subtitle: "&cHope you enjoy your stay"
+    fadeIn: 20
+    stay: 40
+    fadeOut: 20
+
+  "world_the_end":
+    enabled: true
+    delayMilliseconds: 1000
+    title: "&5Welcome to the End!"
+    subtitle: "&dHope you enjoy your stay"
+    fadeIn: 20
+    stay: 40
+    fadeOut: 20
+```
+
+## `DefaultConfigs/welcome-actionbar.yml`
+
+```yaml
+enabled: true
+delayMilliseconds: 1000
+title: "Welcome to My Server"
+firstJoin:
+  enabled: true
+  delayMilliseconds: 1000
+  title: "Welcome to My Server"
+worlds:
+  "world_the_end":
+    enabled: true
+    delayMilliseconds: 1000
+    title: "${shine:[0;2;0][&5;&d]Welcome to My Server}"
+```
+
+## `DefaultConfigs/scoreboard.yml`
+
+```yaml
+############################################################
+# +------------------------------------------------------+ #
+# |                      Scoreboard                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Toggles this feature.
+enabled: true
+
+# Minimum delay between animated scoreboard updates in milliseconds.
+updateIntervalMilliseconds: 50
+
+# The title displayed at the very top of the scoreboard.
+# The title must consist of 32 or fewer characters (this includes color codes).
+title: "${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}"
+
+# The content of the scoreboard (Maximum of 15 lines allowed)
+# Each line can only have 40 characters (this includes color codes)
+content: |-
+  ${cycle:sunset}&m----------------------------------
+  &b> &3&lPlayer Name:
+  &b%{name}
+
+  &b> &3&lOnline:
+  &b%{online} players
+  
+  &b> &3&lServer Time:
+  &b%{server-time}
+  ${cycle:sunset}&m----------------------------------
+
+############################################################
+# +------------------------------------------------------+ #
+# |             World specific configuration             | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Each key under "worlds" is the name of the world that you want to the specific scoreboard in.
+# Setting enabled to false, will disable scoreboards in the given world.
+# Otherwise, the configuration is the exact same as before, just specific to the world you're configuring.
+
+worlds:
+  "world_nether":
+    enabled: true
+    updateIntervalMilliseconds: 50
+    title: "${shine:[0;2;0][0;25;0][0;25;0][&4;&c]My Server}"
+    content: |-
+      &c&m----------------------------------
+      &c> &4&lPlayer Name:
+      &c%{name}
+      
+      &c> &4&lOnline:
+      &c%{online} players
+      
+      &c> &4&lServer Time:
+      &c%{server-time}
+      &c&m----------------------------------
+  "world_the_end":
+    enabled: false
+```
+
+## `DefaultConfigs/gradients.yml`
+
+```yaml
+############################################################
+# +------------------------------------------------------+ #
+# |                       Gradients                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Defines all the gradients usable by TitleManager's RGB animations.
+# Each key under gradients is a new gradient and will be used as the name when using gradient animations.
+
+gradients:
+  sunset:
+    # The color space used when creating gradients can affect the outcome of the gradients.
+    # Currently, the only color space available is HSL and HSL Long.
+    # "HSL" will take the shortest way around the color circle, creating nice seamless gradients.
+    # "HSL Long" will take the longest way around the color circle, going through a lot of different colors to get there.
+    colorSpace: 'HSL'
+
+    # How many points in the gradient should be displayed.
+    # The higher the number the smoother the gradient, but also the higher the memory usage.
+    # Generally a precision of 100 should be fine, but for very large gradients, a higher number might look slightly nicer.
+    precision: 100
+
+    # RGB colors defined in a standard HEX format. #000000 for black, #FFFFFF for white and so on.
+    colors:
+      - '#833AB4'
+      - '#FD1D1D'
+      - '#FCB045'
+
+  sublime-vivid:
+    colorSpace: 'HSL'
+    precision: 100
+    colors:
+      - '#FC466B'
+      - '#3F5EFB'
+
+  pink-flavour:
+    colorSpace: 'HSL'
+    precision: 100
+    colors:
+      - '#800080'
+      - '#ffc0cb'
+
+  orange-fun:
+    colorSpace: 'HSL'
+    precision: 100
+    colors:
+      - '#fc4a1a'
+      - '#f7b733'
+
+  argon:
+    colorSpace: 'HSL'
+    precision: 100
+    colors:
+      - '#03001e'
+      - '#7303c0'
+      - '#ec38bc'
+      - '#fdeff9'
+
+  rainbow:
+    colorSpace: 'HSL Long'
+    precision: 100
+    colors:
+      - '#FF0000'
+      - '#FF0001'
+```
+
+## `DefaultConfigs/announcer.yml`
+
+```yaml
+############################################################
+# +------------------------------------------------------+ #
+# |                      Announcer                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Toggles automatic title/actionbar announcements.
+# Fresh TitleManager Next installs keep this disabled so example messages are
+# not broadcast unexpectedly. Legacy config migration preserves enabled state.
+enabled: false
+
+# Each announcement runs on its own interval in seconds. Titles and actionbars
+# share one index, matching legacy TitleManager behavior:
+# the first title pairs with the first actionbar, the second with the second,
+# and missing entries are skipped.
+announcements:
+  example:
+    interval: 60
+    timings:
+      fadeIn: 20
+      stay: 40
+      fadeOut: 20
+    titles:
+      - "&aThis is the 1st title announcement<nl>&aThis is the subtitle"
+      - "&bThis is the 2nd title announcement<nl>&bThis is the subtitle"
+    actionbar:
+      - "&aThis is the 1st actionbar announcement"
+      - "&bThis is the 2nd actionbar announcement"
+```
+
+## `DefaultConfigs/hooks.yml`
+
+```yaml
+combatLogX: true
+```
+
+## `DefaultAnimations/left-to-right.txt`
+
+```text
+[0;5;0]&7&b-&7---------
+[0;2;0]&7-&b-&7--------
+[0;2;0]&7--&b-&7-------
+[0;2;0]&7---&b-&7------
+[0;2;0]&7----&b-&7-----
+[0;2;0]&7-----&b-&7----
+[0;2;0]&7------&b-&7---
+[0;2;0]&7-------&b-&7--
+[0;2;0]&7--------&b-&7-
+[0;5;0]&7---------&b-&7
+[0;2;0]&7--------&b-&7-
+[0;2;0]&7-------&b-&7--
+[0;2;0]&7------&b-&7---
+[0;2;0]&7-----&b-&7----
+[0;2;0]&7----&b-&7-----
+[0;2;0]&7---&b-&7------
+[0;2;0]&7--&b-&7-------
+[0;2;0]&7-&b-&7--------
+```
+
+## `DefaultAnimations/right-to-left.txt`
+
+```text
+[0;5;0]&7---------&b-&7
+[0;2;0]&7--------&b-&7-
+[0;2;0]&7-------&b-&7--
+[0;2;0]&7------&b-&7---
+[0;2;0]&7-----&b-&7----
+[0;2;0]&7----&b-&7-----
+[0;2;0]&7---&b-&7------
+[0;2;0]&7--&b-&7-------
+[0;2;0]&7-&b-&7--------
+[0;5;0]&7&b-&7---------
+[0;2;0]&7-&b-&7--------
+[0;2;0]&7--&b-&7-------
+[0;2;0]&7---&b-&7------
+[0;2;0]&7----&b-&7-----
+[0;2;0]&7-----&b-&7----
+[0;2;0]&7------&b-&7---
+[0;2;0]&7-------&b-&7--
+[0;2;0]&7--------&b-&7-
+```

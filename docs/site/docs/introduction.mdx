@@ -1,0 +1,21 @@
+---
+id: introduction
+title: Introduction
+slug: /
+---
+
+TitleManager is a Bukkit, Spigot, and Paper plugin for customizing the player-facing presentation of your Minecraft server. It can show welcome titles, actionbar messages, player-list headers and footers, sidebars, announcements, placeholders, gradients, and file-backed animations.
+
+The current documentation targets TitleManager 3.0.0-SNAPSHOT.
+
+## Key features
+
+- **Welcome titles and actionbars**: greet new and returning players with configurable timings and per-world overrides.
+- **Player list customization**: configure animated headers and footers shown in the <kbd>TAB</kbd> player list.
+- **Sidebar scoreboard**: show up to 15 animated lines using Bukkit scoreboard output.
+- **Animations**: use built-in animation placeholders, RGB gradient animations, and `plugins/TitleManager/animations/*.txt` files.
+- **Placeholders**: combine TitleManager placeholders with PlaceholderAPI, Vault, and BungeeCord-aware values when those integrations are available.
+- **Safe mode and diagnostics**: broken configuration loads into a limited command mode instead of leaving the plugin unusable.
+- **Developer API**: call a small Bukkit service API for titles, actionbars, player-list text, and sidebars.
+
+Use `/tm diagnostics` after startup to confirm which runtime module and integrations TitleManager selected for your server.

@@ -1,0 +1,58 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                      Scoreboard                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Toggles this feature.
+enabled: true
+
+# Minimum delay between animated scoreboard updates in milliseconds.
+updateIntervalMilliseconds: 50
+
+# The title displayed at the very top of the scoreboard.
+# The title must consist of 32 or fewer characters (this includes color codes).
+title: "${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}"
+
+# The content of the scoreboard (Maximum of 15 lines allowed)
+# Each line can only have 40 characters (this includes color codes)
+content: |-
+  ${cycle:sunset}&m----------------------------------
+  &b> &3&lPlayer Name:
+  &b%{name}
+
+  &b> &3&lOnline:
+  &b%{online} players
+  
+  &b> &3&lServer Time:
+  &b%{server-time}
+  ${cycle:sunset}&m----------------------------------
+
+############################################################
+# +------------------------------------------------------+ #
+# |             World specific configuration             | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Each key under "worlds" is the name of the world that you want to the specific scoreboard in.
+# Setting enabled to false, will disable scoreboards in the given world.
+# Otherwise, the configuration is the exact same as before, just specific to the world you're configuring.
+
+worlds:
+  "world_nether":
+    enabled: true
+    updateIntervalMilliseconds: 50
+    title: "${shine:[0;2;0][0;25;0][0;25;0][&4;&c]My Server}"
+    content: |-
+      &c&m----------------------------------
+      &c> &4&lPlayer Name:
+      &c%{name}
+      
+      &c> &4&lOnline:
+      &c%{online} players
+      
+      &c> &4&lServer Time:
+      &c%{server-time}
+      &c&m----------------------------------
+  "world_the_end":
+    enabled: false

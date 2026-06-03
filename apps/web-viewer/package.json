@@ -1,0 +1,19 @@
+{
+  "name": "titlemanager-web-viewer",
+  "version": "3.0.0-SNAPSHOT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare:core": "node scripts/prepare-core.mjs",
+    "build": "npm run prepare:core && npm run build:no-prepare --",
+    "build:no-prepare": "tsc --noEmit && vite build",
+    "dev": "npm run prepare:core && vite --host 127.0.0.1"
+  },
+  "dependencies": {
+    "vite": "8.0.14"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "typescript-language-server": "5.3.0"
+  }
+}

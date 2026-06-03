@@ -1,0 +1,65 @@
+---
+id: placeholders
+title: Placeholders
+---
+
+TitleManager provides placeholders that dynamically display values such as player names and server statistics. These
+placeholders can be used in titles, headers, footers, and other text elements.
+
+PlaceholderAPI placeholders are applied after TitleManager's built-in placeholders when PlaceholderAPI is installed and
+enabled.
+
+:::warning[Important Note]
+Integration placeholders with unavailable runtime dependencies fail configuration validation instead of being rendered as
+unknown text.
+:::
+
+## Standard Placeholders
+
+The following placeholders are natively supported by TitleManager:
+
+| Placeholder                                                                                                                                                           | Description                                                                                                                                                                                |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| <p><code>%\{name}</code></p><p><code>%\{username}</code></p><p><code>%\{player}</code></p>                                                                            | The player's username.                                                                                                                                                                     |
+| <p><code>%\{displayname}</code></p><p><code>%\{display-name}</code></p><p><code>%\{nickname}</code></p><p><code>%\{nick}</code></p>                                   | The player's display name (nickname).                                                                                                                                                      |
+| <p><code>%\{strippeddisplayname}</code></p><p><code>%\{stripped-displayname}</code></p><p><code>%\{stripped-nickname}</code></p><p><code>%\{stripped-nick}</code></p> | The player's display name without color codes.                                                                                                                                             |
+| <p><code>%\{world}</code></p><p><code>%\{world-name}</code></p>                                                                                                       | The name of the world the player is currently in.                                                                                                                                          |
+| <p><code>%\{world-time}</code></p>                                                                                                                                    | The current time in the player's world.                                                                                                                                                    |
+| <p><code>%\{12h-world-time}</code></p>                                                                                                                                | The current time in the player's world in 12-hour format.                                                                                                                                  |
+| <p><code>%\{24h-world-time}</code></p>                                                                                                                                | The current time in the player's world in 24-hour format.                                                                                                                                  |
+| <p><code>%\{world-online}</code></p><p><code>%\{world-players}</code></p>                                                                                             | The number of players currently in the same world as the player.                                                                                                                           |
+| <p><code>%\{online}</code></p><p><code>%\{online-players}</code></p><p><code>%\{online:Server}</code></p><p><code>%\{online-players:Server}</code></p>                | The total number of players on the server. When BungeeCord integration is enabled, server-name data resolves per-server network counts.                                                    |
+| <p><code>%\{bungeecord-online}</code></p><p><code>%\{bungeecord-online-players}</code></p>                                                                            | The total online players across known BungeeCord servers.                                                                                                                                  |
+| <p><code>%\{server}</code></p><p><code>%\{server-name}</code></p>                                                                                                     | The current BungeeCord server name when BungeeCord integration is enabled.                                                                                                                 |
+| <p><code>%\{safe-online}</code></p><p><code>%\{safe-online-players}</code></p>                                                                                        | The number of online players visible to the current player according to Bukkit's direct visibility API.                                                                                    |
+| <p><code>%\{max}</code></p><p><code>%\{max-players}</code></p>                                                                                                        | The maximum player capacity of the server.                                                                                                                                                 |
+| <p><code>%\{server-time}</code></p>                                                                                                                                   | The current server time.                                                                                                                                                                   |
+| <p><code>%\{ping}</code></p>                                                                                                                                          | The player's ping in milliseconds.                                                                                                                                                         |
+| <p><code>%\{balance}</code></p><p><code>%\{money}</code></p>                                                                                                          | The player's Vault economy balance, formatted with the configured number format. Requires Vault API classes at runtime.                                                                    |
+| <p><code>%\{group}</code></p><p><code>%\{group-name}</code></p>                                                                                                       | The player's primary Vault permissions group. Requires Vault API classes at runtime.                                                                                                       |
+| <p><code>%\{tps}</code></p><p><code>%\{tps:1}</code></p><p><code>%\{tps:5}</code></p><p><code>%\{tps:15}</code></p><p><code>%\{tps:short}</code></p>                  | Server ticks per second from Paper's one-, five-, and fifteen-minute TPS samples.                                                                                                          |
+| <p><code>%\{c:#ff0000}</code></p><p><code>%\{color:#ff0000}</code></p><p><code>%\{colour:#ff0000}</code></p>                                                          | Inserts a legacy RGB color code for the following text on modern servers.                                                                                                                  |
+| <p><code>%\{gradient:[#ff0000,#00ff00]Text}</code></p>                                                                                                                | Inserts old-style RGB gradient color codes across the supplied text. Optional flags include <code>bold</code>, <code>strikethrough</code>, <code>underline</code>, and <code>magic</code>. |
+
+## Integration Availability
+
+Vault placeholders require matching Vault services to be registered at startup. `%{balance}` and `%{money}` require an
+economy provider; `%{group}` and `%{group-name}` require a permissions provider with group support. If enabled
+config-driven text uses Vault placeholders without the needed provider, TitleManager rejects the configuration during
+startup validation instead of rendering unknown or misleading text.
+
+`%{server}`, `%{server-name}`, `%{bungeecord-online}`, and `%{bungeecord-online-players}` require BungeeCord integration
+to be enabled in `advanced.yml`. Enabled config-driven text that uses those placeholders without BungeeCord enabled is
+rejected during startup validation. `%{online:Server}` remains valid with BungeeCord disabled and falls back to the local
+online-player count, matching legacy TitleManager behavior.
+
+## Custom Placeholder Aliases
+
+`placeholder.yml` can define simple custom aliases. Each key becomes a `%{key}` placeholder and renders the configured
+string value.
+
+## Tips for Using Placeholders
+
+- Combine placeholders with animations for dynamic and visually appealing effects.
+- Use the configuration file to customize placeholders based on your server's requirements.
+- If you encounter issues with special characters in placeholders, refer to the [Troubleshooting Guide](./troubleshooting).

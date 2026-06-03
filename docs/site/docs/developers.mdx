@@ -1,0 +1,83 @@
+---
+id: developers
+title: Developers
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The **Developers** section provides documentation and examples for integrating TitleManager into other plugins and tools.
+
+## Bukkit plugin API
+
+Use `titlemanager-bukkit-api` when another Bukkit, Spigot, or Paper plugin needs to send managed titles, actionbars, player-list text, or sidebars. See [Getting started](./getting-started) for dependency and service lookup examples.
+
+Generated [JavaDoc and Dokka Kotlin API references](./api-reference) are built into the docs site.
+
+## Shared animation core
+
+The `titlemanager-core` module is the runtime-independent animation library. It has no Bukkit, Spigot, Paper, or NMS dependency, and is the source of truth for animation parsing, deterministic timeline generation, legacy color rendering, gradient formatting, and typed title line splitting.
+
+Minecraft runtime modules and the browser viewer should consume this shared core instead of reimplementing animation behavior. That keeps plugin output and web previews aligned.
+
+### JVM usage
+
+Use `TitleManagerCoreApi` when you need a stable API boundary from plugins, tests, or tooling:
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+TitleManagerTimelineResult timeline = TitleManagerCoreApi.INSTANCE.createAnimationTimelineWithSafetyLimits(
+                "[50]Hello\n[50]&aWorld",
+                1,
+                10_000,
+                500,
+                2_000,
+                100_000
+            );
+
+            if (timeline.isSuccess()) {
+                for (TitleManagerTimelineFrame frame : timeline.getFrames()) {
+                    System.out.println(frame.getStartMilliseconds() + "ms: " + frame.getText());
+                }
+            }
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val timeline = TitleManagerCoreApi.createAnimationTimelineWithSafetyLimits(
+                text = "[50]Hello\n[50]&aWorld",
+                timingScale = 1,
+                maxInputCharacters = 10_000,
+                maxLines = 500,
+                maxFrames = 2_000,
+                maxOutputCharacters = 100_000
+            )
+
+            if (timeline.isSuccess) {
+                timeline.frames.forEach { frame ->
+                    println("${frame.startMilliseconds}ms: ${frame.text}")
+                }
+            }
+```
+
+</TabItem>
+</Tabs>
+
+### JavaScript and web usage
+
+The Gradle build publishes the Kotlin/JS production library into the web viewer's generated package directory. The generated TypeScript declarations are guarded by the build so browser tooling can rely on:
+
+- `createAnimationTimelineWithSafetyLimits(...)`
+- `renderLegacyText(...)`
+- `splitTypedLineBreak(...)`
+- `TitleManagerTimelineFrame`
+
+The web viewer uses these APIs directly for its frame list, live preview, preview scrubber, and timeline JSON export.
+
+### Safety limits
+
+Always use the safety-limited timeline API for untrusted input. Large or accidentally infinite animations should return structured errors through `TitleManagerTimelineResult.errors` instead of hanging a server thread or browser tab.

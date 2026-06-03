@@ -1,0 +1,2 @@
+[500]line 1 ${countdown:5}
+[500]line 2 ${countdown:3}

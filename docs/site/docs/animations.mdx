@@ -1,0 +1,111 @@
+---
+id: animations
+title: Animations
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import AnimationPreview from "@site/src/components/AnimationPreview";
+
+Animations render changing text in titles, actionbars, player-list text, sidebars, and other animation files.
+
+## Animation files
+
+Animation files live in `plugins/TitleManager/animations/` and use the file name as the placeholder name. For example, `example-animation.txt` is used as `${example-animation}`.
+
+Fresh installs include:
+
+- `left-to-right.txt`
+- `right-to-left.txt`
+
+These files are used by the default player-list footer. TitleManager copies them when they are missing or empty and does not overwrite existing non-empty files.
+
+## Frame format
+
+Each line is one frame. Prefix a frame with timing data to control how long it stays visible:
+
+```text
+[fadeIn;stay;fadeOut]Frame text
+```
+
+For simple frame animations, the default files use `[0;stay;0]`.
+
+## Built-in animation placeholders
+
+| Placeholder                                | Description                                           |
+| ------------------------------------------ | ----------------------------------------------------- |
+| `${shine:[timing][primary;secondary]Text}` | Moves a shine color across text.                      |
+| `${marquee:[timing][width]Text}`           | Scrolls text through a fixed-width window.            |
+| `${text_write:Text}`                       | Types text one character at a time.                   |
+| `${text_delete:Text}`                      | Deletes text one character at a time.                 |
+| `${countdown:10}`                          | Counts down from a number.                            |
+| `${cycle:gradient-name}`                   | Cycles through a named gradient from `gradients.yml`. |
+| `${gradient:[gradient-name]Text}`          | Applies a named gradient across text.                 |
+| `${cgradient:[gradient-name]Text}`         | Applies a clamped named gradient across text.         |
+
+See [Built-in Animation Examples](./built-in-animation-examples) for live local previews of every built-in animation placeholder.
+
+<AnimationPreview
+  title={"shine preview"}
+  text={"${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}"}
+  scale={50}
+/>
+
+## Default player-list animations
+
+<Tabs>
+<TabItem value="left-to-right-txt" label="left-to-right.txt">
+
+```left-to-right
+[0;5;0]&7&b-&7---------
+          [0;2;0]&7-&b-&7--------
+          [0;2;0]&7--&b-&7-------
+          [0;2;0]&7---&b-&7------
+          [0;2;0]&7----&b-&7-----
+          [0;2;0]&7-----&b-&7----
+          [0;2;0]&7------&b-&7---
+          [0;2;0]&7-------&b-&7--
+          [0;2;0]&7--------&b-&7-
+          [0;5;0]&7---------&b-&7
+          [0;2;0]&7--------&b-&7-
+          [0;2;0]&7-------&b-&7--
+          [0;2;0]&7------&b-&7---
+          [0;2;0]&7-----&b-&7----
+          [0;2;0]&7----&b-&7-----
+          [0;2;0]&7---&b-&7------
+          [0;2;0]&7--&b-&7-------
+          [0;2;0]&7-&b-&7--------
+```
+
+</TabItem>
+<TabItem value="right-to-left-txt" label="right-to-left.txt">
+
+```right-to-left
+[0;5;0]&7---------&b-&7
+          [0;2;0]&7--------&b-&7-
+          [0;2;0]&7-------&b-&7--
+          [0;2;0]&7------&b-&7---
+          [0;2;0]&7-----&b-&7----
+          [0;2;0]&7----&b-&7-----
+          [0;2;0]&7---&b-&7------
+          [0;2;0]&7--&b-&7-------
+          [0;2;0]&7-&b-&7--------
+          [0;5;0]&7&b-&7---------
+          [0;2;0]&7-&b-&7--------
+          [0;2;0]&7--&b-&7-------
+          [0;2;0]&7---&b-&7------
+          [0;2;0]&7----&b-&7-----
+          [0;2;0]&7-----&b-&7----
+          [0;2;0]&7------&b-&7---
+          [0;2;0]&7-------&b-&7--
+          [0;2;0]&7--------&b-&7-
+```
+
+</TabItem>
+</Tabs>
+
+<AnimationPreview title={"left-to-right"} preset={"left-to-right"} scale={50} />
+
+<AnimationPreview title={"right-to-left"} preset={"right-to-left"} scale={50} />
+
+Use `/tm animations` to list the placeholders loaded on the running server.

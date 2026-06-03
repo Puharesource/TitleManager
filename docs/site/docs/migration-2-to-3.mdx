@@ -1,0 +1,54 @@
+---
+id: migration-2-to-3
+title: Migrating from 2.x to 3.0
+---
+
+# Migrating from 2.x to 3.0
+
+TitleManager 3.0 is a clean-cut release. It modernizes the codebase, documentation, release process, and public API layout.
+
+## Java and Kotlin API imports
+
+The Bukkit API package changed from the old `dev.tarkan.titlemanager.bukkitplugin.api` namespace to:
+
+```kotlin
+import dev.tarkan.titlemanager.bukkit.api.TitleManagerServices
+```
+
+The public type names remain stable:
+
+- `TitleManagerApi`
+- `TitleManagerSession`
+- `TitleManagerSessionType`
+- `TitleManagerServices`
+
+No compatibility aliases are published for the old package.
+
+## Maven coordinates
+
+The public Bukkit API artifact remains platform-explicit:
+
+```kotlin
+dependencies {
+    compileOnly("dev.tarkan.titlemanager:titlemanager-bukkit-api:3.0.0-SNAPSHOT")
+}
+```
+
+`titlemanager-core` is published to the same Maven repository and is resolved as a dependency of the API artifact.
+
+## Configuration files
+
+TitleManager 3.0 uses split YAML configuration files under `plugins/TitleManager/` instead of a single legacy `config.yml` file. Default configuration and animation files are shipped from the shared defaults module and installed on first run.
+
+## Minecraft support floor
+
+Minecraft 1.7.10 support was removed. The 3.0 support floor is Minecraft 1.8.
+
+## Documentation and releases
+
+Documentation is now Docusaurus-based and published at `https://titlemanager.tarkan.dev`. Release channels use SemVer:
+
+- `vX.Y.Z` → Release
+- `vX.Y.Z-beta.N` → Beta
+- `vX.Y.Z-alpha.N` → Alpha
+- `main` builds → Snapshot

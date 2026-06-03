@@ -1,0 +1,175 @@
+@font-face {
+  font-display: swap;
+  font-family: "Minecraft";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/minecraft/Minecraft.otf") format("opentype");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Minecraft";
+  font-style: normal;
+  font-weight: 700;
+  src: url("/fonts/minecraft/Minecraft-Bold.otf") format("opentype");
+}
+
+:root {
+  --ifm-color-primary: #0ea5e9;
+  --ifm-color-primary-dark: #0284c7;
+  --ifm-color-primary-darker: #0369a1;
+  --ifm-color-primary-darkest: #075985;
+  --ifm-color-primary-light: #38bdf8;
+  --ifm-color-primary-lighter: #7dd3fc;
+  --ifm-color-primary-lightest: #bae6fd;
+  --ifm-code-font-size: 95%;
+}
+
+.hero--primary {
+  background: linear-gradient(135deg, #0f172a, #075985 55%, #0ea5e9);
+}
+
+.tm-animation-preview {
+  margin: 1rem 0;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: 12px;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(31, 132, 255, 0.13), transparent 28%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.88));
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
+  color: #e5e7eb;
+}
+
+.tm-animation-preview__title {
+  margin-bottom: 0.75rem;
+  color: #93c5fd;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tm-animation-preview__output {
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.8);
+  font-family:
+    "Minecraft", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: clamp(1.1rem, 2.5vw, 1.75rem);
+  line-height: 1.4;
+  text-align: center;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.tm-animation-preview__status {
+  margin-top: 0.65rem;
+  color: #94a3b8;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+.tm-animation-preview--error {
+  border-color: rgba(248, 113, 113, 0.55);
+}
+
+.tm-animation-preview--error .tm-animation-preview__output {
+  color: #fecaca;
+}
+
+.tm-animation-preview__obfuscated {
+  filter: blur(0.08em);
+}
+
+.tm-animation-playground {
+  display: grid;
+  gap: 1rem;
+}
+
+.tm-animation-playground__controls {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  background: var(--ifm-background-surface-color);
+}
+
+.tm-animation-playground__field {
+  display: grid;
+  gap: 0.45rem;
+  font-weight: 700;
+}
+
+.tm-animation-playground__field textarea,
+.tm-animation-playground__field input {
+  width: 100%;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  padding: 0.65rem;
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  font: inherit;
+}
+
+.tm-animation-playground__field textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  resize: vertical;
+}
+
+.tm-animation-playground__examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tm-animation-playground__examples button {
+  border: 1px solid var(--ifm-color-primary);
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+  background: transparent;
+  color: var(--ifm-color-primary);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.tm-animation-playground__examples button:hover,
+.tm-animation-playground__examples button:focus-visible {
+  background: var(--ifm-color-primary);
+  color: var(--ifm-color-white);
+}
+
+.tm-animation-playground__meta {
+  margin: 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.9rem;
+}
+
+.tm-api-frame-page {
+  display: grid;
+  gap: 1rem;
+  min-height: calc(100vh - var(--ifm-navbar-height));
+  padding: 1.5rem;
+}
+
+.tm-api-frame-page__header {
+  max-width: 960px;
+}
+
+.tm-api-frame-page__header h1 {
+  margin-bottom: 0.25rem;
+}
+
+.tm-api-frame-page__frame {
+  width: 100%;
+  min-height: 72vh;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  background: #ffffff;
+}

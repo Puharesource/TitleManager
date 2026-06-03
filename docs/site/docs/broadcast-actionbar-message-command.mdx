@@ -1,0 +1,24 @@
+---
+id: broadcast-actionbar-message-command
+title: Broadcast Actionbar Message Command
+---
+
+Sends an actionbar message to all players on the server.
+
+## Syntax
+
+```
+/tm abc [parameters] <message>
+/tm abroadcast [parameters] <message>
+```
+
+## Arguments
+
+- **`[parameters]`**: Optional parameters to modify the behavior of the message.
+- **`<message>`**: The content of the actionbar message to be broadcast.
+
+## Supported Parameters
+
+- **`-silent`**: Suppresses any response text from the command.
+- **`-world`, `-world=WorldName`**: Restricts the broadcast to a specific world. `-world` uses the sender's current world when the sender is a player. `-world=world_nether` targets that named world.
+- **`-radius=distance`**: Restricts the broadcast to players within a radius in blocks of the sender. Decimal distances are supported. Example: `-radius=10.5`.

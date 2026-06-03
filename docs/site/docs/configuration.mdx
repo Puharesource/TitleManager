@@ -1,0 +1,256 @@
+---
+id: configuration
+title: Configuration
+---
+
+import AnimationPreview from "@site/src/components/AnimationPreview";
+
+# Configuration
+
+TitleManager stores configuration in `plugins/TitleManager/` as split YAML files. Legacy single-file configurations are migrated when possible.
+
+Use `/tm reload` after editing files. Reload is transactional: if parsing or validation fails, the previous running configuration remains active and diagnostics reports the error.
+
+## Placeholder syntax
+
+- `%{name}` inserts a TitleManager placeholder.
+- `%{name:argument}` inserts a placeholder with an argument.
+- `${animation}` inserts an animation placeholder.
+- `${animation:data}` inserts an animation with data.
+
+Examples:
+
+```yaml
+header: |-
+  ${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}
+  &7Online: &b%{online}&7/&b%{max}
+```
+
+<AnimationPreview
+  title={"header animation"}
+  text={"${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}"}
+  scale={50}
+/>
+
+:::warning[YAML formatting]
+Use spaces, not tabs. Save files as UTF-8 when using Unicode characters.
+:::
+
+## File overview
+
+| File                    | Purpose                                                                   |
+| ----------------------- | ------------------------------------------------------------------------- |
+| `advanced.yml`          | Global settings, update checks, duplicate-packet prevention, and storage. |
+| `player-list.yml`       | Player-list header and footer shown while holding <kbd>TAB</kbd>.         |
+| `welcome-title.yml`     | Join title and subtitle messages.                                         |
+| `welcome-actionbar.yml` | Join actionbar messages.                                                  |
+| `scoreboard.yml`        | Sidebar title and content.                                                |
+| `gradients.yml`         | Named RGB gradients used by gradient animations.                          |
+| `announcer.yml`         | Scheduled title and actionbar announcements.                              |
+| `hooks.yml`             | Optional integration behavior.                                            |
+
+## `advanced.yml`
+
+```yaml
+threadPoolSize: 4
+debug: false
+usingConfig: true
+usingBungeeCord: false
+checkForUpdates: false
+preventDuplicatePackets: true
+databaseConnectionString: "username"
+```
+
+`usingConfig` controls config-driven player-facing features. `preventDuplicatePackets` skips repeated player-list and sidebar output when the rendered text has not changed.
+
+## `player-list.yml`
+
+```yaml
+enabled: true
+updateIntervalMilliseconds: 50
+header: |-
+
+  ${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}
+  &r
+footer: |-
+
+  &7World time: &b%{12h-world-time}
+  &7Server time: &b%{server-time}
+
+
+  ${right-to-left} &b%{online}&7/&b%{max} &7Online Players ${left-to-right}
+worlds:
+  "world_nether":
+    enabled: true
+    updateIntervalMilliseconds: 50
+    header: |-
+
+      ${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}
+      &r
+    footer: |-
+
+      &7World time: &b%{12h-world-time}
+      &7Server time: &b%{server-time}
+
+
+      ${right-to-left} &b%{online}&7/&b%{max} &7Online Players ${left-to-right}
+```
+
+Fresh installs include `left-to-right.txt` and `right-to-left.txt` in `plugins/TitleManager/animations/`, so the default footer works without extra files.
+
+<AnimationPreview
+  title={"default player-list footer animations"}
+  preset={"left-to-right"}
+  scale={50}
+/>
+
+## `welcome-title.yml`
+
+```yaml
+enabled: true
+delayMilliseconds: 1000
+title: "Welcome to My Server"
+subtitle: "Hope you enjoy your stay"
+fadeIn: 20
+stay: 40
+fadeOut: 20
+firstJoin:
+  enabled: true
+  delayMilliseconds: 1000
+  title: "Welcome to My Server"
+  subtitle: "Hope you enjoy your stay"
+  fadeIn: 20
+  stay: 40
+  fadeOut: 20
+worlds:
+  "world_nether":
+    enabled: true
+    delayMilliseconds: 1000
+    title: "${shine:[0;2;0][&4;&c]Welcome to My Server}"
+    subtitle: "&cHope you enjoy your stay"
+    fadeIn: 20
+    stay: 40
+    fadeOut: 20
+```
+
+Timings are in ticks. `delayMilliseconds` controls how long TitleManager waits after the triggering event before sending the message.
+
+## `welcome-actionbar.yml`
+
+```yaml
+enabled: true
+delayMilliseconds: 1000
+title: "Welcome to My Server"
+firstJoin:
+  enabled: true
+  delayMilliseconds: 1000
+  title: "Welcome to My Server"
+worlds:
+  "world_the_end":
+    enabled: true
+    delayMilliseconds: 1000
+    title: "${shine:[0;2;0][&5;&d]Welcome to My Server}"
+```
+
+## `scoreboard.yml`
+
+```yaml
+enabled: true
+updateIntervalMilliseconds: 50
+title: "${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}"
+content: |-
+  ${cycle:sunset}&m----------------------------------
+  &b> &3&lPlayer Name:
+  &b%{name}
+
+  &b> &3&lOnline:
+  &b%{online} players
+
+  &b> &3&lServer Time:
+  &b%{server-time}
+  ${cycle:sunset}&m----------------------------------
+worlds:
+  "world_nether":
+    enabled: true
+    updateIntervalMilliseconds: 50
+    title: "${shine:[0;2;0][0;25;0][0;25;0][&4;&c]My Server}"
+    content: |-
+      &c&m----------------------------------
+      &c> &4&lPlayer Name:
+      &c%{name}
+
+      &c> &4&lOnline:
+      &c%{online} players
+
+      &c> &4&lServer Time:
+      &c%{server-time}
+      &c&m----------------------------------
+  "world_the_end":
+    enabled: false
+```
+
+Bukkit sidebars support at most 15 visible lines. TitleManager assigns sidebar scores from `0` upward in configured line order.
+
+<AnimationPreview
+  title={"scoreboard title"}
+  text={"${shine:[0;2;0][0;25;0][0;25;0][&3;&b]My Server}"}
+  scale={50}
+/>
+
+<AnimationPreview
+  title={"scoreboard separator cycle"}
+  kind={"cycle"}
+  label={"----------------------------------"}
+  gradient={"#833AB4,#FD1D1D,#FCB045"}
+/>
+
+## `gradients.yml`
+
+```yaml
+gradients:
+  sunset:
+    colorSpace: "HSL"
+    precision: 100
+    colors:
+      - "#833AB4"
+      - "#FD1D1D"
+      - "#FCB045"
+```
+
+Gradient names are used by `${cycle:name}`, `${gradient:[name]text}`, and `${cgradient:[name]text}`. A missing gradient name is a configuration error.
+
+<AnimationPreview
+  title={"sunset gradient"}
+  text={"Gradient text"}
+  kind={"gradient"}
+  gradient={"#833AB4,#FD1D1D,#FCB045"}
+/>
+
+## `announcer.yml`
+
+```yaml
+enabled: false
+announcements:
+  example:
+    interval: 60
+    timings:
+      fadeIn: 20
+      stay: 40
+      fadeOut: 20
+    titles:
+      - "&aThis is the 1st title announcement<nl>&aThis is the subtitle"
+      - "&bThis is the 2nd title announcement<nl>&bThis is the subtitle"
+    actionbar:
+      - "&aThis is the 1st actionbar announcement"
+      - "&bThis is the 2nd actionbar announcement"
+```
+
+Announcements are disabled by default so fresh installs do not broadcast example messages unexpectedly.
+
+## `hooks.yml`
+
+```yaml
+combatLogX: true
+```
+
+Optional hooks depend on the matching plugin being installed and enabled.

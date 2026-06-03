@@ -1,0 +1,2 @@
+line 1: ${countdown:3}
+line 2: ${countdown:3} ${countdown:3}

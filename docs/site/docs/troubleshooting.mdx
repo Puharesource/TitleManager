@@ -1,0 +1,53 @@
+---
+id: troubleshooting
+title: Troubleshooting
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Use `/tm diagnostics` first. It reports whether TitleManager is running normally or in safe mode, which runtime module was selected, which integrations are active, and any validation errors.
+
+## Special characters are not working
+
+If Unicode characters or symbols are not displayed correctly, save every TitleManager YAML and animation file as UTF-8.
+
+<Tabs>
+<TabItem value="notepad" label="Notepad++">
+
+```text
+Encoding > Convert to UTF-8
+```
+
+</TabItem>
+<TabItem value="sublime-text" label="Sublime Text">
+
+```text
+File > Save with Encoding > UTF-8
+```
+
+</TabItem>
+</Tabs>
+
+If file encoding is correct but the server still misreads characters, add UTF-8 to the Java launch command:
+
+```console
+java -Dfile.encoding=UTF-8 -jar paper.jar
+```
+
+## Unknown animation placeholders
+
+`Unknown-Animation-Placeholder` means a `${name}` animation placeholder was referenced but not registered.
+
+Check that:
+
+- the animation file exists in `plugins/TitleManager/animations/`;
+- the file name matches the placeholder, for example `${left-to-right}` requires `left-to-right.txt`;
+- the file is not empty;
+- `/tm animations` lists the placeholder.
+
+Fresh installs include `left-to-right.txt` and `right-to-left.txt`. TitleManager does not overwrite existing non-empty custom files.
+
+## Configuration validation failed
+
+When configuration validation fails during startup, TitleManager enters safe mode. Safe mode keeps `/tm version`, `/tm diagnostics`, and `/tm reload` available. Fix the reported file and run `/tm reload`; a successful reload returns the plugin to normal mode.

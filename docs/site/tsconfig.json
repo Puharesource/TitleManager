@@ -1,0 +1,18 @@
+{
+  "extends": "@docusaurus/tsconfig",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@site/*": ["./*"],
+      "@titlemanager/core": ["./.generated/titlemanager-core"]
+    }
+  },
+  "include": [
+    "src",
+    "docs",
+    "docusaurus.config.ts",
+    "sidebars.ts",
+    "vite.config.ts",
+    ".generated/titlemanager-core/**/*.d.ts"
+  ]
+}

@@ -1,0 +1,4 @@
+[500]line 1 %{var1}
+[1000]line 2 %{var2:with data}
+[750]line 3 %{var3} %{var1}
+[200]line 4 %{var1:with data} %{var2}

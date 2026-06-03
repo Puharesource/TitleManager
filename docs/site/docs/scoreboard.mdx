@@ -1,0 +1,73 @@
+---
+id: scoreboard
+title: Scoreboard
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+The scoreboard is the sidebar shown on the right side of the player's screen. Bukkit sidebars support at most 15 visible lines.
+
+## Configured sidebars
+
+Configured sidebars are controlled by `scoreboard.yml`. The `content` block is rendered line by line. TitleManager assigns Bukkit sidebar scores from `0` upward in configured line order:
+
+| Config line | Sidebar score |
+| ----------- | ------------- |
+| First line  | `0`           |
+| Second line | `1`           |
+| Third line  | `2`           |
+
+## API sidebars
+
+Use `TitleManagerApi#setSidebar` to apply a managed sidebar from another plugin.
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+TitleManagerSession session = api.setSidebar(
+                player,
+                "Stats",
+                List.of("Kills: 10", "Coins: 25")
+            );
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val session = api.setSidebar(
+                player,
+                title = "Stats",
+                lines = listOf("Kills: 10", "Coins: 25")
+            )
+```
+
+</TabItem>
+</Tabs>
+
+## Clearing the sidebar
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+api.clearSidebar(player);
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+api.clearSidebar(player)
+```
+
+</TabItem>
+</Tabs>
+
+Closing the returned `TitleManagerSession` clears the sidebar if that session is still active.
+
+:::warning
+Passing more than 15 lines throws an `IllegalArgumentException` before applying the sidebar.
+:::

@@ -1,0 +1,12 @@
+enabled: true
+delayMilliseconds: 1000
+title: "Welcome to My Server"
+firstJoin:
+  enabled: true
+  delayMilliseconds: 1000
+  title: "Welcome to My Server"
+worlds:
+  "world_the_end":
+    enabled: true
+    delayMilliseconds: 1000
+    title: "${shine:[0;2;0][&5;&d]Welcome to My Server}"

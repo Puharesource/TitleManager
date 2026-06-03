@@ -1,105 +1,82 @@
-<h1 align="center">
-    TitleManager
-</h1>
+# TitleManager
 
-<p align="center">
-    <a href="https://www.spigotmc.org/resources/titlemanager.1049">
-        <img src="https://img.shields.io/badge/Version-2.3.6-blue?style=for-the-badge" alt="Version">
-    </a>
-    <a href="https://github.com/Puharesource/TitleManager/actions">
-        <img src="https://img.shields.io/github/workflow/status/Puharesource/TitleManager/Java%20CI?logo=github&style=for-the-badge&logoColor=fff" alt="Actions Status">
-    </a>
-    <a href="https://titlemanager.tarkan.dev/javadoc/">
-        <img src="https://img.shields.io/badge/JavaDoc-2.2-blue.svg?style=for-the-badge&logo=Read-the-Docs&logoColor=fff" alt="Javadoc">
-    </a>
-    <a href="https://www.spigotmc.org/resources/titlemanager.1049/updates">
-        <img src="https://img.shields.io/badge/Minecraft-1.8%20--%201.18-blue?style=for-the-badge&logo=Hack-the-Box&logoColor=fff" alt="Minecraft versions">
-    </a>
-    <a href="https://bstats.org/plugin/bukkit/TitleManager/7318">
-        <img src="https://img.shields.io/bstats/players/7318?style=for-the-badge" alt="Players currently experiencing TitleManager">
-    </a>
-    <a href="https://bstats.org/plugin/bukkit/TitleManager/7318">
-        <img src="https://img.shields.io/bstats/servers/7318?style=for-the-badge" alt="Servers currenty running TitleManager">
-    </a>
-</p>
+TitleManager is a Bukkit, Spigot, and Paper plugin for customizing the player-facing presentation of your Minecraft server. It supports animated titles, actionbars, tab-list headers and footers, sidebars, announcements, placeholders, gradients, and file-backed animations.
 
-<p align="center"><sup><strong>A Bukkit plugin for sending titles and setting the header and footer of the player list. <a href="https://www.spigotmc.org/resources/titlemanager.1049/">Spigot Project Page</a></strong></sup></p>
+## Links
 
----
+- Documentation: <https://titlemanager.tarkan.dev>
+- Maven repository: <https://repo.tarkan.dev>
+- GitHub releases: <https://github.com/Puharesource/TitleManager/releases>
+- Hangar: configured by release automation
+- SpigotMC resource: <https://www.spigotmc.org/resources/titlemanager.1049/>
 
-* **[WIKI & GUIDES](https://tmdocs.tarkan.dev)** – plugin guidelines.
-* **[COMMANDS](https://tmdocs.tarkan.dev/admins/commands)** – command guidelines.
-* **[PERMISSIONS](https://tmdocs.tarkan.dev/admins/permissions)** – command and feature permissions.
-* **[SUPPORT CHAT](https://discord.gg/U3Yyu6G)** - discord support chat and help.
+## Supported Minecraft versions
 
-For Developers
---------------
+TitleManager targets Minecraft `1.8` through the latest configured Paper API version. The current build metadata validates that marketplace metadata includes the configured Paper API version from `gradle.properties`.
 
-#### The Repository
-Example for Gradle .kts:
+## Installation
+
+1. Download the plugin jar from GitHub Releases, Hangar, or SpigotMC.
+2. Place the jar in your server's `plugins` directory.
+3. Restart the server.
+4. Edit the generated files in `plugins/TitleManager/`.
+5. Run `/tm reload` after configuration changes.
+
+## Developer API
+
+Add the public Maven repository and compile against the API module:
+
 ```kotlin
-maven("https://repo.tarkan.dev")
-```
+repositories {
+    maven("https://repo.tarkan.dev")
+}
 
-Example for Gradle:
-```groovy
-maven {
-    url 'https://repo.tarkan.dev'
+dependencies {
+    compileOnly("dev.tarkan.titlemanager:modules:bukkit:api:3.0.0-SNAPSHOT")
 }
 ```
 
-Example for Maven:
-```xml
-<repository>
-  <id>tarkan-repo</id>
-  <url>https://repo.tarkan.dev</url>
-</repository>
+The API artifact depends on `dev.tarkan.titlemanager:modules:core`, which is published to the same repository.
+
+Use `TitleManagerServices.get(plugin)` for optional integration or `TitleManagerServices.require(plugin)` when TitleManager is a hard dependency.
+
+See the [2.x to 3.0 migration guide](docs/site/docs/migration-2-to-3.mdx) for package, Maven, configuration, and Minecraft support changes.
+
+## Building locally
+
+```bash
+./gradlew check :apps:bukkit-plugin:shadowJar buildDocsSite
 ```
 
-#### The dependency
-Example for Gradle .kts:
-```kotlin
-implementation('io.puharesource.mc:TitleManager:2.3.1')
-```  
+Useful build outputs:
 
-Example for Gradle:
-```groovy
-compile group: 'io.puharesource.mc', name: 'TitleManager', version: '2.3.1'
+- Plugin jar: `apps/bukkit-plugin/build/libs/bukkit-plugin-<version>-all.jar`
+- Docusaurus docs: `docs/site/build/`
+- Vite/Rolldown/Oxc preview entry: `docs/site/vite-dist/`
+- Local public Maven repository bundle: `build/maven-repository/`
+
+## Release automation
+
+GitHub Actions is the source of truth for CI/CD:
+
+- PRs run full non-publishing gates.
+- `main` publishes `3.0.0-SNAPSHOT` artifacts and a `snapshot-<shortSha>` prerelease.
+- Tags publish strict SemVer channels:
+  - `vX.Y.Z` → Release
+  - `vX.Y.Z-beta.N` → Beta
+  - `vX.Y.Z-alpha.N` → Alpha
+- Docs deploy to Cloudflare Pages at `titlemanager.tarkan.dev` from `main` after `ENABLE_PUBLISHING=true` is set.
+- Maven artifacts deploy to Cloudflare R2 at `repo.tarkan.dev` after `ENABLE_PUBLISHING=true` is set.
+- Plugin releases publish to Hangar after `ENABLE_PUBLISHING=true` is set.
+- Spigot publishing is represented by a manual guarded workflow path, but upload remains disabled until the SpigotMC upload API/contract is confirmed.
+
+The first alpha should be tagged manually after secrets and Cloudflare/Hangar resources are ready:
+
+```bash
+git tag v3.0.0-alpha.1
+git push origin v3.0.0-alpha.1
 ```
 
-Example for Maven
-```xml
-<dependency>
-   <groupId>io.puharesource.mc</groupId>
-   <artifactId>TitleManager</artifactId>
-   <version>2.3.1</version>
-</dependency>
-```
+## License
 
-### plugin.yml
-If your plugin can't run without TitleManager add the following line to your plugin.yml file.  
-```yaml
-depend: [TitleManager]
-```
-
-If your plugin can run without TitleManager, then add the following line to your plugin.yml file instead
-```yaml
-softdepend: [TitleManager]
-```
-
-### Getting the API instance
-Once you want to use TitleManager's API, you'll need an instance of `TitleManagerAPI`, which carries all of the methods available for TitleManager. I suggest getting the instance once you load your plugin and store it somewhere easily accessible, for this example I'll however just be storing it locally in the `onEnable` method.
-
-##### Java
-```java
-@Override
-public void onEnable() {
-  TitleManagerAPI api = (TitleManagerAPI) Bukkit.getServer().getPluginManager().getPlugin("TitleManager");
-}
-```
-
-##### Kotlin
-For kotlin I suggest using the `lazy` delegate for storing the instance of TitleManager when accessed.  
-```kotlin
-val titleManagerAPI : TitleManagerAPI by lazy { Bukkit.getServer().pluginManager.getPlugin("TitleManager") }
-```
+TitleManager is licensed under the terms in [LICENSE.md](LICENSE.md). The documentation preview font is bundled from [IdreesInc/Minecraft-Font](https://github.com/IdreesInc/Minecraft-Font) under the SIL Open Font License 1.1.

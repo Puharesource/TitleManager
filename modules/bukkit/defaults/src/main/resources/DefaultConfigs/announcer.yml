@@ -1,0 +1,28 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                      Announcer                       | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Toggles automatic title/actionbar announcements.
+# Fresh TitleManager Next installs keep this disabled so example messages are
+# not broadcast unexpectedly. Legacy config migration preserves enabled state.
+enabled: false
+
+# Each announcement runs on its own interval in seconds. Titles and actionbars
+# share one index, matching legacy TitleManager behavior:
+# the first title pairs with the first actionbar, the second with the second,
+# and missing entries are skipped.
+announcements:
+  example:
+    interval: 60
+    timings:
+      fadeIn: 20
+      stay: 40
+      fadeOut: 20
+    titles:
+      - "&aThis is the 1st title announcement<nl>&aThis is the subtitle"
+      - "&bThis is the 2nd title announcement<nl>&bThis is the subtitle"
+    actionbar:
+      - "&aThis is the 1st actionbar announcement"
+      - "&bThis is the 2nd actionbar announcement"

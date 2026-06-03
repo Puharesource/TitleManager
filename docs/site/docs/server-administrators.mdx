@@ -1,0 +1,50 @@
+---
+id: server-administrators
+title: Server Administrators
+---
+
+This section covers installing, configuring, and operating TitleManager on a Minecraft server.
+
+## Getting started
+
+Install the plugin jar into your server's `plugins` directory and restart the server. TitleManager generates its configuration under `plugins/TitleManager/` on first startup.
+
+See [Setup](./setup) for installation details.
+
+## Configuration
+
+TitleManager uses split YAML files instead of a single `config.yml` file:
+
+- `advanced.yml` for global behavior, update checks, duplicate-packet prevention, and storage settings.
+- `player-list.yml` for <kbd>TAB</kbd> header and footer text.
+- `welcome-title.yml` and `welcome-actionbar.yml` for join messages.
+- `scoreboard.yml` for sidebar content.
+- `gradients.yml` for named RGB gradients used by `${cycle}`, `${gradient}`, and `${cgradient}`.
+- `announcer.yml` for scheduled title and actionbar announcements.
+- `hooks.yml` for optional integration behavior.
+
+Use `/tm reload` after editing configuration. Reload is transactional: if validation fails, the previous running configuration stays active.
+
+## Animations
+
+Animation files are stored in `plugins/TitleManager/animations/*.txt`. Fresh installs include `left-to-right.txt` and `right-to-left.txt`, which are used by the default player-list footer.
+
+See [Animations](./animations) for the file format.
+
+## Placeholders
+
+Use `%{placeholder}` for TitleManager placeholders and PlaceholderAPI placeholders. Use `${animation}` for animation placeholders. Integration placeholders that require Vault or BungeeCord are validated at startup so unavailable data is not rendered as misleading text.
+
+See [Placeholders](./placeholders) for supported placeholders.
+
+## Diagnostics
+
+Run `/tm diagnostics` to inspect:
+
+- normal mode vs safe mode;
+- plugin version;
+- selected runtime module;
+- runtime capabilities;
+- loaded animation files;
+- integration availability;
+- configuration validation errors.

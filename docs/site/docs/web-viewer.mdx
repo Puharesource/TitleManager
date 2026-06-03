@@ -1,0 +1,67 @@
+---
+id: web-viewer
+title: Web Viewer
+---
+
+import AnimationPreview from "@site/src/components/AnimationPreview";
+
+TitleManager Next includes a TypeScript/Vite web viewer in `apps/web-viewer`. It consumes the generated Kotlin/JS package from `:modules:core`, so the browser preview uses the same shared parser, timeline builder, safety limits, and legacy text renderer as the Minecraft-facing code path.
+
+## Build and verification
+
+Run the standard repository build to include the viewer:
+
+```bash
+./gradlew test build --no-daemon --console=plain --quiet
+```
+
+The root Gradle build runs:
+
+- `:modules:core:jsNodeProductionLibraryDistribution`
+- generated core package copy into `apps/web-viewer/.generated/titlemanager-core`
+- TypeScript type-checking
+- Vite production build
+- production dependency audit with `npm audit --omit=dev --audit-level=moderate`
+
+You can also run the viewer checks directly:
+
+```bash
+./gradlew checkWebViewer --no-daemon --console=plain --quiet
+```
+
+## Local development
+
+```bash
+cd apps/web-viewer
+npm run dev
+```
+
+`npm run dev` rebuilds and copies the generated core package before starting Vite on `127.0.0.1`.
+
+The viewer includes both a frame list and a live looping preview driven by the shared-core timeline frames. The preview renders legacy color/style segments through `TitleManagerCoreApi.renderLegacyText`, so browser playback and the detailed frame list share the same parser/rendering surface. Use the preview-time scrubber to pause playback and inspect the exact frame rendered at a specific millisecond.
+
+The default timing scale is `50`, matching the Minecraft plugin's old tick-based config timing (`1` unit = `50ms`). Set the timing scale to `1` when testing animation text that already uses millisecond values.
+
+Viewer input, timing scale, and safety limits are mirrored into query parameters as you edit. Copying the browser URL, or using the viewer's **Copy share link** button, is enough to reopen the same preview later. Use **Copy timeline JSON** to copy the exact shared-core frame output for debugging or comparing browser/Minecraft behavior, and **Import timeline JSON** to reload that exported payload into the editor for round-trip investigation.
+
+The viewer intentionally exposes preview safety limits. Large or accidentally infinite animations should fail through the shared core result model instead of hanging the browser.
+
+## Docusaurus documentation previews
+
+The Docusaurus docs use the same generated Kotlin/JS core package through a React `AnimationPreview` component. The docs are local MDX files, so previews work during local Docusaurus development and in the static production build without embedding the hosted web viewer.
+
+Build the docs site and the Vite/Rolldown/Oxc preview entry with:
+
+```bash
+./gradlew buildDocsSite
+```
+
+Documentation topics can render a live preview by importing and using the component:
+
+```tsx
+import AnimationPreview from "@site/src/components/AnimationPreview";
+
+<AnimationPreview text={"${shine:[0;2;0][&3;&b]TitleManager}"} scale={50} />;
+```
+
+Use `kind="cycle"`, `kind="gradient"`, or `kind="cgradient"` for gradient-backed Bukkit animation previews. See [Built-in Animation Examples](./built-in-animation-examples) for examples.

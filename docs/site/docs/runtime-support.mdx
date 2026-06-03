@@ -1,0 +1,38 @@
+---
+id: runtime-support
+title: Runtime Support Matrix
+---
+
+TitleManager Next prefers stable Bukkit/Spigot/Paper APIs whenever they expose every runtime feature TitleManager needs: titles, actionbar, player-list header/footer, and sidebar output. Direct NMS modules are selected only when the API fallback is incomplete for the detected runtime key. Unsupported old versions still fail closed when neither an API fallback nor a direct module can cover the required feature set.
+
+| Runtime                                                                           | Current status                                             | Notes                                                                                                                                                                                       |
+| --------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Minecraft 1.17+                                                                   | Supported through `bukkit-api`                             | Uses Adventure/Paper title, actionbar, player-list, and Bukkit scoreboard APIs. This complete non-NMS fallback is preferred even when a matching exact NMS module is present.               |
+| Minecraft 1.20.2 / `v1_20_R2` and Minecraft 1.20.4 / `v1_20_R3`                   | Exact NMS modules packaged but not selected by default     | The exact modules remain service-loadable and packet-tested, but runtime selection chooses `bukkit-api` because the non-NMS API fallback already covers every required feature.             |
+| Minecraft 1.12.2 through 1.16.5 / original NMS keys `v1_12_R1` through `v1_16_R1` | Supported through per-version `titlemanager-nms-*` modules | Direct, version-keyed NMS code is used for player-list header/footer, which the legacy Spigot API cannot cover. Titles, actionbar, and sidebar continue to delegate to stable non-NMS APIs. |
+| Minecraft 1.8.8 through 1.11.2 / original NMS keys `v1_8_R1` through `v1_11_R1`   | Supported through per-version `titlemanager-nms-*` modules | Direct, version-keyed NMS code covers title packets, title timings, actionbar packets, and player-list header/footer. Sidebar still uses the Bukkit scoreboard API.                         |
+
+Use `/tm diagnostics` to confirm what the running server selected. The `direct-nms` capability reports whether any direct packet path is active; its detail lists which outputs are direct and, for partial modules, which outputs still delegate to fallback APIs.
+
+If startup enters safe mode after a runtime module was selected, diagnostics still reports that selected module and its capability statuses so the failing feature can be mapped back to the runtime support table. Earlier configuration-load failures, where no runtime module has been selected yet, report the runtime as inactive.
+
+## Direct NMS module rules
+
+Runtime selection must prefer a complete non-NMS fallback over any direct module. Direct factories are consulted only after the fallback reports at least one required runtime capability as unavailable.
+
+NMS factories must stay safe to load on every server version. Service discovery happens before runtime compatibility checks, so factory classes must not statically reference `net.minecraft`, CraftBukkit, or Mojang server classes. Keep server internals behind classes that are only constructed after the exact runtime key matches.
+
+Minecraft 1.20.2 / `v1_20_R2` and Minecraft 1.20.4 / `v1_20_R3` use `paperweight-userdev` to compile against version-specific internals and wire the reobfuscated outputs into the universal shadow jar. The universal plugin jar must not bundle `net.minecraft/**`, `com.mojang/**`, CraftBukkit, or Paper server classes; those come from the target server runtime.
+
+The legacy direct NMS modules cover the original TitleManager runtime keys `v1_8_R1`, `v1_8_R2`, `v1_8_R3`, `v1_9_R1`, `v1_9_R2`, `v1_10_R1`, `v1_11_R1`, `v1_12_R1`, `v1_13_R1`, `v1_13_R2`, `v1_14_R1`, `v1_15_R1`, and `v1_16_R1`. Each runtime key has its own Gradle module and compiles against the matching real Spigot server artifact from the ElMakers Maven mirror; there is no shared stub jar. Reflection is isolated to cached private-field writes for legacy `PacketPlayOutPlayerListHeaderFooter`, where Spigot did not expose a constructor or setter for header/footer components.
+
+## Adding old-version support
+
+Do not add NMS for a server line when Bukkit/Spigot/Paper already exposes all required features. When a direct module is needed:
+
+- implement a module for the exact NMS/runtime key;
+- keep ServiceLoader factories free of server-internal class references;
+- delegate surfaces with complete non-NMS APIs instead of replacing them with packet code;
+- mark unsupported surfaces unavailable rather than pretending they work;
+- add selector tests for the exact runtime key, adjacent non-matching versions, and API-preference behavior;
+- add MockBukkit or module-level tests proving diagnostics cannot report `direct-nms=available` until direct packet paths are actually implemented.

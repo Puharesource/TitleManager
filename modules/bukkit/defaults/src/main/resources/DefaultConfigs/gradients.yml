@@ -1,0 +1,64 @@
+############################################################
+# +------------------------------------------------------+ #
+# |                       Gradients                      | #
+# +------------------------------------------------------+ #
+############################################################
+
+# Defines all the gradients usable by TitleManager's RGB animations.
+# Each key under gradients is a new gradient and will be used as the name when using gradient animations.
+
+gradients:
+  sunset:
+    # The color space used when creating gradients can affect the outcome of the gradients.
+    # Currently, the only color space available is HSL and HSL Long.
+    # "HSL" will take the shortest way around the color circle, creating nice seamless gradients.
+    # "HSL Long" will take the longest way around the color circle, going through a lot of different colors to get there.
+    colorSpace: 'HSL'
+
+    # How many points in the gradient should be displayed.
+    # The higher the number the smoother the gradient, but also the higher the memory usage.
+    # Generally a precision of 100 should be fine, but for very large gradients, a higher number might look slightly nicer.
+    precision: 100
+
+    # RGB colors defined in a standard HEX format. #000000 for black, #FFFFFF for white and so on.
+    colors:
+      - '#833AB4'
+      - '#FD1D1D'
+      - '#FCB045'
+
+  sublime-vivid:
+    colorSpace: 'HSL'
+    precision: 100
+    colors:
+      - '#FC466B'
+      - '#3F5EFB'
+
+  pink-flavour:
+    colorSpace: 'HSL'
+    precision: 100
+    colors:
+      - '#800080'
+      - '#ffc0cb'
+
+  orange-fun:
+    colorSpace: 'HSL'
+    precision: 100
+    colors:
+      - '#fc4a1a'
+      - '#f7b733'
+
+  argon:
+    colorSpace: 'HSL'
+    precision: 100
+    colors:
+      - '#03001e'
+      - '#7303c0'
+      - '#ec38bc'
+      - '#fdeff9'
+
+  rainbow:
+    colorSpace: 'HSL Long'
+    precision: 100
+    colors:
+      - '#FF0000'
+      - '#FF0001'

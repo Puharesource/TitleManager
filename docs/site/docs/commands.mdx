@@ -1,0 +1,25 @@
+---
+id: commands
+title: Commands
+---
+
+All TitleManager commands start with `/tm` or `/titlemanager`.
+
+## Syntax overview
+
+- `<argument>`: required argument.
+- `[argument]`: optional argument.
+- `[parameters]`: optional flags such as `-silent`, `-world`, or timing values.
+
+## Text syntax
+
+- `%{placeholder}` or `%{placeholder:argument}` inserts a placeholder.
+- `${animation}` inserts a registered animation placeholder.
+- `${animation:data}` inserts an animation with data.
+- `<nl>`, `{nl}`, or `%\nl%` splits title and subtitle text in title commands.
+
+## Safety
+
+Commands validate runtime capability before sending output. If a server runtime cannot support a feature, the command reports an error instead of pretending the message was sent.
+
+See [Permissions](./permissions) for command permissions.

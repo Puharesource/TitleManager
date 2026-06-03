@@ -1,0 +1,6 @@
+locale: "en-US"
+numberFormat:
+  enabled: true
+  format: "#,###.##"
+dateFormat: "EEE, dd MMM yyyy HH:mm:ss z"
+aliases: {}

@@ -1,0 +1,33 @@
+enabled: true
+delayMilliseconds: 1000
+title: "Welcome to My Server"
+subtitle: "Hope you enjoy your stay"
+fadeIn: 20
+stay: 40
+fadeOut: 20
+firstJoin:
+  enabled: true
+  delayMilliseconds: 1000
+  title: "Welcome to My Server"
+  subtitle: "Hope you enjoy your stay"
+  fadeIn: 20
+  stay: 40
+  fadeOut: 20
+worlds:
+  "world_nether":
+    enabled: true
+    delayMilliseconds: 1000
+    title: "${shine:[0;2;0][&4;&c]Welcome to My Server}"
+    subtitle: "&cHope you enjoy your stay"
+    fadeIn: 20
+    stay: 40
+    fadeOut: 20
+
+  "world_the_end":
+    enabled: true
+    delayMilliseconds: 1000
+    title: "&5Welcome to the End!"
+    subtitle: "&dHope you enjoy your stay"
+    fadeIn: 20
+    stay: 40
+    fadeOut: 20

@@ -1,0 +1,73 @@
+---
+id: title-messages
+title: Title Messages
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+Title messages are displayed in the center of a player's screen. TitleManager sends a title and subtitle together and returns a session that can be closed later.
+
+## Sending a title
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+TitleManagerSession session = api.showTitle(
+                player,
+                "Welcome",
+                "Enjoy your stay",
+                Timing.Companion.getDefault()
+            );
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+val session = api.showTitle(player, "Welcome", "Enjoy your stay")
+```
+
+</TabItem>
+</Tabs>
+
+`Timing` values are measured in milliseconds. The Kotlin API can construct custom `Timing` values directly; Java callers should use the provided default timing unless a Java-friendly timing factory is added.
+
+## Clearing titles
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+api.clearTitle(player);
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+api.clearTitle(player)
+```
+
+</TabItem>
+</Tabs>
+
+If you kept the returned session, closing it clears the title only if that session is still active:
+
+<Tabs>
+<TabItem value="java" label="Java">
+
+```java
+session.close();
+```
+
+</TabItem>
+<TabItem value="kotlin" label="Kotlin">
+
+```kotlin
+session.close()
+```
+
+</TabItem>
+</Tabs>

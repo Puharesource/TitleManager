@@ -1,0 +1,44 @@
+---
+id: setup
+title: Setup
+---
+
+Follow these steps to install TitleManager 3.0.0-SNAPSHOT on a Bukkit, Spigot, or Paper server.
+
+## Installation
+
+1. Download the latest plugin jar from the [GitHub Releases](https://github.com/Puharesource/TitleManager/releases) page or the [SpigotMC Resource Page](https://www.spigotmc.org/resources/titlemanager.1049/).
+2. Place the jar in your server's `plugins` directory.
+3. Restart the server.
+4. Run `/tm version` or `/tm diagnostics` from the console or in game.
+
+On first startup TitleManager creates `plugins/TitleManager/` with split configuration files and default animation files.
+
+## Generated files
+
+A fresh installation creates these configuration files:
+
+- `advanced.yml`
+- `player-list.yml`
+- `welcome-title.yml`
+- `welcome-actionbar.yml`
+- `scoreboard.yml`
+- `gradients.yml`
+- `announcer.yml`
+- `hooks.yml`
+
+It also creates `plugins/TitleManager/animations/left-to-right.txt` and `plugins/TitleManager/animations/right-to-left.txt`. Existing non-empty animation files are not overwritten.
+
+## Common issues
+
+### The plugin is not loading
+
+- Confirm the jar is in the server's `plugins` directory.
+- Check the console for the first TitleManager error.
+- Run `/tm diagnostics` if the plugin entered safe mode.
+
+### Configuration files are not applied
+
+- YAML indentation must use spaces, not tabs.
+- Save configuration files as UTF-8.
+- Use `/tm reload` after editing files. If validation fails, the previous running configuration remains active.

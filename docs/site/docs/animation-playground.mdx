@@ -1,0 +1,18 @@
+---
+id: animation-playground
+title: Animation Playground
+---
+
+import AnimationPlayground from "@site/src/components/AnimationPlayground";
+
+# Animation Playground
+
+Use this playground to test TitleManager animation text locally in the docs site. It uses the same Kotlin/JS core package that powers the web viewer and the embedded documentation previews.
+
+<AnimationPlayground />
+
+## Notes
+
+- The default timing scale is `50`, matching Minecraft's tick length of 50 milliseconds.
+- Use a timing scale of `1` for animation text that already uses millisecond values.
+- The playground uses the shared-core timeline parser, so it is useful for checking frame timing and legacy color rendering before copying text into a configuration file.

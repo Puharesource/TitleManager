@@ -1,0 +1,94 @@
+name: Docs
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build docs
+        run: ./gradlew buildDocsSite
+
+      - name: Check publishing gate
+        id: publishing-gate
+        run: |
+          if [ "${{ vars.ENABLE_PUBLISHING }}" = "true" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Docs deployment skipped because ENABLE_PUBLISHING is not true."
+          fi
+
+      - name: Validate Cloudflare configuration
+        if: steps.publishing-gate.outputs.enabled == 'true' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "Missing CLOUDFLARE_ACCOUNT_ID repository variable"; exit 1; }
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "Missing CLOUDFLARE_API_TOKEN secret"; exit 1; }
+
+      - name: Deploy docs to Cloudflare Pages
+        if: steps.publishing-gate.outputs.enabled == 'true' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+        id: cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy docs/site/build --project-name titlemanager-docs --branch ${{ github.head_ref || github.ref_name }}
+
+      - name: Comment docs preview
+        if: steps.publishing-gate.outputs.enabled == 'true' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/github-script@v7
+        env:
+          DEPLOY_OUTPUT: ${{ steps.cloudflare.outputs.command-output }}
+        with:
+          script: |
+            const marker = '<!-- titlemanager-docs-preview -->';
+            const output = process.env.DEPLOY_OUTPUT || '';
+            const match = output.match(/https:\/\/[^\s]+\.pages\.dev[^\s]*/);
+            const url = match?.[0] || 'Cloudflare Pages deployment completed.';
+            const body = `${marker}\nDocs preview: ${url}`;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner: context.repo.owner, repo: context.repo.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number, body });
+            }
