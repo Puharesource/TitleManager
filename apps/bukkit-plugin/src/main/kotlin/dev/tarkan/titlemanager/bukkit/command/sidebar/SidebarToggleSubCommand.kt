@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.command.sidebar
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import dev.tarkan.titlemanager.bukkit.command.CommandContext
 import dev.tarkan.titlemanager.bukkit.command.CommandParameters
 import dev.tarkan.titlemanager.bukkit.command.TitleManagerSubCommand
@@ -38,7 +39,7 @@ class SidebarToggleSubCommand(private val playerContextManager: PlayerContextMan
         }
 
         if (!parameters.isSilent) {
-            sender.sendMessage(SidebarToggleCommandMessages.toggle.toComponent(enableSidebar.toggleText, context.locale))
+            sender.sendTitleManagerMessage(SidebarToggleCommandMessages.toggle.toComponent(enableSidebar.toggleText, context.locale))
         }
     }
 }

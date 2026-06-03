@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.command
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import dev.tarkan.titlemanager.bukkit.extensions.MessageColors
 import dev.tarkan.titlemanager.bukkit.extensions.toComponent
 import dev.tarkan.titlemanager.bukkit.extensions.toErrorComponent
@@ -42,10 +43,10 @@ internal fun CommandSender.sendCommandHelp(
     subCommands: Collection<TitleManagerSubCommand>,
     context: CommandContext
 ) {
-    sendMessage(GlobalCommandMessages.helpHeader.toErrorComponent(baseCommand, context.locale))
+    sendTitleManagerMessage(GlobalCommandMessages.helpHeader.toErrorComponent(baseCommand, context.locale))
 
     for (subCommand in subCommands.filter { it.isVisibleTo(this) }) {
-        sendMessage(
+        sendTitleManagerMessage(
             GlobalCommandMessages.helpLine.toErrorComponent(
                 "$baseCommand ${subCommand.name}",
                 subCommand.description.toErrorComponent(context.locale),
@@ -59,9 +60,9 @@ internal suspend fun CommandSender.executeSafely(body: suspend () -> Unit) {
     try {
         body()
     } catch (exception: CommandError) {
-        sendMessage(exception.message.orEmpty().toRawErrorComponent())
+        sendTitleManagerMessage(exception.message.orEmpty().toRawErrorComponent())
     } catch (exception: UnsupportedOperationException) {
-        sendMessage((exception.message ?: DEFAULT_UNSUPPORTED_RUNTIME_MESSAGE).toRawErrorComponent())
+        sendTitleManagerMessage((exception.message ?: DEFAULT_UNSUPPORTED_RUNTIME_MESSAGE).toRawErrorComponent())
     }
 }
 

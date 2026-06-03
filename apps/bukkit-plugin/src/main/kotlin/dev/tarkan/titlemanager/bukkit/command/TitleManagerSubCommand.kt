@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.command
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import de.comahe.i18n4k.messages.MessageBundleLocalizedString
 import dev.tarkan.titlemanager.bukkit.concurrency.ConcurrencyType
 import dev.tarkan.titlemanager.bukkit.extensions.toErrorComponent
@@ -30,12 +31,12 @@ abstract class TitleManagerSubCommand(
 
     fun canExecute(sender: CommandSender, context: CommandContext): Boolean {
         if (permission != null && !sender.hasPermission(permission)) {
-            sender.sendMessage(GlobalCommandMessages.noPermission.toErrorComponent(permission, context.locale))
+            sender.sendTitleManagerMessage(GlobalCommandMessages.noPermission.toErrorComponent(permission, context.locale))
             return false
         }
 
         if (playerOnly && sender !is Player) {
-            sender.sendMessage(GlobalCommandMessages.playerOnly.toErrorComponent(context.locale))
+            sender.sendTitleManagerMessage(GlobalCommandMessages.playerOnly.toErrorComponent(context.locale))
             return false
         }
 
@@ -43,12 +44,12 @@ abstract class TitleManagerSubCommand(
     }
 
     protected fun sendInvalidUsage(sender: CommandSender, usage: MessageBundleLocalizedString, context: CommandContext) {
-        sender.sendMessage(GlobalCommandMessages.invalidUsage.toErrorComponent(usage.toComponent(context.locale), context.locale))
+        sender.sendTitleManagerMessage(GlobalCommandMessages.invalidUsage.toErrorComponent(usage.toComponent(context.locale), context.locale))
     }
 
     protected fun CommandSender.sendIfNotSilent(parameters: CommandParameters, message: Component) {
         if (!parameters.isSilent) {
-            sendMessage(message)
+            sendTitleManagerMessage(message)
         }
     }
 

@@ -117,7 +117,7 @@ class LegacySpigotRuntimeAdapter(
 
 private val legacyComponentSerializer = LegacyComponentSerializer.legacySection()
 
-private fun Component.toLegacyText(): String {
+internal fun Component.toLegacyText(): String {
     return legacyComponentSerializer.serialize(this)
 }
 

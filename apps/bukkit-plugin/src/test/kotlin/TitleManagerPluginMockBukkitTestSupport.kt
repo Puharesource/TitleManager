@@ -270,6 +270,16 @@ abstract class TitleManagerPluginMockBukkitTestSupport {
             ))
 
         }
+        override fun sendTitle(title: String?, subtitle: String?, fadeIn: Int, stay: Int, fadeOut: Int) {
+            titles.add(CapturedTitle(title = title.orEmpty().legacyToPlainText(), subtitle = subtitle.orEmpty().legacyToPlainText()))
+            super.sendTitle(title, subtitle, fadeIn, stay, fadeOut)
+        }
+
+        override fun sendTitle(title: String?, subtitle: String?) {
+            titles.add(CapturedTitle(title = title.orEmpty().legacyToPlainText(), subtitle = subtitle.orEmpty().legacyToPlainText()))
+            super.sendTitle(title, subtitle)
+        }
+
 
         override fun <T : Any> sendTitlePart(part: TitlePart<T>, value: T) {
             when (part) {
@@ -291,12 +301,30 @@ abstract class TitleManagerPluginMockBukkitTestSupport {
 
             super.sendPlayerListHeaderAndFooter(header, footer)
         }
+        override fun setPlayerListHeaderFooter(header: String?, footer: String?) {
+            playerLists.add(CapturedPlayerList(
+                header = header.orEmpty().legacyToPlainText(),
+                footer = footer.orEmpty().legacyToPlainText(),
+                legacyHeader = header.orEmpty(),
+                legacyFooter = footer.orEmpty()
+            ))
+
+            super.setPlayerListHeaderFooter(header, footer)
+        }
+
 
         override fun sendActionBar(message: Component) {
             actionBars.add(serializer.serialize(message))
 
             super.sendActionBar(message)
         }
+        override fun sendActionBar(message: String) {
+            actionBars.add(message.legacyToPlainText())
+
+            super.sendActionBar(message)
+        }
+
+        private fun String.legacyToPlainText(): String = serializer.serialize(legacySerializer.deserialize(this))
     }
 
     protected class TpsServerMock(private val tpsSamples: DoubleArray) : org.mockbukkit.mockbukkit.ServerMock() {

@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.command.subcommands
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import dev.tarkan.titlemanager.bukkit.command.CommandContext
 import dev.tarkan.titlemanager.bukkit.command.CommandParameters
 import dev.tarkan.titlemanager.bukkit.command.TitleManagerSubCommand
@@ -15,7 +16,7 @@ import kotlin.time.measureTime
 class ReloadSubCommand(private val reloader: TitleManagerReloader) : TitleManagerSubCommand("reload", description = ReloadCommandMessages.description, permission = "titlemanager.command.reload") {
     override suspend fun executeCommand(sender: CommandSender, args: Array<out String>, parameters: CommandParameters, context: CommandContext) {
         if (!parameters.isSilent) {
-            sender.sendMessage(ReloadCommandMessages.before.toComponent(context.locale))
+            sender.sendTitleManagerMessage(ReloadCommandMessages.before.toComponent(context.locale))
         }
 
         try {
@@ -24,10 +25,10 @@ class ReloadSubCommand(private val reloader: TitleManagerReloader) : TitleManage
             }
 
             if (!parameters.isSilent) {
-                sender.sendMessage(ReloadCommandMessages.after.toComponent(elapsedTime.toString(DurationUnit.MILLISECONDS), context.locale))
+                sender.sendTitleManagerMessage(ReloadCommandMessages.after.toComponent(elapsedTime.toString(DurationUnit.MILLISECONDS), context.locale))
             }
         } catch (exception: ConfigurationException) {
-            sender.sendMessage(ReloadCommandMessages.failed.toErrorComponent(exception.message ?: "Unknown configuration error.", context.locale))
+            sender.sendTitleManagerMessage(ReloadCommandMessages.failed.toErrorComponent(exception.message ?: "Unknown configuration error.", context.locale))
         }
     }
 }

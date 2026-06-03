@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.listeners
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import de.comahe.i18n4k.Locale
 import dev.tarkan.titlemanager.bukkit.plugin.TitleManagerPlugin
 import dev.tarkan.titlemanager.bukkit.concurrency.CoroutineScopeManager
@@ -19,7 +20,7 @@ class UpdateNotificationListener(plugin: TitleManagerPlugin, coroutineScopeManag
             }
 
             val latestVersion = updateService.latestVersion ?: return@registerEventExecutor
-            event.player.sendMessage(
+            event.player.sendTitleManagerMessage(
                 VersionCommandMessages.updateAvailable.toComponent(
                     latestVersion,
                     Locale.forLanguageTag(event.player.locale().toLanguageTag())

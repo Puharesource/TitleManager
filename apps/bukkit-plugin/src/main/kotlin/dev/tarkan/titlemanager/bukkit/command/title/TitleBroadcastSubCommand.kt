@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.command.title
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import dev.tarkan.titlemanager.bukkit.plugin.TitleManagerPlugin
 
 import dev.tarkan.titlemanager.bukkit.command.BroadcastSubCommand
@@ -42,15 +43,15 @@ class TitleBroadcastSubCommand(
         }
 
         if (subtitle == null) {
-            sender.sendMessage(TitleBroadcastCommandMessages.titleSent.toComponent(title, context.locale))
+            sender.sendTitleManagerMessage(TitleBroadcastCommandMessages.titleSent.toComponent(title, context.locale))
             return
         }
 
         if (title.isEmpty()) {
-            sender.sendMessage(TitleBroadcastCommandMessages.subtitleSent.toComponent(subtitle, context.locale))
+            sender.sendTitleManagerMessage(TitleBroadcastCommandMessages.subtitleSent.toComponent(subtitle, context.locale))
             return
         }
 
-        sender.sendMessage(TitleBroadcastCommandMessages.bothSent.toComponent(title, subtitle, context.locale))
+        sender.sendTitleManagerMessage(TitleBroadcastCommandMessages.bothSent.toComponent(title, subtitle, context.locale))
     }
 }

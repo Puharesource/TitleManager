@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.command.actionbar
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import dev.tarkan.titlemanager.bukkit.plugin.TitleManagerPlugin
 import dev.tarkan.titlemanager.bukkit.command.CommandContext
 import dev.tarkan.titlemanager.bukkit.command.CommandParameters
@@ -25,7 +26,7 @@ class ActionbarMessageSubCommand(
         val player = plugin.server.getPlayer(playerName)
 
         if (player == null) {
-            sender.sendMessage(ActionbarMessageCommandMessages.invalidPlayer.toErrorComponent(playerName, context.locale))
+            sender.sendTitleManagerMessage(ActionbarMessageCommandMessages.invalidPlayer.toErrorComponent(playerName, context.locale))
             return
         }
 

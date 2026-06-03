@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.command.subcommands
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import dev.tarkan.titlemanager.bukkit.command.CommandContext
 import dev.tarkan.titlemanager.bukkit.command.CommandParameters
 import dev.tarkan.titlemanager.bukkit.command.TitleManagerSubCommand
@@ -16,7 +17,7 @@ class ListAnimationsSubCommand(private val animationPlaceholderRegistry: Animati
         val list = keys.joinToComponent(separator = ", ")
 
         if (!parameters.isSilent) {
-            sender.sendMessage(ListAnimationsCommandMessages.list.toComponent(keys.size, list, context.locale))
+            sender.sendTitleManagerMessage(ListAnimationsCommandMessages.list.toComponent(keys.size, list, context.locale))
         }
     }
 }

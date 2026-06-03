@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.command.playerlist
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import dev.tarkan.titlemanager.bukkit.command.CommandContext
 import dev.tarkan.titlemanager.bukkit.command.CommandParameters
 import dev.tarkan.titlemanager.bukkit.command.TitleManagerSubCommand
@@ -37,7 +38,7 @@ class PlayerListToggleSubCommand(private val playerContextManager: PlayerContext
         }
 
         if (!parameters.isSilent) {
-            sender.sendMessage(PlayerListToggleSubCommandMessages.toggle.toComponent(enablePlayerList.toggleText, context.locale))
+            sender.sendTitleManagerMessage(PlayerListToggleSubCommandMessages.toggle.toComponent(enablePlayerList.toggleText, context.locale))
         }
     }
 }

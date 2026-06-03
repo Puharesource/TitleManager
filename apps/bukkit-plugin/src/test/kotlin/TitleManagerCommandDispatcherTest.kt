@@ -297,6 +297,9 @@ class TitleManagerCommandDispatcherTest {
         every { sender.sendMessage(any<Component>()) } answers {
             messages += firstArg<Component>()
         }
+        every { sender.sendMessage(any<String>()) } answers {
+            messages += ComponentSerializer.deserialize(firstArg<String>())
+        }
         every { sender.hasPermission(any<String>()) } returns hasPermission
 
         return sender

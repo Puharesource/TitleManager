@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.command.actionbar
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import dev.tarkan.titlemanager.bukkit.command.CommandContext
 import dev.tarkan.titlemanager.bukkit.command.CommandParameters
 import dev.tarkan.titlemanager.bukkit.command.TitleManagerSubCommand
@@ -24,7 +25,7 @@ class WelcomeActionbarToggleSubCommand(private val playerStorage: PlayerStorage)
         playerStorage.setWelcomeActionbarEnabled(sender.uniqueId, enableSidebar)
 
         if (!parameters.isSilent) {
-            sender.sendMessage(ActionbarWelcomeToggleSubCommandMessages.toggle.toComponent(enableSidebar.toggleText, context.locale))
+            sender.sendTitleManagerMessage(ActionbarWelcomeToggleSubCommandMessages.toggle.toComponent(enableSidebar.toggleText, context.locale))
         }
     }
 }

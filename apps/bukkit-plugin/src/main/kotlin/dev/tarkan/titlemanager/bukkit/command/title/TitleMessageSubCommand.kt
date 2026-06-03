@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.command.title
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import dev.tarkan.titlemanager.bukkit.plugin.TitleManagerPlugin
 import dev.tarkan.titlemanager.bukkit.command.CommandContext
 import dev.tarkan.titlemanager.bukkit.command.CommandParameters
@@ -26,7 +27,7 @@ class TitleMessageSubCommand(
         val player = plugin.server.getPlayer(playerName)
 
         if (player == null) {
-            sender.sendMessage(TitleMessageCommandMessages.invalidPlayer.toErrorComponent(playerName, context.locale))
+            sender.sendTitleManagerMessage(TitleMessageCommandMessages.invalidPlayer.toErrorComponent(playerName, context.locale))
             return
         }
 

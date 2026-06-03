@@ -10,9 +10,8 @@ import dev.tarkan.titlemanager.bukkit.diagnostics.RuntimeVersionModule
 import dev.tarkan.titlemanager.bukkit.runtime.RuntimeCapabilityDetail
 import dev.tarkan.titlemanager.bukkit.runtime.RuntimeTextConstants
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.title.Title
-import net.kyori.adventure.title.TitlePart
+import java.time.Duration
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.Server
 import org.bukkit.entity.Player
@@ -22,6 +21,7 @@ import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
 import java.math.BigInteger
 import java.util.Random
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -40,28 +40,41 @@ class BukkitApiRuntimeAdapter(
         DiagnosticsStatus(RuntimeCapability.DIRECT_NMS, RuntimeCapabilityStatus.UNAVAILABLE, "no direct module selected for ${serverVersion.displayVersion}")
     )
 
+    private val titleTimes = ConcurrentHashMap<UUID, BukkitApiTitleTicks>()
+
     override fun sendTitleTimes(player: Player, times: Title.Times) {
-        player.sendTitlePart(TitlePart.TIMES, times)
+        titleTimes[player.uniqueId] = BukkitApiTitleTicks.from(times)
     }
 
     override fun sendTitle(player: Player, title: Component) {
-        player.sendTitlePart(TitlePart.TITLE, title)
+        val times = titleTimes.current(player)
+        player.sendTitle(title.toLegacyText(), "", times.fadeIn, times.stay, times.fadeOut)
     }
 
     override fun sendSubtitle(player: Player, subtitle: Component) {
-        player.sendTitlePart(TitlePart.SUBTITLE, subtitle)
+        val times = titleTimes.current(player)
+        player.sendTitle("", subtitle.toLegacyText(), times.fadeIn, times.stay, times.fadeOut)
     }
 
     override fun showTitle(player: Player, title: Title) {
-        player.showTitle(title)
+        val times = BukkitApiTitleTicks.from(title.times() ?: DEFAULT_TITLE_TIMES)
+        player.sendTitle(title.title().toLegacyText(), title.subtitle().toLegacyText(), times.fadeIn, times.stay, times.fadeOut)
     }
 
     override fun sendActionBar(player: Player, actionBar: Component) {
-        player.sendActionBar(actionBar)
+        player.sendActionBar(actionBar.toLegacyText())
     }
 
     override fun sendPlayerListHeaderAndFooter(player: Player, header: Component, footer: Component) {
-        player.sendPlayerListHeaderAndFooter(header, footer)
+        player.setPlayerListHeaderFooter(header.toLegacyText(), footer.toLegacyText())
+    }
+
+    override fun close() {
+        titleTimes.clear()
+    }
+
+    private fun ConcurrentHashMap<UUID, BukkitApiTitleTicks>.current(player: Player): BukkitApiTitleTicks {
+        return get(player.uniqueId) ?: DEFAULT_TITLE_TICKS
     }
 
     override fun createSidebar(player: Player): RuntimeSidebar {
@@ -73,6 +86,13 @@ class BukkitApiRuntimeAdapter(
     }
 
     companion object {
+        private val DEFAULT_TITLE_TICKS = BukkitApiTitleTicks(10, 70, 20)
+        private val DEFAULT_TITLE_TIMES = Title.Times.times(
+            Duration.ofMillis(500),
+            Duration.ofMillis(3500),
+            Duration.ofMillis(1000)
+        )
+
         fun isCompatible(serverVersion: RuntimeServerVersion): Boolean {
             val version = serverVersion.minecraftVersion ?: return true
             val parts = version.split('.').mapNotNull { it.toIntOrNull() }
@@ -80,6 +100,30 @@ class BukkitApiRuntimeAdapter(
             val minor = parts.getOrNull(1) ?: return false
 
             return major > 1 || (major == 1 && minor >= 17)
+        }
+    }
+}
+
+private data class BukkitApiTitleTicks(
+    val fadeIn: Int,
+    val stay: Int,
+    val fadeOut: Int
+) {
+    companion object {
+        fun from(times: Title.Times): BukkitApiTitleTicks {
+            return BukkitApiTitleTicks(
+                fadeIn = times.fadeIn().toTicks(),
+                stay = times.stay().toTicks(),
+                fadeOut = times.fadeOut().toTicks()
+            )
+        }
+
+        private fun Duration.toTicks(): Int {
+            return toMillis()
+                .coerceAtLeast(0)
+                .div(50)
+                .coerceAtMost(Int.MAX_VALUE.toLong())
+                .toInt()
         }
     }
 }
@@ -98,9 +142,8 @@ private class BukkitApiScoreboardHandler(
             if (field == value) {
                 return
             }
-
             field = value
-            objective.displayName(componentSerializer.deserialize(value))
+            objective.setDisplayName(value.take(128))
             isUpdatePending.set(true)
         }
 
@@ -114,9 +157,8 @@ private class BukkitApiScoreboardHandler(
 
     override fun set(index: Int, text: String) {
         val isNew = lines[index] != text
-
         lines[index] = text
-        getOrCreateTeam(index).prefix(componentSerializer.deserialize(text))
+        getOrCreateTeam(index).setPrefix(text)
         objective.getScore(getTeamName(index)).score = RuntimeTextConstants.sidebarScore(index)
 
         if (isNew) {
@@ -140,7 +182,7 @@ private class BukkitApiScoreboardHandler(
     private fun getOrCreateObjective(title: String = this.title): Objective {
         val name = generateRandomString()
 
-        return scoreboard.getObjective(name) ?: scoreboard.registerNewObjective(name, Criteria.DUMMY, componentSerializer.deserialize(title))
+        return scoreboard.getObjective(name) ?: scoreboard.registerNewObjective(name, Criteria.DUMMY, title)
     }
 
     private fun getOrCreateTeam(index: Int): Team {
@@ -156,10 +198,8 @@ private class BukkitApiScoreboardHandler(
 
         return team
     }
-
     private companion object {
         private val random = Random()
-        private val componentSerializer = LegacyComponentSerializer.legacy('§')
 
         private fun generateRandomString(): String = BigInteger(80, random).toString(32)
     }

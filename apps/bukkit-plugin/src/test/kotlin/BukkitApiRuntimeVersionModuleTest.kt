@@ -62,10 +62,14 @@ class BukkitApiRuntimeAdapterTest {
             module.sendActionBar(player, actionbar)
             module.sendPlayerListHeaderAndFooter(player, title, footer)
 
-            assertEquals(times, player.times)
-            assertEquals("Title", player.titleParts.single())
-            assertEquals("Subtitle", player.subtitleParts.single())
-            assertEquals(CapturedTitle("Title", "Subtitle"), player.titles.single())
+            assertEquals(
+                listOf(
+                    CapturedLegacyTitle("Title", "", 0, 20, 0),
+                    CapturedLegacyTitle("", "Subtitle", 0, 20, 0),
+                    CapturedLegacyTitle("Title", "Subtitle", 0, 20, 0)
+                ),
+                player.legacyTitles.toList()
+            )
             assertEquals("Actionbar", player.actionBars.single())
             assertEquals(CapturedPlayerList("Title", "Footer"), player.playerLists.single())
         } finally {
@@ -327,8 +331,17 @@ class BukkitApiRuntimeAdapterTest {
             ))
         }
 
+        override fun setPlayerListHeaderFooter(header: String?, footer: String?) {
+            playerLists.add(CapturedPlayerList(header.orEmpty(), footer.orEmpty()))
+        }
+
+
         override fun sendActionBar(message: Component) {
             actionBars.add(serializer.serialize(message))
+        }
+
+        override fun sendActionBar(message: String) {
+            actionBars.add(message)
         }
     }
 }

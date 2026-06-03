@@ -1,5 +1,6 @@
 package dev.tarkan.titlemanager.bukkit.command.subcommands
 
+import dev.tarkan.titlemanager.bukkit.extensions.sendTitleManagerMessage
 import dev.tarkan.titlemanager.bukkit.plugin.TitleManagerPlugin
 import dev.tarkan.titlemanager.bukkit.command.CommandContext
 import dev.tarkan.titlemanager.bukkit.command.CommandParameters
@@ -19,7 +20,7 @@ class VersionSubCommand(
 
         sender.sendIfNotSilent(parameters, VersionCommandMessages.version.toComponent(versionString, context.locale))
         if (!parameters.isSilent && updateService.isUpdateAvailable) {
-            sender.sendMessage(VersionCommandMessages.updateAvailable.toComponent(updateService.latestVersion.orEmpty(), context.locale))
+            sender.sendTitleManagerMessage(VersionCommandMessages.updateAvailable.toComponent(updateService.latestVersion.orEmpty(), context.locale))
         }
     }
 }

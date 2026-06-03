@@ -105,6 +105,7 @@ tasks {
         relocate("org.apache.commons", "dev.tarkan.titlemanager.shaded.org.apache.commons")
         relocate("org.sqlite", "dev.tarkan.titlemanager.shaded.org.sqlite")
         relocate("org.slf4j", "dev.tarkan.titlemanager.shaded.org.slf4j")
+        relocate("net.kyori", "dev.tarkan.titlemanager.shaded.net.kyori")
         doLast {
             val archive = archiveFile.get().asFile
             val archiveEntries = zipTree(archive)
@@ -133,7 +134,7 @@ tasks {
                 .files
                 .isNotEmpty()
             val containsAdventureClass = zipTree(archive)
-                .matching { include("net/kyori/adventure/text/Component.class") }
+                .matching { include("dev/tarkan/titlemanager/shaded/net/kyori/adventure/text/Component.class") }
                 .files
                 .isNotEmpty()
             val containsSnakeYamlEngineKmpClass = zipTree(archive)
@@ -162,6 +163,7 @@ tasks {
                     include("org/slf4j/**")
                     include("org/snakeyaml/**")
                     include("org/sqlite/**")
+                    include("net/kyori/**")
                 }
                 .files
                 .map { it.path.substringAfter("${archive.name}!") }
@@ -245,7 +247,7 @@ tasks {
                 "Shadow jar does not contain title-only legacy Spigot runtime fallback classes"
             }
             check(containsAdventureClass) {
-                "Shadow jar does not contain Adventure API classes required by runtime contracts on legacy servers"
+                "Shadow jar does not contain relocated Adventure API classes required by runtime contracts on legacy servers"
             }
             check(containsSnakeYamlEngineKmpClass) {
                 "Shadow jar does not contain relocated SnakeYAML Engine KMP classes required by kaml"
