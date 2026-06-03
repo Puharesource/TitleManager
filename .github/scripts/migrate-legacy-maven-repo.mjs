@@ -7,6 +7,13 @@ const legacyBaseUrl = normalizeBaseUrl(process.env.LEGACY_MAVEN_REPOSITORY_URL |
 const outputRoot = process.env.MAVEN_REPOSITORY_ROOT || 'build/maven-repository';
 const legacyMetadataPath = 'io/puharesource/mc/TitleManager/maven-metadata.xml';
 const artifactId = 'TitleManager';
+const fetchAttempts = Number(process.env.LEGACY_MAVEN_FETCH_ATTEMPTS || 4);
+const fetchTimeoutMilliseconds = Number(process.env.LEGACY_MAVEN_FETCH_TIMEOUT_MILLISECONDS || 60_000);
+
+function sleep(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
 
 function normalizeBaseUrl(value) {
   return value.endsWith('/') ? value : `${value}/`;
@@ -14,20 +21,38 @@ function normalizeBaseUrl(value) {
 
 async function fetchBytes(relativePath, required = false) {
   const url = new URL(relativePath, legacyBaseUrl);
-  const response = await fetch(url, { headers: { 'user-agent': 'TitleManager-release-migration' } });
-  if (response.status === 404) {
-    if (required) throw new Error(`Required legacy Maven artifact is unavailable: ${relativePath}`);
-    return null;
-  }
-  if (!response.ok) throw new Error(`Failed to fetch ${url}: HTTP ${response.status}`);
+  let lastError;
+  for (let attempt = 1; attempt <= fetchAttempts; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), fetchTimeoutMilliseconds);
+    try {
+      const response = await fetch(url, {
+        headers: { 'user-agent': 'TitleManager-release-migration' },
+        signal: controller.signal,
+      });
+      if (response.status === 404) {
+        if (required) throw new Error(`Required legacy Maven artifact is unavailable: ${relativePath}`);
+        return null;
+      }
+      if (!response.ok) throw new Error(`Failed to fetch ${url}: HTTP ${response.status}`);
 
-  const contentType = response.headers.get('content-type') || '';
-  const bytes = Buffer.from(await response.arrayBuffer());
-  if (contentType.startsWith('text/html') && bytes.subarray(0, 4096).includes(Buffer.from('Cloudflare Workers'))) {
-    if (required) throw new Error(`Required legacy Maven artifact returned Cloudflare Workers HTML: ${relativePath}`);
-    return null;
+      const contentType = response.headers.get('content-type') || '';
+      const bytes = Buffer.from(await response.arrayBuffer());
+      if (contentType.startsWith('text/html') && bytes.subarray(0, 4096).includes(Buffer.from('Cloudflare Workers'))) {
+        if (required) throw new Error(`Required legacy Maven artifact returned Cloudflare Workers HTML: ${relativePath}`);
+        return null;
+      }
+      return bytes;
+    } catch (error) {
+      lastError = error;
+      if (attempt === fetchAttempts) break;
+      await sleep(250 * attempt);
+    } finally {
+      clearTimeout(timeout);
+    }
   }
-  return bytes;
+  throw lastError;
+
 }
 
 async function writeIfChanged(relativePath, bytes) {
