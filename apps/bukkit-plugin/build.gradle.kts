@@ -90,17 +90,21 @@ tasks {
         }
 
         relocate("kotlin", "dev.tarkan.titlemanager.shaded.kotlin")
+        relocate("_COROUTINE", "dev.tarkan.titlemanager.shaded._COROUTINE")
         relocate("org.jetbrains", "dev.tarkan.titlemanager.shaded.org.jetbrains")
         relocate("dagger", "dev.tarkan.titlemanager.shaded.dagger")
         relocate("javax.inject", "dev.tarkan.titlemanager.shaded.javax.inject")
         relocate("org.bstats", "dev.tarkan.titlemanager.shaded.org.bstats")
         relocate("com.charleskorn.kaml", "dev.tarkan.titlemanager.shaded.com.charleskorn.kaml")
+        relocate("org.snakeyaml", "dev.tarkan.titlemanager.shaded.org.snakeyaml")
         relocate("it.krzeminski", "dev.tarkan.titlemanager.shaded.it.krzeminski")
         relocate("net.thauvin.erik.urlencoder", "dev.tarkan.titlemanager.shaded.net.thauvin.erik.urlencoder")
-        relocate("com.squareup.okio", "dev.tarkan.titlemanager.shaded.com.squareup.okio")
-        relocate("io.insert-koin", "dev.tarkan.titlemanager.shaded.org.koin")
+        relocate("okio", "dev.tarkan.titlemanager.shaded.okio")
+        relocate("org.koin", "dev.tarkan.titlemanager.shaded.org.koin")
+        relocate("de.comahe.i18n4k", "dev.tarkan.titlemanager.shaded.de.comahe.i18n4k")
         relocate("org.apache.commons", "dev.tarkan.titlemanager.shaded.org.apache.commons")
-
+        relocate("org.sqlite", "dev.tarkan.titlemanager.shaded.org.sqlite")
+        relocate("org.slf4j", "dev.tarkan.titlemanager.shaded.org.slf4j")
         doLast {
             val archive = archiveFile.get().asFile
             val archiveEntries = zipTree(archive)
@@ -140,6 +144,29 @@ tasks {
                 .matching { include("dev/tarkan/titlemanager/shaded/net/thauvin/erik/urlencoder/UrlEncoderUtil.class") }
                 .files
                 .isNotEmpty()
+            val unrelocatedShadedLibraries = archiveEntries
+                .matching {
+                    include("_COROUTINE/**")
+                    include("com/charleskorn/kaml/**")
+                    include("dagger/**")
+                    include("de/comahe/i18n4k/**")
+                    include("it/krzeminski/**")
+                    include("javax/inject/**")
+                    include("kotlin/**")
+                    include("kotlinx/**")
+                    include("okio/**")
+                    include("org/apache/commons/**")
+                    include("org/bstats/**")
+                    include("org/jetbrains/**")
+                    include("org/koin/**")
+                    include("org/slf4j/**")
+                    include("org/snakeyaml/**")
+                    include("org/sqlite/**")
+                }
+                .files
+                .map { it.path.substringAfter("${archive.name}!") }
+                .sorted()
+
             val containsPaperweightNmsModuleClasses = paperweightNmsModules.associate { (nmsVersion, _) ->
                 nmsVersion to zipTree(archive)
                     .matching { include("dev/tarkan/titlemanager/nms/direct/$nmsVersion/${nmsVersion.toFactoryClassName()}RuntimeVersionModuleFactory.class") }
@@ -226,6 +253,9 @@ tasks {
             check(containsUrlEncoderClass) {
                 "Shadow jar does not contain relocated URL encoder classes required by SnakeYAML Engine KMP"
             }
+            check(unrelocatedShadedLibraries.isEmpty()) {
+                "Shadow jar contains unrelocated shaded library classes: ${unrelocatedShadedLibraries.take(20)}"
+            }
             paperweightNmsModules.forEach { (nmsVersion, nmsProject) ->
                 check(containsPaperweightNmsModuleClasses[nmsVersion] == true) {
                     "Shadow jar does not contain ${nmsProject.name} classes"
@@ -285,10 +315,15 @@ hangarPublish {
         id.set(System.getenv("HANGAR_PROJECT_ID") ?: "TitleManager")
         apiKey.set(System.getenv("HANGAR_API_TOKEN") ?: "")
         changelog.set(System.getenv("HANGAR_CHANGELOG") ?: "")
+        val hangarDownloadUrl = System.getenv("HANGAR_DOWNLOAD_URL")?.takeIf { it.isNotBlank() }
 
         platforms {
             register(Platforms.PAPER) {
-                jar.set(tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar").flatMap { it.archiveFile })
+                if (hangarDownloadUrl == null) {
+                    jar.set(tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar").flatMap { it.archiveFile })
+                } else {
+                    url.set(hangarDownloadUrl)
+                }
                 platformVersions.set(supportedMinecraftVersions.get().split(',').map { it.trim() })
 
                 dependencies {

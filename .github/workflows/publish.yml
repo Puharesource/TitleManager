@@ -165,6 +165,7 @@ jobs:
           HANGAR_CHANNEL: ${{ steps.context.outputs.channel }}
           HANGAR_VERSION: ${{ steps.context.outputs.hangar_version }}
           HANGAR_CHANGELOG: ${{ steps.notes.outputs.body }}
+          HANGAR_DOWNLOAD_URL: https://github.com/${{ github.repository }}/releases/download/${{ steps.context.outputs.release_tag }}/TitleManager-${{ steps.context.outputs.gradle_version }}.jar
         run: |
           if curl -fsS "https://hangar.papermc.io/api/v1/projects/${HANGAR_PROJECT_ID}/versions/${HANGAR_VERSION}" >/dev/null; then
             echo "Hangar version ${HANGAR_VERSION} already exists; skipping upload."
