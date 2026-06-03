@@ -21,9 +21,9 @@ root.mkdir(parents=True, exist_ok=True)
     maven("https://repo.tarkan.dev")
 }</code></pre>
   <pre><code>dependencies {
-    compileOnly("dev.tarkan.titlemanager:modules:bukkit:api:3.0.0-SNAPSHOT")
+    compileOnly("dev.tarkan.titlemanager:titlemanager-bukkit-api:3.0.0-SNAPSHOT")
 }</code></pre>
-  <p>Published artifacts include <code>titlemanager-bukkit-api</code> and <code>titlemanager-core</code>.</p>
+  <p>Published artifacts include <code>titlemanager-bukkit-api</code> and <code>titlemanager-core</code>. Legacy artifacts, if migrated into this repository, remain available under their original Maven paths.</p>
 </body>
 </html>
 """,
